@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Fusion;
+using Fusion.Sockets;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -9,6 +11,9 @@ public class PhotonNetworkManager : MonoBehaviour
 {
     public static PhotonNetworkManager Instance { get; private set; }
 
+    [Header("References")]
+    public PhotonEventsHandler eventsHandlerPrefab;
+    
     public bool AutoStart = false;
     public string LastSessionName;
 
@@ -18,6 +23,7 @@ public class PhotonNetworkManager : MonoBehaviour
     public event Action<string> OnLobbyCreated;
     public event Action OnLobbyJoined;
 
+// Add this to Awake method:
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -28,8 +34,19 @@ public class PhotonNetworkManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+    
+        // ✅ FIX: Add scene loaded callback
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    
+        EnsureEventsHandler();
     }
 
+// Don't forget to unsubscribe
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+    
     private void Start()
     {
         if (AutoStart)
@@ -37,7 +54,44 @@ public class PhotonNetworkManager : MonoBehaviour
             CreateLobby();
         }
     }
+    
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Debug.Log($"[PNM] Scene loaded: {scene.name}");
+    
+        // Refresh all player UIs after scene load
+        Invoke(nameof(RefreshAllPlayerUIs), 1f);
+    }
 
+    private void RefreshAllPlayerUIs()
+    {
+        NetworkPlayer[] players = FindObjectsOfType<NetworkPlayer>();
+        foreach (var player in players)
+        {
+            if (player != null)
+            {
+                player.RefreshPlayerUI();
+            }
+        }
+    }
+    private void EnsureEventsHandler()
+    {
+        if (PhotonEventsHandler.Instance == null)
+        {
+            if (eventsHandlerPrefab != null)
+            {
+                Instantiate(eventsHandlerPrefab);
+            }
+            else
+            {
+                // Create a new one if no prefab assigned
+                var handlerObj = new GameObject("PhotonEventsHandler");
+                handlerObj.AddComponent<PhotonEventsHandler>();
+                DontDestroyOnLoad(handlerObj);
+            }
+        }
+        Debug.Log($"[PNM] PhotonEventsHandler Instance: {PhotonEventsHandler.Instance != null}");
+    }
     // ---------------------- CREATE ----------------------
 
     public void CreateLobby()
@@ -66,7 +120,6 @@ public class PhotonNetworkManager : MonoBehaviour
     }
 
     // ---------------------- START RUNNER ----------------------
-
     private async Task StartRunner(GameMode mode, string sessionName)
     {
         // Create runner if doesn't exist
@@ -76,7 +129,6 @@ public class PhotonNetworkManager : MonoBehaviour
             _runner.ProvideInput = true;
         }
 
-        // Prevent duplicate SceneManager components
         var sceneManager = GetComponent<NetworkSceneManagerDefault>() 
                            ?? gameObject.AddComponent<NetworkSceneManagerDefault>();
 
@@ -86,8 +138,7 @@ public class PhotonNetworkManager : MonoBehaviour
             SessionName = sessionName,
             Scene = SceneRef.FromIndex(SceneManager.GetActiveScene().buildIndex),
             SceneManager = sceneManager,
-
-            // 👇 This makes the session discoverable for JoinLobby
+            PlayerCount = 2,
             SessionProperties = new Dictionary<string, SessionProperty>()
             {
                 { "VISIBLE", 1 }
@@ -100,15 +151,24 @@ public class PhotonNetworkManager : MonoBehaviour
         if (result.Ok)
         {
             Debug.Log($"[PNM] Runner started successfully as {mode}. Room: {sessionName}");
+        
+            // Register callbacks
+            if (PhotonEventsHandler.Instance != null)
+            {
+                _runner.AddCallbacks(PhotonEventsHandler.Instance);
+            }
+        
+            // ✅ ADD THIS: Register the SimplePlayerSpawner
+            var spawner = FindObjectOfType<PlayerSpawner>();
+            if (spawner != null)
+            {
+                _runner.AddCallbacks(spawner);
+                Debug.Log("[PNM] ✅ Registered Player Spawner");
+            }
         }
         else
         {
             Debug.LogError($"[PNM] FAILED: {result.ShutdownReason}");
-
-            if (mode == GameMode.Client && result.ShutdownReason == ShutdownReason.GameNotFound)
-            {
-                Debug.LogError("[PNM] ❌ Could NOT join room — check lobby code or network visibility.");
-            }
         }
     }
 

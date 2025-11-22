@@ -27,6 +27,7 @@ public class HomeUIManager : MonoBehaviour
     [Header("JoinPanel")]
     [SerializeField] internal Button JoinLobbyButton;
     [SerializeField] internal TMP_InputField LobbyCodeInputField;
+    [SerializeField] internal TextMeshProUGUI LobbyCodeErrorText;
     
     [Header("PlayerJoinedPanel")]
     [SerializeField] internal TextMeshProUGUI Player1NameText;
@@ -96,30 +97,14 @@ public class HomeUIManager : MonoBehaviour
         PrivateLobbyPanel.SetActive(false);
         PlayerJoinedPanel.SetActive(true);
     
-        // Set player 1 info (lobby creator)
-        string playerName = RandomNameGenerator.GetRandomName();
-        Player1NameText.text = playerName;
-        Player1RankText.text = "Rank: 1";
-    
-        // Clear player 2 info
-        Player2NameText.text = "Waiting...";
-        Player2RankText.text = "";
-    
         PhotonNetworkManager.Instance.CreateLobby();
     }
 
     public void UpdateSessionCode(string sessionCode)
     {
-        SessionCodeText.text = $"Session: {sessionCode}";
+        SessionCodeText.text = $"Session code : {sessionCode}";
     }
-
-    public void UpdatePlayer2Info()
-    {
-        string playerName = RandomNameGenerator.GetRandomName();
-        Player2NameText.text = playerName;
-        Player2RankText.text = "Rank: 1";
-    }
-
+    
     private void OpenJoinLobbyPanel()
     {
         PrivateLobbyPanel.SetActive(false);
@@ -132,7 +117,11 @@ public class HomeUIManager : MonoBehaviour
         PlayerJoinedPanel.SetActive(true);
         
         PhotonNetworkManager.Instance.JoinLobby(LobbyCodeInputField.text);
-        UpdatePlayer2Info();
+    }
+    
+    internal void ShowError(string error)
+    {
+        LobbyCodeErrorText.text = error;
     }
 
     #endregion

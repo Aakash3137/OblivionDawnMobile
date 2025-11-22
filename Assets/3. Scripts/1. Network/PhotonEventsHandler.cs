@@ -19,9 +19,17 @@ public class PhotonEventsHandler : MonoBehaviour, INetworkRunnerCallbacks
 
     private void Awake()
     {
-        Instance = this;
-    }
+        // ✅ Proper singleton pattern
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
+        Instance = this;
+        DontDestroyOnLoad(gameObject); // ✅ Keep alive between scenes
+        Debug.Log("[PEH] PhotonEventsHandler initialized");
+    }
     public void OnConnectedToServer(NetworkRunner runner)
     {
         Debug.Log("[PEH] Connected to server");
@@ -53,7 +61,7 @@ public class PhotonEventsHandler : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        Debug.Log($"[PEH] PlayerJoined: {player}");
+        Debug.Log($"[PEH] OnPlayerJoined called - Runner: {runner != null}, Player: {player}");
         OnPlayerJoinedEvent?.Invoke(player);
     }
 

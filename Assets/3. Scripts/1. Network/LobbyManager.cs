@@ -1,75 +1,109 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Fusion;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class LobbyManager : MonoBehaviour
 {
     public static LobbyManager Instance { get; private set; }
 
-    private readonly List<PlayerRef> _players = new();
-
-    [Header("Game Scene (Fusion SceneRef)")]
-    public SceneRef GameScene;
+    [Header("Game Scene Name")]
+    public string GameSceneName = "GameScene";
 
     public float CountdownTime = 5f;
+    
+    private NetworkRunner _runner;
+    private bool _countdownStarted = false;
 
     private void Awake()
     {
         Instance = this;
     }
 
-    private void OnEnable()
+    private void Start()
     {
-        if (PhotonEventsHandler.Instance != null)
-        {
-            PhotonEventsHandler.Instance.OnPlayerJoinedEvent += HandlePlayerJoined;
-            PhotonEventsHandler.Instance.OnPlayerLeftEvent += HandlePlayerLeft;
-        }
+        _runner = PhotonNetworkManager.Instance?.Runner;
     }
 
-
-    private void OnDisable()
+    private void Update()
     {
-        if (PhotonEventsHandler.Instance != null)
+        if (_runner == null) 
         {
-            PhotonEventsHandler.Instance.OnPlayerJoinedEvent -= HandlePlayerJoined;
-            PhotonEventsHandler.Instance.OnPlayerLeftEvent -= HandlePlayerLeft;
+            _runner = PhotonNetworkManager.Instance?.Runner;
+            return;
         }
+
+        CheckPlayerCountDirectly();
     }
 
-    private void HandlePlayerJoined(PlayerRef player)
+    private void CheckPlayerCountDirectly()
     {
-        if (!_players.Contains(player))
-            _players.Add(player);
+        if (_countdownStarted) return;
+        
+        var activePlayers = _runner.ActivePlayers.ToList();
+        var networkPlayers = FindObjectsOfType<NetworkPlayer>();
+        
+        int activePlayerCount = activePlayers.Count;
+        int networkPlayerCount = networkPlayers.Length;
 
-        var runner = PhotonNetworkManager.Instance.Runner;
-
-        if (_players.Count == 2 && runner.IsServer)
+        // Check both conditions - we need at least 2 NetworkPlayer objects AND 2 active players
+        if (networkPlayerCount >= 2 && activePlayerCount >= 2 && _runner.IsServer)
         {
+            Debug.Log("[LobbyManager] ✅ Starting countdown to game scene!");
+            _countdownStarted = true;
             StartCoroutine(StartCountdown());
         }
     }
 
-    private void HandlePlayerLeft(PlayerRef player)
-    {
-        _players.Remove(player);
-    }
-    
     private IEnumerator StartCountdown()
     {
-        Debug.Log($"[Lobby] Match starts in {CountdownTime} seconds...");
-        yield return new WaitForSeconds(CountdownTime);
-
-        var runner = PhotonNetworkManager.Instance.Runner;
-
-        if (runner != null && runner.IsServer)
+        Debug.Log($"[LobbyManager] Match starts in {CountdownTime} seconds...");
+        
+        // Update UI with countdown if needed
+        for (int i = (int)CountdownTime; i > 0; i--)
         {
-            Debug.Log("[Lobby] Loading game scene...");
+            Debug.Log($"[LobbyManager] Starting in {i}...");
+            yield return new WaitForSeconds(1f);
+        }
 
-            runner.SceneManager.LoadScene(GameScene, default);
+        if (_runner != null && _runner.IsServer)
+        {
+            Debug.Log("[LobbyManager] 🚀 Loading game scene...");
+            
+            // ✅ CRITICAL FIX: Don't destroy network objects when loading scene
+            LoadGameScene();
         }
     }
 
+    private void LoadGameScene()
+    {
+        int sceneIndex = GetSceneBuildIndex(GameSceneName);
+        if (sceneIndex >= 0)
+        {
+            // ✅ CRITICAL FIX: Use LoadSceneMode.Single but preserve network objects
+            _runner.LoadScene(SceneRef.FromIndex(sceneIndex), 
+                new UnityEngine.SceneManagement.LoadSceneParameters(UnityEngine.SceneManagement.LoadSceneMode.Single));
+        }
+        else
+        {
+            Debug.LogError($"[LobbyManager] Cannot load scene: {GameSceneName} not found in build settings!");
+        }
+    }
+
+    private int GetSceneBuildIndex(string sceneName)
+    {
+        for (int i = 0; i < UnityEngine.SceneManagement.SceneManager.sceneCountInBuildSettings; i++)
+        {
+            string scenePath = UnityEngine.SceneManagement.SceneUtility.GetScenePathByBuildIndex(i);
+            if (System.IO.Path.GetFileNameWithoutExtension(scenePath) == sceneName)
+                return i;
+        }
+        return -1;
+    }
+
+    private int GetActivePlayerCount()
+    {
+        return _runner.ActivePlayers.Count();
+    }
 }
