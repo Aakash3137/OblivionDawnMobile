@@ -1,0 +1,69 @@
+pluginManagement {
+    repositories {
+        **ARTIFACTORYREPOSITORY**
+        maven {
+          url 'https://mirrors.huaweicloud.com/repository/maven/'
+        }
+    }
+}
+
+include ':launcher', ':unityLibrary'
+**INCLUDES**
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+    repositories {
+        **ARTIFACTORYREPOSITORY**
+        maven {
+          url 'https://mirrors.huaweicloud.com/repository/maven/'
+        }
+        //google()
+        //mavenCentral()
+// Android Resolver Repos Start
+        def unityProjectPath = $/file:///**DIR_UNITYPROJECT**/$.replace("\\", "/")
+        maven {
+            url "https://maven.aliyun.com/repository/google/" // Assets/VoodooSauce/Ads/AudioAds/Networks/Odeeo/3rdParty/PlayOn/Editor/PlayOnSDKDependencies.xml:15
+        }
+        maven {
+            url "https://repo.maven.apache.org/maven2" // Assets/VoodooSauce/CrashReport/Embrace/Internal/Unity/Editor/EmbraceDependencies.xml:6
+        }
+        maven {
+            url "https://dl.google.com/dl/android/maven2" // Assets/VoodooSauce/CrashReport/Embrace/Internal/Unity/Editor/EmbraceDependencies.xml:6
+        }
+        maven {
+            url (unityProjectPath + "/Assets/GeneratedLocalRepo/GooglePlayGames/com.google.play.games/Editor/m2repository") // Assets/GooglePlayGames/com.google.play.games/Editor/GooglePlayGamesPluginDependencies.xml:11
+        }
+        maven {
+            url "https://jitpack.io" // Assets/VoodooSauce/Ads/AppHarbr/3rdParty/AppHarbrSDK/Editor/Dependencies.xml:12
+        }
+        maven {
+            url "https://adnetwork-framework.voodoo-tech.io/android/v2" // Assets/VoodooSauce/Ads/Mediations/MaxAds/3rdParty/MaxSdk/Mediation/Adn/Editor/Dependencies.xml:8
+        }
+        maven {
+            url "https://artifactory.bidmachine.io/bidmachine" // Assets/VoodooSauce/Ads/Mediations/MaxAds/3rdParty/MaxSdk/Mediation/BidMachine/Editor/Dependencies.xml:8
+        }
+        maven {
+            url "https://artifact.bytedance.com/repository/pangle" // Assets/VoodooSauce/Ads/Mediations/MaxAds/3rdParty/MaxSdk/Mediation/ByteDance/Editor/Dependencies.xml:8
+        }
+        maven {
+            url "https://android-sdk.is.com/" // Assets/VoodooSauce/Ads/Mediations/MaxAds/3rdParty/MaxSdk/Mediation/IronSource/Editor/Dependencies.xml:8
+        }
+        maven {
+            url "https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea" // Assets/VoodooSauce/Ads/Mediations/MaxAds/3rdParty/MaxSdk/Mediation/Mintegral/Editor/Dependencies.xml:8
+        }
+        maven {
+            url "https://maven.ogury.co" // Assets/VoodooSauce/Ads/Mediations/MaxAds/3rdParty/MaxSdk/Mediation/OguryPresage/Editor/Dependencies.xml:8
+        }
+        maven {
+            url "https://aws.oss.sonatype.org/content/repositories/releases/" // Assets/VoodooSauce/Ads/Mediations/MaxAds/Internal/Mediation/Amazon/Editor/AmazonDependencies.xml:10
+        }
+        maven {
+            url "https://voodoosauce-sdk.voodoo-tech.io/max-nativeads/android" // Assets/VoodooSauce/Ads/Mediations/MaxAds/Internal/NativeAds/Editor/Dependencies.xml:8, Assets/VoodooSauce/Ads/Mediations/MaxAds/Internal/NativeAds/Editor/Dependencies.xml:14
+        }
+        mavenLocal()
+// Android Resolver Repos End
+        flatDir {
+            dirs "${project(':unityLibrary').projectDir}/libs"
+        }
+    }
+}
