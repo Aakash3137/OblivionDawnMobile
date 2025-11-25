@@ -6,51 +6,39 @@ using Fusion.Sockets;
 
 public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
 {
-    [Header("Assign your NetworkPlayer prefab here")]
+    #region Inspector Fields
+    
+    [Header("Player Prefab")]
     public NetworkObject playerPrefab;
-
-    [Header("Spawn Positions")]
+    
+    [Header("Spawn Configuration")]
     public Vector3[] spawnPositions = { Vector3.zero, new Vector3(0, 0, 20) };
-
+    public GameModeType gameMode = GameModeType.HostClient;
+    
+    #endregion
+    
+    #region Private Fields
+    
     private Dictionary<PlayerRef, NetworkObject> _spawnedPlayers = new Dictionary<PlayerRef, NetworkObject>();
+    
+    #endregion
 
+    #region Network Callbacks
+    
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        Debug.Log($"[SimpleSpawner] Player joined: {player}");
+        Debug.Log($"[PlayerSpawner] Player joined: {player}");
         
         if (runner.IsServer && !_spawnedPlayers.ContainsKey(player))
         {
+            InitializeGameModeIfNeeded();
             SpawnPlayer(runner, player);
         }
     }
-
-    private void SpawnPlayer(NetworkRunner runner, PlayerRef player)
-    {
-        if (playerPrefab == null)
-        {
-            Debug.LogError("[SimpleSpawner] ❌ Player prefab is not assigned! Please assign it in the inspector.");
-            return;
-        }
-
-        // Always spawn second player at position 1 (0,0,20)
-        int playerIndex = _spawnedPlayers.Count == 0 ? 0 : 1;
-        Vector3 spawnPosition = playerIndex < spawnPositions.Length ? spawnPositions[playerIndex] : Vector3.zero;
-        
-        Debug.Log($"[SimpleSpawner] Player {player} (ID: {player.PlayerId}) -> Index: {playerIndex} -> Position: {spawnPosition}");
-        
-        NetworkObject playerObject = runner.Spawn(playerPrefab, spawnPosition, Quaternion.identity, player);
-        
-        Debug.Log($"[SimpleSpawner] Spawned at position: {playerObject.transform.position}");
-        
-        DontDestroyOnLoad(playerObject.gameObject);
-        
-        _spawnedPlayers[player] = playerObject;
-        Debug.Log($"[SimpleSpawner] ✅ Spawned Persistent NetworkPlayer for {player} with ID: {playerObject.Id}");
-    }
-
+    
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
-        Debug.Log($"[SimpleSpawner] Player left: {player}");
+        Debug.Log($"[PlayerSpawner] Player left: {player}");
         
         if (_spawnedPlayers.TryGetValue(player, out NetworkObject playerObject))
         {
@@ -61,6 +49,64 @@ public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
             _spawnedPlayers.Remove(player);
         }
     }
+    
+    #endregion
+
+    #region Spawning Logic
+    
+    private void InitializeGameModeIfNeeded()
+    {
+        if (_spawnedPlayers.Count == 0)
+        {
+            CustomGameMode.SetGameMode(gameMode);
+        }
+    }
+    
+    private void SpawnPlayer(NetworkRunner runner, PlayerRef player)
+    {
+        if (playerPrefab == null)
+        {
+            Debug.LogError("[PlayerSpawner] Player prefab not assigned!");
+            return;
+        }
+        
+        Vector3 spawnPosition = GetSpawnPosition();
+        NetworkObject playerObject = CreatePlayerObject(runner, player, spawnPosition);
+        ConfigurePlayerObject(playerObject, spawnPosition);
+        RegisterPlayer(player, playerObject);
+    }
+    
+    private Vector3 GetSpawnPosition()
+    {
+        int playerIndex = _spawnedPlayers.Count == 0 ? 0 : 1;
+        return playerIndex < spawnPositions.Length ? spawnPositions[playerIndex] : Vector3.zero;
+    }
+    
+    private NetworkObject CreatePlayerObject(NetworkRunner runner, PlayerRef player, Vector3 position)
+    {
+        return runner.Spawn(playerPrefab, position, Quaternion.identity, player);
+    }
+    
+    private void ConfigurePlayerObject(NetworkObject playerObject, Vector3 position)
+    {
+        var networkPlayer = playerObject.GetComponent<NetworkPlayer>();
+        if (networkPlayer != null)
+        {
+            networkPlayer.NetworkPosition = position;
+        }
+        
+        DontDestroyOnLoad(playerObject.gameObject);
+    }
+    
+    private void RegisterPlayer(PlayerRef player, NetworkObject playerObject)
+    {
+        _spawnedPlayers[player] = playerObject;
+        Debug.Log($"[PlayerSpawner] Spawned player {player} at {playerObject.transform.position}");
+    }
+    
+    #endregion
+
+    #region Unused Network Callbacks
     
     public void OnInput(NetworkRunner runner, NetworkInput input) { }
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
@@ -73,13 +119,12 @@ public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
     public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) { }
     public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
     public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
-    
-    // Fixed: Added the missing reliable data methods
     public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data) { }
     public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress) { }
-    
     public void OnSceneLoadDone(NetworkRunner runner) { }
     public void OnSceneLoadStart(NetworkRunner runner) { }
     public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
     public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
+    
+    #endregion
 }

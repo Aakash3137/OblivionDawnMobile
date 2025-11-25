@@ -100,10 +100,22 @@ public class PhotonNetworkManager : MonoBehaviour
         LastSessionName = code;
 
         Debug.Log($"[PNM] Creating lobby: {code}");
-        StartRunner(GameMode.Host, code).Forget();
+        StartRunner(Fusion.GameMode.Host, code).Forget();
 
         HomeUIManager.Instance.UpdateSessionCode(code);
         OnLobbyCreated?.Invoke(code);
+    }
+
+    // ---------------------- PVP MATCHMAKING ----------------------
+    
+    public void StartPvPMatchmaking()
+    {
+        // Use a fixed session name for PvP matchmaking so players can find each other
+        string pvpSession = "PvP_Global_Match";
+        LastSessionName = pvpSession;
+        
+        Debug.Log($"[PNM] Starting PvP matchmaking: {pvpSession}");
+        StartRunner(Fusion.GameMode.AutoHostOrClient, pvpSession).Forget();
     }
 
     // ---------------------- JOIN ----------------------
@@ -114,13 +126,13 @@ public class PhotonNetworkManager : MonoBehaviour
         LastSessionName = code;
 
         Debug.Log($"[PNM] Attempt join lobby: {code}");
-        StartRunner(GameMode.Client, code).Forget();
+        StartRunner(Fusion.GameMode.Client, code).Forget();
 
         OnLobbyJoined?.Invoke();
     }
 
     // ---------------------- START RUNNER ----------------------
-    private async Task StartRunner(GameMode mode, string sessionName)
+    private async Task StartRunner(Fusion.GameMode mode, string sessionName)
     {
         // Create runner if doesn't exist
         if (_runner == null)

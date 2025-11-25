@@ -1,47 +1,78 @@
 using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
+
 public class HomeUIManager : MonoBehaviour
 {
-    #region Variables
-    [Header("Panel Reference")]
-    [SerializeField] internal GameObject HomePanel;
-    [SerializeField] internal GameObject PrivateLobbyPanel;
-    [SerializeField] internal GameObject JoinLobbyPanel;
-    [SerializeField] internal GameObject PlayerJoinedPanel;
-    [SerializeField] internal GameObject LoadingPanel;
+    #region Singleton
     
-    [Header("Button Reference")]
-    [SerializeField] internal Button CampaignButton;
-    [SerializeField] internal Button PrivateLobbyButton;
-    [SerializeField] internal Button PVPButton;
+    public static HomeUIManager Instance { get; private set; }
     
-    [SerializeField] internal Button CreateLobbyButton;
-    [SerializeField] internal Button OuterJoinLobbyButton;
+    #endregion
     
-    [SerializeField] internal Button PrivateLobbyBackButton;
-    [SerializeField] internal Button JoinLobbyBackButton;
+    #region UI Panels
     
-    [Header("JoinPanel")]
-    [SerializeField] internal Button JoinLobbyButton;
-    [SerializeField] internal TMP_InputField LobbyCodeInputField;
-    [SerializeField] internal TextMeshProUGUI LobbyCodeErrorText;
+    [Header("Panels")]
+    [SerializeField] private GameObject HomePanel;
+    [SerializeField] private GameObject PrivateLobbyPanel;
+    [SerializeField] private GameObject JoinLobbyPanel;
+    [SerializeField] private GameObject PlayerJoinedPanel;
+    [SerializeField] private GameObject LoadingPanel;
+    [SerializeField] private GameObject PvpDisplayPanel;
     
-    [Header("PlayerJoinedPanel")]
-    [SerializeField] internal TextMeshProUGUI Player1NameText;
-    [SerializeField] internal TextMeshProUGUI Player1RankText;
-    [SerializeField] internal TextMeshProUGUI Player2NameText;
-    [SerializeField] internal TextMeshProUGUI Player2RankText;
-    [SerializeField] internal TextMeshProUGUI SessionCodeText;
-
-    public static HomeUIManager Instance;
-
+    #endregion
+    
+    #region UI Buttons
+    
+    [Header("Main Buttons")]
+    [SerializeField] private Button CampaignButton;
+    [SerializeField] private Button PrivateLobbyButton;
+    [SerializeField] private Button PVPButton;
+    
+    [Header("Lobby Buttons")]
+    [SerializeField] private Button CreateLobbyButton;
+    [SerializeField] private Button OuterJoinLobbyButton;
+    [SerializeField] private Button JoinLobbyButton;
+    
+    [Header("Navigation Buttons")]
+    [SerializeField] private Button PrivateLobbyBackButton;
+    [SerializeField] private Button JoinLobbyBackButton;
+    
+    #endregion
+    
+    #region UI Elements
+    
+    [Header("Join Panel Elements")]
+    [SerializeField] private TMP_InputField LobbyCodeInputField;
+    [SerializeField] private TextMeshProUGUI LobbyCodeErrorText;
+    
+    [Header("Player Info Elements")]
+    [SerializeField] private TextMeshProUGUI Player1NameText;
+    [SerializeField] private TextMeshProUGUI Player1RankText;
+    [SerializeField] private TextMeshProUGUI Player2NameText;
+    [SerializeField] private TextMeshProUGUI Player2RankText;
+    [SerializeField] private TextMeshProUGUI SessionCodeText;
+    
     #endregion
 
-    #region Unity Method
+    #region Unity Lifecycle
+    
     private void Awake()
+    {
+        InitializeSingleton();
+    }
+    
+    private void Start()
+    {
+        SetupButtonListeners();
+    }
+    
+    #endregion
+    
+    #region Initialization
+    
+    private void InitializeSingleton()
     {
         if (Instance == null)
         {
@@ -52,95 +83,102 @@ public class HomeUIManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
-    private void Start()
+    
+    private void SetupButtonListeners()
     {
+        // Main menu buttons
         CampaignButton.onClick.AddListener(OnClickCampaignButton);
         PrivateLobbyButton.onClick.AddListener(OnClickPrivateLobbyButton);
         PVPButton.onClick.AddListener(OnClickPVPButton);
         
+        // Lobby buttons
         CreateLobbyButton.onClick.AddListener(OnClickCreateLobbyButton);
         OuterJoinLobbyButton.onClick.AddListener(OpenJoinLobbyPanel);
         JoinLobbyButton.onClick.AddListener(OnJoinButtonClicked);
         
+        // Navigation buttons
         PrivateLobbyBackButton.onClick.AddListener(OnPrivateLobbyBackButton);
         JoinLobbyBackButton.onClick.AddListener(OnJoinLobbyBackButton);
     }
     
     #endregion
 
-    #region Button Listeners
+    #region Button Event Handlers
+    
     private void OnClickCampaignButton()
     {
-        HomePanel.SetActive(false);
-        LoadingPanel.SetActive(true);
-        
-        // Load Campaign Scene
+        SwitchPanel(HomePanel, LoadingPanel);
+        // TODO: Load Campaign Scene
     }
     
     private void OnClickPVPButton()
     {
-        HomePanel.SetActive(false);
-        LoadingPanel.SetActive(true);
-
-        // PVP Logic
+        CustomGameMode.SetGameMode(GameModeType.PvP);
+        SwitchPanel(HomePanel, PvpDisplayPanel);
+        PhotonNetworkManager.Instance.StartPvPMatchmaking();
     }
     
     private void OnClickPrivateLobbyButton()
     {
-        HomePanel.SetActive(false);
-        PrivateLobbyPanel.SetActive(true);
+        SwitchPanel(HomePanel, PrivateLobbyPanel);
     }
     
     private void OnClickCreateLobbyButton()
     {
-        PrivateLobbyPanel.SetActive(false);
-        PlayerJoinedPanel.SetActive(true);
-    
+        CustomGameMode.SetGameMode(GameModeType.HostClient);
+        SwitchPanel(PrivateLobbyPanel, PlayerJoinedPanel);
         PhotonNetworkManager.Instance.CreateLobby();
-    }
-
-    public void UpdateSessionCode(string sessionCode)
-    {
-        SessionCodeText.text = $"Session code : {sessionCode}";
     }
     
     private void OpenJoinLobbyPanel()
     {
-        PrivateLobbyPanel.SetActive(false);
-        JoinLobbyPanel.SetActive(true);
+        SwitchPanel(PrivateLobbyPanel, JoinLobbyPanel);
     }
     
     private void OnJoinButtonClicked()
     {
-        JoinLobbyPanel.SetActive(false);
-        PlayerJoinedPanel.SetActive(true);
-        
+        CustomGameMode.SetGameMode(GameModeType.HostClient);
+        SwitchPanel(JoinLobbyPanel, PlayerJoinedPanel);
         PhotonNetworkManager.Instance.JoinLobby(LobbyCodeInputField.text);
     }
     
-    internal void ShowError(string error)
-    {
-        LobbyCodeErrorText.text = error;
-    }
-
     #endregion
-
-    #region BackButton
+    
+    #region Navigation Handlers
     
     private void OnPrivateLobbyBackButton()
     {
-        PrivateLobbyPanel.SetActive(false);
-        HomePanel.SetActive(true);
+        SwitchPanel(PrivateLobbyPanel, HomePanel);
     }
-    
     
     private void OnJoinLobbyBackButton()
     {
-        JoinLobbyPanel.SetActive(false);
-        PrivateLobbyPanel.SetActive(true);
+        SwitchPanel(JoinLobbyPanel, PrivateLobbyPanel);
     }
-     
+    
+    #endregion
 
+    #region Public API
+    
+    public void UpdateSessionCode(string sessionCode)
+    {
+        SessionCodeText.text = $"Session code: {sessionCode}";
+    }
+    
+    public void ShowError(string error)
+    {
+        LobbyCodeErrorText.text = error;
+    }
+    
+    #endregion
+    
+    #region Helper Methods
+    
+    private void SwitchPanel(GameObject fromPanel, GameObject toPanel)
+    {
+        fromPanel.SetActive(false);
+        toPanel.SetActive(true);
+    }
+    
     #endregion
 }

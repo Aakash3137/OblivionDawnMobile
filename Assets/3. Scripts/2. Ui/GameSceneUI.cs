@@ -12,6 +12,11 @@ public class GameSceneUI : MonoBehaviour
     [Header("Player 2 Info")] 
     public TextMeshProUGUI player2NameText;
     public TextMeshProUGUI player2RankText;
+    
+    [Header("Camera Settings")]
+    public Camera gameCamera;
+    
+    private bool _cameraRotationApplied = false;
 
     private void Start()
     {
@@ -20,6 +25,12 @@ public class GameSceneUI : MonoBehaviour
         // ✅ FIX: Wait longer for players to be properly loaded
         Invoke(nameof(RefreshPlayerInfo), 1f);
         InvokeRepeating(nameof(RefreshPlayerInfo), 2f, 2f);
+        
+        // Set camera reference if not assigned
+        if (gameCamera == null)
+        {
+            gameCamera = Camera.main;
+        }
     }
 
     public void RefreshPlayerInfo()
@@ -59,6 +70,9 @@ public class GameSceneUI : MonoBehaviour
             {
                 SetupPlayerUI(players[1], player2NameText, player2RankText);
                 Debug.Log($"[GameSceneUI] Player 2: {players[1].GetDisplayName()}");
+                
+                // Check for camera rotation
+                CheckCameraRotation(players[1]);
             }
             else
             {
@@ -93,6 +107,31 @@ public class GameSceneUI : MonoBehaviour
         rankText.text = "Rank -";
     }
 
+    private void CheckCameraRotation(NetworkPlayer player)
+    {
+        // Rotate camera once for second player (client) in both Host/Client and PvP modes
+        if (!_cameraRotationApplied && player.Object.HasInputAuthority && player.PlayerColorIndex == 1)
+        {
+            RotateClientCamera();
+            _cameraRotationApplied = true;
+        }
+    }
+    
+    private void RotateClientCamera()
+    {
+        if (gameCamera != null)
+        {
+            Vector3 cameraRotation = gameCamera.transform.eulerAngles;
+            cameraRotation.z = 180f;
+            gameCamera.transform.eulerAngles = cameraRotation;
+            Debug.Log($"[GameSceneUI] ✅ Camera rotated 180° for client player");
+        }
+        else
+        {
+            Debug.LogWarning($"[GameSceneUI] ❌ Game camera not assigned for rotation");
+        }
+    }
+    
     private void OnDestroy()
     {
         CancelInvoke(nameof(RefreshPlayerInfo));
