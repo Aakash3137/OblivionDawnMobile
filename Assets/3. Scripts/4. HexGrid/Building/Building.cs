@@ -18,7 +18,7 @@ public class Building : MonoBehaviour
         if (buildingSide == null)
             Debug.LogError($"Building {name} missing UnitSide. Assign Player/Enemy.");
 
-        // 🔑 Find UnitPool by tag
+        // Find UnitPool by tag
         GameObject poolObj = GameObject.FindGameObjectWithTag("UnitPool");
         if (poolObj != null)
         {
@@ -52,7 +52,7 @@ public class Building : MonoBehaviour
     //     // Instantiate prefab at spawn point
     //     GameObject unit = Instantiate(unitToProduce.prefab, spawnPoint.position, Quaternion.identity);
 
-    //     // 🔑 Parent under UnitPool if found
+    //     // Parent under UnitPool if found
     //     if (unitPool != null)
     //     {
     //         unit.transform.SetParent(unitPool);
