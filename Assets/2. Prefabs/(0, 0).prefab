@@ -394,9 +394,10 @@ GameObject:
   m_Component:
   - component: {fileID: 5162495419593765877}
   - component: {fileID: 8493246821123608514}
-  - component: {fileID: 4016717862359041415}
+  - component: {fileID: -3684556392437514643}
+  - component: {fileID: -2631318548825409783}
   m_Layer: 13
-  m_Name: Hex_Player_0
+  m_Name: (0, 0)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -411,14 +412,13 @@ Transform:
   m_GameObject: {fileID: 5965051179479958454}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -15.525, y: 0, z: -32.86566}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3207632763535011981}
   - {fileID: 7686812123343976294}
   - {fileID: 5191098780122691176}
-  - {fileID: 5006253457185868740}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &8493246821123608514
@@ -442,7 +442,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2, y: 2, z: 2}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &4016717862359041415
+--- !u!114 &-3684556392437514643
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -451,7 +451,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 5965051179479958454}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dcbf53ec94bf5c14f93290beb4e12fc5, type: 3}
+  m_Script: {fileID: 11500000, guid: 4318e9e7de6742e4687acff599a09f7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  side: 0
+--- !u!114 &-2631318548825409783
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5965051179479958454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2eee6fcc9b199a942b41d057c31b298f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   hexSize: 1.15
@@ -468,12 +481,12 @@ GameObject:
   - component: {fileID: 74239121981772693}
   - component: {fileID: 7236812205239611924}
   m_Layer: 13
-  m_Name: GameObject
+  m_Name: Text_Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5006253457185868740
 Transform:
   m_ObjectHideFlags: 0
@@ -482,12 +495,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5983266701514019672}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.05, y: 0.05, z: 0.05}
+  m_LocalScale: {x: 0.05, y: 0.050000004, z: 0.050000004}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 5162495419593765877}
+  m_Father: {fileID: 3207632763535011981}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!23 &74239121981772693
 MeshRenderer:
@@ -542,7 +555,7 @@ TextMesh:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5983266701514019672}
-  m_Text: XX,XX
+  m_Text: (0, 0)
   m_OffsetZ: 0
   m_CharacterSize: 1
   m_LineSpacing: 1
@@ -568,7 +581,7 @@ GameObject:
   - component: {fileID: 2368763250348630823}
   - component: {fileID: 3200034119988593076}
   m_Layer: 0
-  m_Name: hex_blue
+  m_Name: Hex_Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -620,7 +633,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 2be810f3542f34142b7440677ccf03ae, type: 2}
+  - {fileID: 2100000, guid: 7e16977e889fafd4b9c8f5e4ab23671f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -826,7 +839,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3207632763535011981}
   m_Layer: 13
-  m_Name: Hex_Player_0
+  m_Name: Hex
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -847,5 +860,6 @@ Transform:
   m_Children:
   - {fileID: 1126526532823223368}
   - {fileID: 2776063877878527271}
+  - {fileID: 5006253457185868740}
   m_Father: {fileID: 5162495419593765877}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

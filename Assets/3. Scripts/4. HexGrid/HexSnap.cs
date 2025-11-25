@@ -1,24 +1,42 @@
-using UnityEngine;
+using UnityEngine; // V.5
 
-[ExecuteInEditMode]   // runs in editor, even when not playing
+[ExecuteAlways]   // runs in editor AND play mode
 public class HexSnap : MonoBehaviour
 {
     [Header("Hex Settings")]
-    public float hexSize = 1f;       // radius of hex tile
+    public float hexSize = 1f;       // radius of hex tile 1.15
     public bool pointyTop = true;    // orientation: pointy or flat
+
+    private TextMesh textMesh;       // reference to child TextMesh
+
+    void Awake()
+    {
+        // Find the TextMesh in children once
+        textMesh = GetComponentInChildren<TextMesh>();
+    }
 
     void Update()
     {
-        if (!Application.isPlaying)
+        // Snap in both Editor and Play mode
+        Vector3 pos = transform.position;
+        Vector2Int hexCoord = WorldToHex(pos);
+        transform.position = HexToWorld(hexCoord);
+
+        // Build label string
+        string label = $"({hexCoord.x}, {hexCoord.y})";
+
+        // Show hex coordinates (q,r) as whole numbers
+        if (textMesh != null)
         {
-            Vector3 pos = transform.position;
-            Vector2Int hexCoord = WorldToHex(pos);
-            transform.position = HexToWorld(hexCoord);
+            textMesh.text = label;
         }
+
+        // Also set the GameObject name in hierarchy
+        gameObject.name = label;
     }
 
     // Convert world position → hex coordinates
-    private Vector2Int WorldToHex(Vector3 position)
+    public Vector2Int WorldToHex(Vector3 position)
     {
         if (pointyTop)
         {
