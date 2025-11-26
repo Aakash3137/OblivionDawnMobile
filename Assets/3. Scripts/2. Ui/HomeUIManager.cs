@@ -114,20 +114,51 @@ public class HomeUIManager : MonoBehaviour
     private void OnClickPVPButton()
     {
         CustomGameMode.SetGameMode(GameModeType.PvP);
-        SwitchPanel(HomePanel, PvpDisplayPanel);
+        SwitchPanel(HomePanel, LoadingPanel);
+        
+        // Start matchmaking and show PvP panel after delay
+        Invoke(nameof(StartPvPAndShowPanel), 0.1f);
+    }
+    
+    private void StartPvPAndShowPanel()
+    {
         PhotonNetworkManager.Instance.StartPvPMatchmaking();
+        
+        // Show PvP panel after 3 seconds to allow player spawning
+        Invoke(nameof(ShowPvPPanel), 3f);
+    }
+    
+    private void ShowPvPPanel()
+    {
+        SwitchPanel(LoadingPanel, PvpDisplayPanel);
     }
     
     private void OnClickPrivateLobbyButton()
     {
+        Debug.Log("[HomeUIManager] Private lobby button clicked");
         SwitchPanel(HomePanel, PrivateLobbyPanel);
     }
     
     private void OnClickCreateLobbyButton()
     {
         CustomGameMode.SetGameMode(GameModeType.HostClient);
-        SwitchPanel(PrivateLobbyPanel, PlayerJoinedPanel);
+        SwitchPanel(PrivateLobbyPanel, LoadingPanel);
+        
+        // Start lobby creation and show panel after delay
+        Invoke(nameof(StartLobbyAndShowPanel), 0.1f);
+    }
+    
+    private void StartLobbyAndShowPanel()
+    {
         PhotonNetworkManager.Instance.CreateLobby();
+        
+        // Show lobby panel after 3 seconds (unlimited waiting after that)
+        Invoke(nameof(ShowLobbyPanel), 3f);
+    }
+    
+    private void ShowLobbyPanel()
+    {
+        SwitchPanel(LoadingPanel, PlayerJoinedPanel);
     }
     
     private void OpenJoinLobbyPanel()
@@ -170,14 +201,30 @@ public class HomeUIManager : MonoBehaviour
         LobbyCodeErrorText.text = error;
     }
     
+    public void SwitchToHomePanel()
+    {
+        // Cancel any pending PvP panel shows
+        CancelInvoke(nameof(ShowPvPPanel));
+        
+        // Turn off all other panels and show home panel
+        PvpDisplayPanel?.SetActive(false);
+        LoadingPanel?.SetActive(false);
+        PrivateLobbyPanel?.SetActive(false);
+        JoinLobbyPanel?.SetActive(false);
+        PlayerJoinedPanel?.SetActive(false);
+        
+        HomePanel?.SetActive(true);
+        Debug.Log("[HomeUIManager] Switched to home panel");
+    }
+    
     #endregion
     
     #region Helper Methods
     
     private void SwitchPanel(GameObject fromPanel, GameObject toPanel)
     {
-        fromPanel.SetActive(false);
-        toPanel.SetActive(true);
+        if (fromPanel != null) fromPanel.SetActive(false);
+        if (toPanel != null) toPanel.SetActive(true);
     }
     
     #endregion

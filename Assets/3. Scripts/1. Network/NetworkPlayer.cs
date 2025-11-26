@@ -41,7 +41,7 @@ public class NetworkPlayer : NetworkBehaviour
         SubscribeToEvents();
         
         // Delayed UI refresh to ensure all components are ready
-        Invoke(nameof(DelayedRefresh), 0.5f);
+        Invoke(nameof(DelayedRefresh), 0.1f);
     }
     
     public override void Despawned(NetworkRunner runner, bool hasState)
@@ -179,7 +179,7 @@ public class NetworkPlayer : NetworkBehaviour
         // Update game scene UI
         if (gameObject.scene.name == "GameScene")
         {
-            var gameUI = FindObjectOfType<GameSceneUI>();
+            var gameUI = FindObjectOfType<PrivateLobbyUI>();
             gameUI?.RefreshPlayerInfo();
         }
         

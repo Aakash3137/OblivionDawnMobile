@@ -30,8 +30,12 @@ public class PlayerListUI : MonoBehaviour
             PhotonEventsHandler.Instance.OnConnectedToServerEvent += HandleConnected;
         }
         
-        // More frequent refresh to catch profile synchronization
-        InvokeRepeating(nameof(RefreshUI), 0.3f, 0.5f);
+        // More frequent refresh to catch profile synchronization for better synchronize
+        //InvokeRepeating(nameof(RefreshUI), 0.3f, 0.5f);
+        
+        // Reduced fps: every 1 seconds instead of 0.5 
+        InvokeRepeating(nameof(RefreshUI), 1f, 1f);
+   
     }
 
     private void OnDisable()
@@ -49,16 +53,14 @@ public class PlayerListUI : MonoBehaviour
     private void HandleConnected()
     {
         Debug.Log("[PlayerListUI] Connected to server, refreshing UI");
-        Invoke(nameof(RefreshUI), 0.5f);
+        RefreshUI();
     }
 
     private void HandlePlayerChange(PlayerRef player)
     {
         Debug.Log($"[PlayerListUI] Player change detected: {player}, refreshing UI");
-        // Multiple refreshes to ensure we catch the RPC synchronization
-        Invoke(nameof(RefreshUI), 0.1f);
-        Invoke(nameof(RefreshUI), 0.3f);
-        Invoke(nameof(RefreshUI), 0.7f);
+        // Single delayed refresh for RPC synchronization
+        Invoke(nameof(RefreshUI), 0.5f);
     }
 
     internal void RefreshUI()

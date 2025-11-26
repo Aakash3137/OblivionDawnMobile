@@ -181,6 +181,14 @@ public class PhotonNetworkManager : MonoBehaviour
         else
         {
             Debug.LogError($"[PNM] FAILED: {result.ShutdownReason}");
+            Debug.LogError($"[PNM] Error Details: {result.ErrorMessage}");
+            
+            // Handle connection timeouts
+            if (result.ShutdownReason.ToString().Contains("Timeout"))
+            {
+                Debug.Log("[PNM] Connection timeout - showing error to user");
+                HandleConnectionError("Connection timeout. Please check your internet connection.");
+            }
         }
     }
 
@@ -194,6 +202,62 @@ public class PhotonNetworkManager : MonoBehaviour
             _ = _runner.Shutdown();
             Destroy(_runner);
             _runner = null;
+        }
+    }
+    
+    public void ForceCleanup()
+    {
+        Debug.Log("[PNM] Force cleanup - destroying all network components");
+        
+        if (_runner != null)
+        {
+            Destroy(_runner);
+            _runner = null;
+        }
+        
+        // Clean up any remaining network objects
+        var networkObjects = FindObjectsOfType<NetworkObject>();
+        foreach (var obj in networkObjects)
+        {
+            if (obj != null)
+            {
+                Destroy(obj.gameObject);
+            }
+        }
+    }
+    
+    public void HandleOpponentDisconnect()
+    {
+        Debug.Log("[PNM] Opponent disconnected - ending match");
+        
+        // Leave current session
+        LeaveSession();
+        
+        // Show match over screen
+        if (MatchOverManager.Instance != null)
+        {
+            MatchOverManager.Instance.ShowMatchOver("You Win!", "Opponent disconnected");
+        }
+    }
+    
+    private void HandleConnectionError(string errorMessage)
+    {
+        Debug.LogWarning($"[PNM] Connection error: {errorMessage}");
+        
+        // Go back to home and show error
+        if (HomeUIManager.Instance != null)
+        {
+            HomeUIManager.Instance.ShowError(errorMessage);
+            
+            // Switch back to home panel
+            GameObject loadingPanel = GameObject.Find("LoadingPanel");
+            GameObject homePanel = GameObject.Find("HomePanel");
+            
+            if (loadingPanel != null && homePanel != null)
+            {
+                loadingPanel.SetActive(false);
+                homePanel.SetActive(true);
+            }
         }
     }
 }

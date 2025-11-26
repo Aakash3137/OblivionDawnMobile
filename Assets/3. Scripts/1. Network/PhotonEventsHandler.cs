@@ -69,6 +69,13 @@ public class PhotonEventsHandler : MonoBehaviour, INetworkRunnerCallbacks
     {
         Debug.Log($"[PEH] PlayerLeft: {player}");
         OnPlayerLeftEvent?.Invoke(player);
+        
+        // Handle PvP disconnections
+        if (CustomGameMode.CurrentGameMode == GameModeType.PvP)
+        {
+            Debug.Log("[PEH] PvP player disconnect detected");
+            PhotonNetworkManager.Instance?.HandleOpponentDisconnect();
+        }
     }
 
     public void OnShutdown(NetworkRunner runner, ShutdownReason reason)

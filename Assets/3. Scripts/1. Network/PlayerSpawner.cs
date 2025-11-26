@@ -13,7 +13,6 @@ public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
     
     [Header("Spawn Configuration")]
     public Vector3[] spawnPositions = { Vector3.zero, new Vector3(0, 0, 20) };
-    public GameModeType gameMode = GameModeType.HostClient;
     
     #endregion
     
@@ -56,10 +55,8 @@ public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
     
     private void InitializeGameModeIfNeeded()
     {
-        if (_spawnedPlayers.Count == 0)
-        {
-            CustomGameMode.SetGameMode(gameMode);
-        }
+        // Game mode should already be set by the UI manager
+        Debug.Log($"[PlayerSpawner] Current game mode: {CustomGameMode.CurrentGameMode}");
     }
     
     private void SpawnPlayer(NetworkRunner runner, PlayerRef player)

@@ -28,7 +28,7 @@ public class PvPMatchUI : MonoBehaviour
     [Header("Matchmaking Settings")]
     [SerializeField] private int rankTolerance = 10;
     [SerializeField] private float autoStartDelay = 2f;
-    [SerializeField] private float botMatchmakingTimeout = 20f;
+    [SerializeField] private float pvpTimeout = 20f;
     
     #endregion
     
@@ -36,6 +36,8 @@ public class PvPMatchUI : MonoBehaviour
     
     private bool _matchStarted = false;
     private bool _botMatchmakingStarted = false;
+    private int _countdownTimer = 3;
+    private bool _countdownActive = false;
     
     #endregion
 
@@ -44,6 +46,16 @@ public class PvPMatchUI : MonoBehaviour
     private void Start()
     {
         InitializeUI();
+    }
+    
+    private void OnEnable()
+    {
+        // Restart UI when panel is reactivated
+        if (_matchStarted || _botMatchmakingStarted)
+        {
+            Debug.Log("[PvPMatchUI] Panel reactivated - restarting UI");
+            InitializeUI();
+        }
     }
     
     private void OnDestroy()
@@ -57,15 +69,21 @@ public class PvPMatchUI : MonoBehaviour
     
     private void InitializeUI()
     {
+        // Reset all flags for fresh start
+        _matchStarted = false;
+        _botMatchmakingStarted = false;
+        _countdownActive = false;
+        _countdownTimer = 3;
+        
         RefreshPlayerInfo();
-        InvokeRepeating(nameof(RefreshPlayerInfo), 0.5f, 0.5f);
+        InvokeRepeating(nameof(RefreshPlayerInfo), 0.1f, 0.2f);
         StartBotMatchmakingTimer();
     }
     
     private void StartBotMatchmakingTimer()
     {
-        Invoke(nameof(CheckForBotMatchmaking), botMatchmakingTimeout);
-        Debug.Log($"[PvPMatchUI] Bot matchmaking timer started - {botMatchmakingTimeout} seconds");
+        Invoke(nameof(OnPvPTimeout), pvpTimeout);
+        Debug.Log($"[PvPMatchUI] PvP timeout timer started - {pvpTimeout} seconds");
     }
     
     #endregion
@@ -106,21 +124,24 @@ public class PvPMatchUI : MonoBehaviour
     {
         if (!_botMatchmakingStarted)
         {
-            CancelInvoke(nameof(CheckForBotMatchmaking));
-            Debug.Log("[PvPMatchUI] Bot matchmaking cancelled - player found");
+            CancelInvoke(nameof(OnPvPTimeout));
+            Debug.Log("[PvPMatchUI] PvP timeout cancelled - player found");
         }
     }
     
     private void ProcessMatchmaking(NetworkPlayer player1, NetworkPlayer player2)
     {
-        if (AreRanksCompatible(player1, player2))
+        if (!_countdownActive)
         {
-            ShowMatchReady();
-            StartAutoMatchTimer();
-        }
-        else
-        {
-            ShowRankMismatch(player1, player2);
+            if (AreRanksCompatible(player1, player2))
+            {
+                ShowMatchReady();
+                StartAutoMatchTimer();
+            }
+            else
+            {
+                ShowRankMismatch(player1, player2);
+            }
         }
     }
     
@@ -150,7 +171,7 @@ public class PvPMatchUI : MonoBehaviour
     
     private void ShowMatchReady()
     {
-        UpdateMatchStatus("Match Ready! Starting in 2 seconds...");
+        UpdateMatchStatus("Match Ready! Starting in 3...");
     }
     
     private void ShowRankMismatch(NetworkPlayer player1, NetworkPlayer player2)
@@ -179,7 +200,24 @@ public class PvPMatchUI : MonoBehaviour
         if (!_matchStarted)
         {
             _matchStarted = true;
-            Invoke(nameof(StartPvPMatch), autoStartDelay);
+            _countdownActive = true;
+            _countdownTimer = 3;
+            InvokeRepeating(nameof(UpdateCountdown), 1f, 1f);
+        }
+    }
+    
+    private void UpdateCountdown()
+    {
+        if (_countdownTimer > 0)
+        {
+            UpdateMatchStatus($"Match starting in {_countdownTimer}...");
+            _countdownTimer--;
+        }
+        else
+        {
+            CancelInvoke(nameof(UpdateCountdown));
+            _countdownActive = false;
+            StartPvPMatch();
         }
     }
     
@@ -192,17 +230,41 @@ public class PvPMatchUI : MonoBehaviour
     
     #region Bot Matchmaking
     
-    private void CheckForBotMatchmaking()
+    private void OnPvPTimeout()
     {
         if (!_matchStarted && !_botMatchmakingStarted)
         {
-            var players = FindObjectsOfType<NetworkPlayer>();
-            
-            if (players.Length == 1 && players[0].IsProfileSet)
-            {
-                Debug.Log("[PvPMatchUI] No suitable opponent found - starting bot match");
-                StartBotMatch();
-            }
+            Debug.Log("[PvPMatchUI] PvP timeout reached - calling timeout function");
+            HandlePvPTimeout();
+        }
+    }
+    
+    private void HandlePvPTimeout()
+    {
+        UpdateMatchStatus("No opponent found. Returning to home...");
+        Debug.Log("[PvPMatchUI] PvP timeout - returning to home page");
+        
+        // Go back to home page after 2 seconds
+        Invoke(nameof(GoBackToHome), 2f);
+    }
+    
+    private void GoBackToHome()
+    {
+        Debug.Log("[PvPMatchUI] Going back to home page");
+        
+        // Cancel any running timers
+        CancelInvoke();
+        
+        // Complete network cleanup for fresh start
+        if (PhotonNetworkManager.Instance != null)
+        {
+            PhotonNetworkManager.Instance.ForceCleanup();
+        }
+        
+        // Use HomeUIManager to properly switch panels
+        if (HomeUIManager.Instance != null)
+        {
+            HomeUIManager.Instance.SwitchToHomePanel();
         }
     }
     
