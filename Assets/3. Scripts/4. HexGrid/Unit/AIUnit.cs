@@ -1040,18 +1040,586 @@
 
 
 
+// using UnityEngine;
+// using System.Collections.Generic;
+
+// public enum UnitState { Moving, Fighting }
+
+// public class AIUnit : MonoBehaviour
+// {
+//     [Header("Movement")]
+//     public float moveSpeed = 2f;
+//     public float yOffset = 1f;
+//     public float tileSnapThreshold = 0.1f;
+
+//     [Header("Combat")]
+//     public float attackRange = 1.2f;
+//     public float aggroRadius = 3f;
+//     public float attackInterval = 0.5f;
+//     public int attackDamage = 10;
+
+//     private UnitSide unitSide;
+//     private Transform primaryTarget;
+//     private Transform tempTarget;
+//     private List<Vector2Int> path;
+//     private int pathIndex;
+//     private float lastAttackTime;
+//     private UnitState state = UnitState.Moving;
+
+//     private Vector2Int currentCoord;
+
+//     void Awake()
+//     {
+//         unitSide = GetComponent<UnitSide>();
+//     }
+
+//     void Start()
+//     {
+//         currentCoord = HexGridManager.Instance.WorldToHex(transform.position);
+//         EnterTile(currentCoord);
+
+//         RecalculatePath("Start()");
+//         SnapToStartTile();
+//     }
+
+//     void Update()
+//     {
+//         if (state == UnitState.Fighting)
+//         {
+//             if (tempTarget == null || TargetIsDead(tempTarget))
+//             {
+//                 tempTarget = null;
+//                 state = UnitState.Moving;
+//                 UpdateTileOwnershipAtCurrentCoord();
+//                 RecalculatePath("Combat ended");
+//             }
+//             else
+//             {
+//                 EngageTempTarget();
+//             }
+//             return;
+//         }
+
+//         // Look for nearby enemies
+//         tempTarget = FindClosestEnemyUnitInAggroRadius();
+//         if (tempTarget != null && !TargetIsDead(tempTarget))
+//         {
+//             state = UnitState.Fighting;
+//             return;
+//         }
+
+//         // March toward building
+//         if (primaryTarget == null || TargetIsDead(primaryTarget))
+//         {
+//             RecalculatePath("Target lost");
+//             return;
+//         }
+
+//         if (path == null || path.Count == 0 || pathIndex >= path.Count)
+//         {
+//             Debug.LogWarning($"{name} has no valid path!");
+//             return;
+//         }
+
+//         MoveAlongPath();
+
+//         float distToPrimary = Vector3.Distance(transform.position, primaryTarget.position);
+//         if (distToPrimary <= attackRange)
+//             TryAttack(primaryTarget);
+//     }
+
+//     void SnapToStartTile()
+//     {
+//         var hexGO = HexGridManager.Instance.GetHex(currentCoord);
+//         if (hexGO != null)
+//         {
+//             var p = hexGO.transform.position;
+//             transform.position = new Vector3(p.x, p.y + yOffset, p.z);
+//         }
+//     }
+
+//     void MoveAlongPath()
+//     {
+//         var nextCoord = path[pathIndex];
+//         var hex = HexGridManager.Instance.GetHex(nextCoord);
+//         if (hex == null)
+//         {
+//             RecalculatePath("Missing hex");
+//             return;
+//         }
+
+//         Vector3 targetPos = hex.transform.position + Vector3.up * yOffset;
+//         transform.position = Vector3.MoveTowards(transform.position, targetPos, moveSpeed * Time.deltaTime);
+
+//         if (Vector3.Distance(transform.position, targetPos) < tileSnapThreshold)
+//         {
+//             LeaveTile(currentCoord);
+//             currentCoord = nextCoord;
+//             EnterTile(currentCoord);
+
+//             pathIndex++;
+//             if (pathIndex >= path.Count)
+//                 RecalculatePath("Reached end");
+//         }
+//     }
+
+//     void EngageTempTarget()
+//     {
+//         float dist = Vector3.Distance(transform.position, tempTarget.position);
+//         if (dist <= attackRange)
+//         {
+//             TryAttack(tempTarget);
+//         }
+//         else
+//         {
+//             // Move closer
+//             transform.position = Vector3.MoveTowards(transform.position, tempTarget.position, moveSpeed * Time.deltaTime);
+//         }
+//     }
+
+//     bool TargetIsDead(Transform t)
+//     {
+//         var h = t.GetComponent<Health>();
+//         return h == null || h.currentHealth <= 0;
+//     }
+
+//     void TryAttack(Transform t)
+//     {
+//         if (Time.time - lastAttackTime < attackInterval) return;
+//         var h = t.GetComponent<Health>();
+//         if (h != null)
+//         {
+//             h.TakeDamage(attackDamage);
+//             lastAttackTime = Time.time;
+//         }
+//     }
+
+//     void RecalculatePath(string reason)
+//     {
+//         primaryTarget = FindPriorityTarget();
+//         if (primaryTarget == null)
+//         {
+//             path = null;
+//             return;
+//         }
+
+//         Vector2Int start = currentCoord;
+//         Vector2Int goal = HexGridManager.Instance.WorldToHex(primaryTarget.position);
+
+//         path = Pathfinding.BFS(start, goal);
+//         pathIndex = 0;
+
+//         Debug.Log($"{name} recalculated path. Reason: {reason}. Steps: {path?.Count}");
+//     }
+
+//     Transform FindPriorityTarget()
+//     {
+//         var main = FindClosestEnemyByType<BuildingHealth>("MainBuilding");
+//         if (main != null) return main;
+
+//         var bld = FindClosestEnemyByType<BuildingHealth>();
+//         if (bld != null) return bld;
+
+//         return FindClosestEnemyByType<UnitHealth>();
+//     }
+
+//     Transform FindClosestEnemyByType<T>(string requireTag = null) where T : Component
+//     {
+//         T[] objs = Object.FindObjectsByType<T>(FindObjectsSortMode.None);
+//         float best = Mathf.Infinity;
+//         Transform pick = null;
+
+//         foreach (var obj in objs)
+//         {
+//             if (!string.IsNullOrEmpty(requireTag) && !obj.CompareTag(requireTag)) continue;
+
+//             var otherSide = obj.GetComponent<UnitSide>();
+//             if (otherSide == null || unitSide == null) continue;
+//             if (otherSide.side == unitSide.side) continue;
+
+//             float d = Vector3.Distance(transform.position, obj.transform.position);
+//             if (d < best)
+//             {
+//                 best = d;
+//                 pick = obj.transform;
+//             }
+//         }
+//         return pick;
+//     }
+
+//     Transform FindClosestEnemyUnitInAggroRadius()
+//     {
+//         UnitHealth[] allUnits = Object.FindObjectsByType<UnitHealth>(FindObjectsSortMode.None);
+//         float best = Mathf.Infinity;
+//         Transform pick = null;
+
+//         foreach (var u in allUnits)
+//         {
+//             var otherSide = u.GetComponent<UnitSide>();
+//             if (otherSide != null && otherSide.side != unitSide.side)
+//             {
+//                 float d = Vector3.Distance(transform.position, u.transform.position);
+//                 if (d < best && d <= aggroRadius)
+//                 {
+//                     best = d;
+//                     pick = u.transform;
+//                 }
+//             }
+//         }
+//         return pick;
+//     }
+
+//     void EnterTile(Vector2Int coord)
+//     {
+//         TileManager.Instance.TryEnterTile(gameObject, coord);
+
+//         var tileGO = HexGridManager.Instance.GetHex(coord);
+//         var tile = tileGO != null ? tileGO.GetComponent<Tile>() : null;
+//         if (tile != null) tile.Occupy(unitSide);
+//     }
+
+//     void LeaveTile(Vector2Int coord)
+//     {
+//         TileManager.Instance.LeaveTile(coord, gameObject);
+
+//         var tileGO = HexGridManager.Instance.GetHex(coord);
+//         var tile = tileGO != null ? tileGO.GetComponent<Tile>() : null;
+//         if (tile != null) tile.Vacate(unitSide);
+//     }
+
+//     void UpdateTileOwnershipAtCurrentCoord()
+//     {
+//         var tileGO = HexGridManager.Instance.GetHex(currentCoord);
+//         var tile = tileGO != null ? tileGO.GetComponent<Tile>() : null;
+//         if (tile != null && tile.ownerSide != unitSide.side)
+//             tile.SetOwner(unitSide.side);
+//     }
+// }
+
+
+
+
+
+
+// using UnityEngine; // V.14
+// using System.Collections.Generic;
+
+// public enum UnitState { Moving, Fighting }
+
+// public class AIUnit : MonoBehaviour
+// {
+//     [Header("Movement")]
+//     public float moveSpeed = 2f;
+//     public float yOffset = 1f;
+//     public float tileSnapThreshold = 0.2f; // slightly larger for reliability
+
+//     [Header("Combat")]
+//     public float attackRange = 1.2f;
+//     public float aggroRadius = 3f;
+//     public float attackInterval = 0.5f;
+//     public int attackDamage = 10;
+
+//     private UnitSide unitSide;
+//     private Transform primaryTarget;
+//     private Transform tempTarget;
+//     private List<Vector2Int> path;
+//     private int pathIndex;
+//     private float lastAttackTime;
+//     private UnitState state = UnitState.Moving;
+
+//     private Vector2Int currentCoord;
+
+//     void Awake()
+//     {
+//         unitSide = GetComponent<UnitSide>();
+//     }
+
+//     void Start()
+//     {
+//         currentCoord = HexGridManager.Instance.WorldToHex(transform.position);
+//         EnterTile(currentCoord);
+
+//         RecalculatePath("Start()");
+//         SnapToStartTile();
+//     }
+
+//     void Update()
+//     {
+//         if (state == UnitState.Fighting)
+//         {
+//             if (tempTarget == null || TargetIsDead(tempTarget))
+//             {
+//                 tempTarget = null;
+//                 state = UnitState.Moving;
+//                 UpdateTileOwnershipAtCurrentCoord();
+//                 RecalculatePath("Combat ended");
+//             }
+//             else
+//             {
+//                 EngageTempTarget();
+//             }
+//             return;
+//         }
+
+//         // Look for nearby enemies
+//         tempTarget = FindClosestEnemyUnitInAggroRadius();
+//         if (tempTarget != null && !TargetIsDead(tempTarget))
+//         {
+//             state = UnitState.Fighting;
+//             return;
+//         }
+
+//         // March toward building
+//         if (primaryTarget == null || TargetIsDead(primaryTarget))
+//         {
+//             RecalculatePath("Target lost");
+//             return;
+//         }
+
+//         if (path == null || path.Count == 0 || pathIndex >= path.Count)
+//         {
+//             Debug.LogWarning($"{name} has no valid path!");
+//             return;
+//         }
+
+//         MoveAlongPath();
+
+//         float distToPrimary = Vector3.Distance(transform.position, primaryTarget.position);
+//         if (distToPrimary <= attackRange)
+//             TryAttack(primaryTarget);
+//     }
+
+//     void SnapToStartTile()
+//     {
+//         var hexGO = HexGridManager.Instance.GetHex(currentCoord);
+//         if (hexGO != null)
+//         {
+//             var p = hexGO.transform.position;
+//             transform.position = new Vector3(p.x, p.y + yOffset, p.z);
+//         }
+//     }
+
+//     void MoveAlongPath()
+//     {
+//         var nextCoord = path[pathIndex];
+//         var hex = HexGridManager.Instance.GetHex(nextCoord);
+//         if (hex == null)
+//         {
+//             RecalculatePath("Missing hex");
+//             return;
+//         }
+
+//         Vector3 targetPos = hex.transform.position + Vector3.up * yOffset;
+//         transform.position = Vector3.MoveTowards(transform.position, targetPos, moveSpeed * Time.deltaTime);
+
+//         if (Vector3.Distance(transform.position, targetPos) < tileSnapThreshold)
+//         {
+//             LeaveTile(currentCoord);
+//             currentCoord = nextCoord;
+//             EnterTile(currentCoord);
+
+//             pathIndex++;
+//             if (pathIndex >= path.Count)
+//                 RecalculatePath("Reached end");
+//         }
+//     }
+
+//     void EngageTempTarget()
+//     {
+//         float dist = Vector3.Distance(transform.position, tempTarget.position);
+//         if (dist <= attackRange)
+//         {
+//             TryAttack(tempTarget);
+//         }
+//         else
+//         {
+//             // Find the hex under the enemy
+//             Vector2Int enemyCoord = HexGridManager.Instance.WorldToHex(tempTarget.position);
+//             var enemyHex = HexGridManager.Instance.GetHex(enemyCoord);
+
+//             if (enemyHex != null && HexGridManager.Instance.AreAdjacent(currentCoord, enemyCoord))
+//             {
+//                 // Move into the enemy’s hex if adjacent
+//                 Vector3 targetPos = enemyHex.transform.position + Vector3.up * yOffset;
+//                 transform.position = Vector3.MoveTowards(transform.position, targetPos, moveSpeed * Time.deltaTime);
+
+//                 if (Vector3.Distance(transform.position, targetPos) < tileSnapThreshold)
+//                 {
+//                     LeaveTile(currentCoord);
+//                     currentCoord = enemyCoord;
+//                     EnterTile(currentCoord);
+//                 }
+//             }
+//             else
+//             {
+//                 // Otherwise stay on current tile
+//                 var hexGO = HexGridManager.Instance.GetHex(currentCoord);
+//                 if (hexGO != null)
+//                 {
+//                     Vector3 tileCenter = hexGO.transform.position + Vector3.up * yOffset;
+//                     transform.position = tileCenter;
+//                 }
+//             }
+//         }
+
+//     }
+
+//     bool TargetIsDead(Transform t)
+//     {
+//         var h = t.GetComponent<Health>();
+//         return h == null || h.currentHealth <= 0;
+//     }
+
+//     void TryAttack(Transform t)
+//     {
+//         if (Time.time - lastAttackTime < attackInterval) return;
+//         var h = t.GetComponent<Health>();
+//         if (h != null)
+//         {
+//             h.TakeDamage(attackDamage);
+//             lastAttackTime = Time.time;
+//         }
+//     }
+
+//     void RecalculatePath(string reason)
+//     {
+//         primaryTarget = FindPriorityTarget();
+//         if (primaryTarget == null)
+//         {
+//             path = null;
+//             return;
+//         }
+
+//         Vector2Int start = currentCoord;
+//         Vector2Int goal = HexGridManager.Instance.WorldToHex(primaryTarget.position);
+
+//         path = Pathfinding.BFS(start, goal);
+//         pathIndex = 0;
+
+//         Debug.Log($"{name} recalculated path. Reason: {reason}. Steps: {path?.Count}");
+//     }
+
+//     Transform FindPriorityTarget()
+//     {
+//         var main = FindClosestEnemyByType<BuildingHealth>("MainBuilding");
+//         if (main != null) return main;
+
+//         var bld = FindClosestEnemyByType<BuildingHealth>();
+//         if (bld != null) return bld;
+
+//         return FindClosestEnemyByType<UnitHealth>();
+//     }
+
+//     Transform FindClosestEnemyByType<T>(string requireTag = null) where T : Component
+//     {
+//         T[] objs = Object.FindObjectsByType<T>(FindObjectsSortMode.None);
+//         float best = Mathf.Infinity;
+//         Transform pick = null;
+
+//         foreach (var obj in objs)
+//         {
+//             if (!string.IsNullOrEmpty(requireTag) && !obj.CompareTag(requireTag)) continue;
+
+//             var otherSide = obj.GetComponent<UnitSide>();
+//             if (otherSide == null || unitSide == null) continue;
+//             if (otherSide.side == unitSide.side) continue;
+
+//             float d = Vector3.Distance(transform.position, obj.transform.position);
+//             if (d < best)
+//             {
+//                 best = d;
+//                 pick = obj.transform;
+//             }
+//         }
+//         return pick;
+//     }
+
+//     Transform FindClosestEnemyUnitInAggroRadius()
+//     {
+//         UnitHealth[] allUnits = Object.FindObjectsByType<UnitHealth>(FindObjectsSortMode.None);
+//         float best = Mathf.Infinity;
+//         Transform pick = null;
+
+//         foreach (var u in allUnits)
+//         {
+//             var otherSide = u.GetComponent<UnitSide>();
+//             if (otherSide != null && otherSide.side != unitSide.side)
+//             {
+//                 float d = Vector3.Distance(transform.position, u.transform.position);
+//                 if (d < best && d <= aggroRadius)
+//                 {
+//                     best = d;
+//                     pick = u.transform;
+//                 }
+//             }
+//         }
+//         return pick;
+//     }
+
+//     void EnterTile(Vector2Int coord)
+//     {
+//         TileManager.Instance.TryEnterTile(gameObject, coord);
+
+//         var tileGO = HexGridManager.Instance.GetHex(coord);
+//         var tile = tileGO != null ? tileGO.GetComponent<Tile>() : null;
+//         if (tile != null)
+//         {
+//             tile.Occupy(unitSide);
+//             // If visuals ever desync, uncomment:
+//             // tile.ApplyOwnerMaterial();
+//         }
+//     }
+
+//     void LeaveTile(Vector2Int coord)
+//     {
+//         TileManager.Instance.LeaveTile(coord, gameObject);
+
+//         var tileGO = HexGridManager.Instance.GetHex(coord);
+//         var tile = tileGO != null ? tileGO.GetComponent<Tile>() : null;
+//         if (tile != null)
+//         {
+//             tile.Vacate(unitSide);
+//         }
+//     }
+
+//     void UpdateTileOwnershipAtCurrentCoord()
+//     {
+//         var tileGO = HexGridManager.Instance.GetHex(currentCoord);
+//         var tile = tileGO != null ? tileGO.GetComponent<Tile>() : null;
+//         if (tile != null && tile.ownerSide != unitSide.side)
+//         {
+//             tile.SetOwner(unitSide.side);
+//         }
+//     }
+
+
+
+//     // --- Gizmos for debugging ---
+//     void OnDrawGizmosSelected()
+//     {
+//         // Attack range (red)
+//         Gizmos.color = Color.red;
+//         Gizmos.DrawWireSphere(transform.position, attackRange);
+
+//         // Aggro radius (yellow)
+//         Gizmos.color = Color.yellow;
+//         Gizmos.DrawWireSphere(transform.position, aggroRadius);
+//     }
+// }
+
+
+
+
+
 using UnityEngine;
+using UnityEngine.AI;
 using System.Collections.Generic;
 
 public enum UnitState { Moving, Fighting }
 
+[RequireComponent(typeof(NavMeshAgent))]
 public class AIUnit : MonoBehaviour
 {
-    [Header("Movement")]
-    public float moveSpeed = 2f;
-    public float yOffset = 1f;
-    public float tileSnapThreshold = 0.1f;
-
     [Header("Combat")]
     public float attackRange = 1.2f;
     public float aggroRadius = 3f;
@@ -1061,46 +1629,48 @@ public class AIUnit : MonoBehaviour
     private UnitSide unitSide;
     private Transform primaryTarget;
     private Transform tempTarget;
-    private List<Vector2Int> path;
-    private int pathIndex;
+    private NavMeshAgent agent;
     private float lastAttackTime;
     private UnitState state = UnitState.Moving;
 
+    // Track current tile coordinate
     private Vector2Int currentCoord;
 
     void Awake()
     {
         unitSide = GetComponent<UnitSide>();
+        agent = GetComponent<NavMeshAgent>();
+        agent.stoppingDistance = attackRange; // stop at attack range
     }
 
     void Start()
     {
+        // Snap to starting tile
         currentCoord = HexGridManager.Instance.WorldToHex(transform.position);
         EnterTile(currentCoord);
-
-        RecalculatePath("Start()");
-        SnapToStartTile();
     }
 
     void Update()
     {
+        // --- Combat state ---
         if (state == UnitState.Fighting)
         {
             if (tempTarget == null || TargetIsDead(tempTarget))
             {
                 tempTarget = null;
                 state = UnitState.Moving;
-                UpdateTileOwnershipAtCurrentCoord();
-                RecalculatePath("Combat ended");
+                SetPrimaryTarget();
             }
             else
             {
                 EngageTempTarget();
             }
+
+            UpdateTileOwnership(); // keep tile colors updated
             return;
         }
 
-        // Look for nearby enemies
+        // --- Aggro check ---
         tempTarget = FindClosestEnemyUnitInAggroRadius();
         if (tempTarget != null && !TargetIsDead(tempTarget))
         {
@@ -1108,59 +1678,20 @@ public class AIUnit : MonoBehaviour
             return;
         }
 
-        // March toward building
+        // --- March toward building ---
         if (primaryTarget == null || TargetIsDead(primaryTarget))
         {
-            RecalculatePath("Target lost");
+            SetPrimaryTarget();
             return;
         }
 
-        if (path == null || path.Count == 0 || pathIndex >= path.Count)
-        {
-            Debug.LogWarning($"{name} has no valid path!");
-            return;
-        }
+        agent.isStopped = false;
+        agent.SetDestination(primaryTarget.position);
 
-        MoveAlongPath();
-
-        float distToPrimary = Vector3.Distance(transform.position, primaryTarget.position);
-        if (distToPrimary <= attackRange)
+        if (Vector3.Distance(transform.position, primaryTarget.position) <= attackRange)
             TryAttack(primaryTarget);
-    }
 
-    void SnapToStartTile()
-    {
-        var hexGO = HexGridManager.Instance.GetHex(currentCoord);
-        if (hexGO != null)
-        {
-            var p = hexGO.transform.position;
-            transform.position = new Vector3(p.x, p.y + yOffset, p.z);
-        }
-    }
-
-    void MoveAlongPath()
-    {
-        var nextCoord = path[pathIndex];
-        var hex = HexGridManager.Instance.GetHex(nextCoord);
-        if (hex == null)
-        {
-            RecalculatePath("Missing hex");
-            return;
-        }
-
-        Vector3 targetPos = hex.transform.position + Vector3.up * yOffset;
-        transform.position = Vector3.MoveTowards(transform.position, targetPos, moveSpeed * Time.deltaTime);
-
-        if (Vector3.Distance(transform.position, targetPos) < tileSnapThreshold)
-        {
-            LeaveTile(currentCoord);
-            currentCoord = nextCoord;
-            EnterTile(currentCoord);
-
-            pathIndex++;
-            if (pathIndex >= path.Count)
-                RecalculatePath("Reached end");
-        }
+        UpdateTileOwnership(); // keep tile colors updated
     }
 
     void EngageTempTarget()
@@ -1168,12 +1699,13 @@ public class AIUnit : MonoBehaviour
         float dist = Vector3.Distance(transform.position, tempTarget.position);
         if (dist <= attackRange)
         {
+            agent.isStopped = true;
             TryAttack(tempTarget);
         }
         else
         {
-            // Move closer
-            transform.position = Vector3.MoveTowards(transform.position, tempTarget.position, moveSpeed * Time.deltaTime);
+            agent.isStopped = false;
+            agent.SetDestination(tempTarget.position);
         }
     }
 
@@ -1194,22 +1726,11 @@ public class AIUnit : MonoBehaviour
         }
     }
 
-    void RecalculatePath(string reason)
+    void SetPrimaryTarget()
     {
         primaryTarget = FindPriorityTarget();
-        if (primaryTarget == null)
-        {
-            path = null;
-            return;
-        }
-
-        Vector2Int start = currentCoord;
-        Vector2Int goal = HexGridManager.Instance.WorldToHex(primaryTarget.position);
-
-        path = Pathfinding.BFS(start, goal);
-        pathIndex = 0;
-
-        Debug.Log($"{name} recalculated path. Reason: {reason}. Steps: {path?.Count}");
+        if (primaryTarget != null)
+            agent.SetDestination(primaryTarget.position);
     }
 
     Transform FindPriorityTarget()
@@ -1269,13 +1790,28 @@ public class AIUnit : MonoBehaviour
         return pick;
     }
 
+    // --- Tile ownership logic ---
+    void UpdateTileOwnership()
+    {
+        Vector2Int coord = HexGridManager.Instance.WorldToHex(transform.position);
+        if (coord != currentCoord)
+        {
+            LeaveTile(currentCoord);
+            currentCoord = coord;
+            EnterTile(currentCoord);
+        }
+    }
+
     void EnterTile(Vector2Int coord)
     {
         TileManager.Instance.TryEnterTile(gameObject, coord);
 
         var tileGO = HexGridManager.Instance.GetHex(coord);
         var tile = tileGO != null ? tileGO.GetComponent<Tile>() : null;
-        if (tile != null) tile.Occupy(unitSide);
+        if (tile != null)
+        {
+            tile.Occupy(unitSide);
+        }
     }
 
     void LeaveTile(Vector2Int coord)
@@ -1284,14 +1820,22 @@ public class AIUnit : MonoBehaviour
 
         var tileGO = HexGridManager.Instance.GetHex(coord);
         var tile = tileGO != null ? tileGO.GetComponent<Tile>() : null;
-        if (tile != null) tile.Vacate(unitSide);
+        if (tile != null)
+        {
+            tile.Vacate(unitSide);
+        }
     }
 
-    void UpdateTileOwnershipAtCurrentCoord()
+    // --- Gizmos for debugging ---
+    void OnDrawGizmosSelected()
     {
-        var tileGO = HexGridManager.Instance.GetHex(currentCoord);
-        var tile = tileGO != null ? tileGO.GetComponent<Tile>() : null;
-        if (tile != null && tile.ownerSide != unitSide.side)
-            tile.SetOwner(unitSide.side);
+        // Attack range (red)
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+
+        // Aggro radius (yellow)
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, aggroRadius);
     }
+
 }

@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 2748991518083550829}
   - component: {fileID: -6514663550154592986}
   - component: {fileID: 7303109429633482320}
+  - component: {fileID: 5810902254558253002}
   m_Layer: 0
   m_Name: SwordUnit
   m_TagString: Untagged
@@ -126,11 +127,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eca179aae21aa094ebc8547ed241afec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 2
-  yOffset: 1
-  tileSnapThreshold: 0.1
-  attackRange: 3
-  aggroRadius: 6
+  attackRange: 1
+  aggroRadius: 2
   attackInterval: 0.5
   attackDamage: 10
 --- !u!114 &2748991518083550829
@@ -174,3 +172,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   currentHealth: 0
+--- !u!195 &5810902254558253002
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7515513741037607415}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 2
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 1
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
