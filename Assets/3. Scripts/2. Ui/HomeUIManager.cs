@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,6 +16,7 @@ public class HomeUIManager : MonoBehaviour
     
     [Header("Panels")]
     [SerializeField] private GameObject HomePanel;
+    [SerializeField] private GameObject ProfilePanel;
     [SerializeField] private GameObject PrivateLobbyPanel;
     [SerializeField] private GameObject JoinLobbyPanel;
     [SerializeField] private GameObject PlayerJoinedPanel;
@@ -26,6 +28,7 @@ public class HomeUIManager : MonoBehaviour
     #region UI Buttons
     
     [Header("Main Buttons")]
+    [SerializeField] private Button ProfileButton;
     [SerializeField] private Button CampaignButton;
     [SerializeField] private Button PrivateLobbyButton;
     [SerializeField] private Button PVPButton;
@@ -87,6 +90,7 @@ public class HomeUIManager : MonoBehaviour
     private void SetupButtonListeners()
     {
         // Main menu buttons
+        ProfileButton.onClick.AddListener(OnClickProfileButton);
         CampaignButton.onClick.AddListener(OnClickCampaignButton);
         PrivateLobbyButton.onClick.AddListener(OnClickPrivateLobbyButton);
         PVPButton.onClick.AddListener(OnClickPVPButton);
@@ -100,11 +104,16 @@ public class HomeUIManager : MonoBehaviour
         PrivateLobbyBackButton.onClick.AddListener(OnPrivateLobbyBackButton);
         JoinLobbyBackButton.onClick.AddListener(OnJoinLobbyBackButton);
     }
-    
+
     #endregion
 
     #region Button Event Handlers
-    
+
+    private void OnClickProfileButton()
+    { 
+        ProfilePanel.SetActive(true);
+        HomePanel.SetActive(false);
+    }
     private void OnClickCampaignButton()
     {
         SwitchPanel(HomePanel, LoadingPanel);

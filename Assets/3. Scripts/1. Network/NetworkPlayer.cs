@@ -131,18 +131,26 @@ public class NetworkPlayer : NetworkBehaviour
         _playerProfile = CreatePlayerProfile();
         RPC_SetPlayerProfile(_playerProfile.PlayerName, _playerProfile.Rank);
     }
-    
+
     private PlayerProfile CreatePlayerProfile()
     {
-        #if UNITY_EDITOR || DEVELOPMENT_BUILD
         var profile = new PlayerProfile();
-        profile.InitializeWithRandomData();
+        string savedName = PlayerPrefs.GetString("Username", "");
+        Debug.Log($"[NetworkPlayer] CreatePlayerProfile - PlayerPrefs Username: {savedName}");
+        if (!string.IsNullOrEmpty(savedName))
+        {
+            profile.PlayerName = savedName;
+        }
+        else
+        {
+            profile.PlayerName = RandomNameGenerator.GetRandomName();
+        }
+        profile.Rank = Random.Range(1, 10);
+        Debug.Log($"[NetworkPlayer] CreatePlayerProfile - Final PlayerName: {profile.PlayerName}, Rank: {profile.Rank}");
         return profile;
-        #else
-        return PlayerProfile.LoadFromDisk();
-        #endif
     }
-    
+
+
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     private void RPC_SetPlayerProfile(string name, int rank)
     {
@@ -179,7 +187,7 @@ public class NetworkPlayer : NetworkBehaviour
         // Update game scene UI
         if (gameObject.scene.name == "GameScene")
         {
-            var gameUI = FindObjectOfType<PrivateLobbyUI>();
+            var gameUI = FindObjectOfType<NetworkGameUI>();
             gameUI?.RefreshPlayerInfo();
         }
         

@@ -154,15 +154,18 @@ public class PvPMatchUI : MonoBehaviour
         player1Panel?.SetActive(true);
         if (player1Name != null) player1Name.text = player.GetDisplayName();
         if (player1Rank != null) player1Rank.text = $"Rank: {player.GetRank()}";
+        Debug.Log($"[PvPMatchUI] Player 1: {player.GetDisplayName()} (Rank: {player.GetRank()}) | IsProfileSet: {player.IsProfileSet} | NetworkedName: {player.PlayerName}");
     }
-    
+
     private void ShowPlayer2Info(NetworkPlayer player)
     {
         player2Panel?.SetActive(true);
         if (player2Name != null) player2Name.text = player.GetDisplayName();
         if (player2Rank != null) player2Rank.text = $"Rank: {player.GetRank()}";
+        Debug.Log($"[PvPMatchUI] Player 2: {player.GetDisplayName()} (Rank: {player.GetRank()}) | IsProfileSet: {player.IsProfileSet} | NetworkedName: {player.PlayerName}");
     }
-    
+
+
     private void ShowWaitingForOpponent()
     {
         player2Panel?.SetActive(false);

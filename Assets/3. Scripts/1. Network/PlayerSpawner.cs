@@ -26,7 +26,7 @@ public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
     
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        Debug.Log($"[PlayerSpawner] Player joined: {player}");
+        Debug.Log($"[PlayerSpawner] Player joined 11: {player}");
         
         if (runner.IsServer && !_spawnedPlayers.ContainsKey(player))
         {
@@ -37,7 +37,7 @@ public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
     
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
-        Debug.Log($"[PlayerSpawner] Player left: {player}");
+        Debug.Log($"[PlayerSpawner] Player left11: {player}");
         
         if (_spawnedPlayers.TryGetValue(player, out NetworkObject playerObject))
         {
@@ -66,7 +66,7 @@ public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
             Debug.LogError("[PlayerSpawner] Player prefab not assigned!");
             return;
         }
-        
+        Debug.Log($"[PlayerSpawner] Spawned 11");
         Vector3 spawnPosition = GetSpawnPosition();
         NetworkObject playerObject = CreatePlayerObject(runner, player, spawnPosition);
         ConfigurePlayerObject(playerObject, spawnPosition);
