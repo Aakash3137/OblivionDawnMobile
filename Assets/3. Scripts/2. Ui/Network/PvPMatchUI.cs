@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Linq;
 
 public class PvPMatchUI : MonoBehaviour
 {
@@ -85,19 +86,81 @@ public class PvPMatchUI : MonoBehaviour
         Invoke(nameof(OnPvPTimeout), pvpTimeout);
         Debug.Log($"[PvPMatchUI] PvP timeout timer started - {pvpTimeout} seconds");
     }
-    
+
     #endregion
 
     #region Player Info Management
-    
+
+    /* public void RefreshPlayerInfo()
+     {
+         var players = FindObjectsOfType<NetworkPlayer>();
+
+         HandlePlayer1Display(players);
+         HandlePlayer2Display(players);
+     }*/
     public void RefreshPlayerInfo()
     {
-        var players = FindObjectsOfType<NetworkPlayer>();
-        
-        HandlePlayer1Display(players);
-        HandlePlayer2Display(players);
+        try
+        {
+            NetworkPlayer[] players = FindObjectsOfType<NetworkPlayer>();
+            Debug.Log($"[PvPMatchUI] Found {players.Length} NetworkPlayer objects in scene");
+
+            NetworkPlayer localPlayer = players.FirstOrDefault(p => p.Object.HasInputAuthority);
+            NetworkPlayer enemyPlayer = players.FirstOrDefault(p => !p.Object.HasInputAuthority);
+
+            // Local player always on left (Player 1 UI)
+            if (localPlayer != null && localPlayer.IsProfileSet)
+            {
+                SetupPlayerUI(localPlayer, player1Name, player1Rank, Color.green);
+                Debug.Log($"[PvPMatchUI] Player 1 (Local): {localPlayer.GetDisplayName()}");
+            }
+            else
+            {
+                SetEmptyPlayerUI(player1Name, player1Rank);
+                Debug.Log("[PvPMatchUI] Player 1 (Local) not ready");
+            }
+
+            // Enemy player always on right (Player 2 UI)
+            if (enemyPlayer != null && enemyPlayer.IsProfileSet)
+            {
+                SetupPlayerUI(enemyPlayer, player2Name, player2Rank, Color.red);
+                Debug.Log($"[PvPMatchUI] Player 2 (Enemy): {enemyPlayer.GetDisplayName()}");
+            }
+            else
+            {
+                SetEmptyPlayerUI(player2Name, player2Rank);
+                Debug.Log("[PvPMatchUI] Player 2 (Enemy) not ready");
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogWarning($"[PvPMatchUI] Error: {ex.Message}");
+        }
     }
-    
+
+    private void SetupPlayerUI(NetworkPlayer player, TextMeshProUGUI nameText, TextMeshProUGUI rankText, Color color)
+    {
+        if (player != null && player.IsProfileSet)
+        {
+            nameText.text = player.GetDisplayName();
+            nameText.color = color;
+            rankText.text = $"Rank: {player.GetRank()}";
+        }
+        else
+        {
+            SetEmptyPlayerUI(nameText, rankText);
+        }
+    }
+
+    private void SetEmptyPlayerUI(TextMeshProUGUI nameText, TextMeshProUGUI rankText)
+    {
+        nameText.text = "Waiting...";
+        nameText.color = Color.white;
+        rankText.text = "Rank -";
+    }
+
+
+
     private void HandlePlayer1Display(NetworkPlayer[] players)
     {
         if (players.Length >= 1 && players[0].IsProfileSet)

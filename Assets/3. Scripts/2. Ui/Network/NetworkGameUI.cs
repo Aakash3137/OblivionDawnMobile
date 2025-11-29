@@ -13,8 +13,8 @@ public class NetworkGameUI : MonoBehaviour
     public TextMeshProUGUI player2NameText;
     public TextMeshProUGUI player2RankText;
     
-    [Header("Camera Settings")]
-    public Camera gameCamera;
+   // [Header("Camera Settings")]
+    //public Camera gameCamera;
     
     private bool _cameraRotationApplied = false;
 
@@ -27,72 +27,73 @@ public class NetworkGameUI : MonoBehaviour
         InvokeRepeating(nameof(RefreshPlayerInfo), 2f, 2f);
         
         // Set camera reference if not assigned
-        if (gameCamera == null)
+       /* if (gameCamera == null)
         {
             gameCamera = Camera.main;
-        }
+        }*/
     }
 
     public void RefreshPlayerInfo()
     {
         try
         {
-            // ✅ FIX: Use NetworkRunner's GetComponents for more reliable player finding
             NetworkPlayer[] players = FindObjectsOfType<NetworkPlayer>();
-            
-            Debug.Log($"[PrivateLobbyUI] Found {players.Length} NetworkPlayer objects in scene");
+            Debug.Log($"[NetworkGameUI] Found {players.Length} NetworkPlayer objects in scene");
 
-            if (players.Length == 0)
+            NetworkPlayer localPlayer = players.FirstOrDefault(p => p.Object.HasInputAuthority);
+            NetworkPlayer enemyPlayer = players.FirstOrDefault(p => !p.Object.HasInputAuthority);
+
+            // Local player always on left (Player 1 UI)
+            if (localPlayer != null && localPlayer.IsProfileSet)
             {
-                // Try alternative method to find players
-                var runner = FindObjectOfType<NetworkRunner>();
-                if (runner != null)
-                {
-                    Debug.Log($"[PrivateLobbyUI] NetworkRunner has {runner.ActivePlayers.ToList().Count()} active players");
-                }
-            }
-
-            // Sort players consistently
-            System.Array.Sort(players, (a, b) => a.Object.Id.Raw.CompareTo(b.Object.Id.Raw));
-
-            if (players.Length > 0 && players[0] != null && players[0].IsProfileSet)
-            {
-                SetupPlayerUI(players[0], player1NameText, player1RankText);
-                Debug.Log($"[PrivateLobbyUI] Player 1: {players[0].GetDisplayName()}");
+                SetupPlayerUI(localPlayer, player1NameText, player1RankText, Color.green);
+                Debug.Log($"[NetworkGameUI] Player 1 (Local): {localPlayer.GetDisplayName()}");
             }
             else
             {
                 SetEmptyPlayerUI(player1NameText, player1RankText);
-                Debug.Log("[PrivateLobbyUI] Player 1 not ready");
+                Debug.Log("[NetworkGameUI] Player 1 (Local) not ready");
             }
 
-            if (players.Length > 1 && players[1] != null && players[1].IsProfileSet)
+            // Enemy player always on right (Player 2 UI)
+            if (enemyPlayer != null && enemyPlayer.IsProfileSet)
             {
-                SetupPlayerUI(players[1], player2NameText, player2RankText);
-                Debug.Log($"[PrivateLobbyUI] Player 2: {players[1].GetDisplayName()}");
-                
-                // Check for camera rotation
-                CheckCameraRotation(players[1]);
+                SetupPlayerUI(enemyPlayer, player2NameText, player2RankText, Color.red);
+                Debug.Log($"[NetworkGameUI] Player 2 (Enemy): {enemyPlayer.GetDisplayName()}");
             }
             else
             {
                 SetEmptyPlayerUI(player2NameText, player2RankText);
-                Debug.Log("[PrivateLobbyUI] Player 2 not ready");
+                Debug.Log("[NetworkGameUI] Player 2 (Enemy) not ready");
             }
         }
         catch (System.Exception ex)
         {
-            Debug.LogWarning($"[PrivateLobbyUI] Error: {ex.Message}");
+            Debug.LogWarning($"[NetworkGameUI] Error: {ex.Message}");
         }
     }
 
-    private void SetupPlayerUI(NetworkPlayer player, TextMeshProUGUI nameText, TextMeshProUGUI rankText)
+
+    /* private void SetupPlayerUI(NetworkPlayer player, TextMeshProUGUI nameText, TextMeshProUGUI rankText)
+     {
+         if (player != null && player.IsProfileSet)
+         {
+             nameText.text = player.GetDisplayName();
+             nameText.color = player.GetPlayerColor();
+             rankText.text = $"Rank {player.GetRank()}";
+         }
+         else
+         {
+             SetEmptyPlayerUI(nameText, rankText);
+         }
+     }*/
+    private void SetupPlayerUI(NetworkPlayer player, TextMeshProUGUI nameText, TextMeshProUGUI rankText, Color color)
     {
         if (player != null && player.IsProfileSet)
         {
             nameText.text = player.GetDisplayName();
-            nameText.color = player.GetPlayerColor();
-            rankText.text = $"Rank {player.GetRank()}";
+            nameText.color = color;
+            rankText.text = $"Rank: {player.GetRank()}";
         }
         else
         {
@@ -100,14 +101,15 @@ public class NetworkGameUI : MonoBehaviour
         }
     }
 
-    private void SetEmptyPlayerUI(TextMeshProUGUI nameText, TextMeshProUGUI rankText)
+
+    internal void SetEmptyPlayerUI(TextMeshProUGUI nameText, TextMeshProUGUI rankText)
     {
         nameText.text = "Waiting...";
         nameText.color = Color.white;
         rankText.text = "Rank -";
     }
 
-    private void CheckCameraRotation(NetworkPlayer player)
+    /*private void CheckCameraRotation(NetworkPlayer player)
     {
         // Rotate camera once for second player (client) in both Host/Client and PvP modes
         if (!_cameraRotationApplied && player.Object.HasInputAuthority && player.PlayerColorIndex == 1)
@@ -130,7 +132,7 @@ public class NetworkGameUI : MonoBehaviour
         {
             Debug.LogWarning($"[PrivateLobbyUI] ❌ Game camera not assigned for rotation");
         }
-    }
+    }*/
     
     private void OnDestroy()
     {
