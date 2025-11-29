@@ -14,11 +14,16 @@ public class NetworkPlayer : NetworkBehaviour
     [Networked] public bool IsProfileSet { get; set; }
     [Networked] public int PlayerColorIndex { get; set; }
     [Networked] public Vector3 NetworkPosition { get; set; }
-    
+    [Networked] public Quaternion NetworkRotation { get; set; }
+
     #endregion
-    
+
+    #region Public Fields
+    [SerializeField] internal Camera MainCamera;
+    #endregion
+
     #region Private Fields
-    
+
     private PlayerProfile _playerProfile;
     private bool _isMatchmakingMode;
     private MeshRenderer _meshRenderer;
@@ -34,12 +39,21 @@ public class NetworkPlayer : NetworkBehaviour
         Debug.Log($"[NetworkPlayer] Spawned - InputAuthority: {Object.InputAuthority}, Scene: {gameObject.scene.name}");
         DontDestroyOnLoad(gameObject);
         
-        InitializeNetworkPosition();
+        //InitializeNetworkPosition();
         InitializePlayerProfile();
         InitializeVisualAppearance();
         InitializeGameMode();
         SubscribeToEvents();
-        
+
+
+        // Apply transform from network state immediately
+        transform.position = NetworkPosition;
+        transform.rotation = NetworkRotation;
+
+
+        //update camera
+        UpdateCameraForScene();
+
         // Delayed UI refresh to ensure all components are ready
         Invoke(nameof(DelayedRefresh), 0.1f);
     }
@@ -52,25 +66,22 @@ public class NetworkPlayer : NetworkBehaviour
     
     public override void FixedUpdateNetwork()
     {
-        // Synchronize position for non-authoritative clients
-        if (!Object.HasStateAuthority)
-        {
-            transform.position = NetworkPosition;
-        }
+        transform.position = NetworkPosition;
+        transform.rotation = NetworkRotation;
     }
-    
+
     #endregion
 
     #region Initialization Methods
-    
-    private void InitializeNetworkPosition()
-    {
-        if (Object.HasStateAuthority)
-        {
-            NetworkPosition = transform.position;
-        }
-    }
-    
+
+    /* private void InitializeNetworkPosition()
+     {
+         if (Object.HasStateAuthority)
+         {
+             NetworkPosition = transform.position;
+         }
+     }*/
+
     private void InitializePlayerProfile()
     {
         if (Object.HasInputAuthority && !IsProfileSet)
@@ -114,6 +125,7 @@ public class NetworkPlayer : NetworkBehaviour
     private void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
     {
         Debug.Log($"[NetworkPlayer] Scene changed to: {scene.name}, refreshing UI");
+        UpdateCameraForScene(); //update camera
         Invoke(nameof(DelayedRefresh), 0.3f);
     }
     
@@ -220,11 +232,47 @@ public class NetworkPlayer : NetworkBehaviour
             Debug.Log($"[NetworkPlayer] Color set - IsLocal: {Object.HasInputAuthority}, Color: {playerColor}");
         }
     }
-    
+
+    #endregion
+
+    #region Camera fixture
+    private void UpdateCameraForScene()
+    {
+        if (MainCamera == null)
+        {
+            Debug.LogWarning($"[NetworkPlayer] MainCamera is not assigned for player {PlayerName}");
+            return;
+        }
+
+        // Use the active scene name, not the object's scene
+        string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        Debug.Log($"[NetworkPlayer] UpdateCameraForScene - Active Scene: {sceneName}, HasInputAuthority: {Object.HasInputAuthority}");
+
+        // Only activate camera for local player
+        if (Object.HasInputAuthority)
+        {
+            if (sceneName.Equals("GameScene", System.StringComparison.OrdinalIgnoreCase))
+            {
+                MainCamera.gameObject.SetActive(true);
+                Debug.Log($"[NetworkPlayer] Camera activated for {PlayerName} in GameScene");
+            }
+            else
+            {
+                MainCamera.gameObject.SetActive(false);
+                Debug.Log($"[NetworkPlayer] Camera deactivated for {PlayerName} in {sceneName}");
+            }
+        }
+        else
+        {
+            MainCamera.gameObject.SetActive(false);
+            Debug.Log($"[NetworkPlayer] Camera deactivated for remote player {PlayerName}");
+        }
+    }
+
     #endregion
 
     #region Public API
-    
+
     /// <summary>
     /// Gets the player profile, creating it from networked data if needed.
     /// </summary>

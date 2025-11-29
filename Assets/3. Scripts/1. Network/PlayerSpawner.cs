@@ -1,4 +1,4 @@
-using Fusion;
+﻿using Fusion;
 using UnityEngine;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
     public NetworkObject playerPrefab;
     
     [Header("Spawn Configuration")]
-    public Vector3[] spawnPositions = { Vector3.zero, new Vector3(0, 0, 20) };
+    public Vector3[] spawnPositions = { new Vector3(7.08f, 22.5f, 2.29f), new Vector3(7.08f,22.5f,28.5f) };
     
     #endregion
     
@@ -67,34 +67,86 @@ public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
             return;
         }
         Debug.Log($"[PlayerSpawner] Spawned 11");
-        Vector3 spawnPosition = GetSpawnPosition();
+        /*Vector3 spawnPosition = GetSpawnPosition();
         NetworkObject playerObject = CreatePlayerObject(runner, player, spawnPosition);
         ConfigurePlayerObject(playerObject, spawnPosition);
+        RegisterPlayer(player, playerObject);*/
+
+        /*Vector3 spawnPosition = GetSpawnPosition(out Quaternion spawnRotation);
+        NetworkObject playerObject = CreatePlayerObject(runner, player, spawnPosition, spawnRotation);
+        ConfigurePlayerObject(playerObject, spawnPosition, spawnRotation);
+        RegisterPlayer(player, playerObject);*/
+
+        Vector3 spawnPosition = GetSpawnPosition(out Quaternion spawnRotation);
+        // 🔥 set prefab transform BEFORE spawning so Fusion uses correct values
+        playerPrefab.transform.position = spawnPosition;
+        playerPrefab.transform.rotation = spawnRotation;
+
+        // spawn
+        NetworkObject playerObject = CreatePlayerObject(runner, player, spawnPosition, spawnRotation);
+
+        // initialize network state IMMEDIATELY
+        var np = playerObject.GetComponent<NetworkPlayer>();
+
+        if (np != null && playerObject.HasStateAuthority)
+        {
+            np.NetworkPosition = spawnPosition;
+            np.NetworkRotation = spawnRotation;
+        }
+
         RegisterPlayer(player, playerObject);
+
     }
-    
-    private Vector3 GetSpawnPosition()
+
+    /* private Vector3 GetSpawnPosition()
+     {
+         int playerIndex = _spawnedPlayers.Count == 0 ? 0 : 1;
+         return playerIndex < spawnPositions.Length ? spawnPositions[playerIndex] : Vector3.zero;
+     }*/
+    private Vector3 GetSpawnPosition(out Quaternion rotation)
     {
         int playerIndex = _spawnedPlayers.Count == 0 ? 0 : 1;
-        return playerIndex < spawnPositions.Length ? spawnPositions[playerIndex] : Vector3.zero;
+        rotation = Quaternion.identity;
+        Vector3 pos = playerIndex < spawnPositions.Length ? spawnPositions[playerIndex] : Vector3.zero;
+        if (playerIndex == 1)
+            rotation = Quaternion.Euler(0f, 180f, 0f);
+        return pos;
     }
-    
-    private NetworkObject CreatePlayerObject(NetworkRunner runner, PlayerRef player, Vector3 position)
+
+
+
+    private NetworkObject CreatePlayerObject(NetworkRunner runner, PlayerRef player, Vector3 position, Quaternion rotation)
     {
-        return runner.Spawn(playerPrefab, position, Quaternion.identity, player);
+        return runner.Spawn(playerPrefab, position, rotation, player);
     }
-    
-    private void ConfigurePlayerObject(NetworkObject playerObject, Vector3 position)
+
+    /* private NetworkObject CreatePlayerObject(NetworkRunner runner, PlayerRef player, Vector3 position)
+     {
+         return runner.Spawn(playerPrefab, position, Quaternion.identity, player);
+     }*/
+    private void ConfigurePlayerObject(NetworkObject playerObject, Vector3 position, Quaternion rotation)
     {
-        var networkPlayer = playerObject.GetComponent<NetworkPlayer>();
+        /*var networkPlayer = playerObject.GetComponent<NetworkPlayer>();
         if (networkPlayer != null)
         {
             networkPlayer.NetworkPosition = position;
-        }
-        
+            networkPlayer.NetworkRotation = rotation;   // <-- IMPORTANT
+        }*/
+
         DontDestroyOnLoad(playerObject.gameObject);
     }
-    
+
+    /* private void ConfigurePlayerObject(NetworkObject playerObject, Vector3 position)
+     {
+         var networkPlayer = playerObject.GetComponent<NetworkPlayer>();
+         if (networkPlayer != null)
+         {
+             networkPlayer.NetworkPosition = position;
+         }
+
+         DontDestroyOnLoad(playerObject.gameObject);
+     }*/
+
     private void RegisterPlayer(PlayerRef player, NetworkObject playerObject)
     {
         _spawnedPlayers[player] = playerObject;
