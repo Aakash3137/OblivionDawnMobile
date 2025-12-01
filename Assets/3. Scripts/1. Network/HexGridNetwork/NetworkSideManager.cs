@@ -30,4 +30,6 @@ public class NetworkSideManager : MonoBehaviour
         Renderer rend = tile.GetComponentInChildren<Renderer>();
         SetSide(rend, side);
     }
+
+    
 }

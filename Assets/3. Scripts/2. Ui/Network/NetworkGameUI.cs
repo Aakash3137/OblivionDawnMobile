@@ -38,7 +38,7 @@ public class NetworkGameUI : MonoBehaviour
         try
         {
             NetworkPlayer[] players = FindObjectsOfType<NetworkPlayer>();
-            Debug.Log($"[NetworkGameUI] Found {players.Length} NetworkPlayer objects in scene");
+           // Debug.Log($"[NetworkGameUI] Found {players.Length} NetworkPlayer objects in scene");
 
             NetworkPlayer localPlayer = players.FirstOrDefault(p => p.Object.HasInputAuthority);
             NetworkPlayer enemyPlayer = players.FirstOrDefault(p => !p.Object.HasInputAuthority);
@@ -47,29 +47,29 @@ public class NetworkGameUI : MonoBehaviour
             if (localPlayer != null && localPlayer.IsProfileSet)
             {
                 SetupPlayerUI(localPlayer, player1NameText, player1RankText, Color.green);
-                Debug.Log($"[NetworkGameUI] Player 1 (Local): {localPlayer.GetDisplayName()}");
+               // Debug.Log($"[NetworkGameUI] Player 1 (Local): {localPlayer.GetDisplayName()}");
             }
             else
             {
                 SetEmptyPlayerUI(player1NameText, player1RankText);
-                Debug.Log("[NetworkGameUI] Player 1 (Local) not ready");
+               // Debug.Log("[NetworkGameUI] Player 1 (Local) not ready");
             }
 
             // Enemy player always on right (Player 2 UI)
             if (enemyPlayer != null && enemyPlayer.IsProfileSet)
             {
                 SetupPlayerUI(enemyPlayer, player2NameText, player2RankText, Color.red);
-                Debug.Log($"[NetworkGameUI] Player 2 (Enemy): {enemyPlayer.GetDisplayName()}");
+               // Debug.Log($"[NetworkGameUI] Player 2 (Enemy): {enemyPlayer.GetDisplayName()}");
             }
             else
             {
                 SetEmptyPlayerUI(player2NameText, player2RankText);
-                Debug.Log("[NetworkGameUI] Player 2 (Enemy) not ready");
+                //Debug.Log("[NetworkGameUI] Player 2 (Enemy) not ready");
             }
         }
         catch (System.Exception ex)
         {
-            Debug.LogWarning($"[NetworkGameUI] Error: {ex.Message}");
+           // Debug.LogWarning($"[NetworkGameUI] Error: {ex.Message}");
         }
     }
 

@@ -15,6 +15,7 @@ public class NetworkPlayer : NetworkBehaviour
     [Networked] public int PlayerColorIndex { get; set; }
     [Networked] public Vector3 NetworkPosition { get; set; }
     [Networked] public Quaternion NetworkRotation { get; set; }
+    [Networked] public int SpawnId { get; set; }
 
     #endregion
 
@@ -27,7 +28,8 @@ public class NetworkPlayer : NetworkBehaviour
     private PlayerProfile _playerProfile;
     private bool _isMatchmakingMode;
     private MeshRenderer _meshRenderer;
-    
+    private TileSelectionManager _tileSelectionManager;
+    private bool _isInGameScene = false;
     #endregion
 
     #region Unity Lifecycle & Network Events
@@ -118,6 +120,57 @@ public class NetworkPlayer : NetworkBehaviour
         UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
     }
     
+    private void InitializeForCurrentScene()
+    {
+        string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        Debug.Log($"[NetworkPlayer] InitializeForCurrentScene: {sceneName}");
+        
+        _isInGameScene = sceneName.Equals("GameScene", System.StringComparison.OrdinalIgnoreCase);
+        
+        if (_isInGameScene)
+        {
+            InitializeTileSelectionManager();
+        }
+        else
+        {
+            // Clean up if we're not in GameScene
+            if (_tileSelectionManager != null)
+            {
+                // Don't destroy, just disable functionality
+            }
+        }
+    }
+
+    private void InitializeTileSelectionManager()
+    {
+        // Only local player needs tile selection in GameScene
+        if (Object.HasInputAuthority && _isInGameScene)
+        {
+            // Check if TileSelectionManager exists
+            _tileSelectionManager = FindObjectOfType<TileSelectionManager>();
+            
+            if (_tileSelectionManager == null)
+            {
+                // Create new if doesn't exist
+                GameObject managerObj = new GameObject("TileSelectionManager");
+                _tileSelectionManager = managerObj.AddComponent<TileSelectionManager>();
+                DontDestroyOnLoad(managerObj);
+            }
+            
+            // Initialize with player's camera
+            if (MainCamera != null && MainCamera.gameObject.activeSelf)
+            {
+                _tileSelectionManager.Initialize(MainCamera);
+                Debug.Log($"[NetworkPlayer] TileSelectionManager initialized for player: {PlayerName}");
+            }
+            else
+            {
+                Debug.LogWarning($"[NetworkPlayer] Camera not active, will retry...");
+                // Try again after a delay
+                Invoke(nameof(InitializeTileSelectionManager), 0.5f);
+            }
+        }
+    }
     #endregion
 
     #region Event Handlers
@@ -126,6 +179,10 @@ public class NetworkPlayer : NetworkBehaviour
     {
         Debug.Log($"[NetworkPlayer] Scene changed to: {scene.name}, refreshing UI");
         UpdateCameraForScene(); //update camera
+        
+        // Re-initialize based on new scene
+        Invoke(nameof(InitializeForCurrentScene), 0.1f);
+        
         Invoke(nameof(DelayedRefresh), 0.3f);
     }
     

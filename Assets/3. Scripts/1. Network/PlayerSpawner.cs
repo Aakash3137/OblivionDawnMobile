@@ -12,8 +12,8 @@ public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
     public NetworkObject playerPrefab;
     
     [Header("Spawn Configuration")]
-    public Vector3[] spawnPositions = { new Vector3(7.08f, 22.5f, 2.29f), new Vector3(7.08f,22.5f,28.5f) };
-    
+    //public Vector3[] spawnPositions = { new Vector3(7.08f, 22.5f, 2.29f), new Vector3(7.08f,22.5f,28.5f) };
+    public Vector3[] spawnPositions = { new Vector3(7.08f, 22.5f, -6.5f), new Vector3(7.08f,22.5f,37.5f) };
     #endregion
     
     #region Private Fields
@@ -77,21 +77,20 @@ public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
         ConfigurePlayerObject(playerObject, spawnPosition, spawnRotation);
         RegisterPlayer(player, playerObject);*/
 
-        Vector3 spawnPosition = GetSpawnPosition(out Quaternion spawnRotation);
-        // 🔥 set prefab transform BEFORE spawning so Fusion uses correct values
+        int spawnId = _spawnedPlayers.Count;
+        Vector3 spawnPosition = GetSpawnPosition(out Quaternion spawnRotation, out spawnId);
+        
         playerPrefab.transform.position = spawnPosition;
         playerPrefab.transform.rotation = spawnRotation;
 
-        // spawn
         NetworkObject playerObject = CreatePlayerObject(runner, player, spawnPosition, spawnRotation);
 
-        // initialize network state IMMEDIATELY
         var np = playerObject.GetComponent<NetworkPlayer>();
-
         if (np != null && playerObject.HasStateAuthority)
         {
             np.NetworkPosition = spawnPosition;
             np.NetworkRotation = spawnRotation;
+            np.SpawnId = spawnId;
         }
 
         RegisterPlayer(player, playerObject);
@@ -103,12 +102,12 @@ public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
          int playerIndex = _spawnedPlayers.Count == 0 ? 0 : 1;
          return playerIndex < spawnPositions.Length ? spawnPositions[playerIndex] : Vector3.zero;
      }*/
-    private Vector3 GetSpawnPosition(out Quaternion rotation)
+    private Vector3 GetSpawnPosition(out Quaternion rotation, out int spawnId)
     {
-        int playerIndex = _spawnedPlayers.Count == 0 ? 0 : 1;
+        spawnId = _spawnedPlayers.Count == 0 ? 0 : 1;
         rotation = Quaternion.identity;
-        Vector3 pos = playerIndex < spawnPositions.Length ? spawnPositions[playerIndex] : Vector3.zero;
-        if (playerIndex == 1)
+        Vector3 pos = spawnId < spawnPositions.Length ? spawnPositions[spawnId] : Vector3.zero;
+        if (spawnId == 1)
             rotation = Quaternion.Euler(0f, 180f, 0f);
         return pos;
     }

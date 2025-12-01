@@ -1,4 +1,4 @@
-using UnityEngine;
+/*using UnityEngine;
 
 public class FireEventReceiver : MonoBehaviour {
 
@@ -31,4 +31,4 @@ public class FireEventReceiver : MonoBehaviour {
         Debug.Log($" Player {id} STOPPED firing.");
         // TODO: stop shooting logic
     }
-}
+}*/
