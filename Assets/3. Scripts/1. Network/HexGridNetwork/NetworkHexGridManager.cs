@@ -1,7 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Fusion;
 
-public class NetworkHexGridManager : MonoBehaviour
+public class NetworkHexGridManager : NetworkBehaviour
 {
     public static NetworkHexGridManager Instance;
 
@@ -9,15 +10,25 @@ public class NetworkHexGridManager : MonoBehaviour
     public float hexSize = 1f;
     public bool pointyTop = true;
 
+    [Header("Network Event Core Prefab")]
+    public NetworkObject networkEventCorePrefab; 
+    
+    
     // All tiles stored by hex coordinate
     public Dictionary<Vector2Int, NetworkTile> hexTiles =
         new Dictionary<Vector2Int, NetworkTile>();
 
-    // Ownership statistics (auto-updated)
+    // TILE LISTS
+    [Header("Tile Lists (Auto Generated)")]
+    public List<NetworkTile> allTiles = new List<NetworkTile>();
+    public List<NetworkTile> playerTiles = new List<NetworkTile>();
+    public List<NetworkTile> enemyTiles = new List<NetworkTile>();
+
+    // Ownership statistics (real network ownership)
     public int playerTileCount { get; private set; }
     public int enemyTileCount { get; private set; }
 
-    // Bounds for minimaps or iteration
+    // Boundaries
     public int MinX { get; private set; } = int.MaxValue;
     public int MinY { get; private set; } = int.MaxValue;
     public int MaxX { get; private set; } = int.MinValue;
@@ -26,9 +37,52 @@ public class NetworkHexGridManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        Debug.Log("NetworkHexGridManager is Ready");
+        AutoLoadTilesFromChildren();
     }
 
+    public override void Spawned()
+    {
+        Debug.Log("Spawned!!");
+        if (Runner.IsServer)
+        {Debug.Log("Spawned!!!");
+            SpawnNetworkEventCore();
+        }
+    }
+
+    // --------------------------------------------------------------------
+    //  LOAD TILES AUTOMATICALLY FROM CHILDREN
+    // --------------------------------------------------------------------
+    private void AutoLoadTilesFromChildren()
+    {
+        allTiles.Clear();
+
+        foreach (Transform child in transform)
+        {
+            if (child.TryGetComponent(out NetworkTile tile))
+            {
+                allTiles.Add(tile);
+            }
+        }
+    }
+
+    private void SpawnNetworkEventCore()
+    {Debug.Log("Spawned!!!!");
+        if (NetworkEventCore.Instance != null)
+        {
+            Debug.Log("[NetworkHexGridManager] NetworkEventCore already exists.");
+            return;
+        }
+
+        if (networkEventCorePrefab == null)
+        {
+            Debug.LogError("[NetworkHexGridManager] NetworkEventCore prefab not assigned!");
+            return;
+        }
+
+        Runner.Spawn(networkEventCorePrefab, Vector3.zero, Quaternion.identity);
+        Debug.Log("[NetworkHexGridManager] NetworkEventCore spawned by host.");
+    }
+    
     // ---------------------------------------------------------
     //  TILE REGISTRATION
     // ---------------------------------------------------------
@@ -40,40 +94,46 @@ public class NetworkHexGridManager : MonoBehaviour
         if (!hexTiles.ContainsKey(coord))
             hexTiles.Add(coord, tile);
 
-        // Store bounds
         MinX = Mathf.Min(MinX, coord.x);
         MinY = Mathf.Min(MinY, coord.y);
         MaxX = Mathf.Max(MaxX, coord.x);
         MaxY = Mathf.Max(MaxY, coord.y);
-
-        // Count ownership including this tile
-        UpdateOwnershipCounts();
+        
+        UpdateTileLists();
     }
 
-    // ---------------------------------------------------------
-    //  OWNERSHIP TRACKING
-    // ---------------------------------------------------------
-    public void UpdateOwnershipCounts()
+    // --------------------------------------------------------------------
+    //  UPDATE TILE LISTS (REAL NETWORK OWNERSHIP ONLY)
+    // --------------------------------------------------------------------
+    public void UpdateTileLists()
     {
+        playerTiles.Clear();
+        enemyTiles.Clear();
+
         playerTileCount = 0;
         enemyTileCount = 0;
 
-        foreach (var entry in hexTiles)
+        foreach (var tile in allTiles)
         {
-            NetworkTile tile = entry.Value;
+            var owner = (NetworkSide)tile.OwnerInt;  // REAL OWNER
 
-            switch ((NetworkSide)tile.OwnerInt)
+            if (owner == NetworkSide.Player)
             {
-                case NetworkSide.Player: playerTileCount++; break;
-                case NetworkSide.Enemy: enemyTileCount++; break;
+                playerTiles.Add(tile);
+                playerTileCount++;
+            }
+            else if (owner == NetworkSide.Enemy)
+            {
+                enemyTiles.Add(tile);
+                enemyTileCount++;
             }
         }
     }
 
-    // Called from NetworkTile on ownership change
+    // Called from NetworkTile when OwnerInt changes on network
     public void NotifyOwnerChanged()
     {
-        UpdateOwnershipCounts();
+        UpdateTileLists();
     }
 
     // ---------------------------------------------------------
@@ -86,7 +146,7 @@ public class NetworkHexGridManager : MonoBehaviour
     }
 
     // ---------------------------------------------------------
-    //  WORLD ? HEX CONVERSION
+    //  WORLD → HEX conversion
     // ---------------------------------------------------------
     public Vector2Int WorldToHex(Vector3 worldPos)
     {
@@ -112,7 +172,7 @@ public class NetworkHexGridManager : MonoBehaviour
     }
 
     // ---------------------------------------------------------
-    //  CUBE COORD HELPERS (for distance, adjacency)
+    //  DISTANCE, ADJACENCY (unchanged)
     // ---------------------------------------------------------
     public Vector3 OffsetToCube(Vector2Int offset)
     {

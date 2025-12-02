@@ -3502,7 +3502,7 @@ GameObject:
   - component: {fileID: 1039674180}
   - component: {fileID: 1039674179}
   - component: {fileID: 1039674178}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TileSelectionManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3525,8 +3525,7 @@ MonoBehaviour:
   ObjectInterest: 1
   Flags: 262145
   NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 1039674179}
+  NetworkedBehaviours: []
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &1039674179
 MonoBehaviour:
@@ -3540,11 +3539,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8684ad2a30c1b014aa4d6e8ba8e03067, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tileLayerMask:
+  selectedTile: {fileID: 0}
+  tileMask:
     serializedVersion: 2
     m_Bits: 64
-  selectedMaterial: {fileID: 2100000, guid: 82e0274ff4645394196b7c17349d6813, type: 2}
-  defaultMaterial: {fileID: 0}
 --- !u!4 &1039674180
 Transform:
   m_ObjectHideFlags: 0
@@ -5412,70 +5410,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 437}
   m_SizeDelta: {x: 1000, y: 250}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &1527249529
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1527249532}
-  - component: {fileID: 1527249531}
-  - component: {fileID: 1527249530}
-  m_Layer: 0
-  m_Name: NetworkEventSystem
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1527249530
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1527249529}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SortKey: 2974632274
-  ObjectInterest: 1
-  Flags: 262145
-  NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 1527249531}
-  ForceRemoteRenderTimeframe: 0
---- !u!114 &1527249531
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1527249529}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8594f41b6aea22409f00c807ea084f5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &1527249532
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1527249529}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1570328052
 GameObject:
   m_ObjectHideFlags: 0
@@ -8950,7 +8884,6 @@ SceneRoots:
   - {fileID: 1665323099}
   - {fileID: 361253514}
   - {fileID: 241949473}
-  - {fileID: 1527249532}
   - {fileID: 2079848227}
   - {fileID: 764489299}
   - {fileID: 1039674180}
