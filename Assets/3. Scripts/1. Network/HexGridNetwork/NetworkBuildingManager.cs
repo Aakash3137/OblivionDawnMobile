@@ -114,8 +114,17 @@ public class NetworkBuildingManager : NetworkBehaviour
         }
 
         Vector3 pos = tile.transform.position + Vector3.up;
-        Runner.Spawn(housePrefab, pos, Quaternion.identity);
-
-        Debug.Log($"[NBM] Spawned building on tile {tile.name} (server)");
+        Debug.Log($"[NBM] Spawning building at position: {pos} (tile: {tile.name}, tile pos: {tile.transform.position})");
+        
+        var spawnedObj = Runner.Spawn(housePrefab, pos, Quaternion.identity);
+        
+        if (spawnedObj != null)
+        {
+            Debug.Log($"[NBM] Building spawned successfully at {spawnedObj.transform.position}");
+        }
+        else
+        {
+            Debug.LogError("[NBM] Failed to spawn building!");
+        }
     }
 }

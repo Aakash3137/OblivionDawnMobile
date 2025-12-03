@@ -9,12 +9,11 @@ public class TileSelectionManager : MonoBehaviour
     public NetworkTile selectedTile;
     private Camera playerCamera;
 
-    public LayerMask tileMask;   // Leave uninitialized here !!!
+    public LayerMask tileMask;
 
     private void Awake()
     {
         Instance = this;
-
         tileMask = LayerMask.GetMask("HexTile");
     }
 
@@ -26,7 +25,7 @@ public class TileSelectionManager : MonoBehaviour
     public void Local_SelectTile(NetworkTile tile)
     {
         Debug.Log($"[TSM] Local_SelectTile called for: {tile.name}");
-        
+
         if (selectedTile != null)
         {
             Debug.Log($"[TSM] Deselecting previous tile: {selectedTile.name}");
@@ -49,16 +48,12 @@ public class TileSelectionManager : MonoBehaviour
         return selectedTile;
     }
 
-    // Player presses BUILD button
     public void TryBuild(string buildingName)
     {
         if (selectedTile == null) return;
-
         selectedTile.RequestBuild(buildingName);
     }
 
-
-    // ---- INPUT ----
     private void Update()
     {
         if (playerCamera == null) return;
@@ -73,6 +68,15 @@ public class TileSelectionManager : MonoBehaviour
 
     private void ProcessInput(Vector2 pos)
     {
+        // -----------------------------------------------------------
+        // BLOCK TILE CLICKS IF TOUCH IS OVER UI WITH UIRaycastBlocker
+        // -----------------------------------------------------------
+        if (IsPointerOverBlockingUI(pos))
+        {
+            Debug.Log("[TSM] Touch is over UI that blocks raycast");
+            return;
+        }
+
         // Raycast to tiles only
         Ray ray = playerCamera.ScreenPointToRay(pos);
         if (Physics.Raycast(ray, out RaycastHit hit, 100f, tileMask))
@@ -95,6 +99,25 @@ public class TileSelectionManager : MonoBehaviour
             Debug.Log($"[TSM] Raycast missed (tileMask: {tileMask.value})");
         }
     }
-    
-   
+
+    // -----------------------------------------------------------
+    // RETURN TRUE if finger/mouse is over a UI element that has
+    // the "UIRaycastBlocker" component
+    // -----------------------------------------------------------
+    private bool IsPointerOverBlockingUI(Vector2 pos)
+    {
+        PointerEventData ped = new PointerEventData(EventSystem.current);
+        ped.position = pos;
+
+        var results = new System.Collections.Generic.List<RaycastResult>();
+        EventSystem.current.RaycastAll(ped, results);
+
+        foreach (var r in results)
+        {
+            if (r.gameObject.GetComponent<UIRaycastBlocker>() != null)
+                return true;
+        }
+
+        return false;
+    }
 }
