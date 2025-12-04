@@ -6,15 +6,17 @@ using UnityEngine;
 public class NetworkGameUI : MonoBehaviour
 {
     [Header("Player 1 Info")]
-    public TextMeshProUGUI player1NameText;
-    public TextMeshProUGUI player1RankText;
+    [SerializeField] internal TextMeshProUGUI player1NameText;
+    [SerializeField] internal TextMeshProUGUI player1RankText;
+    [SerializeField] internal TextMeshProUGUI player1TileCount;
     
     [Header("Player 2 Info")] 
-    public TextMeshProUGUI player2NameText;
-    public TextMeshProUGUI player2RankText;
+    [SerializeField] internal TextMeshProUGUI player2NameText;
+    [SerializeField] internal TextMeshProUGUI player2RankText;
+    [SerializeField] internal TextMeshProUGUI player2TileCount;
     
-   // [Header("Camera Settings")]
-    //public Camera gameCamera;
+    internal Color playerColor = Color.green;
+    internal Color enemyColor = Color.red;
     
     private bool _cameraRotationApplied = false;
 
@@ -24,7 +26,7 @@ public class NetworkGameUI : MonoBehaviour
         
         // ✅ FIX: Wait longer for players to be properly loaded
         Invoke(nameof(RefreshPlayerInfo), 1f);
-        InvokeRepeating(nameof(RefreshPlayerInfo), 2f, 2f);
+        InvokeRepeating(nameof(RefreshPlayerInfo), 1f, 2f);
         
         // Set camera reference if not assigned
        /* if (gameCamera == null)
@@ -46,25 +48,21 @@ public class NetworkGameUI : MonoBehaviour
             // Local player always on left (Player 1 UI)
             if (localPlayer != null && localPlayer.IsProfileSet)
             {
-                SetupPlayerUI(localPlayer, player1NameText, player1RankText, Color.green);
-               // Debug.Log($"[NetworkGameUI] Player 1 (Local): {localPlayer.GetDisplayName()}");
+                SetupPlayerUI(localPlayer, player1NameText, player1RankText, player1TileCount, playerColor, true);
             }
             else
             {
                 SetEmptyPlayerUI(player1NameText, player1RankText);
-               // Debug.Log("[NetworkGameUI] Player 1 (Local) not ready");
             }
-
-            // Enemy player always on right (Player 2 UI)
+            
+            // Enemy player always on Right (Player 2 UI)
             if (enemyPlayer != null && enemyPlayer.IsProfileSet)
             {
-                SetupPlayerUI(enemyPlayer, player2NameText, player2RankText, Color.red);
-               // Debug.Log($"[NetworkGameUI] Player 2 (Enemy): {enemyPlayer.GetDisplayName()}");
+                SetupPlayerUI(enemyPlayer, player2NameText, player2RankText, player2TileCount, enemyColor, false);
             }
             else
             {
                 SetEmptyPlayerUI(player2NameText, player2RankText);
-                //Debug.Log("[NetworkGameUI] Player 2 (Enemy) not ready");
             }
         }
         catch (System.Exception ex)
@@ -74,26 +72,23 @@ public class NetworkGameUI : MonoBehaviour
     }
 
 
-    /* private void SetupPlayerUI(NetworkPlayer player, TextMeshProUGUI nameText, TextMeshProUGUI rankText)
-     {
-         if (player != null && player.IsProfileSet)
-         {
-             nameText.text = player.GetDisplayName();
-             nameText.color = player.GetPlayerColor();
-             rankText.text = $"Rank {player.GetRank()}";
-         }
-         else
-         {
-             SetEmptyPlayerUI(nameText, rankText);
-         }
-     }*/
-    private void SetupPlayerUI(NetworkPlayer player, TextMeshProUGUI nameText, TextMeshProUGUI rankText, Color color)
+    private void SetupPlayerUI(NetworkPlayer player, TextMeshProUGUI nameText, TextMeshProUGUI rankText,TextMeshProUGUI tileCount, Color color, bool isPlayer)
     {
         if (player != null && player.IsProfileSet)
         {
             nameText.text = player.GetDisplayName();
             nameText.color = color;
             rankText.text = $"Rank: {player.GetRank()}";
+            if (isPlayer)
+            {
+                tileCount.text = $"Tiles: {NetworkHexGridManager.Instance.playerTileCount}";
+                tileCount.color = color;
+            }
+            else
+            {
+                tileCount.text = $"Tiles: {NetworkHexGridManager.Instance.playerTileCount}";
+                tileCount.color = color;
+            }
         }
         else
         {
@@ -101,39 +96,16 @@ public class NetworkGameUI : MonoBehaviour
         }
     }
 
-
-    internal void SetEmptyPlayerUI(TextMeshProUGUI nameText, TextMeshProUGUI rankText)
+    //player leave ui update
+    internal void SetEmptyPlayerUI(TextMeshProUGUI nameText, TextMeshProUGUI rankText, TextMeshProUGUI tileCount = null)
     {
         nameText.text = "Waiting...";
         nameText.color = Color.white;
         rankText.text = "Rank -";
+        tileCount.text = "Tiles -";
     }
 
-    /*private void CheckCameraRotation(NetworkPlayer player)
-    {
-        // Rotate camera once for second player (client) in both Host/Client and PvP modes
-        if (!_cameraRotationApplied && player.Object.HasInputAuthority && player.PlayerColorIndex == 1)
-        {
-            RotateClientCamera();
-            _cameraRotationApplied = true;
-        }
-    }
-    
-    private void RotateClientCamera()
-    {
-        if (gameCamera != null)
-        {
-            Vector3 cameraRotation = gameCamera.transform.eulerAngles;
-            cameraRotation.z = 180f;
-            gameCamera.transform.eulerAngles = cameraRotation;
-            Debug.Log($"[PrivateLobbyUI] ✅ Camera rotated 180° for client player");
-        }
-        else
-        {
-            Debug.LogWarning($"[PrivateLobbyUI] ❌ Game camera not assigned for rotation");
-        }
-    }*/
-    
+   
     private void OnDestroy()
     {
         CancelInvoke(nameof(RefreshPlayerInfo));

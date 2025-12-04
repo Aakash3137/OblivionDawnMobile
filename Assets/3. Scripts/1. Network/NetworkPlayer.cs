@@ -329,22 +329,6 @@ public class NetworkPlayer : NetworkBehaviour
     #endregion
 
     #region Public API
-
-    /// <summary>
-    /// Gets the player profile, creating it from networked data if needed.
-    /// </summary>
-    public PlayerProfile GetPlayerProfile()
-    {
-        if (_playerProfile == null && IsProfileSet)
-        {
-            _playerProfile = new PlayerProfile
-            {
-                PlayerName = PlayerName.ToString(),
-                Rank = Rank
-            };
-        }
-        return _playerProfile;
-    }
     
     /// <summary>
     /// Gets the display name for UI purposes.
@@ -372,14 +356,6 @@ public class NetworkPlayer : NetworkBehaviour
             return "Connecting...";
         }
         return $"{PlayerName.ToString()} [{Rank}]";
-    }
-    
-    /// <summary>
-    /// Gets the player's color from their perspective (always green for self, red for others).
-    /// </summary>
-    public Color GetPlayerColor()
-    {
-        return Object.HasInputAuthority ? Color.green : Color.red;
     }
     
     #endregion

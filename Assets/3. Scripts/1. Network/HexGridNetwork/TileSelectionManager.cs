@@ -42,18 +42,7 @@ public class TileSelectionManager : MonoBehaviour
 
         Debug.Log($"[TSM] Selection complete: {tile.name} (ID: {tile.Object.Id})");
     }
-
-    public NetworkTile GetSelectedTile()
-    {
-        return selectedTile;
-    }
-
-    public void TryBuild(string buildingName)
-    {
-        if (selectedTile == null) return;
-        selectedTile.RequestBuild(buildingName);
-    }
-
+    
     private void Update()
     {
         if (playerCamera == null) return;

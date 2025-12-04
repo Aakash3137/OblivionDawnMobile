@@ -63,9 +63,7 @@ public class NetworkBuildingManager : NetworkBehaviour
 
         BuildRequestData data = JsonUtility.FromJson<BuildRequestData>(json);
         Debug.Log($"[NBM] Client received build sync for tile {data.tileName}, building: {data.buildingName}");
-       
-        //client cannot spawn anything
-        //ProcessBuildRequest(data, isHost: false);
+    
     }
 
     // ---------------- SPAWN LOGIC ----------------
@@ -87,11 +85,7 @@ public class NetworkBuildingManager : NetworkBehaviour
             // Notify clients
             NetworkEventCore.RaiseEvent(EventCode.BuildSync, data, NetworkEventTargets.ClientsOnly);
         }
-        /*else
-        {
-            Debug.Log($"[NBM] Client spawning building {data.buildingName} locally on tile {tile.name}");
-            SpawnBuilding(tile);
-        }*/
+        
     }
 
     private NetworkTile FindTileByName(string tileName)
