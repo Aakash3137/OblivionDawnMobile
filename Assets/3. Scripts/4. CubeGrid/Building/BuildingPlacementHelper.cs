@@ -165,7 +165,7 @@ public class BuildingPlacementHelper : MonoBehaviour
 
     void Start()
     {
-        var gm = CubeGridManager.Instance;
+        var gm = HexGridManager.Instance;
         if (gm == null) return;
 
         // Find closest tile to this building
@@ -228,7 +228,7 @@ public class BuildingPlacementHelper : MonoBehaviour
     // --- Helpers ---
     private Vector2Int GetClosestCoord(Vector3 worldPos)
     {
-        var gm = CubeGridManager.Instance;
+        var gm = HexGridManager.Instance;
         Vector2Int best = Vector2Int.zero;
         float bestDist = float.MaxValue;
 
@@ -266,16 +266,16 @@ public class BuildingPlacementHelper : MonoBehaviour
 
     void OnDrawGizmosSelected()
     {
-        if (CubeGridManager.Instance == null) return;
+        if (HexGridManager.Instance == null) return;
         Vector2Int coord = GetClosestCoord(transform.position);
 
         Gizmos.color = Color.green;
-        Gizmos.DrawSphere(HexToWorld(coord, CubeGridManager.Instance.hexSize, CubeGridManager.Instance.pointyTop), 0.3f);
+        Gizmos.DrawSphere(HexToWorld(coord, HexGridManager.Instance.hexSize, HexGridManager.Instance.pointyTop), 0.3f);
 
         Gizmos.color = Color.yellow;
         foreach (var n in Pathfinding.GetNeighbors(coord))
         {
-            Gizmos.DrawSphere(HexToWorld(n, CubeGridManager.Instance.hexSize, CubeGridManager.Instance.pointyTop), 0.2f);
+            Gizmos.DrawSphere(HexToWorld(n, HexGridManager.Instance.hexSize, HexGridManager.Instance.pointyTop), 0.2f);
         }
     }
 }

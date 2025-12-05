@@ -69,7 +69,7 @@ public class NetworkHexGridManager : NetworkBehaviour
 
         if (networkEventCorePrefab == null)
         {
-            Debug.LogError("[NetworkCubeGridManager] NetworkEventCore prefab not assigned!");
+            Debug.LogError("[NetworkHexGridManager] NetworkEventCore prefab not assigned!");
             return;
         }
 

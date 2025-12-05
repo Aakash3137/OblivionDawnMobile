@@ -13,7 +13,7 @@ public class HexSnap : MonoBehaviour
     void Update()
     {
         // Read settings from HexGridManager
-        var gm = CubeGridManager.Instance;
+        var gm = HexGridManager.Instance;
         if (gm == null) return;
 
         float hexSize = gm.hexSize;
