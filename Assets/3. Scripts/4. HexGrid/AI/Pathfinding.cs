@@ -17,7 +17,7 @@ public class Pathfinding
     public static List<Vector2Int> GetNeighbors(Vector2Int axial)
     {
         List<Vector2Int> neighbors = new List<Vector2Int>();
-        var gm = HexGridManager.Instance;
+        var gm = CubeGridManager.Instance;
         Vector3 cube = gm.AxialToCube(axial);
 
         foreach (var dir in cubeDirs)

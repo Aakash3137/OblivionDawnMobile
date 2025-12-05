@@ -324,10 +324,10 @@ public class Tile : MonoBehaviour
     {
         sideManager = FindAnyObjectByType<SideManager>();
 
-        if (HexGridManager.Instance != null)
+        if (CubeGridManager.Instance != null)
         {
-            var coord = HexGridManager.Instance.WorldToHex(transform.position);
-            HexGridManager.Instance.RegisterHex(coord, gameObject);
+            var coord = CubeGridManager.Instance.WorldToHex(transform.position);
+            CubeGridManager.Instance.RegisterHex(coord, gameObject);
         }
 
         if (tileRenderer == null)

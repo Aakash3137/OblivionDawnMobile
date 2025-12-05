@@ -1646,7 +1646,7 @@ public class AIUnit : MonoBehaviour
     void Start()
     {
         // Snap to starting tile
-        currentCoord = HexGridManager.Instance.WorldToHex(transform.position);
+        currentCoord = CubeGridManager.Instance.WorldToHex(transform.position);
         EnterTile(currentCoord);
     }
 
@@ -1793,7 +1793,7 @@ public class AIUnit : MonoBehaviour
     // --- Tile ownership logic ---
     void UpdateTileOwnership()
     {
-        Vector2Int coord = HexGridManager.Instance.WorldToHex(transform.position);
+        Vector2Int coord = CubeGridManager.Instance.WorldToHex(transform.position);
         if (coord != currentCoord)
         {
             LeaveTile(currentCoord);
@@ -1806,7 +1806,7 @@ public class AIUnit : MonoBehaviour
     {
         TileManager.Instance.TryEnterTile(gameObject, coord);
 
-        var tileGO = HexGridManager.Instance.GetHex(coord);
+        var tileGO = CubeGridManager.Instance.GetHex(coord);
         var tile = tileGO != null ? tileGO.GetComponent<Tile>() : null;
         if (tile != null)
         {
@@ -1818,7 +1818,7 @@ public class AIUnit : MonoBehaviour
     {
         TileManager.Instance.LeaveTile(coord, gameObject);
 
-        var tileGO = HexGridManager.Instance.GetHex(coord);
+        var tileGO = CubeGridManager.Instance.GetHex(coord);
         var tile = tileGO != null ? tileGO.GetComponent<Tile>() : null;
         if (tile != null)
         {
