@@ -27,18 +27,19 @@ public class PlayerProfile
             InitializeWithRandomData();
         }
     }
-    
+
     public void SaveToDisk()
     {
+        Debug.Log($"[PlayerProfile] Saving PlayerName: {PlayerName}");
         PlayerPrefs.SetString("PLAYER_PROFILE", JsonUtility.ToJson(this));
         PlayerPrefs.Save();
     }
-    
+
     public static PlayerProfile LoadFromDisk()
     {
         string savedData = PlayerPrefs.GetString("PLAYER_PROFILE", "");
+        Debug.Log($"[PlayerProfile] Loaded data: {savedData}");
         var profile = new PlayerProfile();
-        
         if (!string.IsNullOrEmpty(savedData))
         {
             profile.LoadFromSaveData(savedData);
@@ -46,9 +47,10 @@ public class PlayerProfile
         else
         {
             profile.InitializeWithRandomData();
-            profile.SaveToDisk(); // Save the new profile
+            profile.SaveToDisk();
         }
-        
+        Debug.Log($"[PlayerProfile] Loaded PlayerName: {profile.PlayerName}");
         return profile;
     }
+
 }

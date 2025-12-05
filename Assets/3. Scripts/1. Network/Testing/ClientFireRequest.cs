@@ -1,4 +1,4 @@
-using UnityEngine;
+/*using UnityEngine;
 using System;
 
 [Serializable]
@@ -23,4 +23,4 @@ public class ClientFireRequest : MonoBehaviour {
 
         Debug.Log($"[Client → Host] Request → Player:{myId} Fire:{firing}");
     }
-}
+}*/

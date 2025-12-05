@@ -1,4 +1,4 @@
-using Fusion;
+﻿using Fusion;
 using UnityEngine;
 using System;
 using System.Collections.Generic;
@@ -12,8 +12,8 @@ public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
     public NetworkObject playerPrefab;
     
     [Header("Spawn Configuration")]
-    public Vector3[] spawnPositions = { Vector3.zero, new Vector3(0, 0, 20) };
-    
+    //public Vector3[] spawnPositions = { new Vector3(7.08f, 22.5f, 2.29f), new Vector3(7.08f,22.5f,28.5f) };
+    public Vector3[] spawnPositions = { new Vector3(7.08f, 22.5f, -6.5f), new Vector3(7.08f,22.5f,37.5f) };
     #endregion
     
     #region Private Fields
@@ -26,7 +26,7 @@ public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
     
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        Debug.Log($"[PlayerSpawner] Player joined: {player}");
+        Debug.Log($"[PlayerSpawner] Player joined 11: {player}");
         
         if (runner.IsServer && !_spawnedPlayers.ContainsKey(player))
         {
@@ -37,7 +37,7 @@ public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
     
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
-        Debug.Log($"[PlayerSpawner] Player left: {player}");
+        Debug.Log($"[PlayerSpawner] Player left11: {player}");
         
         if (_spawnedPlayers.TryGetValue(player, out NetworkObject playerObject))
         {
@@ -66,35 +66,86 @@ public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
             Debug.LogError("[PlayerSpawner] Player prefab not assigned!");
             return;
         }
-        
-        Vector3 spawnPosition = GetSpawnPosition();
+        Debug.Log($"[PlayerSpawner] Spawned 11");
+        /*Vector3 spawnPosition = GetSpawnPosition();
         NetworkObject playerObject = CreatePlayerObject(runner, player, spawnPosition);
         ConfigurePlayerObject(playerObject, spawnPosition);
+        RegisterPlayer(player, playerObject);*/
+
+        /*Vector3 spawnPosition = GetSpawnPosition(out Quaternion spawnRotation);
+        NetworkObject playerObject = CreatePlayerObject(runner, player, spawnPosition, spawnRotation);
+        ConfigurePlayerObject(playerObject, spawnPosition, spawnRotation);
+        RegisterPlayer(player, playerObject);*/
+
+        int spawnId = _spawnedPlayers.Count;
+        Vector3 spawnPosition = GetSpawnPosition(out Quaternion spawnRotation, out spawnId);
+        
+        playerPrefab.transform.position = spawnPosition;
+        playerPrefab.transform.rotation = spawnRotation;
+
+        NetworkObject playerObject = CreatePlayerObject(runner, player, spawnPosition, spawnRotation);
+
+        var np = playerObject.GetComponent<NetworkPlayer>();
+        if (np != null && playerObject.HasStateAuthority)
+        {
+            np.NetworkPosition = spawnPosition;
+            np.NetworkRotation = spawnRotation;
+            np.SpawnId = spawnId;
+        }
+
         RegisterPlayer(player, playerObject);
+
     }
-    
-    private Vector3 GetSpawnPosition()
+
+    /* private Vector3 GetSpawnPosition()
+     {
+         int playerIndex = _spawnedPlayers.Count == 0 ? 0 : 1;
+         return playerIndex < spawnPositions.Length ? spawnPositions[playerIndex] : Vector3.zero;
+     }*/
+    private Vector3 GetSpawnPosition(out Quaternion rotation, out int spawnId)
     {
-        int playerIndex = _spawnedPlayers.Count == 0 ? 0 : 1;
-        return playerIndex < spawnPositions.Length ? spawnPositions[playerIndex] : Vector3.zero;
+        spawnId = _spawnedPlayers.Count == 0 ? 0 : 1;
+        rotation = Quaternion.identity;
+        Vector3 pos = spawnId < spawnPositions.Length ? spawnPositions[spawnId] : Vector3.zero;
+        if (spawnId == 1)
+            rotation = Quaternion.Euler(0f, 180f, 0f);
+        return pos;
     }
-    
-    private NetworkObject CreatePlayerObject(NetworkRunner runner, PlayerRef player, Vector3 position)
+
+
+
+    private NetworkObject CreatePlayerObject(NetworkRunner runner, PlayerRef player, Vector3 position, Quaternion rotation)
     {
-        return runner.Spawn(playerPrefab, position, Quaternion.identity, player);
+        return runner.Spawn(playerPrefab, position, rotation, player);
     }
-    
-    private void ConfigurePlayerObject(NetworkObject playerObject, Vector3 position)
+
+    /* private NetworkObject CreatePlayerObject(NetworkRunner runner, PlayerRef player, Vector3 position)
+     {
+         return runner.Spawn(playerPrefab, position, Quaternion.identity, player);
+     }*/
+    private void ConfigurePlayerObject(NetworkObject playerObject, Vector3 position, Quaternion rotation)
     {
-        var networkPlayer = playerObject.GetComponent<NetworkPlayer>();
+        /*var networkPlayer = playerObject.GetComponent<NetworkPlayer>();
         if (networkPlayer != null)
         {
             networkPlayer.NetworkPosition = position;
-        }
-        
+            networkPlayer.NetworkRotation = rotation;   // <-- IMPORTANT
+        }*/
+
         DontDestroyOnLoad(playerObject.gameObject);
     }
-    
+
+    /* private void ConfigurePlayerObject(NetworkObject playerObject, Vector3 position)
+     {
+         var networkPlayer = playerObject.GetComponent<NetworkPlayer>();
+         if (networkPlayer != null)
+         {
+             networkPlayer.NetworkPosition = position;
+         }
+
+         DontDestroyOnLoad(playerObject.gameObject);
+     }*/
+
     private void RegisterPlayer(PlayerRef player, NetworkObject playerObject)
     {
         _spawnedPlayers[player] = playerObject;
