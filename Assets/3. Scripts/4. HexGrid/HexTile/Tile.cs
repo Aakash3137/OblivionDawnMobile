@@ -318,6 +318,8 @@ public class Tile : MonoBehaviour
     private SideManager sideManager;
     private UnitSide occupant;        // Track current occupant (optional)
 
+    public bool isOpen = false; // set true when PlusIcon is activated
+
     void Start()
     {
         sideManager = FindAnyObjectByType<SideManager>();
@@ -332,6 +334,14 @@ public class Tile : MonoBehaviour
             tileRenderer = GetComponentInChildren<Renderer>();
 
         ApplyOwnerMaterial();
+    }
+
+    public void SetOpen(bool open)
+    {
+        isOpen = open;
+        Transform plusIcon = transform.Find("Hex/PlusIcon");
+        if (plusIcon != null)
+            plusIcon.gameObject.SetActive(open);
     }
 
     // Apply correct material based on ownerSide

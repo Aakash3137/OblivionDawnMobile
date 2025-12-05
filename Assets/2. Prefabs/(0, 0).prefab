@@ -393,7 +393,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5162495419593765877}
-  - component: {fileID: 8493246821123608514}
   - component: {fileID: -2631318548825409783}
   - component: {fileID: 6736489346519201113}
   - component: {fileID: 6063259668061735559}
@@ -422,27 +421,6 @@ Transform:
   - {fileID: 5191098780122691176}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &8493246821123608514
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5965051179479958454}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 2, y: 2, z: 2}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &-2631318548825409783
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -455,7 +433,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2eee6fcc9b199a942b41d057c31b298f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hexSize: 1.15
+  hexSize: 1
   pointyTop: 0
 --- !u!114 &6736489346519201113
 MonoBehaviour:
@@ -471,6 +449,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ownerSide: 0
   tileRenderer: {fileID: 3200034119988593076}
+  isOpen: 0
 --- !u!114 &6063259668061735559
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -595,6 +574,7 @@ GameObject:
   - component: {fileID: 2776063877878527271}
   - component: {fileID: 2368763250348630823}
   - component: {fileID: 3200034119988593076}
+  - component: {fileID: 571914702295161229}
   m_Layer: 0
   m_Name: Hex_Mesh
   m_TagString: Untagged
@@ -613,7 +593,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -0, y: -0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 3207632763535011981}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
@@ -648,7 +628,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7e16977e889fafd4b9c8f5e4ab23671f, type: 2}
+  - {fileID: -446391599537426965, guid: 8c16a68ce25bf1a4e85272b9c3f71725, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -670,6 +650,28 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &571914702295161229
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6232585781803042932}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 703726867841230225, guid: 4bab0a0f1890a7341bdeb52a674932a0, type: 3}
 --- !u!1 &7783676089351740431
 GameObject:
   m_ObjectHideFlags: 0
@@ -768,7 +770,7 @@ GameObject:
   - component: {fileID: 1126526532823223368}
   - component: {fileID: 3303364863024005670}
   m_Layer: 0
-  m_Name: zhezhao
+  m_Name: PlusIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -784,7 +786,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: -0.02}
-  m_LocalScale: {x: 0.46, y: 0.46, z: 1}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3207632763535011981}
@@ -833,8 +835,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: 4ed1fd90b21e8dc45828e1cd1a686092, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.8}
+  m_Sprite: {fileID: 21300000, guid: 013d30133967e46368c46a6c8d385c5b, type: 3}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.78431374}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
