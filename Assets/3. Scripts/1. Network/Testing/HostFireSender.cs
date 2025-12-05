@@ -1,3 +1,4 @@
+/*
 using System;
 using UnityEngine;
 
@@ -24,3 +25,4 @@ public class HostFireSender : MonoBehaviour {
         Debug.Log($"[Host → Clients] Fire → ID:{hostPlayerId}");
     }
 }
+*/
