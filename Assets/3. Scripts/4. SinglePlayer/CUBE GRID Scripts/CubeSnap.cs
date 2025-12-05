@@ -1,34 +1,32 @@
 using UnityEngine;
 
-[ExecuteAlways]
+[ExecuteAlways]   // run in editor AND play mode
 public class CubeSnap : MonoBehaviour
 {
     [Header("Cube Grid Settings")]
     public float cellSize = 1f;     // Must NOT be zero
-    public bool useOffset = false;   // Stagger every 2nd row
+    public bool useOffset = false;  // Stagger every 2nd row
 
     private TextMesh textMesh;
 
-    void Awake()
+    void OnEnable()   // safer than Awake in edit mode
     {
         textMesh = GetComponentInChildren<TextMesh>();
     }
 
     void Update()
     {
-        // --- SAFETY: Prevent collapse into one point ---
         if (cellSize < 0.01f)
             cellSize = 1f;
 
-        // Snap to grid
-        Vector3 snapped = Snap(transform.position);
+        // Snap to nearest grid cell
+        Vector2Int grid = WorldToGrid(transform.position);
+        Vector3 snapped = GridToWorld(grid);
         transform.position = snapped;
 
         // Update label + name
-        Vector2Int grid = WorldToGrid(snapped);
         string label = $"({grid.x}, {grid.y})";
-
-        if (textMesh) textMesh.text = label;
+        if (textMesh != null) textMesh.text = label;
         gameObject.name = label;
     }
 
@@ -62,14 +60,5 @@ public class CubeSnap : MonoBehaviour
             0,
             grid.y * cellSize
         );
-    }
-
-    // -----------------------------
-    // SNAP
-    // -----------------------------
-    private Vector3 Snap(Vector3 pos)
-    {
-        Vector2Int g = WorldToGrid(pos);
-        return GridToWorld(g);
     }
 }
