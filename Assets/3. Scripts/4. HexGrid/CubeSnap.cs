@@ -5,7 +5,7 @@ public class CubeSnap : MonoBehaviour
 {
     [Header("Cube Grid Settings")]
     public float cellSize = 1f;     // Must NOT be zero
-    public bool useOffset = true;   // Stagger every 2nd row
+    public bool useOffset = false;   // Stagger every 2nd row
 
     private TextMesh textMesh;
 
