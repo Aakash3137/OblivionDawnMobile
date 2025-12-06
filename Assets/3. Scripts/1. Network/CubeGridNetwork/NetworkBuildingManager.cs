@@ -69,7 +69,6 @@ public class NetworkBuildingManager : NetworkBehaviour
     // ---------------- SPAWN LOGIC ----------------
     private void ProcessBuildRequest(BuildRequestData data, bool isHost)
     {
-        // Find the tile by name (you could also use HexCoord.ToString())
         NetworkTile tile = FindTileByName(data.tileName);
         if (tile == null)
         {
@@ -77,15 +76,18 @@ public class NetworkBuildingManager : NetworkBehaviour
             return;
         }
 
+        if (tile.IsOccupied)
+        {
+            Debug.LogWarning($"[NBM] Tile {tile.name} is already occupied!");
+            return;
+        }
+
         if (isHost)
         {
             Debug.Log($"[NBM] Host spawning building {data.buildingName} on tile {tile.name}");
             SpawnBuilding(tile);
-
-            // Notify clients
             NetworkEventCore.RaiseEvent(EventCode.BuildSync, data, NetworkEventTargets.ClientsOnly);
         }
-        
     }
 
     private NetworkTile FindTileByName(string tileName)
@@ -114,7 +116,9 @@ public class NetworkBuildingManager : NetworkBehaviour
         
         if (spawnedObj != null)
         {
-            Debug.Log($"[NBM] Building spawned successfully at {spawnedObj.transform.position}");
+            tile.OccupyTile();
+            NetworkHexGridManager.Instance?.UpdateTileLists();
+            Debug.Log($"[NBM] Building spawned successfully at {spawnedObj.transform.position}, tile marked as occupied");
         }
         else
         {

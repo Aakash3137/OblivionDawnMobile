@@ -23,10 +23,15 @@ public class NetworkHexGridManager : NetworkBehaviour
     public List<NetworkTile> allTiles = new List<NetworkTile>();
     public List<NetworkTile> playerTiles = new List<NetworkTile>();
     public List<NetworkTile> enemyTiles = new List<NetworkTile>();
+    public List<NetworkTile> occupiedTiles = new List<NetworkTile>();
 
+    [SerializeField] internal NetworkTile MainBuildingTile1;
+    [SerializeField] internal NetworkTile MainBuildingTile2;
+    
     // Ownership statistics
     public int playerTileCount { get; private set; }
     public int enemyTileCount { get; private set; }
+    public int occupiedTileCount { get; private set; }
 
     // Boundaries
     public int MinX { get; private set; } = int.MaxValue;
@@ -102,9 +107,11 @@ public class NetworkHexGridManager : NetworkBehaviour
     {
         playerTiles.Clear();
         enemyTiles.Clear();
+        occupiedTiles.Clear();
 
         playerTileCount = 0;
         enemyTileCount = 0;
+        occupiedTileCount = 0;
 
         foreach (var tile in allTiles)
         {
@@ -120,6 +127,24 @@ public class NetworkHexGridManager : NetworkBehaviour
                 enemyTiles.Add(tile);
                 enemyTileCount++;
             }
+
+            if (tile.IsOccupied)
+            {
+                occupiedTiles.Add(tile);
+                occupiedTileCount++;
+            }
+        }
+
+        if (MainBuildingTile1 != null && !occupiedTiles.Contains(MainBuildingTile1))
+        {
+            occupiedTiles.Add(MainBuildingTile1);
+            occupiedTileCount++;
+        }
+
+        if (MainBuildingTile2 != null && !occupiedTiles.Contains(MainBuildingTile2))
+        {
+            occupiedTiles.Add(MainBuildingTile2);
+            occupiedTileCount++;
         }
     }
 
