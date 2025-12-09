@@ -143,7 +143,7 @@ public class MainBuildingSpawner : MonoBehaviour
     public GameObject mainBuildingPrefab;
 
     [Header("Spawn Settings")]
-    public float yOffset = 0.5f;
+    public float yOffset = 1f;
 
     [Header("Custom Spawn Positions (world)")]
     public Transform playerSpawnPoint;   // drag a marker placed on the tile

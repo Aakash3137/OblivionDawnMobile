@@ -13,6 +13,8 @@ public class Tile : MonoBehaviour
 
     public bool isOpen = false; // set true when PlusIcon is activated
 
+    public bool hasBuilding = false; // NEW flag
+
     void Start()
     {
         sideManager = FindAnyObjectByType<SideManager>();
@@ -66,5 +68,21 @@ public class Tile : MonoBehaviour
         // Clear occupant only if this unit was tracked
         // if (occupant == unit)
         //     occupant = null;
+    }
+
+
+    // Called when a building is placed
+    public void SetBuildingPlaced()
+    {
+        hasBuilding = true;
+        isOpen = false;
+
+        // Hide PlusIcon if present
+        Transform cubeChild = transform.Find("Cube");
+        if (cubeChild != null)
+        {
+            Transform plusIcon = cubeChild.Find("Plus_Icon");
+            if (plusIcon != null) plusIcon.gameObject.SetActive(false);
+        }
     }
 }

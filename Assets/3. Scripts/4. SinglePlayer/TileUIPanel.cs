@@ -33,20 +33,17 @@ public class TileUIPanel : MonoBehaviour
         if (currentTile == null) return;
         if (prefabIndex < 0 || prefabIndex >= buildingPrefabs.Length) return;
 
-        // Spawn at tile center (adjust Y or parent as needed)
+        // Prevent double placement
+        if (currentTile.hasBuilding) return;
+
+        // Spawn at tile center (adjust Y if needed)
         Vector3 spawnPos = currentTile.transform.position;
-        Instantiate(buildingPrefabs[prefabIndex], spawnPos, Quaternion.identity);
+        spawnPos.y += 2f; // adjust depending on prefab pivot
 
-        // Mark tile occupied
-        currentTile.isOpen = false;
+        Instantiate(buildingPrefabs[prefabIndex], spawnPos, Quaternion.identity, currentTile.transform);
 
-        // Optional: hide PlusIcon if present
-        Transform cubeChild = currentTile.transform.Find("Cube");
-        if (cubeChild != null)
-        {
-            Transform plusIcon = cubeChild.Find("Plus_Icon");
-            if (plusIcon != null) plusIcon.gameObject.SetActive(false);
-        }
+        // Mark tile as having a building
+        currentTile.SetBuildingPlaced();
 
         Close();
     }
@@ -65,6 +62,5 @@ public class TileUIPanel : MonoBehaviour
         }
     }
 
-    // Optional: hook your close button to this for clarity
     public void OnCloseButtonClicked() => Close();
 }

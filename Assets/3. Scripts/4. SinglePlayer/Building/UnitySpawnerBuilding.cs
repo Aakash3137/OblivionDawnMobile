@@ -1,7 +1,7 @@
-// using UnityEngine; // V.6
+// using UnityEngine;
 // using System.Collections;
 
-// public class Building : MonoBehaviour
+// public class UnitySpawnerBuilding : MonoBehaviour
 // {
 //     [Header("Production Settings")]
 //     public UnitData unitToProduce;   // ScriptableObject reference
@@ -10,6 +10,9 @@
 
 //     private UnitSide buildingSide;   // building's faction marker
 //     private Transform unitPool;      // found by tag "UnitPool"
+
+//     // Reference to the faction's MainBuilding
+//     private BuildingHealth mainBuildingHealth;
 
 //     void Awake()
 //     {
@@ -28,6 +31,18 @@
 //         {
 //             Debug.LogError("No GameObject with tag 'UnitPool' found in scene!");
 //         }
+
+//         // Find this side's MainBuilding
+//         GameObject[] allBuildings = GameObject.FindGameObjectsWithTag("MainBuilding");
+//         foreach (var b in allBuildings)
+//         {
+//             UnitSide side = b.GetComponent<UnitSide>();
+//             if (side != null && buildingSide != null && side.side == buildingSide.side)
+//             {
+//                 mainBuildingHealth = b.GetComponent<BuildingHealth>();
+//                 break;
+//             }
+//         }
 //     }
 
 //     void Start()
@@ -40,59 +55,17 @@
 //     {
 //         while (true)
 //         {
+//             // Stop producing if main building is gone
+//             if (mainBuildingHealth == null || mainBuildingHealth.currentHealth <= 0)
+//             {
+//                 Debug.Log($"{buildingSide.side} production stopped: MainBuilding destroyed.");
+//                 yield break; // exit coroutine
+//             }
+
 //             yield return new WaitForSeconds(unitToProduce.buildTime);
 //             SpawnUnit();
 //         }
 //     }
-
-//     // private void SpawnUnit()
-//     // {
-//     //     if (unitToProduce == null || spawnPoint == null) return;
-
-//     //     // Instantiate prefab at spawn point
-//     //     GameObject unit = Instantiate(unitToProduce.prefab, spawnPoint.position, Quaternion.identity);
-
-//     //     // Parent under UnitPool if found
-//     //     if (unitPool != null)
-//     //     {
-//     //         unit.transform.SetParent(unitPool);
-//     //     }
-
-//     //     // Assign side from building → unit
-//     //     UnitSide unitSide = unit.GetComponent<UnitSide>();
-//     //     if (unitSide != null && buildingSide != null)
-//     //     {
-//     //         unitSide.side = buildingSide.side;
-
-//     //         // Apply correct material immediately
-//     //         SideManager manager = FindAnyObjectByType<SideManager>();
-//     //         if (manager != null)
-//     //         {
-//     //             manager.SetSide(unit, unitSide.side);
-//     //         }
-//     //     }
-
-//     //     // Assign stats from ScriptableObject
-//     //     UnitStats stats = unit.GetComponent<UnitStats>();
-//     //     if (stats != null)
-//     //     {
-//     //         stats.health = unitToProduce.health;
-//     //         stats.attackPower = unitToProduce.attackPower;
-//     //     }
-
-//     //     // Sync AI attackDamage with stats.attackPower if present
-//     //     AIUnit ai = unit.GetComponent<AIUnit>();
-//     //     if (ai != null && stats != null)
-//     //     {
-//     //         ai.attackDamage = stats.attackPower;
-//     //     }
-
-//     //     Debug.Log($"{buildingSide?.side} building produced {unitToProduce.unitName} inside UnitPool");
-//     // }
-
-
-
-
 
 //     private void SpawnUnit()
 //     {
@@ -131,8 +104,11 @@
 
 //         Debug.Log($"{buildingSide?.side} building produced {unitToProduce.unitName} inside UnitPool");
 //     }
-
 // }
+
+
+
+
 
 
 
@@ -140,7 +116,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class Building : MonoBehaviour
+public class UnitySpawnerBuilding : MonoBehaviour
 {
     [Header("Production Settings")]
     public UnitData unitToProduce;   // ScriptableObject reference
@@ -150,35 +126,30 @@ public class Building : MonoBehaviour
     private UnitSide buildingSide;   // building's faction marker
     private Transform unitPool;      // found by tag "UnitPool"
 
-    // Reference to the faction's MainBuilding
-    private BuildingHealth mainBuildingHealth;
+    // Reference to the ENEMY MainBuilding
+    private BuildingHealth enemyMainBuildingHealth;
 
     void Awake()
     {
-        // Building itself must have UnitSide attached
         buildingSide = GetComponent<UnitSide>();
         if (buildingSide == null)
             Debug.LogError($"Building {name} missing UnitSide. Assign Player/Enemy.");
 
-        // Find UnitPool by tag
         GameObject poolObj = GameObject.FindGameObjectWithTag("UnitPool");
         if (poolObj != null)
-        {
             unitPool = poolObj.transform;
-        }
         else
-        {
             Debug.LogError("No GameObject with tag 'UnitPool' found in scene!");
-        }
 
-        // Find this side's MainBuilding
+        // Find the ENEMY MainBuilding (not this side’s)
         GameObject[] allBuildings = GameObject.FindGameObjectsWithTag("MainBuilding");
         foreach (var b in allBuildings)
         {
             UnitSide side = b.GetComponent<UnitSide>();
-            if (side != null && buildingSide != null && side.side == buildingSide.side)
+            if (side != null && buildingSide != null && side.side != buildingSide.side)
             {
-                mainBuildingHealth = b.GetComponent<BuildingHealth>();
+                enemyMainBuildingHealth = b.GetComponent<BuildingHealth>();
+                Debug.Log($"{buildingSide.side} spawner linked to enemy main building: {b.name}");
                 break;
             }
         }
@@ -194,11 +165,17 @@ public class Building : MonoBehaviour
     {
         while (true)
         {
-            // Stop producing if main building is gone
-            if (mainBuildingHealth == null || mainBuildingHealth.currentHealth <= 0)
+            // ✅ Stop producing as soon as enemy main building is destroyed
+            if (enemyMainBuildingHealth == null)
             {
-                Debug.Log($"{buildingSide.side} production stopped: MainBuilding destroyed.");
-                yield break; // exit coroutine
+                Debug.Log($"{buildingSide.side} production stopped: No enemy main building found.");
+                yield break;
+            }
+
+            if (enemyMainBuildingHealth.currentHealth <= 0)
+            {
+                Debug.Log($"{buildingSide.side} production stopped: Enemy MainBuilding destroyed.");
+                yield break;
             }
 
             yield return new WaitForSeconds(unitToProduce.buildTime);
