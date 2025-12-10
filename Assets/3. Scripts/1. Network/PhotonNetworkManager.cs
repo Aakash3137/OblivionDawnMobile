@@ -23,6 +23,7 @@ public class PhotonNetworkManager : MonoBehaviour
     public event Action<string> OnLobbyCreated;
     public event Action OnLobbyJoined;
 
+    
 // Add this to Awake method:
     private void Awake()
     {
@@ -132,11 +133,12 @@ public class PhotonNetworkManager : MonoBehaviour
     }
 
     // ---------------------- START RUNNER ----------------------
+    
     private async Task StartRunner(Fusion.GameMode mode, string sessionName)
     {
         // Create runner if doesn't exist
         if (_runner == null)
-        {
+        { 
             _runner = gameObject.AddComponent<NetworkRunner>();
             _runner.ProvideInput = true;
         }
