@@ -76,12 +76,12 @@ public class NetworkGameUI : MonoBehaviour
             rankText.text = $" {player.GetRank()}";
             if (isPlayer)
             {
-                tileCount.text = $" {NetworkHexGridManager.Instance.playerTileCount}";
+                tileCount.text = $" {NetworkCubeGridManager.Instance.playerTileCount}";
                 tileCount.color = color;
             }
             else
             {
-                tileCount.text = $" {NetworkHexGridManager.Instance.playerTileCount}";
+                tileCount.text = $" {NetworkCubeGridManager.Instance.playerTileCount}";
                 tileCount.color = color;
             }
         }

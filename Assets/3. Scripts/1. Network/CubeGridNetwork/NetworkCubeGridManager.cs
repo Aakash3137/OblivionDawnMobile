@@ -2,9 +2,9 @@ using UnityEngine;
 using System.Collections.Generic;
 using Fusion;
 
-public class NetworkHexGridManager : NetworkBehaviour
+public class NetworkCubeGridManager : NetworkBehaviour
 {
-    public static NetworkHexGridManager Instance;
+    public static NetworkCubeGridManager Instance;
 
     [Header("Grid Settings")]
     public float hexSize = 1f;      // Cube cell size

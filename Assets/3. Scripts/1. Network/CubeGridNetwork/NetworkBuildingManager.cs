@@ -178,7 +178,7 @@ public class NetworkBuildingManager : NetworkBehaviour
         if (spawnedObj != null)
         {
             tile.OccupyTile();
-            NetworkHexGridManager.Instance?.UpdateTileLists();
+            NetworkCubeGridManager.Instance?.UpdateTileLists();
             Debug.Log($"[NBM] ✓ {buildingName} spawned for player {owner}");
         }
     }

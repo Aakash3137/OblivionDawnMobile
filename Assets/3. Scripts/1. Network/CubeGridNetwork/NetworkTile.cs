@@ -48,7 +48,7 @@ public class NetworkTile : NetworkBehaviour
     public override void Spawned()
     {
         // Auto-detect coordinate from world position
-        HexCoord = NetworkHexGridManager.Instance.WorldToHex(transform.position);
+        HexCoord = NetworkCubeGridManager.Instance.WorldToHex(transform.position);
 
         sideManager = FindAnyObjectByType<NetworkSideManager>();
 
@@ -65,13 +65,13 @@ public class NetworkTile : NetworkBehaviour
         UpdateLocalSelectionVisual();
         
         // Register tile in hex grid manager
-        NetworkHexGridManager.Instance.RegisterHex(HexCoord, gameObject);
+        NetworkCubeGridManager.Instance.RegisterHex(HexCoord, gameObject);
         
         // Mark main building tiles as occupied
         if (Object.HasStateAuthority)
         {
-            if (this == NetworkHexGridManager.Instance.MainBuildingTile1 || 
-                this == NetworkHexGridManager.Instance.MainBuildingTile2)
+            if (this == NetworkCubeGridManager.Instance.MainBuildingTile1 || 
+                this == NetworkCubeGridManager.Instance.MainBuildingTile2)
             {
                 IsOccupied = true;
             }
@@ -85,7 +85,7 @@ public class NetworkTile : NetworkBehaviour
             _lastOwnerInt = OwnerInt;
             ApplyOwnerVisual();
 
-            NetworkHexGridManager.Instance?.NotifyOwnerChanged();
+            NetworkCubeGridManager.Instance?.NotifyOwnerChanged();
         }
     }
 
