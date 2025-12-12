@@ -31,13 +31,69 @@ public class Tile : MonoBehaviour
         ApplyOwnerMaterial();
     }
 
+    // public void SetOpen(bool open)
+    // {
+    //     isOpen = open;
+    //     Transform plusIcon = transform.Find("Cube/Plus_Icon");
+    //     if (plusIcon != null)
+    //         plusIcon.gameObject.SetActive(open);
+    // }
+
+
+
+    // public void SetOpen(bool open)
+    // {
+    //     isOpen = open;
+
+    //     Transform plusIcon = transform.Find("Cube/Plus_Icon");
+    //     if (plusIcon != null)
+    //     {
+    //         // Only show PlusIcon for Player side
+    //         if (ownerSide == Side.Player)
+    //         {
+    //             plusIcon.gameObject.SetActive(open);
+    //         }
+    //         else
+    //         {
+    //             // Enemy side never shows PlusIcon
+    //             plusIcon.gameObject.SetActive(false);
+    //         }
+    //     }
+    // }
+
+
+
+
     public void SetOpen(bool open)
     {
         isOpen = open;
+
         Transform plusIcon = transform.Find("Cube/Plus_Icon");
         if (plusIcon != null)
-            plusIcon.gameObject.SetActive(open);
+        {
+            // Only show PlusIcon for Player side
+            if (ownerSide == Side.Player)
+            {
+                plusIcon.gameObject.SetActive(open);
+            }
+            else
+            {
+                // Enemy side never shows PlusIcon
+                plusIcon.gameObject.SetActive(false);
+            }
+        }
+
+        // notify TileCounterUI if available
+        if (TileCounterUI.Instance != null)
+        {
+            // Just trigger a refresh of counts whenever open state changes
+            TileCounterUI.Instance.InitializeCounts();
+        }
+
+        Debug.Log($"Tile at {transform.position} open={isOpen}, side={ownerSide}");
     }
+
+
 
 
     // Apply correct material based on ownerSide
