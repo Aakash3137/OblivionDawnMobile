@@ -20,6 +20,8 @@ public class NetworkTile : NetworkBehaviour
     
     [Networked] public int OwnerInt { get; set; }   //Real owner (host controlled)
     
+    [Networked] public bool IsOccupied { get; set; } 
+    
     private bool localSelected = false;
 
     private Material originalMaterial;
@@ -28,6 +30,13 @@ public class NetworkTile : NetworkBehaviour
     private int _lastOwnerInt = -999;
     private bool _lastSelected = false;
     
+    public bool CanBeSelected()
+    {
+        if (IsOccupied)
+            return false;
+
+        return currentVisualOwner == NetworkSide.Player;
+    }
     private void Awake()
     {
         if (tileRenderer == null)
@@ -47,6 +56,7 @@ public class NetworkTile : NetworkBehaviour
         if (Object.HasStateAuthority)
         {
             OwnerInt = (int)initialOwnerSide;
+            IsOccupied = false;  
         }
 
         _lastOwnerInt = OwnerInt;
@@ -56,6 +66,16 @@ public class NetworkTile : NetworkBehaviour
         
         // Register tile in hex grid manager
         NetworkHexGridManager.Instance.RegisterHex(HexCoord, gameObject);
+        
+        // Mark main building tiles as occupied
+        if (Object.HasStateAuthority)
+        {
+            if (this == NetworkHexGridManager.Instance.MainBuildingTile1 || 
+                this == NetworkHexGridManager.Instance.MainBuildingTile2)
+            {
+                IsOccupied = true;
+            }
+        }
     }
 
     public override void FixedUpdateNetwork()
@@ -69,6 +89,18 @@ public class NetworkTile : NetworkBehaviour
         }
     }
 
+    public void OccupyTile()
+    {
+        if (Object.HasStateAuthority)
+            IsOccupied = true;
+    }
+
+    public void FreeTile()
+    {
+        if (Object.HasStateAuthority)
+            IsOccupied = false;
+    }
+    
     // shows selection local
     public void SetLocalSelected(bool selected)
     {
@@ -93,7 +125,6 @@ public class NetworkTile : NetworkBehaviour
         else
         {
             Debug.Log($"[NetworkTile] Applying owner visual to {name} (localSelected: {localSelected}, selectionMaterial: {selectionMaterial != null})");
-          //  tileRenderer.material = originalMaterial;
             ApplyOwnerVisual();
         }
     }
@@ -105,7 +136,7 @@ public class NetworkTile : NetworkBehaviour
     {
         Debug.Log($"[NetworkTile] HandleClick called on {name}");
         Debug.Log($"[NetworkTile] Calling TileSelectionManager.Local_SelectTile for {name}");
-        TileSelectionManager.Instance?.Local_SelectTile(this);
+        TileSelectionManager.Instance?.TrySelectTile(this);
     }
 
     // --------------------------------------------------------------------
@@ -117,15 +148,7 @@ public class NetworkTile : NetworkBehaviour
 
         NetworkBuildingManager.Instance.RequestBuild(this, buildingName);
     }
-
- 
-    /*
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    private void RPC_RequestBuild(string buildingName)
-    {
-        Debug.Log($"[NetworkTile] RPC_RequestBuild invoked on StateAuthority for tile {name} with buildingName: {buildingName}. LocalPlayer = {Runner.LocalPlayer}");
-        NetworkBuildingManager.Instance?.SpawnBuildingOnTile(this, buildingName);
-    }*/
+    
 
     private void ApplyOwnerVisual()
     {

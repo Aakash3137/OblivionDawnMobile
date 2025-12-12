@@ -13,7 +13,7 @@ public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
     
     [Header("Spawn Configuration")]
     //public Vector3[] spawnPositions = { new Vector3(7.08f, 22.5f, 2.29f), new Vector3(7.08f,22.5f,28.5f) };
-    public Vector3[] spawnPositions = { new Vector3(7.08f, 22.5f, -6.5f), new Vector3(7.08f,22.5f,37.5f) };
+    public Vector3[] spawnPositions = { new Vector3(9.6f, 10f, 9.6f), new Vector3(22.5f,10f,22.5f) };
     #endregion
     
     #region Private Fields
@@ -107,8 +107,10 @@ public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
         spawnId = _spawnedPlayers.Count == 0 ? 0 : 1;
         rotation = Quaternion.identity;
         Vector3 pos = spawnId < spawnPositions.Length ? spawnPositions[spawnId] : Vector3.zero;
-        if (spawnId == 1)
-            rotation = Quaternion.Euler(0f, 180f, 0f);
+        if(spawnId == 0)
+            rotation = Quaternion.Euler(45f, 45f, 0f);
+        else if (spawnId == 1)
+            rotation = Quaternion.Euler(45f, 225f, 0f);
         return pos;
     }
 

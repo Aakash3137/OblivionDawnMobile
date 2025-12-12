@@ -1,13 +1,14 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class BuildUi : MonoBehaviour
 {
-    [SerializeField] private Button buildButtonPrefab;
+    [SerializeField] internal string prefabNameText;
     private void Start()
     {
         Debug.Log("Buttonui start");
-        buildButtonPrefab.onClick.AddListener(() => Build(buildButtonPrefab.name));
+        gameObject.GetComponent<Button>().onClick.AddListener(() => Build(prefabNameText));
     }
 
     public void Build(string buildingName)

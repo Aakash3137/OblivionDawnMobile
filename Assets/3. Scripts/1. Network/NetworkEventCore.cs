@@ -19,6 +19,7 @@ public enum EventCode : ushort {
 public class NetworkEventCore : NetworkBehaviour
 {
     public static NetworkEventCore Instance;
+    public static PlayerRef LastEventSender { get; private set; }
 
     private static Dictionary<EventCode, Action<string>> eventHandlers = new();
 
@@ -83,9 +84,13 @@ public class NetworkEventCore : NetworkBehaviour
     private void RPC_All(EventCode evt, string json) => ProcessEvent(evt, json);
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    private void RPC_Host(EventCode evt, string json)
+    private void RPC_Host(EventCode evt, string json, RpcInfo info = default)
     {
-        if (Runner.IsServer) ProcessEvent(evt, json);
+        if (Runner.IsServer)
+        {
+            LastEventSender = info.Source;
+            ProcessEvent(evt, json);
+        }
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

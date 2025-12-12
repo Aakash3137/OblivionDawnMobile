@@ -28,11 +28,6 @@ public class NetworkGameUI : MonoBehaviour
         Invoke(nameof(RefreshPlayerInfo), 1f);
         InvokeRepeating(nameof(RefreshPlayerInfo), 1f, 2f);
         
-        // Set camera reference if not assigned
-       /* if (gameCamera == null)
-        {
-            gameCamera = Camera.main;
-        }*/
     }
 
     public void RefreshPlayerInfo()
@@ -78,15 +73,15 @@ public class NetworkGameUI : MonoBehaviour
         {
             nameText.text = player.GetDisplayName();
             nameText.color = color;
-            rankText.text = $"Rank: {player.GetRank()}";
+            rankText.text = $" {player.GetRank()}";
             if (isPlayer)
             {
-                tileCount.text = $"Tiles: {NetworkHexGridManager.Instance.playerTileCount}";
+                tileCount.text = $" {NetworkHexGridManager.Instance.playerTileCount}";
                 tileCount.color = color;
             }
             else
             {
-                tileCount.text = $"Tiles: {NetworkHexGridManager.Instance.playerTileCount}";
+                tileCount.text = $" {NetworkHexGridManager.Instance.playerTileCount}";
                 tileCount.color = color;
             }
         }

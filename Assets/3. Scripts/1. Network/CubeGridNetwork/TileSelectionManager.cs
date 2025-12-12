@@ -14,14 +14,14 @@ public class TileSelectionManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        tileMask = LayerMask.GetMask("HexTile");
+        tileMask = LayerMask.GetMask("CubeTile");
     }
 
     public void Initialize(Camera cam)
     {
         playerCamera = cam;
     }
-
+    
     public void Local_SelectTile(NetworkTile tile)
     {
         Debug.Log($"[TSM] Local_SelectTile called for: {tile.name}");
@@ -41,6 +41,33 @@ public class TileSelectionManager : MonoBehaviour
         }
 
         Debug.Log($"[TSM] Selection complete: {tile.name} (ID: {tile.Object.Id})");
+    }
+
+    public void TrySelectTile(NetworkTile tile)
+    {
+        if (tile == null)
+            return;
+
+        if (tile.IsOccupied)
+        {
+            Debug.Log($"[TSM] Tile {tile.name} is occupied.");
+            return;
+        }
+
+        if (tile.CurrentVisualOwner != NetworkSide.Player)
+        {
+            Debug.Log($"[TSM] Tile {tile.name} visual owner is {tile.CurrentVisualOwner}. Selection denied.");
+            return;
+        }
+
+        if (selectedTile == tile)
+        {
+            selectedTile.SetLocalSelected(false);
+            selectedTile = null;
+            return;
+        }
+
+        Local_SelectTile(tile);
     }
     
     private void Update()
@@ -75,8 +102,9 @@ public class TileSelectionManager : MonoBehaviour
             var tile = hit.collider.GetComponent<NetworkTile>();
             if (tile != null)
             {
-                Debug.Log($"[TSM] NetworkTile found: {tile.name}, calling HandleClick");
-                tile.HandleClick();
+                Debug.Log($"[TSM] NetworkTile found: {tile.name}, attempting selection");
+                // NOTE: use TrySelectTile which handles occupied/ownership/toggle logic
+                TrySelectTile(tile);
             }
             else
             {
@@ -109,4 +137,6 @@ public class TileSelectionManager : MonoBehaviour
 
         return false;
     }
+
+
 }
