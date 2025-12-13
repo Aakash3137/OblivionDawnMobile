@@ -1,43 +1,35 @@
-using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class TileUIPanelNetwork : MonoBehaviour
 {
-    [Header("UI Elements")]
-    public CanvasGroup canvasGroup;
-
+    [Header("UI")]
     public Button BackButton;
-    
-    private NetworkTile currentTile;
 
-    public void Start()
+    private NetworkTile currentTile;
+    private FloatingUiManagerNetwork manager;
+
+    private void Awake()
     {
-        BackButton.onClick.AddListener(() => Close());
+        manager = GetComponentInParent<FloatingUiManagerNetwork>();
+    }
+
+    private void Start()
+    {
+        if (BackButton != null)
+            BackButton.onClick.AddListener(OnBackClicked);
     }
 
     public void Open(NetworkTile tile)
     {
         currentTile = tile;
-        ShowPanel(true);
     }
 
-    public void Close()
+    private void OnBackClicked()
     {
         currentTile = null;
-        ShowPanel(false);
+
+        if (manager != null)
+            manager.CloseUI();
     }
-
-
-
-    private void ShowPanel(bool show)
-    {
-        // FloatingUiManagerNetwork handles alpha/fade
-        // Just manage interactable state here
-        if (canvasGroup != null)
-        {
-            canvasGroup.interactable = show;
-        }
-    }
-
 }

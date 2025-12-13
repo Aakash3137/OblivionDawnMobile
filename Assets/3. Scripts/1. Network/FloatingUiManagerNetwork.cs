@@ -13,6 +13,8 @@ public class FloatingUiManagerNetwork : MonoBehaviour
     
     private Camera mainCamera;
     private NetworkTile lastShownTile;
+    
+    private bool isClosing;
 
     void Start()
     {
@@ -37,7 +39,7 @@ public class FloatingUiManagerNetwork : MonoBehaviour
                 }
             }
         }
-        else if (lastShownTile != null)
+        else if (lastShownTile != null && !isClosing)
         {
             CloseUI();
             lastShownTile = null;
@@ -94,6 +96,8 @@ public class FloatingUiManagerNetwork : MonoBehaviour
         // Fade in
         if (currentGroup != null)
         {
+            isClosing = false;
+            
             StopAllCoroutines(); // stop any fade-out
             currentGroup.alpha = 0f;
             currentGroup.interactable = true;
@@ -104,13 +108,15 @@ public class FloatingUiManagerNetwork : MonoBehaviour
 
     public void CloseUI()
     {
-        if (currentUI != null && currentGroup != null)
-        {
+        if (currentUI == null || currentGroup == null || isClosing)
+            return;
+
+            isClosing = true;
             StopAllCoroutines(); // stop any fade-in
             StartCoroutine(FadeCanvasGroup(currentGroup, currentGroup.alpha, 0f));
             currentGroup.interactable = false;
             currentGroup.blocksRaycasts = false;
-        }
+        
     }
 
     private IEnumerator FadeCanvasGroup(CanvasGroup cg, float start, float end)
