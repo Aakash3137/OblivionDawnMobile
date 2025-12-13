@@ -60,6 +60,12 @@ public class TileSelectionManager : MonoBehaviour
             return;
         }
 
+        if (!NetworkCubeGridManager.Instance.SelectableTiles.Contains(tile))
+        {
+            Debug.Log($"[TSM] Tile {tile.name} is not in SelectableTiles. Selection denied.");
+            return;
+        }
+        
         if (selectedTile == tile)
         {
             selectedTile.SetLocalSelected(false);
@@ -75,6 +81,9 @@ public class TileSelectionManager : MonoBehaviour
         if (playerCamera == null) return;
         if (!UnityEngine.SceneManagement.SceneManager.GetActiveScene().name.Equals("GameScene")) return;
 
+        if (UIRaycastBlocker.ClickConsumedThisFrame)
+            return;
+        
         if (Input.GetMouseButtonDown(0))
             ProcessInput(Input.mousePosition);
 
@@ -82,16 +91,22 @@ public class TileSelectionManager : MonoBehaviour
             ProcessInput(Input.GetTouch(0).position);
     }
 
+    private void LateUpdate()
+    {
+        UIRaycastBlocker.ClickConsumedThisFrame = false;
+    }
+
+    
     private void ProcessInput(Vector2 pos)
     {
         // -----------------------------------------------------------
         // BLOCK TILE CLICKS IF TOUCH IS OVER UI WITH UIRaycastBlocker
         // -----------------------------------------------------------
-        if (IsPointerOverBlockingUI(pos))
+        /*if (IsPointerOverBlockingUI(pos))
         {
             Debug.Log("[TSM] Touch is over UI that blocks raycast");
             return;
-        }
+        }*/
 
         // Raycast to tiles only
         Ray ray = playerCamera.ScreenPointToRay(pos);
@@ -121,7 +136,7 @@ public class TileSelectionManager : MonoBehaviour
     // RETURN TRUE if finger/mouse is over a UI element that has
     // the "UIRaycastBlocker" component
     // -----------------------------------------------------------
-    private bool IsPointerOverBlockingUI(Vector2 pos)
+    /*private bool IsPointerOverBlockingUI(Vector2 pos)
     {
         PointerEventData ped = new PointerEventData(EventSystem.current);
         ped.position = pos;
@@ -136,7 +151,7 @@ public class TileSelectionManager : MonoBehaviour
         }
 
         return false;
-    }
+    }*/
 
 
 }

@@ -148,7 +148,7 @@ public class NetworkBuildingManager : NetworkBehaviour
         NetworkTile[] allTiles = FindObjectsOfType<NetworkTile>();
         foreach (var t in allTiles)
         {
-            if (t.HexCoord.x == x && t.HexCoord.y == y)
+            if (t.Coord.x == x && t.Coord.y == y)
                 return t;
         }
         return null;
