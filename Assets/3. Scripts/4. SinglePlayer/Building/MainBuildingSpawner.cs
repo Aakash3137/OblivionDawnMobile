@@ -134,20 +134,74 @@
 
 
 
+// using UnityEngine;
+// using System.Collections;
+
+// public class MainBuildingSpawner : MonoBehaviour
+// {
+//     [Header("Prefabs")]
+//     public GameObject mainBuildingPrefab;
+
+//     [Header("Spawn Settings")]
+//     public float yOffset = 1f;
+
+//     [Header("Custom Spawn Positions (world)")]
+//     public Transform playerSpawnPoint;   // drag a marker placed on the tile
+//     public Transform enemySpawnPoint;    // drag a marker placed on the tile
+
+//     IEnumerator Start()
+//     {
+//         yield return null; // wait one frame for tiles to register
+//         SpawnMainBuildings();
+//     }
+
+//     void SpawnMainBuildings()
+//     {
+//         // Player building
+//         if (playerSpawnPoint != null)
+//         {
+//             Vector3 pos = playerSpawnPoint.position + Vector3.up * yOffset;
+//             var building = Instantiate(mainBuildingPrefab, pos, Quaternion.identity);
+//             building.GetComponent<UnitSide>().side = Side.Player;
+//         }
+
+//         // Enemy building
+//         if (enemySpawnPoint != null)
+//         {
+//             Vector3 pos = enemySpawnPoint.position + Vector3.up * yOffset;
+//             var building = Instantiate(mainBuildingPrefab, pos, Quaternion.identity);
+//             building.GetComponent<UnitSide>().side = Side.Enemy;
+//         }
+//     }
+// }
+
+
+
+
 using UnityEngine;
 using System.Collections;
 
 public class MainBuildingSpawner : MonoBehaviour
 {
-    [Header("Prefabs")]
+    public static MainBuildingSpawner Instance;
+
+    [Header("Default Prefabs (fallback)")]
     public GameObject mainBuildingPrefab;
 
     [Header("Spawn Settings")]
     public float yOffset = 1f;
 
     [Header("Custom Spawn Positions (world)")]
-    public Transform playerSpawnPoint;   // drag a marker placed on the tile
-    public Transform enemySpawnPoint;    // drag a marker placed on the tile
+    public Transform playerSpawnPoint;
+    public Transform enemySpawnPoint;
+
+    private GameObject playerMainBuildingPrefab;
+    private GameObject enemyMainBuildingPrefab;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     IEnumerator Start()
     {
@@ -155,21 +209,38 @@ public class MainBuildingSpawner : MonoBehaviour
         SpawnMainBuildings();
     }
 
+    public void SetPlayerFaction(FactionButton faction)
+    {
+        playerMainBuildingPrefab = faction.mainBuildingPrefab;
+
+        // Enemy picks randomly but not the same as player
+        var allButtons = Object.FindObjectsByType<FactionButton>(FindObjectsSortMode.None);
+        var possibleEnemies = new System.Collections.Generic.List<FactionButton>(allButtons);
+        possibleEnemies.Remove(faction);
+
+        int randomIndex = Random.Range(0, possibleEnemies.Count);
+        enemyMainBuildingPrefab = possibleEnemies[randomIndex].mainBuildingPrefab;
+
+        // Respawn buildings after selection
+        SpawnMainBuildings();
+    }
+
+
     void SpawnMainBuildings()
     {
         // Player building
-        if (playerSpawnPoint != null)
+        if (playerSpawnPoint != null && playerMainBuildingPrefab != null)
         {
             Vector3 pos = playerSpawnPoint.position + Vector3.up * yOffset;
-            var building = Instantiate(mainBuildingPrefab, pos, Quaternion.identity);
+            var building = Instantiate(playerMainBuildingPrefab, pos, Quaternion.identity);
             building.GetComponent<UnitSide>().side = Side.Player;
         }
 
         // Enemy building
-        if (enemySpawnPoint != null)
+        if (enemySpawnPoint != null && enemyMainBuildingPrefab != null)
         {
             Vector3 pos = enemySpawnPoint.position + Vector3.up * yOffset;
-            var building = Instantiate(mainBuildingPrefab, pos, Quaternion.identity);
+            var building = Instantiate(enemyMainBuildingPrefab, pos, Quaternion.identity);
             building.GetComponent<UnitSide>().side = Side.Enemy;
         }
     }
