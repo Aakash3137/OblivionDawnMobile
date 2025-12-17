@@ -26,6 +26,7 @@ public class NetworkCubeGridManager : NetworkBehaviour
     public List<NetworkTile> enemyTiles = new List<NetworkTile>();
     public List<NetworkTile> occupiedTiles = new List<NetworkTile>();
     public List<NetworkTile> SelectableTiles = new List<NetworkTile>();
+    public List<NetworkTile> spawnTiles = new List<NetworkTile>();
 
     [SerializeField] internal NetworkTile MainBuildingTile1;
     [SerializeField] internal NetworkTile MainBuildingTile2;
@@ -126,7 +127,7 @@ public class NetworkCubeGridManager : NetworkBehaviour
 
         playerTileCount = 0;
         enemyTileCount = 0;
-        occupiedTileCount = 0;
+        occupiedTileCount = 0;   
 
         foreach (var tile in allTiles)
         {
@@ -258,5 +259,49 @@ public class NetworkCubeGridManager : NetworkBehaviour
     public bool AreAdjacent(Vector2Int a, Vector2Int b)
     {
         return CubeDistance(a, b) == 1;
+    }
+
+    public bool RegisterSpawnTile(NetworkTile tile)
+    {
+        if (!spawnTiles.Contains(tile))
+        {
+            spawnTiles.Add(tile);
+            return true;
+        }
+        return false;
+    }
+
+    public void UnregisterSpawnTile(NetworkTile tile)
+    {
+        spawnTiles.Remove(tile);
+    }
+
+    public NetworkTile FindNearestUnoccupiedTile(Vector2Int startCoord)
+    {
+        int maxRadius = Mathf.Max(MaxX - MinX, MaxY - MinY);
+        
+        for (int radius = 1; radius <= maxRadius; radius++)
+        {
+            for (int x = -radius; x <= radius; x++)
+            {
+                for (int y = -radius; y <= radius; y++)
+                {
+                    if (Mathf.Abs(x) != radius && Mathf.Abs(y) != radius) continue;
+                    
+                    Vector2Int checkCoord = new Vector2Int(startCoord.x + x, startCoord.y + y);
+                    GameObject tileObj = GetCube(checkCoord);
+                    
+                    if (tileObj != null)
+                    {
+                        NetworkTile tile = tileObj.GetComponent<NetworkTile>();
+                        if (tile != null && !tile.IsOccupied && !spawnTiles.Contains(tile))
+                        {
+                            return tile;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 }
