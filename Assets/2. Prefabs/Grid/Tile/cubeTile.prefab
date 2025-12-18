@@ -274,7 +274,7 @@ GameObject:
   - component: {fileID: 2240560452369454675}
   - component: {fileID: 2934036097191778806}
   - component: {fileID: 1104293407760248124}
-  - component: {fileID: 7946984466242508984}
+  - component: {fileID: 1592648188086742848}
   m_Layer: 0
   m_Name: Cube_Mesh
   m_TagString: Untagged
@@ -350,8 +350,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &7946984466242508984
-MeshCollider:
+--- !u!65 &1592648188086742848
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -368,10 +368,9 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4068373912626513877, guid: cca3fdc141e8c254b9fca50e9792f57c, type: 3}
+  serializedVersion: 3
+  m_Size: {x: 0.01, y: 0.01, z: 0.01}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4517590336350411406
 GameObject:
   m_ObjectHideFlags: 0
@@ -596,8 +595,10 @@ MonoBehaviour:
   currentVisualOwner: 0
   tileRenderer: {fileID: 1104293407760248124}
   selectionMaterial: {fileID: 2100000, guid: 82e0274ff4645394196b7c17349d6813, type: 2}
-  HexCoord: {x: 0, y: 0}
+  Coord: {x: 0, y: 0}
   _OwnerInt: 0
+  _IsOccupied: 0
+  isOpen: 0
 --- !u!1 &5983266701514019672
 GameObject:
   m_ObjectHideFlags: 0
