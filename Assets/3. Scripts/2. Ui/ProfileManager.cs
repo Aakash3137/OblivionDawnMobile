@@ -23,7 +23,7 @@ public class ProfileManager : MonoBehaviour
         crossButton.onClick.AddListener(CloseProfileManager);
     }
 
-    private void SaveProfile()
+    public void SaveProfile()
     {
         string newUsername = usernameInputField.text;
         Debug.Log($"[ProfileManager] Saving Username: {newUsername}");

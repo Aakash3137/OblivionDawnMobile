@@ -1869,7 +1869,6 @@ GameObject:
   - component: {fileID: 6874257561012461838}
   - component: {fileID: 4126653188900821437}
   - component: {fileID: 6003070852606754904}
-  - component: {fileID: 1472127275297211227}
   m_Layer: 5
   m_Name: Build Panel
   m_TagString: Untagged
@@ -1921,7 +1920,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0.15294118, g: 0.16862746, b: 0.20392159, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -1963,6 +1962,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tileInfoText: {fileID: 0}
   canvasGroup: {fileID: 6874257561012461838}
+  _wallPrefab: {fileID: 698741203513538792, guid: 81a59e70982c8914e9de23637eaaf238, type: 3}
   buildingPrefabs:
   - {fileID: 4320449579214391836, guid: f042475ee4aec3d438dc6e0182ea890d, type: 3}
   - {fileID: 4320449579214391836, guid: e84dab7c790e30542bf029885ad0c3d3, type: 3}
@@ -1997,22 +1997,6 @@ MonoBehaviour:
   - {fileID: 5957442351460467085}
   - {fileID: 3301443771613459177}
   - {fileID: 3798169925695135528}
---- !u!114 &1472127275297211227
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3711739251563581095}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cebd39b656777cd4baa8fa4dd4c5d7d5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileInfoText: {fileID: 0}
-  canvasGroup: {fileID: 0}
-  buildingPrefabs: []
-  _wallPrefab: {fileID: 0}
 --- !u!1 &3798169925695135528
 GameObject:
   m_ObjectHideFlags: 0
