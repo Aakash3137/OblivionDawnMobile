@@ -7,16 +7,17 @@ public class NetworkCubeGridManager : NetworkBehaviour
     public static NetworkCubeGridManager Instance;
 
     [Header("Grid Settings")]
-    public float hexSize = 1f;      // Cube cell size
-    public bool pointyTop = false;  // UNUSED but kept for compatibility
-    public bool useOffset = true;   // Staggered rows like bricks
+    public float cellSize = 1f;
+
+    [Tooltip("Offset every 2nd row (like staggered grid)")]
+    public bool useOffset = false;
+
+    // Dictionary of all tiles keyed by (x,y)
+    public Dictionary<Vector2Int, GameObject> cubeTiles = new Dictionary<Vector2Int, GameObject>();
 
     [Header("Network Event Core Prefab")]
     public NetworkObject networkEventCorePrefab;
-
-    // All tiles stored by grid coordinate
-    public Dictionary<Vector2Int, NetworkTile> hexTiles =
-        new Dictionary<Vector2Int, NetworkTile>();
+    
 
     // TILE LISTS
     [Header("Tile Lists (Auto Generated)")]
@@ -24,6 +25,8 @@ public class NetworkCubeGridManager : NetworkBehaviour
     public List<NetworkTile> playerTiles = new List<NetworkTile>();
     public List<NetworkTile> enemyTiles = new List<NetworkTile>();
     public List<NetworkTile> occupiedTiles = new List<NetworkTile>();
+    public List<NetworkTile> SelectableTiles = new List<NetworkTile>();
+    public List<NetworkTile> spawnTiles = new List<NetworkTile>();
 
     [SerializeField] internal NetworkTile MainBuildingTile1;
     [SerializeField] internal NetworkTile MainBuildingTile2;
@@ -84,7 +87,7 @@ public class NetworkCubeGridManager : NetworkBehaviour
     // --------------------------------------------------------------------
     //  TILE REGISTRATION
     // --------------------------------------------------------------------
-    public void RegisterHex(Vector2Int coord, GameObject tileGO)
+    /*public void RegisterHex(Vector2Int coord, GameObject tileGO)
     {
         if (!tileGO.TryGetComponent(out NetworkTile tile))
             return;
@@ -97,6 +100,19 @@ public class NetworkCubeGridManager : NetworkBehaviour
         MaxX = Mathf.Max(MaxX, coord.x);
         MaxY = Mathf.Max(MaxY, coord.y);
 
+        UpdateTileLists();
+    }*/
+    public void RegisterCube(Vector2Int grid, GameObject tile)
+    {
+        
+        if (!cubeTiles.ContainsKey(grid))
+            cubeTiles.Add(grid, tile);
+
+        MinX = Mathf.Min(MinX, grid.x);
+        MinY = Mathf.Min(MinY, grid.y);
+        MaxX = Mathf.Max(MaxX, grid.x);
+        MaxY = Mathf.Max(MaxY, grid.y);
+        
         UpdateTileLists();
     }
 
@@ -111,7 +127,7 @@ public class NetworkCubeGridManager : NetworkBehaviour
 
         playerTileCount = 0;
         enemyTileCount = 0;
-        occupiedTileCount = 0;
+        occupiedTileCount = 0;   
 
         foreach (var tile in allTiles)
         {
@@ -156,26 +172,24 @@ public class NetworkCubeGridManager : NetworkBehaviour
     // --------------------------------------------------------------------
     //  LOOKUP
     // --------------------------------------------------------------------
-    public NetworkTile GetHex(Vector2Int coord)
+    public GameObject GetCube(Vector2Int grid)
     {
-        hexTiles.TryGetValue(coord, out var tile);
+        cubeTiles.TryGetValue(grid, out var tile);
         return tile;
     }
 
     // --------------------------------------------------------------------
     //  WORLD → GRID (Cube Staggered Grid)
     // --------------------------------------------------------------------
-    public Vector2Int WorldToHex(Vector3 pos)
+    public Vector2Int WorldToGrid(Vector3 pos)
     {
-        float size = Mathf.Max(0.01f, hexSize);
-
-        int row = Mathf.RoundToInt(pos.z / size);
+        int row = Mathf.RoundToInt(pos.z / cellSize);
 
         float offset = (useOffset && (row & 1) != 0)
-            ? size * 0.5f
+            ? cellSize * 0.5f
             : 0f;
 
-        int col = Mathf.RoundToInt((pos.x - offset) / size);
+        int col = Mathf.RoundToInt((pos.x - offset) / cellSize);
 
         return new Vector2Int(col, row);
     }
@@ -183,33 +197,111 @@ public class NetworkCubeGridManager : NetworkBehaviour
     // --------------------------------------------------------------------
     //  GRID → WORLD
     // --------------------------------------------------------------------
-    public Vector3 HexToWorld(Vector2Int grid)
+    public Vector3 GridToWorld(Vector2Int grid)
     {
-        float size = Mathf.Max(0.01f, hexSize);
-
         float offset = (useOffset && (grid.y & 1) != 0)
-            ? size * 0.5f
+            ? cellSize * 0.5f
             : 0f;
 
-        float x = grid.x * size + offset;
-        float z = grid.y * size;
-
-        return new Vector3(x, 0, z);
+        return new Vector3(
+            grid.x * cellSize + offset,
+            0,
+            grid.y * cellSize
+        );
     }
 
-    // --------------------------------------------------------------------
-    //  DISTANCE AND ADJACENCY (Square-grid variants)
-    // --------------------------------------------------------------------
-    public int HexDistance(Vector2Int a, Vector2Int b)
+    // -----------------------------
+    // NEIGHBORS
+    // -----------------------------
+    /// <summary>
+    /// Get 4 cardinal neighbors (up, down, left, right).
+    /// </summary>
+    public List<Vector2Int> GetCardinalNeighbors(Vector2Int grid)
     {
-        // Manhattan distance with stagger awareness
-        int dx = Mathf.Abs(a.x - b.x);
-        int dy = Mathf.Abs(a.y - b.y);
-        return dx + dy;
+        return new List<Vector2Int>
+        {
+            new Vector2Int(grid.x + 1, grid.y), // right
+            new Vector2Int(grid.x - 1, grid.y), // left
+            new Vector2Int(grid.x, grid.y + 1), // up
+            new Vector2Int(grid.x, grid.y - 1)  // down
+        };
+    }
+
+    /// <summary>
+    /// Get all 8 neighbors (cardinals + diagonals).
+    /// </summary>
+    public List<Vector2Int> GetAllNeighbors(Vector2Int grid)
+    {
+        return new List<Vector2Int>
+        {
+            // 4 cardinal
+            new Vector2Int(grid.x + 1, grid.y),
+            new Vector2Int(grid.x - 1, grid.y),
+            new Vector2Int(grid.x, grid.y + 1),
+            new Vector2Int(grid.x, grid.y - 1),
+
+            // 4 diagonals
+            new Vector2Int(grid.x + 1, grid.y + 1),
+            new Vector2Int(grid.x - 1, grid.y + 1),
+            new Vector2Int(grid.x + 1, grid.y - 1),
+            new Vector2Int(grid.x - 1, grid.y - 1)
+        };
+    }
+
+    // -----------------------------
+    // DISTANCE / ADJACENCY
+    // -----------------------------
+    public int CubeDistance(Vector2Int a, Vector2Int b)
+    {
+        return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
     }
 
     public bool AreAdjacent(Vector2Int a, Vector2Int b)
     {
-        return HexDistance(a, b) == 1;
+        return CubeDistance(a, b) == 1;
+    }
+
+    public bool RegisterSpawnTile(NetworkTile tile)
+    {
+        if (!spawnTiles.Contains(tile))
+        {
+            spawnTiles.Add(tile);
+            return true;
+        }
+        return false;
+    }
+
+    public void UnregisterSpawnTile(NetworkTile tile)
+    {
+        spawnTiles.Remove(tile);
+    }
+
+    public NetworkTile FindNearestUnoccupiedTile(Vector2Int startCoord)
+    {
+        int maxRadius = Mathf.Max(MaxX - MinX, MaxY - MinY);
+        
+        for (int radius = 1; radius <= maxRadius; radius++)
+        {
+            for (int x = -radius; x <= radius; x++)
+            {
+                for (int y = -radius; y <= radius; y++)
+                {
+                    if (Mathf.Abs(x) != radius && Mathf.Abs(y) != radius) continue;
+                    
+                    Vector2Int checkCoord = new Vector2Int(startCoord.x + x, startCoord.y + y);
+                    GameObject tileObj = GetCube(checkCoord);
+                    
+                    if (tileObj != null)
+                    {
+                        NetworkTile tile = tileObj.GetComponent<NetworkTile>();
+                        if (tile != null && !tile.IsOccupied && !spawnTiles.Contains(tile))
+                        {
+                            return tile;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 }

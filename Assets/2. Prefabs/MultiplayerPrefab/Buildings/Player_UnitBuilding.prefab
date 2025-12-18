@@ -98,7 +98,8 @@ GameObject:
   - component: {fileID: 6646138055195263156}
   - component: {fileID: 2680682628249106584}
   - component: {fileID: 1832992415989413726}
-  - component: {fileID: 6818545314082454604}
+  - component: {fileID: 4431307890699216608}
+  - component: {fileID: 6739344241620022616}
   - component: {fileID: 408435574797514460}
   - component: {fileID: 6691963867669352236}
   m_Layer: 0
@@ -174,7 +175,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   side: 0
---- !u!114 &6818545314082454604
+--- !u!114 &4431307890699216608
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -183,10 +184,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 3611371041204665839}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd319cb35c2ba70429dfa5bc61ffc59e, type: 3}
+  m_Script: {fileID: 11500000, guid: cec592e26370bef4fbd61427b5596b70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   useDiagonals: 1
+--- !u!114 &6739344241620022616
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3611371041204665839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbd9674d3e582284bb004e6f053b35f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unitPrefab:
+    RawGuidValue: 24a50d5be3d5d5d4c9bd0079ac2d68f3
+  spawnInterval: 5
+  allowSpawning: 1
 --- !u!114 &408435574797514460
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -205,6 +222,7 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 2680682628249106584}
+  - {fileID: 6739344241620022616}
   - {fileID: 6691963867669352236}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &6691963867669352236

@@ -16,11 +16,12 @@ public class NetworkTile : NetworkBehaviour
     public Renderer tileRenderer;
     public Material selectionMaterial;
     
-    public Vector2Int HexCoord;
+    public Vector2Int  Coord;
     
     [Networked] public int OwnerInt { get; set; }   //Real owner (host controlled)
     
-    [Networked] public bool IsOccupied { get; set; } 
+    [Networked] public bool IsOccupied { get; set; }
+    public bool isOpen = false;
     
     private bool localSelected = false;
 
@@ -48,7 +49,7 @@ public class NetworkTile : NetworkBehaviour
     public override void Spawned()
     {
         // Auto-detect coordinate from world position
-        HexCoord = NetworkCubeGridManager.Instance.WorldToHex(transform.position);
+         Coord = NetworkCubeGridManager.Instance.WorldToGrid(transform.position);
 
         sideManager = FindAnyObjectByType<NetworkSideManager>();
 
@@ -64,8 +65,8 @@ public class NetworkTile : NetworkBehaviour
         ApplyOwnerVisual();
         UpdateLocalSelectionVisual();
         
-        // Register tile in hex grid manager
-        NetworkCubeGridManager.Instance.RegisterHex(HexCoord, gameObject);
+        // Register tile in   grid manager
+        NetworkCubeGridManager.Instance.RegisterCube( Coord, gameObject);
         
         // Mark main building tiles as occupied
         if (Object.HasStateAuthority)
@@ -199,4 +200,19 @@ public class NetworkTile : NetworkBehaviour
             sideManager.SetSide(tileRenderer, flipped);
         }
     }
+    
+    public void SetBuildingPlaced()
+    {
+        IsOccupied = true;
+        isOpen = false;
+
+        // Hide PlusIcon if present
+        Transform cubeChild = transform.Find("Cube");
+        if (cubeChild != null)
+        {
+            Transform plusIcon = cubeChild.Find("Plus_Icon");
+            if (plusIcon != null) plusIcon.gameObject.SetActive(false);
+        }
+    }
+    
 }
