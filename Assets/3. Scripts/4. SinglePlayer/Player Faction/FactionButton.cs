@@ -13,7 +13,7 @@ public class FactionButton : MonoBehaviour
 
     [Header("Other Buildings")]
     [SerializeField]
-    GameObject[] buildingPrefabs; // gold mine, wood mill, steel mine, etc.
+    internal GameObject[] buildingPrefabs; // gold mine, wood mill, steel mine, etc.
 
     [Header("UI References")]
     [SerializeField] CanvasGroup factionPanel; // drag your PlayerFaction Panel here in Inspector

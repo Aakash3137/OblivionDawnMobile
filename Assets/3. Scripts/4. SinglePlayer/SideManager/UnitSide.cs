@@ -3,31 +3,49 @@
 // public class UnitSide : MonoBehaviour
 // {
 //     [Header("Building Prefabs")]
-//     public GameObject playerBuilding; // assign blue building prefab in Inspector
-//     public GameObject enemyBuilding;  // assign red building prefab in Inspector
+//     public GameObject playerSideOBJ_Fab; // assign blue Object prefab in Inspector
+//     public GameObject enemySideOBJ_Fab;  // assign red Object prefab in Inspector
 
 //     [Header("Side Settings")]
 //     public Side side; // set in Inspector or at runtime
 
+//     private GameObject currentBuilding; // track the instantiated building
+
 //     void Start()
 //     {
-//         ToggleBuilding();
+//         SpawnBuilding();
 //     }
 
 //     /// <summary>
-//     /// Activates the correct building prefab based on side.
+//     /// Instantiates the correct building prefab as a child at local (0, -1, 0).
 //     /// </summary>
-//     public void ToggleBuilding()
+//     public void SpawnBuilding()
 //     {
-//         if (side == Side.Player)
+//         // Destroy any existing building instance
+//         if (currentBuilding != null)
 //         {
-//             if (playerBuilding != null) playerBuilding.SetActive(true);
-//             if (enemyBuilding != null) enemyBuilding.SetActive(false);
+//             Destroy(currentBuilding);
+//             currentBuilding = null;
 //         }
-//         else if (side == Side.Enemy)
+
+//         GameObject prefabToSpawn = null;
+//         if (side == Side.Player && playerSideOBJ_Fab != null)
 //         {
-//             if (playerBuilding != null) playerBuilding.SetActive(false);
-//             if (enemyBuilding != null) enemyBuilding.SetActive(true);
+//             prefabToSpawn = playerSideOBJ_Fab;
+//         }
+//         else if (side == Side.Enemy && enemySideOBJ_Fab != null)
+//         {
+//             prefabToSpawn = enemySideOBJ_Fab;
+//         }
+
+//         if (prefabToSpawn != null)
+//         {
+//             // Instantiate as child of this object
+//             currentBuilding = Instantiate(prefabToSpawn, transform);
+
+//             // Set local position to (0, -1, 0)
+//             currentBuilding.transform.localPosition = new Vector3(0f, -1f, 0f);
+//             currentBuilding.transform.localRotation = Quaternion.identity;
 //         }
 //     }
 
@@ -37,9 +55,14 @@
 //     public void SetSide(Side newSide)
 //     {
 //         side = newSide;
-//         ToggleBuilding();
+//         SpawnBuilding();
 //     }
 // }
+
+
+
+
+
 
 
 
@@ -47,26 +70,23 @@ using UnityEngine;
 
 public class UnitSide : MonoBehaviour
 {
-    [Header("Building Prefabs")]
-    public GameObject playerSideOBJ_Fab; // assign blue Object prefab in Inspector
-    public GameObject enemySideOBJ_Fab;  // assign red Object prefab in Inspector
-
     [Header("Side Settings")]
-    public Side side; // set in Inspector or at runtime
+    public Side side;   // Player or Enemy
 
-    private GameObject currentBuilding; // track the instantiated building
-
-    void Start()
-    {
-        SpawnBuilding();
-    }
+    private GameObject currentBuilding;
 
     /// <summary>
-    /// Instantiates the correct building prefab as a child at local (0, -1, 0).
+    /// Assign prefab from faction based on this object's name and side.
     /// </summary>
-    public void SpawnBuilding()
+    public void AssignBuildingFromFaction(FactionButton faction)
     {
-        // Destroy any existing building instance
+        if (faction == null)
+        {
+            Debug.LogWarning($"{name}: No faction assigned.");
+            return;
+        }
+
+        // Clear previous child if any
         if (currentBuilding != null)
         {
             Destroy(currentBuilding);
@@ -74,74 +94,37 @@ public class UnitSide : MonoBehaviour
         }
 
         GameObject prefabToSpawn = null;
-        if (side == Side.Player && playerSideOBJ_Fab != null)
+
+        // Decide prefab based on object name
+        if (gameObject.name.Contains("Auric Syndicate (MainBuilding)"))
         {
-            prefabToSpawn = playerSideOBJ_Fab;
+            prefabToSpawn = faction.mainBuildingPrefab;
         }
-        else if (side == Side.Enemy && enemySideOBJ_Fab != null)
+        else
         {
-            prefabToSpawn = enemySideOBJ_Fab;
+            // For other buildings, match by name + side suffix
+            string suffix = side == Side.Player ? "_Blue" : "_Red";
+            string expectedName = gameObject.name + suffix;
+            // e.g. "Turret_Blue", "GoldMine_Red"
+
+            foreach (var prefab in faction.buildingPrefabs)
+            {
+                if (prefab != null && prefab.name == expectedName)
+                {
+                    prefabToSpawn = prefab;
+                    break;
+                }
+            }
         }
 
-        if (prefabToSpawn != null)
+        if (prefabToSpawn == null)
         {
-            // Instantiate as child of this object
-            currentBuilding = Instantiate(prefabToSpawn, transform);
-
-            // Set local position to (0, -1, 0)
-            currentBuilding.transform.localPosition = new Vector3(0f, -1f, 0f);
-            currentBuilding.transform.localRotation = Quaternion.identity;
+            Debug.LogWarning($"{name}: No prefab found for {gameObject.name} (side={side}) in faction {faction.name}. Check names and assignments.");
+            return;
         }
-    }
 
-    /// <summary>
-    /// Allows changing side at runtime and updates building accordingly.
-    /// </summary>
-    public void SetSide(Side newSide)
-    {
-        side = newSide;
-        SpawnBuilding();
+        currentBuilding = Instantiate(prefabToSpawn, transform);
+        currentBuilding.transform.localPosition = Vector3.zero;
+        currentBuilding.transform.localRotation = Quaternion.identity;
     }
 }
-
-
-
-// using UnityEngine;
-
-// public class UnitSide : MonoBehaviour
-// {
-//     [Header("Building Variants")]
-//     public GameObject[] playerVariants; // assign blue variants in Inspector
-//     public GameObject[] enemyVariants;  // assign red variants in Inspector
-
-//     [Header("Side Settings")]
-//     public Side side; // set in Inspector or at runtime
-
-//     private GameObject activeBuilding;
-
-//     void Start()
-//     {
-//         ActivateVariant();
-//     }
-
-//     private void ActivateVariant()
-//     {
-//         // Disable previous active building
-//         if (activeBuilding != null) activeBuilding.SetActive(false);
-
-//         // Choose correct array
-//         GameObject[] variants = side == Side.Player ? playerVariants : enemyVariants;
-//         if (variants == null || variants.Length == 0) return;
-
-//         // Randomly select one
-//         int index = Random.Range(0, variants.Length);
-//         activeBuilding = variants[index];
-//         activeBuilding.SetActive(true);
-//     }
-
-//     public void SetSide(Side newSide)
-//     {
-//         side = newSide;
-//         ActivateVariant();
-//     }
-// }

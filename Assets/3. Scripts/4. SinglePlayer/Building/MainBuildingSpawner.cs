@@ -1,183 +1,3 @@
-// using UnityEngine;
-// using System.Collections;
-
-// public class MainBuildingSpawner : MonoBehaviour
-// {
-//     [Header("Prefabs")]
-//     public GameObject mainBuildingPrefab;
-
-//     [Header("Spawn Settings")]
-//     public float yOffset = 0.5f;
-
-//     IEnumerator Start()
-//     {
-//         // Wait one frame so all Tile.Start() has run
-//         yield return null;
-
-//         SpawnMainBuildings();
-//     }
-
-//     void SpawnMainBuildings()
-//     {
-//         if (HexGridManager.Instance.hexTiles.Count == 0)
-//         {
-//             Debug.LogError("No tiles registered in HexGridManager!");
-//             return;
-//         }
-
-//         // Bottom-left tile by world position
-//         var playerTile = GetBottomLeftTile();
-//         // Top-right tile by world position
-//         var enemyTile = GetTopRightTile();
-
-//         if (playerTile != null)
-//         {
-//             Vector3 pos = playerTile.transform.position + Vector3.up * yOffset;
-//             var building = Instantiate(mainBuildingPrefab, pos, Quaternion.identity, playerTile.transform);
-//             building.GetComponent<UnitSide>().side = Side.Player;
-//             Debug.Log("Spawned Player building at " + playerTile.transform.position);
-//         }
-
-//         if (enemyTile != null)
-//         {
-//             Vector3 pos = enemyTile.transform.position + Vector3.up * yOffset;
-//             var building = Instantiate(mainBuildingPrefab, pos, Quaternion.identity, enemyTile.transform);
-//             building.GetComponent<UnitSide>().side = Side.Enemy;
-//             Debug.Log("Spawned Enemy building at " + enemyTile.transform.position);
-//         }
-//     }
-
-//     GameObject GetBottomLeftTile()
-//     {
-//         // Find tile with lowest x+z sum
-//         GameObject tile = null;
-//         float best = float.MaxValue;
-//         foreach (var t in HexGridManager.Instance.hexTiles.Values)
-//         {
-//             float score = t.transform.position.x + t.transform.position.z;
-//             if (score < best)
-//             {
-//                 best = score;
-//                 tile = t;
-//             }
-//         }
-//         return tile;
-//     }
-
-//     GameObject GetTopRightTile()
-//     {
-//         // Find tile with highest x+z sum
-//         GameObject tile = null;
-//         float best = float.MinValue;
-//         foreach (var t in HexGridManager.Instance.hexTiles.Values)
-//         {
-//             float score = t.transform.position.x + t.transform.position.z;
-//             if (score > best)
-//             {
-//                 best = score;
-//                 tile = t;
-//             }
-//         }
-//         return tile;
-//     }
-// }
-
-
-
-
-
-// using System.Collections;
-// using UnityEngine;
-
-// public class MainBuildingSpawner : MonoBehaviour
-// {
-//     [Header("Prefabs")]
-//     public GameObject mainBuildingPrefab;
-
-//     [Header("Spawn Settings")]
-//     public float yOffset = 0.5f;
-
-//     [Header("Custom Spawn Coordinates")]
-//     public Vector2Int playerSpawnCoord;   // e.g. (0,0)
-//     public Vector2Int enemySpawnCoord;    // e.g. (5,5)
-
-//     IEnumerator Start()
-//     {
-//         yield return null; // wait one frame for tiles to register
-//         SpawnMainBuildings();
-//     }
-
-//     void SpawnMainBuildings()
-//     {
-//         // Player building
-//         GameObject playerTile = HexGridManager.Instance.GetHex(playerSpawnCoord);
-//         if (playerTile != null)
-//         {
-//             Vector3 pos = playerTile.transform.position + Vector3.up * yOffset;
-//             var building = Instantiate(mainBuildingPrefab, pos, Quaternion.identity, playerTile.transform);
-//             building.GetComponent<UnitSide>().side = Side.Player;
-//         }
-
-//         // Enemy building
-//         GameObject enemyTile = HexGridManager.Instance.GetHex(enemySpawnCoord);
-//         if (enemyTile != null)
-//         {
-//             Vector3 pos = enemyTile.transform.position + Vector3.up * yOffset;
-//             var building = Instantiate(mainBuildingPrefab, pos, Quaternion.identity, enemyTile.transform);
-//             building.GetComponent<UnitSide>().side = Side.Enemy;
-//         }
-//     }
-// }
-
-
-
-
-
-
-// using UnityEngine;
-// using System.Collections;
-
-// public class MainBuildingSpawner : MonoBehaviour
-// {
-//     [Header("Prefabs")]
-//     public GameObject mainBuildingPrefab;
-
-//     [Header("Spawn Settings")]
-//     public float yOffset = 1f;
-
-//     [Header("Custom Spawn Positions (world)")]
-//     public Transform playerSpawnPoint;   // drag a marker placed on the tile
-//     public Transform enemySpawnPoint;    // drag a marker placed on the tile
-
-//     IEnumerator Start()
-//     {
-//         yield return null; // wait one frame for tiles to register
-//         SpawnMainBuildings();
-//     }
-
-//     void SpawnMainBuildings()
-//     {
-//         // Player building
-//         if (playerSpawnPoint != null)
-//         {
-//             Vector3 pos = playerSpawnPoint.position + Vector3.up * yOffset;
-//             var building = Instantiate(mainBuildingPrefab, pos, Quaternion.identity);
-//             building.GetComponent<UnitSide>().side = Side.Player;
-//         }
-
-//         // Enemy building
-//         if (enemySpawnPoint != null)
-//         {
-//             Vector3 pos = enemySpawnPoint.position + Vector3.up * yOffset;
-//             var building = Instantiate(mainBuildingPrefab, pos, Quaternion.identity);
-//             building.GetComponent<UnitSide>().side = Side.Enemy;
-//         }
-//     }
-// }
-
-
-
-
 using UnityEngine;
 using System.Collections;
 
@@ -245,3 +65,102 @@ public class MainBuildingSpawner : MonoBehaviour
         }
     }
 }
+
+
+
+
+
+
+
+
+// using UnityEngine;
+// using System.Collections;
+// using System.Collections.Generic;
+
+// public class MainBuildingSpawner : MonoBehaviour
+// {
+//     public static MainBuildingSpawner Instance;
+
+//     [Header("Spawn Settings")]
+//     public float yOffset = 1f;
+
+//     [Header("Main building slot prefab (empty root with UnitSide + optional helper)")]
+//     public GameObject mainBuildingSlotPrefab;
+
+//     [Header("Custom Spawn Positions (world)")]
+//     public Transform playerSpawnPoint;
+//     public Transform enemySpawnPoint;
+
+//     private FactionButton playerFaction;
+//     private FactionButton enemyFaction;
+
+//     private void Awake()
+//     {
+//         Instance = this;
+//     }
+
+//     IEnumerator Start()
+//     {
+//         yield return null; // wait one frame for tiles to register
+//         SpawnMainBuildings();
+//     }
+
+//     public void SetPlayerFaction(FactionButton faction)
+//     {
+//         playerFaction = faction;
+
+//         // Enemy picks randomly but not the same as player
+//         var allButtons = Object.FindObjectsByType<FactionButton>(FindObjectsSortMode.None);
+//         var possibleEnemies = new List<FactionButton>(allButtons);
+//         possibleEnemies.Remove(faction);
+
+//         if (possibleEnemies.Count > 0)
+//         {
+//             int randomIndex = Random.Range(0, possibleEnemies.Count);
+//             enemyFaction = possibleEnemies[randomIndex];
+//         }
+//         else
+//         {
+//             enemyFaction = null;
+//         }
+
+//         SpawnMainBuildings();
+//     }
+
+//     void SpawnMainBuildings()
+//     {
+//         // Player HQ
+//         if (playerSpawnPoint != null && playerFaction != null && mainBuildingSlotPrefab != null)
+//         {
+//             Vector3 pos = playerSpawnPoint.position + Vector3.up * yOffset;
+
+//             var buildingRoot = Instantiate(mainBuildingSlotPrefab, pos, Quaternion.identity);
+//             buildingRoot.name = "PlayerHQ";
+
+//             var unitSide = buildingRoot.GetComponent<UnitSide>();
+//             if (unitSide == null) unitSide = buildingRoot.AddComponent<UnitSide>();
+
+//             unitSide.side = Side.Player;
+//             unitSide.buildingType = BuildingType.MainBuilding;
+//             unitSide.faction = playerFaction;
+//             unitSide.AssignFromFaction();
+//         }
+
+//         // Enemy HQ
+//         if (enemySpawnPoint != null && enemyFaction != null && mainBuildingSlotPrefab != null)
+//         {
+//             Vector3 pos = enemySpawnPoint.position + Vector3.up * yOffset;
+
+//             var buildingRoot = Instantiate(mainBuildingSlotPrefab, pos, Quaternion.identity);
+//             buildingRoot.name = "EnemyHQ";
+
+//             var unitSide = buildingRoot.GetComponent<UnitSide>();
+//             if (unitSide == null) unitSide = buildingRoot.AddComponent<UnitSide>();
+
+//             unitSide.side = Side.Enemy;
+//             unitSide.buildingType = BuildingType.MainBuilding;
+//             unitSide.faction = enemyFaction;
+//             unitSide.AssignFromFaction();
+//         }
+//     }
+// }
