@@ -7,7 +7,6 @@ public class BuildingEntry
 {
     public string buildingName;
     public GameObject playerBuildingPrefab;
-    public GameObject enemyBuildingPrefab;
 }
 
 public class BuildingRegistry : MonoBehaviour
