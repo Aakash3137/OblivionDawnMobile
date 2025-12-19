@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Runtime.CompilerServices;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -17,6 +18,7 @@ public class HomeUIManager : MonoBehaviour
     #region UI Panels
 
     [Header("Panels")]
+    [SerializeField] private GameObject _uiLoginPanel;
     [SerializeField] private GameObject HomePanel;
     [SerializeField] private GameObject ProfilePanel;
     [SerializeField] private GameObject PrivateLobbyPanel;
@@ -24,16 +26,28 @@ public class HomeUIManager : MonoBehaviour
     [SerializeField] private GameObject PlayerJoinedPanel;
     [SerializeField] private GameObject LoadingPanel;
     [SerializeField] private GameObject PvpDisplayPanel;
+    [SerializeField] CanvasGroup playerFactionPanel; //--------
 
     #endregion
 
     #region UI Buttons
+
+
+    [Header("Login Panel Buttons")]
+    [SerializeField] private Button loginButton;
+    [SerializeField] private Button signUpButton;
+    [SerializeField] private Button guestButton;
+
 
     [Header("Main Buttons")]
     [SerializeField] private Button ProfileButton;
     [SerializeField] private Button CampaignButton;
     [SerializeField] private Button PrivateLobbyButton;
     [SerializeField] private Button PVPButton;
+
+
+    [SerializeField] private Button shopButton;
+    [SerializeField] private Button upgradeButton;
 
     [Header("Lobby Buttons")]
     [SerializeField] private Button CreateLobbyButton;
@@ -71,6 +85,8 @@ public class HomeUIManager : MonoBehaviour
     private void Start()
     {
         SetupButtonListeners();
+        playerFactionPanel.GetComponent<CanvasGroup>(); //--------
+
     }
 
     #endregion
@@ -91,7 +107,18 @@ public class HomeUIManager : MonoBehaviour
 
     private void SetupButtonListeners()
     {
-        // Main menu buttons
+
+
+        //Login Panel Listeners
+        // loginButton.onClick.AddListener(OnClickLoginButton);
+        // signUpButton.onClick.AddListener(OnClickSignUpButton);
+        // guestButton.onClick.AddListener(OnClickGuestLogin);
+
+        // // Main menu buttons
+
+        // shopButton.onClick.AddListener(OnClickShopButton);
+        // upgradeButton.onClick.AddListener(OnClickUpgradeButton);
+
         ProfileButton.onClick.AddListener(OnClickProfileButton);
         CampaignButton.onClick.AddListener(OnClickCampaignButton);
         PrivateLobbyButton.onClick.AddListener(OnClickPrivateLobbyButton);
@@ -111,6 +138,15 @@ public class HomeUIManager : MonoBehaviour
 
     #region Button Event Handlers
 
+
+    public void OnClickLoginButton()
+    {
+        ActivatePanel(HomePanel);
+    }
+    public void OnClickSignUpButton() { }
+    public void OnClickGuestLogin() { }
+
+
     private void OnClickProfileButton()
     {
         ProfilePanel.SetActive(true);
@@ -118,16 +154,16 @@ public class HomeUIManager : MonoBehaviour
     }
     private void OnClickCampaignButton()
     {
-        SwitchPanel(HomePanel, LoadingPanel);
-        // TODO: Load Campaign Scene
-        LoadSinglePlayerSceneWithDelay(2);
-    }
+        // SwitchPanel(HomePanel, LoadingPanel);
+        // // TODO: Load Campaign Scene
+        // StartCoroutine(LoadSceneAfterDelay(2));
 
-    public void LoadSinglePlayerSceneWithDelay(float delay)
-    {
-        StartCoroutine(LoadSceneAfterDelay(delay));
-    }
+        playerFactionPanel.alpha = 1;
+        playerFactionPanel.interactable = true;
+        playerFactionPanel.blocksRaycasts = true;
 
+        GameData.GameModeType = "Campaign";
+    }
     private IEnumerator LoadSceneAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -141,6 +177,8 @@ public class HomeUIManager : MonoBehaviour
 
         // Start matchmaking and show PvP panel after delay
         Invoke(nameof(StartPvPAndShowPanel), 0.1f);
+
+        GameData.GameModeType = "PvP";
     }
 
     private void StartPvPAndShowPanel()
@@ -160,6 +198,8 @@ public class HomeUIManager : MonoBehaviour
     {
         Debug.Log("[HomeUIManager] Private lobby button clicked");
         SwitchPanel(HomePanel, PrivateLobbyPanel);
+
+        GameData.GameModeType = "PrivateLobby";
     }
 
     private void OnClickCreateLobbyButton()
@@ -195,6 +235,11 @@ public class HomeUIManager : MonoBehaviour
         SwitchPanel(JoinLobbyPanel, PlayerJoinedPanel);
         PhotonNetworkManager.Instance.JoinLobby(LobbyCodeInputField.text);
     }
+
+
+
+    public void OnClickShopButton() { }
+    public void OnClickUpgradeButton() { }
 
     #endregion
 
@@ -248,6 +293,23 @@ public class HomeUIManager : MonoBehaviour
     {
         if (fromPanel != null) fromPanel.SetActive(false);
         if (toPanel != null) toPanel.SetActive(true);
+    }
+
+
+    private void DisableAllPanels()
+    {
+        _uiLoginPanel.SetActive(false);
+        HomePanel.SetActive(false);
+        PrivateLobbyPanel.SetActive(false);
+        PvpDisplayPanel.SetActive(false);
+        LoadingPanel.SetActive(false);
+    }
+    private void ActivatePanel(GameObject panel, GameObject previousPanel = null)
+    {
+        DisableAllPanels();
+        panel.SetActive(true);
+        if (previousPanel != null)
+            previousPanel.SetActive(true);
     }
 
     #endregion
