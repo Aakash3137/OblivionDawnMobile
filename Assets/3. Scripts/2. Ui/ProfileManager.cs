@@ -6,11 +6,11 @@ using UnityEngine.UI;
 public class ProfileManager : MonoBehaviour
 {
     [SerializeField] internal GameObject profilePanel;
-    [SerializeField] internal GameObject HomePanel;
     [SerializeField] internal TMP_InputField usernameInputField;
     [SerializeField] internal TMP_Text saveText;
-    [SerializeField] internal Button saveButton;
+    [SerializeField] internal Button saveButton;    
     [SerializeField] internal Button crossButton;
+    [SerializeField] internal Button renameButton;
 
     private PlayerProfile playerProfile;
 
@@ -19,8 +19,26 @@ public class ProfileManager : MonoBehaviour
         playerProfile = PlayerProfile.LoadFromDisk();
         usernameInputField.text = playerProfile.PlayerName;
 
-        saveButton.onClick.AddListener(SaveProfile);
         crossButton.onClick.AddListener(CloseProfileManager);
+        renameButton.onClick.AddListener(RenameProfileName);
+        saveButton.onClick.AddListener(SaveProfileName);
+    }
+
+    //Edit profile on UI Profile Panel itself
+    private void RenameProfileName()
+    {
+        usernameInputField.gameObject.SetActive(true);
+        saveButton.gameObject.SetActive(true);
+    }
+    private void SaveProfileName()
+    {
+        SaveProfile();
+        usernameInputField.gameObject.SetActive(false);
+        saveButton.gameObject.SetActive(false);
+    }
+     private void CloseProfileManager()
+    {
+        profilePanel.SetActive(false);
     }
 
     public void SaveProfile()
@@ -37,12 +55,6 @@ public class ProfileManager : MonoBehaviour
             saveText.text = "Username cannot be empty.";
         }
         StartCoroutine(ClearSaveTextAfterDelay(2f));
-    }
-
-    private void CloseProfileManager()
-    {
-        profilePanel.SetActive(false);
-        HomePanel.SetActive(true);
     }
 
     IEnumerator ClearSaveTextAfterDelay(float delay)
