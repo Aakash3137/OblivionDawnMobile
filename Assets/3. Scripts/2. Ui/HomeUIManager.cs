@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -15,7 +17,6 @@ public class HomeUIManager : MonoBehaviour
     #region UI Panels
 
     [Header("Panels")]
-    [SerializeField] private GameObject _uiLoginPanel;
     [SerializeField] private GameObject HomePanel;
     [SerializeField] private GameObject ProfilePanel;
     [SerializeField] private GameObject PrivateLobbyPanel;
@@ -28,22 +29,11 @@ public class HomeUIManager : MonoBehaviour
 
     #region UI Buttons
 
-
-    [Header("Login Panel Buttons")]
-    [SerializeField] private Button loginButton;
-    [SerializeField] private Button signUpButton;
-    [SerializeField] private Button guestButton;
-
-
     [Header("Main Buttons")]
     [SerializeField] private Button ProfileButton;
     [SerializeField] private Button CampaignButton;
     [SerializeField] private Button PrivateLobbyButton;
     [SerializeField] private Button PVPButton;
-
-
-    [SerializeField] private Button shopButton;
-    [SerializeField] private Button upgradeButton;
 
     [Header("Lobby Buttons")]
     [SerializeField] private Button CreateLobbyButton;
@@ -81,7 +71,6 @@ public class HomeUIManager : MonoBehaviour
     private void Start()
     {
         SetupButtonListeners();
-
     }
 
     #endregion
@@ -102,16 +91,7 @@ public class HomeUIManager : MonoBehaviour
 
     private void SetupButtonListeners()
     {
-        //Login Panel Listeners
-        loginButton.onClick.AddListener(OnClickLoginButton);
-        signUpButton.onClick.AddListener(OnClickSignUpButton);
-        guestButton.onClick.AddListener(OnClickGuestLogin);
-
         // Main menu buttons
-
-        shopButton.onClick.AddListener(OnClickShopButton);
-        upgradeButton.onClick.AddListener(OnClickUpgradeButton);
-
         ProfileButton.onClick.AddListener(OnClickProfileButton);
         CampaignButton.onClick.AddListener(OnClickCampaignButton);
         PrivateLobbyButton.onClick.AddListener(OnClickPrivateLobbyButton);
@@ -131,26 +111,23 @@ public class HomeUIManager : MonoBehaviour
 
     #region Button Event Handlers
 
-
-    public void OnClickLoginButton()
-    {
-        ActivatePanel(HomePanel);
-    }
-    public void OnClickSignUpButton() { }
-    public void OnClickGuestLogin() { }
-
-
     private void OnClickProfileButton()
     {
         ProfilePanel.SetActive(true);
-        //HomePanel.SetActive(false);                       //HomePanel is needed on BG since ProfilePanel is not a full screen Panel
+        HomePanel.SetActive(false);
     }
     private void OnClickCampaignButton()
     {
         SwitchPanel(HomePanel, LoadingPanel);
         // TODO: Load Campaign Scene
-        StartCoroutine(LoadSceneAfterDelay(2));
+        LoadSinglePlayerSceneWithDelay(2);
     }
+
+    public void LoadSinglePlayerSceneWithDelay(float delay)
+    {
+        StartCoroutine(LoadSceneAfterDelay(delay));
+    }
+
     private IEnumerator LoadSceneAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -182,15 +159,15 @@ public class HomeUIManager : MonoBehaviour
     private void OnClickPrivateLobbyButton()
     {
         Debug.Log("[HomeUIManager] Private lobby button clicked");
-        //SwitchPanel(HomePanel, PrivateLobbyPanel);
-        PrivateLobbyPanel.SetActive(true);                          //HomePanel is needed on BG since PrivateLobbyPanel is not a full screen Panel
+        SwitchPanel(HomePanel, PrivateLobbyPanel);
     }
 
     private void OnClickCreateLobbyButton()
     {
         CustomGameMode.SetGameMode(GameModeType.HostClient);
-        //SwitchPanel(PrivateLobbyPanel, LoadingPanel);
-        LoadingPanel.SetActive(true);                               //PrivateLobbyPanel is Parent of PlayerJoinedPanel so disable PrivateLobbyPanel will disable PlayerJoinedPanel
+        SwitchPanel(PrivateLobbyPanel, LoadingPanel);
+
+        // Start lobby creation and show panel after delay
         Invoke(nameof(StartLobbyAndShowPanel), 0.1f);
     }
 
@@ -209,8 +186,7 @@ public class HomeUIManager : MonoBehaviour
 
     private void OpenJoinLobbyPanel()
     {
-        //SwitchPanel(PrivateLobbyPanel, JoinLobbyPanel);
-        JoinLobbyPanel.SetActive(true);                         //PrivateLobbyPanel is Parent of JoinLobbyPanel so disable PrivateLobbyPanel will disable JoinLobbyPanel
+        SwitchPanel(PrivateLobbyPanel, JoinLobbyPanel);
     }
 
     private void OnJoinButtonClicked()
@@ -219,8 +195,6 @@ public class HomeUIManager : MonoBehaviour
         SwitchPanel(JoinLobbyPanel, PlayerJoinedPanel);
         PhotonNetworkManager.Instance.JoinLobby(LobbyCodeInputField.text);
     }
-    public void OnClickShopButton() { }
-    public void OnClickUpgradeButton() { }
 
     #endregion
 
@@ -274,23 +248,6 @@ public class HomeUIManager : MonoBehaviour
     {
         if (fromPanel != null) fromPanel.SetActive(false);
         if (toPanel != null) toPanel.SetActive(true);
-    }
-
-
-    private void DisableAllPanels()
-    {
-        _uiLoginPanel.SetActive(false);
-        HomePanel.SetActive(false);
-        PrivateLobbyPanel.SetActive(false);
-        PvpDisplayPanel.SetActive(false);
-        LoadingPanel.SetActive(false);
-    }
-    private void ActivatePanel(GameObject panel, GameObject previousPanel = null)
-    {
-        DisableAllPanels();
-        panel.SetActive(true);
-        if (previousPanel != null)
-            previousPanel.SetActive(true);
     }
 
     #endregion
