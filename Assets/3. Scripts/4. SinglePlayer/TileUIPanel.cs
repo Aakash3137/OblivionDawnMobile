@@ -12,7 +12,8 @@ public class TileUIPanel : MonoBehaviour
     [SerializeField] private WallParent _wallPrefab;
     public GameObject[] buildingPrefabs; // assign in Inspector
 
-    private float _wallYOffset = 1.3f;
+    private bool _mailWallPlaced = false;
+    private float _wallYOffset = 1f;
     private Tile currentTile;
 
     public void Open(Tile tile)
@@ -62,7 +63,8 @@ public class TileUIPanel : MonoBehaviour
         
         // Mark tile as having a building
         currentTile.SetBuildingPlaced();
-
+        
+        PlaceWallsOnMainBuilding();
         PlaceWalls();   // wall place function 
         Close();
     }
@@ -150,7 +152,15 @@ public class TileUIPanel : MonoBehaviour
             }
         }       
     }
-   
+
+    private void PlaceWallsOnMainBuilding()
+    {
+        if(_mailWallPlaced)
+            return;
+        Transform mainBuildingTile = MainBuildingSpawner.Instance.playerSpawnPoint;
+        Instantiate(_wallPrefab, new Vector3(mainBuildingTile.position.x, _wallYOffset, mainBuildingTile.position.z), Quaternion.identity, mainBuildingTile);
+        _mailWallPlaced = true;
+    }   
 }
 
 
