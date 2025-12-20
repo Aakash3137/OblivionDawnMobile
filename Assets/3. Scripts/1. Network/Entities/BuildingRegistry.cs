@@ -13,8 +13,7 @@ public class BuildingRegistry : MonoBehaviour
 {
     public static BuildingRegistry Instance;
 
-    [Header("Building Prefabs")]
-    public List<BuildingEntry> buildings = new List<BuildingEntry>();
+    [Header("Building Prefabs")] public List<BuildingEntry> buildings = new List<BuildingEntry>();
 
     private Dictionary<string, BuildingEntry> buildingDict;
 
@@ -60,5 +59,5 @@ public class BuildingRegistry : MonoBehaviour
         Debug.LogWarning($"[BuildingRegistry] No entry found for: {buildingName}");
         return null;
     }
-    
+
 }

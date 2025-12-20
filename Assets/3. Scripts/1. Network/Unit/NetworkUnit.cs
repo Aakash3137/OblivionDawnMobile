@@ -12,7 +12,7 @@ public class NetworkUnit : NetworkBehaviour
     [SerializeField] private float attackRange = 2f;
     [SerializeField] private float attackDamage = 10f;
     [SerializeField] private float attackCooldown = 1f;
-
+    
     [Networked] public NetworkSide OwnerSide { get; set; }
 
     private Transform targetMainBuilding;
@@ -175,5 +175,4 @@ public class NetworkUnit : NetworkBehaviour
             Runner.Despawn(Object);
         }
     }
-    
 }

@@ -99,16 +99,30 @@ public class FactionButton : MonoBehaviour
 
     [Header("UI References")]
     [SerializeField] CanvasGroup factionPanel;
-    [SerializeField] private GameObject HomePanel, LoadingPanel;
 
     private Button button;
 
     void Start()
     {
         button = GetComponent<Button>();
-        button.onClick.AddListener(OnFactionSelected);
+        //button.onClick.AddListener(OnFactionSelected);
+        button.onClick.AddListener(CheckGameMode);
     }
 
+    void CheckGameMode()
+    {
+        if (GameData.GameModeType == "Campaign")
+        {
+            OnFactionSelected();
+        }
+        else
+        {
+            GameData.SelectedFactionName = factionName;
+            HomeUIManager.Instance.OnFactionClicked();
+            DeactivateFactionPanel();
+        }
+    }
+    
     void OnFactionSelected()
     {
         if (GameData.PrefabStore == null)
@@ -128,11 +142,10 @@ public class FactionButton : MonoBehaviour
         Debug.Log($"[FactionButton] Faction selected: {factionName}, main building injected: {mainBuildingPrefab.name}");
 
         DeactivateFactionPanel();
-        SwitchPanel(HomePanel, LoadingPanel);
+        HomeUIManager.Instance.SwitchPanel(HomeUIManager.Instance.HomePanel, HomeUIManager.Instance.LoadingPanel);
         StartCoroutine(LoadSceneAfterDelay(2));
     }
-
-
+    
     private void DeactivateFactionPanel()
     {
         if (factionPanel != null)
@@ -147,11 +160,5 @@ public class FactionButton : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         SceneManager.LoadScene("SinglePlayerScene");
-    }
-
-    private void SwitchPanel(GameObject fromPanel, GameObject toPanel)
-    {
-        if (fromPanel != null) fromPanel.SetActive(false);
-        if (toPanel != null) toPanel.SetActive(true);
     }
 }

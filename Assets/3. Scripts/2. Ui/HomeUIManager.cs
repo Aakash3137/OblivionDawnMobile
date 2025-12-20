@@ -18,13 +18,13 @@ public class HomeUIManager : MonoBehaviour
     #region UI Panels
 
     [Header("Panels")]
-    [SerializeField] private GameObject _uiLoginPanel;
-    [SerializeField] private GameObject HomePanel;
-    [SerializeField] private GameObject ProfilePanel;
+    [SerializeField] internal GameObject _uiLoginPanel;
+    [SerializeField] internal GameObject HomePanel;
+    [SerializeField] internal GameObject ProfilePanel;
     [SerializeField] private GameObject PrivateLobbyPanel;
     [SerializeField] private GameObject JoinLobbyPanel;
     [SerializeField] private GameObject PlayerJoinedPanel;
-    [SerializeField] private GameObject LoadingPanel;
+    [SerializeField] internal GameObject LoadingPanel;
     [SerializeField] private GameObject PvpDisplayPanel;
     [SerializeField] CanvasGroup playerFactionPanel; //--------
 
@@ -107,14 +107,12 @@ public class HomeUIManager : MonoBehaviour
 
     private void SetupButtonListeners()
     {
+        //Login Panel Listeners
+        loginButton.onClick.AddListener(OnClickLoginButton);
+        signUpButton.onClick.AddListener(OnClickSignUpButton);
+        guestButton.onClick.AddListener(OnClickGuestLogin);
 
-
-       //Login Panel Listeners
-         loginButton.onClick.AddListener(OnClickLoginButton);
-         signUpButton.onClick.AddListener(OnClickSignUpButton);
-         guestButton.onClick.AddListener(OnClickGuestLogin);
-
-         // Main menu buttons
+        // Main menu buttons
         shopButton.onClick.AddListener(OnClickShopButton);
         upgradeButton.onClick.AddListener(OnClickUpgradeButton);
         ProfileButton.onClick.AddListener(OnClickProfileButton);
@@ -143,24 +141,20 @@ public class HomeUIManager : MonoBehaviour
     }
     public void OnClickSignUpButton() { }
     public void OnClickGuestLogin() { }
-
-
+    
     private void OnClickProfileButton()
     {
         ProfilePanel.SetActive(true);
         //HomePanel.SetActive(false);
     }
+    
     private void OnClickCampaignButton()
     {
         // SwitchPanel(HomePanel, LoadingPanel);
         // // TODO: Load Campaign Scene
         // StartCoroutine(LoadSceneAfterDelay(2));
-
-        playerFactionPanel.alpha = 1;
-        playerFactionPanel.interactable = true;
-        playerFactionPanel.blocksRaycasts = true;
-
         GameData.GameModeType = "Campaign";
+        LoadFactionPanel();
     }
     private IEnumerator LoadSceneAfterDelay(float delay)
     {
@@ -171,12 +165,10 @@ public class HomeUIManager : MonoBehaviour
     private void OnClickPVPButton()
     {
         CustomGameMode.SetGameMode(GameModeType.PvP);
-        SwitchPanel(HomePanel, LoadingPanel);
+        GameData.GameModeType = "PVP";
+        //SwitchPanel(HomePanel, LoadingPanel);
 
-        // Start matchmaking and show PvP panel after delay
-        Invoke(nameof(StartPvPAndShowPanel), 0.1f);
-
-        GameData.GameModeType = "PvP";
+        LoadFactionPanel();
     }
 
     private void StartPvPAndShowPanel()
@@ -194,11 +186,10 @@ public class HomeUIManager : MonoBehaviour
 
     private void OnClickPrivateLobbyButton()
     {
-        Debug.Log("[HomeUIManager] Private lobby button clicked");
+        GameData.GameModeType = "Lobby";
         //SwitchPanel(HomePanel, PrivateLobbyPanel);
-        PrivateLobbyPanel.SetActive(true);    
-        //HomePanel is needed on BG since PrivateLobbyPanel is not a full screen Panel
-        GameData.GameModeType = "PrivateLobby";
+        
+        LoadFactionPanel();
     }
 
     private void OnClickCreateLobbyButton()
@@ -229,7 +220,9 @@ public class HomeUIManager : MonoBehaviour
     private void OpenJoinLobbyPanel()
     {
         //SwitchPanel(PrivateLobbyPanel, JoinLobbyPanel);
-        JoinLobbyPanel.SetActive(true);                         //PrivateLobbyPanel is Parent of JoinLobbyPanel so disable PrivateLobbyPanel will disable JoinLobbyPanel
+        
+        //PrivateLobbyPanel is Parent of JoinLobbyPanel so disable PrivateLobbyPanel will disable JoinLobbyPanel
+        JoinLobbyPanel.SetActive(true);    
     }
 
     private void OnJoinButtonClicked()
@@ -239,8 +232,27 @@ public class HomeUIManager : MonoBehaviour
         PhotonNetworkManager.Instance.JoinLobby(LobbyCodeInputField.text);
     }
 
-
-
+    private void LoadFactionPanel()
+    {
+        playerFactionPanel.alpha = 1;
+        playerFactionPanel.interactable = true;
+        playerFactionPanel.blocksRaycasts = true;
+    }
+    
+    internal void OnFactionClicked()
+    {
+        if (GameData.GameModeType == "PVP")
+        {
+            // Start matchmaking and show PvP panel after delay
+            Invoke(nameof(StartPvPAndShowPanel), 0.1f);
+        }
+        else if(GameData.GameModeType == "Lobby")
+        {
+            //HomePanel is needed on BG since PrivateLobbyPanel is not a full screen Panel
+            PrivateLobbyPanel.SetActive(true);    
+        }
+    }
+    
     public void OnClickShopButton() { }
     public void OnClickUpgradeButton() { }
 
@@ -292,7 +304,7 @@ public class HomeUIManager : MonoBehaviour
 
     #region Helper Methods
 
-    private void SwitchPanel(GameObject fromPanel, GameObject toPanel)
+    public void SwitchPanel(GameObject fromPanel, GameObject toPanel)
     {
         if (fromPanel != null) fromPanel.SetActive(false);
         if (toPanel != null) toPanel.SetActive(true);
