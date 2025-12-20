@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8957070321639914992}
   - component: {fileID: 2289749596056121463}
   - component: {fileID: 5551679913311386414}
+  - component: {fileID: 6617784991151446519}
   - component: {fileID: 5711781814223891004}
   m_Layer: 13
   m_Name: UnitSpawner_Building
@@ -33,7 +34,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 2744090075142055788}
   m_Father: {fileID: 0}
@@ -69,7 +70,7 @@ NavMeshObstacle:
   m_Enabled: 1
   serializedVersion: 3
   m_Shape: 1
-  m_Extents: {x: 1, y: 1, z: 1}
+  m_Extents: {x: 0.25, y: 0.25, z: 0.25}
   m_MoveThreshold: 0.1
   m_Carve: 1
   m_CarveOnlyStationary: 1
@@ -87,6 +88,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4318e9e7de6742e4687acff599a09f7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  buildingKey: 
   playerSideOBJ_Fab: {fileID: 769152143781610058, guid: 76cd5de8c6fc41c40b01d4e27db2dc73, type: 3}
   enemySideOBJ_Fab: {fileID: 8869891348722248436, guid: 559d76e68d6799542ae1f6c3706a40db, type: 3}
   side: 0
@@ -117,6 +119,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useDiagonals: 1
+--- !u!114 &6617784991151446519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4320449579214391836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 104aed972e1b6884285c8b605fbfa4ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unitToProduce: {fileID: 0}
+  spawnPoint: {fileID: 0}
+  autoProduce: 1
 --- !u!114 &5711781814223891004
 MonoBehaviour:
   m_ObjectHideFlags: 0

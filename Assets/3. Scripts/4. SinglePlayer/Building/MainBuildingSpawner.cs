@@ -78,42 +78,53 @@ public class MainBuildingSpawner : MonoBehaviour
         SpawnMainBuildings();
     }
 
+
     void SpawnMainBuildings()
     {
         // Player building
         if (playerSpawnPoint != null && playerMainBuildingPrefab != null)
         {
-            Vector3 pos = playerSpawnPoint.position + Vector3.up * yOffset;
-            var building = Instantiate(playerMainBuildingPrefab, pos, Quaternion.identity);
+            Tile tile = playerSpawnPoint.GetComponent<Tile>();
+            if (tile != null)
+            {
+                Vector3 pos = tile.transform.position + Vector3.up * yOffset;
 
-            var unitSide = building.GetComponent<UnitSide>();
-            if (unitSide != null)
-            {
-                unitSide.side = Side.Player;
-                Debug.Log("[Spawner] Player building spawned.");
-            }
-            else
-            {
-                Debug.LogError("[Spawner] Player prefab missing UnitSide component!");
+                // Instantiate building as child of the tile
+                var building = Instantiate(playerMainBuildingPrefab, pos, Quaternion.identity, tile.transform);
+
+                var unitSide = building.GetComponent<UnitSide>();
+                if (unitSide != null)
+                {
+                    unitSide.side = Side.Player;
+                    Debug.Log("[Spawner] Player building spawned inside tile.");
+
+                    tile.SetBuildingPlaced();   // mark tile
+                }
             }
         }
 
         // Enemy building
         if (enemySpawnPoint != null && enemyMainBuildingPrefab != null)
         {
-            Vector3 pos = enemySpawnPoint.position + Vector3.up * yOffset;
-            var building = Instantiate(enemyMainBuildingPrefab, pos, Quaternion.identity);
+            Tile tile = enemySpawnPoint.GetComponent<Tile>();
+            if (tile != null)
+            {
+                Vector3 pos = tile.transform.position + Vector3.up * yOffset;
 
-            var unitSide = building.GetComponent<UnitSide>();
-            if (unitSide != null)
-            {
-                unitSide.side = Side.Enemy;
-                Debug.Log("[Spawner] Enemy building spawned.");
-            }
-            else
-            {
-                Debug.LogError("[Spawner] Enemy prefab missing UnitSide component!");
+                // Instantiate building as child of the tile
+                var building = Instantiate(enemyMainBuildingPrefab, pos, Quaternion.identity, tile.transform);
+
+                var unitSide = building.GetComponent<UnitSide>();
+                if (unitSide != null)
+                {
+                    unitSide.side = Side.Enemy;
+                    Debug.Log("[Spawner] Enemy building spawned inside tile.");
+
+                    tile.SetBuildingPlaced();   // mark tile
+                }
             }
         }
     }
+
+
 }
