@@ -109,16 +109,14 @@ public class HomeUIManager : MonoBehaviour
     {
 
 
-        //Login Panel Listeners
-        // loginButton.onClick.AddListener(OnClickLoginButton);
-        // signUpButton.onClick.AddListener(OnClickSignUpButton);
-        // guestButton.onClick.AddListener(OnClickGuestLogin);
+       //Login Panel Listeners
+         loginButton.onClick.AddListener(OnClickLoginButton);
+         signUpButton.onClick.AddListener(OnClickSignUpButton);
+         guestButton.onClick.AddListener(OnClickGuestLogin);
 
-        // // Main menu buttons
-
-        // shopButton.onClick.AddListener(OnClickShopButton);
-        // upgradeButton.onClick.AddListener(OnClickUpgradeButton);
-
+         // Main menu buttons
+        shopButton.onClick.AddListener(OnClickShopButton);
+        upgradeButton.onClick.AddListener(OnClickUpgradeButton);
         ProfileButton.onClick.AddListener(OnClickProfileButton);
         CampaignButton.onClick.AddListener(OnClickCampaignButton);
         PrivateLobbyButton.onClick.AddListener(OnClickPrivateLobbyButton);
@@ -150,7 +148,7 @@ public class HomeUIManager : MonoBehaviour
     private void OnClickProfileButton()
     {
         ProfilePanel.SetActive(true);
-        HomePanel.SetActive(false);
+        //HomePanel.SetActive(false);
     }
     private void OnClickCampaignButton()
     {
@@ -197,16 +195,20 @@ public class HomeUIManager : MonoBehaviour
     private void OnClickPrivateLobbyButton()
     {
         Debug.Log("[HomeUIManager] Private lobby button clicked");
-        SwitchPanel(HomePanel, PrivateLobbyPanel);
-
+        //SwitchPanel(HomePanel, PrivateLobbyPanel);
+        PrivateLobbyPanel.SetActive(true);    
+        //HomePanel is needed on BG since PrivateLobbyPanel is not a full screen Panel
         GameData.GameModeType = "PrivateLobby";
     }
 
     private void OnClickCreateLobbyButton()
     {
         CustomGameMode.SetGameMode(GameModeType.HostClient);
-        SwitchPanel(PrivateLobbyPanel, LoadingPanel);
-
+        //SwitchPanel(PrivateLobbyPanel, LoadingPanel);
+        
+        LoadingPanel.SetActive(true);                
+        //PrivateLobbyPanel is Parent of PlayerJoinedPanel so disable PrivateLobbyPanel will disable PlayerJoinedPanel
+        
         // Start lobby creation and show panel after delay
         Invoke(nameof(StartLobbyAndShowPanel), 0.1f);
     }
@@ -226,7 +228,8 @@ public class HomeUIManager : MonoBehaviour
 
     private void OpenJoinLobbyPanel()
     {
-        SwitchPanel(PrivateLobbyPanel, JoinLobbyPanel);
+        //SwitchPanel(PrivateLobbyPanel, JoinLobbyPanel);
+        JoinLobbyPanel.SetActive(true);                         //PrivateLobbyPanel is Parent of JoinLobbyPanel so disable PrivateLobbyPanel will disable JoinLobbyPanel
     }
 
     private void OnJoinButtonClicked()

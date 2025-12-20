@@ -43,12 +43,27 @@ public class TileUIPanel : MonoBehaviour
         Vector3 spawnPos = currentTile.transform.position;
         spawnPos.y += 2f; // adjust depending on prefab pivot
 
-        Instantiate(buildingPrefabs[prefabIndex], spawnPos, Quaternion.identity, currentTile.transform);
+        // Instantiate the placeholder prefab
+        var placeholder = Instantiate(buildingPrefabs[prefabIndex], spawnPos, Quaternion.identity, currentTile.transform);
 
+        // Inject UnitSide info
+        var unitSide = placeholder.GetComponent<UnitSide>();
+        if (unitSide != null)
+        {
+            unitSide.side = currentTile.ownerSide;
+
+            // Force UnitSide to inject the correct prefab immediately
+            unitSide.Refresh();
+        }
+        else
+        {
+            Debug.LogError("[TileUIPanel] Building prefab must have UnitSide attached!");
+        }
+        
         // Mark tile as having a building
         currentTile.SetBuildingPlaced();
 
-        PlaceWalls();
+        PlaceWalls();   // wall place function 
         Close();
     }
 
@@ -65,7 +80,10 @@ public class TileUIPanel : MonoBehaviour
             gameObject.SetActive(show);
         }
     }
-
+    
+    public void OnCloseButtonClicked() => Close();
+    
+    //Wall logic
     private void PlaceWalls()
     {
         Vector3 _currentTileCords = currentTile.transform.position;
@@ -132,7 +150,7 @@ public class TileUIPanel : MonoBehaviour
             }
         }       
     }
-    public void OnCloseButtonClicked() => Close();
+   
 }
 
 
