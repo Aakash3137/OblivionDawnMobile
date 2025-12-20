@@ -1,74 +1,6 @@
-// using UnityEngine;
-// using System.Collections;
-
-// public class MainBuildingSpawner : MonoBehaviour
-// {
-//     public static MainBuildingSpawner Instance;
-
-//     [Header("Default Prefabs (fallback)")]
-//     public GameObject mainBuildingPrefab;
-
-//     [Header("Spawn Settings")]
-//     public float yOffset = 1f;
-
-//     [Header("Custom Spawn Positions (world)")]
-//     public Transform playerSpawnPoint;
-//     public Transform enemySpawnPoint;
-
-//     private GameObject playerMainBuildingPrefab;
-//     private GameObject enemyMainBuildingPrefab;
-
-//     private void Awake()
-//     {
-//         Instance = this;
-//     }
-
-//     IEnumerator Start()
-//     {
-//         yield return null; // wait one frame for tiles to register
-//         SpawnMainBuildings();
-//     }
-
-//     public void SetPlayerFaction(FactionButton faction)
-//     {
-//         playerMainBuildingPrefab = faction.mainBuildingPrefab;
-
-//         // Enemy picks randomly but not the same as player
-//         var allButtons = Object.FindObjectsByType<FactionButton>(FindObjectsSortMode.None);
-//         var possibleEnemies = new System.Collections.Generic.List<FactionButton>(allButtons);
-//         possibleEnemies.Remove(faction);
-
-//         int randomIndex = Random.Range(0, possibleEnemies.Count);
-//         enemyMainBuildingPrefab = possibleEnemies[randomIndex].mainBuildingPrefab;
-
-//         // Respawn buildings after selection
-//         SpawnMainBuildings();
-//     }
-
-
-//     void SpawnMainBuildings()
-//     {
-//         // Player building
-//         if (playerSpawnPoint != null && playerMainBuildingPrefab != null)
-//         {
-//             Vector3 pos = playerSpawnPoint.position + Vector3.up * yOffset;
-//             var building = Instantiate(playerMainBuildingPrefab, pos, Quaternion.identity);
-//             building.GetComponent<UnitSide>().side = Side.Player;
-//         }
-
-//         // Enemy building
-//         if (enemySpawnPoint != null && enemyMainBuildingPrefab != null)
-//         {
-//             Vector3 pos = enemySpawnPoint.position + Vector3.up * yOffset;
-//             var building = Instantiate(enemyMainBuildingPrefab, pos, Quaternion.identity);
-//             building.GetComponent<UnitSide>().side = Side.Enemy;
-//         }
-//     }
-// }
-
-
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class MainBuildingSpawner : MonoBehaviour
 {
@@ -92,127 +24,48 @@ public class MainBuildingSpawner : MonoBehaviour
         Instance = this;
     }
 
-    // IEnumerator Start()
-    // {
-    //     yield return null; // wait one frame for tiles to register
-
-    //     // Load player choice from GameData
-    //     if (GameData.SelectedMainBuildingPrefab != null)
-    //         playerMainBuildingPrefab = GameData.SelectedMainBuildingPrefab;
-    //     else
-    //         playerMainBuildingPrefab = mainBuildingPrefab; // fallback
-
-    //     // Pick random enemy faction (different from player)
-    //     var allButtons = Object.FindObjectsByType<FactionButton>(FindObjectsSortMode.None);
-    //     if (allButtons.Length > 0)
-    //     {
-    //         var possibleEnemies = new System.Collections.Generic.List<FactionButton>(allButtons);
-    //         possibleEnemies.RemoveAll(f => f.mainBuildingPrefab == playerMainBuildingPrefab);
-
-    //         if (possibleEnemies.Count > 0)
-    //         {
-    //             int randomIndex = Random.Range(0, possibleEnemies.Count);
-    //             enemyMainBuildingPrefab = possibleEnemies[randomIndex].mainBuildingPrefab;
-    //         }
-    //     }
-
-    //     SpawnMainBuildings();
-    // }
-
-
-
-
-
-
-    // IEnumerator Start()
-    // {
-    //     yield return null; // wait one frame for tiles to register
-
-    //     // Debug logs for player choice
-    //     Debug.Log($"[Spawner] Game starting...");
-    //     Debug.Log($"[Spawner] Selected Faction: {GameData.SelectedFactionName ?? "None"}");
-    //     Debug.Log($"[Spawner] Selected Game Mode: {GameData.GameModeType ?? "None"}");
-
-    //     // Load player choice from GameData
-    //     if (GameData.SelectedMainBuildingPrefab != null)
-    //     {
-    //         playerMainBuildingPrefab = GameData.SelectedMainBuildingPrefab;
-    //         Debug.Log("[Spawner] Player main building prefab loaded from GameData.");
-    //     }
-    //     else
-    //     {
-    //         playerMainBuildingPrefab = mainBuildingPrefab; // fallback
-    //         Debug.LogWarning("[Spawner] No player prefab found in GameData, using fallback prefab.");
-    //     }
-
-    //     // Pick random enemy faction (different from player)
-    //     var allButtons = Object.FindObjectsByType<FactionButton>(FindObjectsSortMode.None);
-    //     if (allButtons.Length > 0)
-    //     {
-    //         var possibleEnemies = new System.Collections.Generic.List<FactionButton>(allButtons);
-    //         possibleEnemies.RemoveAll(f => f.mainBuildingPrefab == playerMainBuildingPrefab);
-
-    //         if (possibleEnemies.Count > 0)
-    //         {
-    //             int randomIndex = Random.Range(0, possibleEnemies.Count);
-    //             enemyMainBuildingPrefab = possibleEnemies[randomIndex].mainBuildingPrefab;
-    //             Debug.Log($"[Spawner] Enemy faction chosen: {possibleEnemies[randomIndex].name}");
-    //         }
-    //         else
-    //         {
-    //             Debug.LogWarning("[Spawner] No valid enemy factions available.");
-    //         }
-    //     }
-    //     else
-    //     {
-    //         Debug.LogWarning("[Spawner] No FactionButtons found in scene to pick enemy faction.");
-    //     }
-
-    //     // Finally spawn buildings
-    //     SpawnMainBuildings();
-    // }
-
-
-
-
-
-
     IEnumerator Start()
     {
         yield return null; // wait one frame for tiles to register
 
-        // Debug logs for player choice
         Debug.Log($"[Spawner] Game starting...");
         Debug.Log($"[Spawner] Selected Faction: {GameData.SelectedFactionName ?? "None"}");
         Debug.Log($"[Spawner] Selected Game Mode: {GameData.GameModeType ?? "None"}");
 
-        // Load player choice from GameData
-        if (GameData.SelectedMainBuildingPrefab != null)
+        // Player main building from store
+        if (GameData.PrefabStore != null && GameData.PrefabStore.playerMainBuildingPrefab != null)
         {
-            playerMainBuildingPrefab = GameData.SelectedMainBuildingPrefab;
-            Debug.Log("[Spawner] Player main building prefab loaded from GameData.");
+            playerMainBuildingPrefab = GameData.PrefabStore.playerMainBuildingPrefab;
+            Debug.Log($"[Spawner] Player main building prefab loaded: {playerMainBuildingPrefab.name}");
         }
         else
         {
             playerMainBuildingPrefab = mainBuildingPrefab; // fallback
-            Debug.LogWarning("[Spawner] No player prefab found in GameData, using fallback prefab.");
+            Debug.LogWarning("[Spawner] No player prefab found in store, using fallback.");
         }
 
-        // Pick random enemy faction (different from player)
-        if (GameData.AllFactionPrefabs != null && GameData.AllFactionPrefabs.Count > 1)
+        // Enemy main building: either explicit or random pick
+        if (GameData.PrefabStore != null && GameData.PrefabStore.enemyMainBuildingPrefab != null)
         {
-            var possibleEnemies = new System.Collections.Generic.List<GameObject>(GameData.AllFactionPrefabs);
+            enemyMainBuildingPrefab = GameData.PrefabStore.enemyMainBuildingPrefab;
+            Debug.Log($"[Spawner] Enemy main building prefab loaded: {enemyMainBuildingPrefab.name}");
+        }
+        else if (GameData.PrefabStore != null && GameData.PrefabStore.PlayerPrefabs.Count > 1)
+        {
+            // Pick random from player prefabs list, excluding the player’s choice
+            var possibleEnemies = new List<GameObject>(GameData.PrefabStore.PlayerPrefabs);
             possibleEnemies.Remove(playerMainBuildingPrefab);
 
             if (possibleEnemies.Count > 0)
             {
                 int randomIndex = Random.Range(0, possibleEnemies.Count);
                 enemyMainBuildingPrefab = possibleEnemies[randomIndex];
-                Debug.Log($"[Spawner] Enemy prefab chosen: {enemyMainBuildingPrefab.name}");
+                Debug.Log($"[Spawner] Enemy prefab chosen randomly: {enemyMainBuildingPrefab.name}");
             }
             else
             {
-                Debug.LogWarning("[Spawner] No valid enemy prefabs available.");
+                enemyMainBuildingPrefab = mainBuildingPrefab; // fallback
+                Debug.LogWarning("[Spawner] No valid enemy prefabs, using fallback.");
             }
         }
         else
@@ -232,7 +85,17 @@ public class MainBuildingSpawner : MonoBehaviour
         {
             Vector3 pos = playerSpawnPoint.position + Vector3.up * yOffset;
             var building = Instantiate(playerMainBuildingPrefab, pos, Quaternion.identity);
-            building.GetComponent<UnitSide>().side = Side.Player;
+
+            var unitSide = building.GetComponent<UnitSide>();
+            if (unitSide != null)
+            {
+                unitSide.side = Side.Player;
+                Debug.Log("[Spawner] Player building spawned.");
+            }
+            else
+            {
+                Debug.LogError("[Spawner] Player prefab missing UnitSide component!");
+            }
         }
 
         // Enemy building
@@ -240,7 +103,17 @@ public class MainBuildingSpawner : MonoBehaviour
         {
             Vector3 pos = enemySpawnPoint.position + Vector3.up * yOffset;
             var building = Instantiate(enemyMainBuildingPrefab, pos, Quaternion.identity);
-            building.GetComponent<UnitSide>().side = Side.Enemy;
+
+            var unitSide = building.GetComponent<UnitSide>();
+            if (unitSide != null)
+            {
+                unitSide.side = Side.Enemy;
+                Debug.Log("[Spawner] Enemy building spawned.");
+            }
+            else
+            {
+                Debug.LogError("[Spawner] Enemy prefab missing UnitSide component!");
+            }
         }
     }
 }

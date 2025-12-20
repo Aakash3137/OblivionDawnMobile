@@ -5144,6 +5144,51 @@ MonoBehaviour:
   Components:
   - {fileID: 1003988542}
   _guid: 235114d4-b298-4aa4-
+--- !u!1 &1012968426
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1012968428}
+  - component: {fileID: 1012968427}
+  m_Layer: 0
+  m_Name: FactionPrefabStore
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1012968427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1012968426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd4b59368bfc6c0418b67185a033582a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  storeAsset: {fileID: 11400000, guid: 0881adec9f2c55a4095f9b1f0dc865ec, type: 2}
+--- !u!4 &1012968428
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1012968426}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 9.088618, y: 4.069025, z: 6.689077}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1033010650 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8017389690918257301, guid: 63c05fdc5ac2d4a41b184966e88f6130, type: 3}
@@ -9284,15 +9329,15 @@ MonoBehaviour:
   LoadingPanel: {fileID: 891822312}
   PvpDisplayPanel: {fileID: 829605580}
   playerFactionPanel: {fileID: 1778103299}
-  _loginButton: {fileID: 0}
-  _signUpButton: {fileID: 0}
-  _guestButton: {fileID: 0}
+  loginButton: {fileID: 0}
+  signUpButton: {fileID: 0}
+  guestButton: {fileID: 0}
   ProfileButton: {fileID: 2086996013}
   CampaignButton: {fileID: 55818839685422626}
   PrivateLobbyButton: {fileID: 55818840177442846}
   PVPButton: {fileID: 55818838434920398}
-  _shopButton: {fileID: 0}
-  _upgradeButton: {fileID: 0}
+  shopButton: {fileID: 0}
+  upgradeButton: {fileID: 0}
   CreateLobbyButton: {fileID: 1751339963}
   OuterJoinLobbyButton: {fileID: 5411062754482281873}
   JoinLobbyButton: {fileID: 718270145}
@@ -10425,6 +10470,10 @@ PrefabInstance:
       propertyPath: LoadingPanel
       value: 
       objectReference: {fileID: 891822312}
+    - target: {fileID: 1557297517898811487, guid: 46eafcce65792e34e919418823be4238, type: 3}
+      propertyPath: mainBuildingPrefab
+      value: 
+      objectReference: {fileID: 4320449579214391836, guid: 91354f5fe4a35b547ad2848ec23d7ee3, type: 3}
     - target: {fileID: 1592573141972886094, guid: 46eafcce65792e34e919418823be4238, type: 3}
       propertyPath: m_Name
       value: Present
@@ -14612,3 +14661,4 @@ SceneRoots:
   - {fileID: 2079848227}
   - {fileID: 764489299}
   - {fileID: 1039674180}
+  - {fileID: 1012968428}
