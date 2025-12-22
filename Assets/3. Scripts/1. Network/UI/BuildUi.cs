@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class BuildUi : MonoBehaviour
 {
     [SerializeField] internal string prefabNameText;
+    
     private void Start()
     {
         Debug.Log("Buttonui start");
