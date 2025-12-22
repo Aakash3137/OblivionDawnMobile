@@ -57,6 +57,7 @@ public class NetworkCubeGridManager : NetworkBehaviour
     // --------------------------------------------------------------------
     //  LOAD TILES AUTOMATICALLY
     // --------------------------------------------------------------------
+    
     private void AutoLoadTilesFromChildren()
     {
         allTiles.Clear();
@@ -84,24 +85,6 @@ public class NetworkCubeGridManager : NetworkBehaviour
         Runner.Spawn(networkEventCorePrefab, Vector3.zero, Quaternion.identity);
     }
 
-    // --------------------------------------------------------------------
-    //  TILE REGISTRATION
-    // --------------------------------------------------------------------
-    /*public void RegisterHex(Vector2Int coord, GameObject tileGO)
-    {
-        if (!tileGO.TryGetComponent(out NetworkTile tile))
-            return;
-
-        if (!hexTiles.ContainsKey(coord))
-            hexTiles.Add(coord, tile);
-
-        MinX = Mathf.Min(MinX, coord.x);
-        MinY = Mathf.Min(MinY, coord.y);
-        MaxX = Mathf.Max(MaxX, coord.x);
-        MaxY = Mathf.Max(MaxY, coord.y);
-
-        UpdateTileLists();
-    }*/
     public void RegisterCube(Vector2Int grid, GameObject tile)
     {
         
@@ -119,6 +102,7 @@ public class NetworkCubeGridManager : NetworkBehaviour
     // --------------------------------------------------------------------
     //  UPDATE TILE LISTS
     // --------------------------------------------------------------------
+    
     public void UpdateTileLists()
     {
         playerTiles.Clear();
@@ -172,6 +156,7 @@ public class NetworkCubeGridManager : NetworkBehaviour
     // --------------------------------------------------------------------
     //  LOOKUP
     // --------------------------------------------------------------------
+    
     public GameObject GetCube(Vector2Int grid)
     {
         cubeTiles.TryGetValue(grid, out var tile);
@@ -181,6 +166,7 @@ public class NetworkCubeGridManager : NetworkBehaviour
     // --------------------------------------------------------------------
     //  WORLD → GRID (Cube Staggered Grid)
     // --------------------------------------------------------------------
+    
     public Vector2Int WorldToGrid(Vector3 pos)
     {
         int row = Mathf.RoundToInt(pos.z / cellSize);
@@ -197,6 +183,7 @@ public class NetworkCubeGridManager : NetworkBehaviour
     // --------------------------------------------------------------------
     //  GRID → WORLD
     // --------------------------------------------------------------------
+    
     public Vector3 GridToWorld(Vector2Int grid)
     {
         float offset = (useOffset && (grid.y & 1) != 0)
@@ -216,6 +203,7 @@ public class NetworkCubeGridManager : NetworkBehaviour
     /// <summary>
     /// Get 4 cardinal neighbors (up, down, left, right).
     /// </summary>
+    
     public List<Vector2Int> GetCardinalNeighbors(Vector2Int grid)
     {
         return new List<Vector2Int>
@@ -230,6 +218,7 @@ public class NetworkCubeGridManager : NetworkBehaviour
     /// <summary>
     /// Get all 8 neighbors (cardinals + diagonals).
     /// </summary>
+    
     public List<Vector2Int> GetAllNeighbors(Vector2Int grid)
     {
         return new List<Vector2Int>
@@ -251,6 +240,7 @@ public class NetworkCubeGridManager : NetworkBehaviour
     // -----------------------------
     // DISTANCE / ADJACENCY
     // -----------------------------
+    
     public int CubeDistance(Vector2Int a, Vector2Int b)
     {
         return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
