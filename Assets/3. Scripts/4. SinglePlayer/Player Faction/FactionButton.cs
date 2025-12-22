@@ -8,49 +8,95 @@
 //     [Header("Faction Info")]
 //     [SerializeField] string factionName;
 
+//     [SerializeField] MP_Faction mpFaction; //=========
+
 //     [Header("Main Building")]
 //     [SerializeField] internal GameObject mainBuildingPrefab;
 
-//     [Header("Other Buildings")]
+//     [Header("Player Buildings for this faction")]
 //     [SerializeField] internal GameObject[] buildingPrefabs;
+
+//     [Header("Enemy Buildings for this faction (optional)")]
+//     [SerializeField] internal GameObject[] enemyBuildingPrefabs;
 
 //     [Header("UI References")]
 //     [SerializeField] CanvasGroup factionPanel;
-//     [SerializeField] private GameObject HomePanel, LoadingPanel;
 
 //     private Button button;
 
 //     void Start()
 //     {
-//         // Register this faction prefab globally
-//         if (!GameData.AllFactionPrefabs.Contains(mainBuildingPrefab))
-//             GameData.AllFactionPrefabs.Add(mainBuildingPrefab);
-
 //         button = GetComponent<Button>();
-//         button.onClick.AddListener(OnFactionSelected);
+//         //button.onClick.AddListener(OnFactionSelected);
+//         button.onClick.AddListener(CheckGameMode);
 //     }
+
+//     void CheckGameMode()
+//     {
+//         GameData.SelectedFactionName = factionName; //======
+//         GameData.SelectedMPFaction = mpFaction; //=========
+
+//         if (GameData.GameModeType == "Campaign")
+//         {
+//             OnFactionSelected();
+//         }
+//         else
+//         {
+//             HomeUIManager.Instance.OnFactionClicked();
+//             DeactivateFactionPanel();
+//         }
+//     }
+
+//     // void OnFactionSelected()
+//     // {
+//     //     if (GameData.PrefabStore == null)
+//     //     {
+//     //         Debug.LogError("[FactionButton] PrefabStore not assigned.");
+//     //         return;
+//     //     }
+
+//     //     // Inject all prefabs into the store
+//     //     GameData.PrefabStore.SetFromFaction(buildingPrefabs, enemyBuildingPrefabs);
+
+//     //     // Also set the main building prefab
+//     //     GameData.PrefabStore.playerMainBuildingPrefab = mainBuildingPrefab;
+
+//     //     GameData.SelectedFactionName = factionName;
+
+//     //     Debug.Log($"[FactionButton] Faction selected: {factionName}, main building injected: {mainBuildingPrefab.name}");
+
+//     //     DeactivateFactionPanel();
+//     //     HomeUIManager.Instance.SwitchPanel(HomeUIManager.Instance.HomePanel, HomeUIManager.Instance.LoadingPanel);
+//     //     StartCoroutine(LoadSceneAfterDelay(2));
+//     // }
+
+
+
+
 //     void OnFactionSelected()
 //     {
-//         // Save faction choice globally
-//         GameData.SelectedMainBuildingPrefab = mainBuildingPrefab;
+//         if (GameData.PrefabStore == null)
+//         {
+//             Debug.LogError("[FactionButton] PrefabStore not assigned.");
+//             return;
+//         }
+
+//         // Add this faction’s prefabs into the global store
+//         GameData.PrefabStore.AddFaction(mainBuildingPrefab, buildingPrefabs, enemyBuildingPrefabs);
+
+//         // Mark player’s choice
+//         GameData.PrefabStore.playerMainBuildingPrefab = mainBuildingPrefab;
 //         GameData.SelectedFactionName = factionName;
 
+//         Debug.Log($"[FactionButton] Player faction selected: {factionName}");
 
-
-//         // Debug logs
-//         Debug.Log($"[FactionButton] Faction selected: {GameData.SelectedFactionName}");
-//         Debug.Log($"[FactionButton] Game mode selected: {GameData.GameModeType}");
-
-//         // Hide faction panel
-//         DeactivateFactiongPanel();
-
-//         SwitchPanel(HomePanel, LoadingPanel);
-
-//         // Load campaign scene
+//         DeactivateFactionPanel();
+//         HomeUIManager.Instance.SwitchPanel(HomeUIManager.Instance.HomePanel, HomeUIManager.Instance.LoadingPanel);
 //         StartCoroutine(LoadSceneAfterDelay(2));
 //     }
 
-//     private void DeactivateFactiongPanel()
+
+//     private void DeactivateFactionPanel()
 //     {
 //         if (factionPanel != null)
 //         {
@@ -65,16 +111,7 @@
 //         yield return new WaitForSeconds(delay);
 //         SceneManager.LoadScene("SinglePlayerScene");
 //     }
-
-//     private void SwitchPanel(GameObject fromPanel, GameObject toPanel)
-//     {
-//         if (fromPanel != null) fromPanel.SetActive(false);
-//         if (toPanel != null) toPanel.SetActive(true);
-//     }
 // }
-
-
-
 
 
 
@@ -87,65 +124,52 @@ public class FactionButton : MonoBehaviour
 {
     [Header("Faction Info")]
     [SerializeField] string factionName;
+    [SerializeField] private FactionName faction;   // use enum instead of string
+    [SerializeField] private AllFactionsData data;  // reference to the ScriptableObject asset
 
-    [Header("Main Building")]
-    [SerializeField] internal GameObject mainBuildingPrefab;
-
-    [Header("Player Buildings for this faction")]
-    [SerializeField] internal GameObject[] buildingPrefabs;
-
-    [Header("Enemy Buildings for this faction (optional)")]
-    [SerializeField] internal GameObject[] enemyBuildingPrefabs;
+    // [SerializeField] MP_Faction mpFaction; //=========
 
     [Header("UI References")]
-    [SerializeField] CanvasGroup factionPanel;
+    [SerializeField] private CanvasGroup factionPanel;
 
     private Button button;
 
     void Start()
     {
         button = GetComponent<Button>();
-        //button.onClick.AddListener(OnFactionSelected);
         button.onClick.AddListener(CheckGameMode);
     }
 
     void CheckGameMode()
     {
+
+        // GameData.SelectedFactionName = factionName; //====== 
+        // GameData.SelectedMPFaction = mpFaction; //=========
+
+        // Store player’s choice globally
+        // GameData.SelectedFaction = faction;
+        GameData.AllFactionsData = data;
+
         if (GameData.GameModeType == "Campaign")
         {
             OnFactionSelected();
         }
         else
         {
-            GameData.SelectedFactionName = factionName;
             HomeUIManager.Instance.OnFactionClicked();
             DeactivateFactionPanel();
         }
     }
-    
+
     void OnFactionSelected()
     {
-        if (GameData.PrefabStore == null)
-        {
-            Debug.LogError("[FactionButton] PrefabStore not assigned.");
-            return;
-        }
-
-        // Inject all prefabs into the store
-        GameData.PrefabStore.SetFromFaction(buildingPrefabs, enemyBuildingPrefabs);
-
-        // Also set the main building prefab
-        GameData.PrefabStore.playerMainBuildingPrefab = mainBuildingPrefab;
-
-        GameData.SelectedFactionName = factionName;
-
-        Debug.Log($"[FactionButton] Faction selected: {factionName}, main building injected: {mainBuildingPrefab.name}");
+        // Debug.Log($"[FactionButton] Player faction selected: {faction}");
 
         DeactivateFactionPanel();
         HomeUIManager.Instance.SwitchPanel(HomeUIManager.Instance.HomePanel, HomeUIManager.Instance.LoadingPanel);
         StartCoroutine(LoadSceneAfterDelay(2));
     }
-    
+
     private void DeactivateFactionPanel()
     {
         if (factionPanel != null)

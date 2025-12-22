@@ -1,17 +1,41 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "FactionData", menuName = "RTS/Faction Data")]
-public class FactionData : ScriptableObject
+[CreateAssetMenu(fileName = "FactionsData", menuName = "RTS/Factions Data")]
+public class FactionsData : ScriptableObject
 {
-    [Header("Faction Info")]
-    public string factionName;
+    [System.Serializable]
+    public class BuildingSlot
+    {
+        public GameObject prefab;          // shared prefab
+        public Material playerMaterial;    // material for player side
+        public Material enemyMaterial;     // material for enemy side
+    }
 
-    [Header("Main Building")]
-    public GameObject mainBuildingPrefab;
+    [System.Serializable]
+    public class FactionBlock
+    {
+        [Header("Main Building")]
+        public BuildingSlot mainBuilding;
 
-    [Header("Player Building Prefabs")]
-    public GameObject[] playerBuildingPrefabs;
+        [Header("Gold Mine")]
+        public BuildingSlot goldMine;
 
-    [Header("Enemy Building Prefabs")]
-    public GameObject[] enemyBuildingPrefabs;
+        [Header("Unit Building")]
+        public BuildingSlot unitBuilding;
+
+        [Header("Turret Building")]
+        public BuildingSlot turretBuilding;
+    }
+
+    [Header("Past Faction")]
+    public FactionBlock past;
+
+    [Header("Present Faction")]
+    public FactionBlock present;
+
+    [Header("Future Faction")]
+    public FactionBlock future;
+
+    [Header("Monster Faction")]
+    public FactionBlock monster;
 }

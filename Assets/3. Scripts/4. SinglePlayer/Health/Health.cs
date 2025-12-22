@@ -4,7 +4,7 @@ public class Health : MonoBehaviour
 {
     public int maxHealth = 100;
     public int currentHealth;
-
+    public FadeHealthBar healthBarFade; // assign in Inspector
     protected virtual void Awake()
     {
         currentHealth = maxHealth;
@@ -12,8 +12,9 @@ public class Health : MonoBehaviour
 
     public void TakeDamage(int amount)
     {
-        currentHealth -= amount;
-        if (currentHealth <= 0) Die();
+        currentHealth -= amount; currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        // Show health bar when hit. 
+        if (healthBarFade != null) healthBarFade.ShowOnHit();
     }
 
     protected virtual void Die()
