@@ -27,7 +27,7 @@ public static class GameData
     public static AllFactionsData AllFactionsData;
 
     // Which faction the player picked (Past, Present, Future, Monster)
-    public static FactionName SelectedFaction;
+    public static FactionName SelectedFaction = FactionName.Past;
 
     // Which faction the enemy is (set at runtime, e.g. random)
     public static FactionName EnemyFaction;
@@ -38,6 +38,7 @@ public static class GameData
     // Game mode info
     public static string GameModeType;
 
+
     public static string SelectedFactionName;
-    public static  MP_Faction SelectedMPFaction;
+    public static MP_Faction SelectedMPFaction;
 }

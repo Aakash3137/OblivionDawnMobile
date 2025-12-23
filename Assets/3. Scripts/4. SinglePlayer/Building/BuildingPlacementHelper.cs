@@ -10,22 +10,14 @@ public class BuildingPlacementHelper : MonoBehaviour
     public bool useDiagonals = false;   // toggle in inspector: 4-way vs 8-way neighbors
 
     private Vector2Int currentCoord;    // track where building is snapped
+    private bool activated = false;     // ensure we only run once
 
     void Start()
     {
-        SnapAndActivate();
-    }
-
-    void Update()
-    {
-        var gm = CubeGridManager.Instance;
-        if (gm == null) return;
-
-        Vector2Int newCoord = gm.WorldToGrid(transform.position);
-        if (newCoord != currentCoord)
+        if (!activated)
         {
-            DeactivateNeighbors();
             SnapAndActivate();
+            activated = true;
         }
     }
 
@@ -68,7 +60,6 @@ public class BuildingPlacementHelper : MonoBehaviour
             if (tileScript.hasBuilding)
                 continue;
 
-
             Debug.Log($"Player-side neighbor: {tileObj.name} at {coord}");
 
             // Show PlusIcon
@@ -87,60 +78,6 @@ public class BuildingPlacementHelper : MonoBehaviour
             openedTiles.Add(tileScript);
         }
     }
-
-
-
-
-
-    // public void SnapAndActivate()
-    // {
-    //     var gm = CubeGridManager.Instance;
-    //     if (gm == null) return;
-
-    //     currentCoord = GetClosestCoord(transform.position);
-
-    //     Vector3 center = gm.GridToWorld(currentCoord);
-    //     transform.position = new Vector3(center.x, transform.position.y, center.z);
-
-    //     List<Vector2Int> neighbors = useDiagonals
-    //         ? gm.GetAllNeighbors(currentCoord)
-    //         : gm.GetCardinalNeighbors(currentCoord);
-
-    //     Debug.Log(useDiagonals
-    //         ? $"Checking 8 neighbors around {currentCoord}"
-    //         : $"Checking 4 neighbors around {currentCoord}");
-
-    //     foreach (var coord in neighbors)
-    //     {
-    //         GameObject tileObj = gm.GetCube(coord);
-    //         if (tileObj == null) continue;
-
-    //         Tile tileScript = tileObj.GetComponent<Tile>();
-    //         if (tileScript == null) continue;
-
-    //         if (tileScript.ownerSide == Side.Enemy) continue;
-    //         if (tileScript.hasBuilding) continue;
-
-    //         Debug.Log($"Player-side neighbor: {tileObj.name} at {coord}");
-
-    //         Transform cubeChild = tileObj.transform.Find("Cube");
-    //         if (cubeChild != null)
-    //         {
-    //             Transform plusIcon = cubeChild.Find("Plus_Icon");
-    //             if (plusIcon != null)
-    //             {
-    //                 plusIcon.gameObject.SetActive(true);
-    //                 activatedIcons.Add(plusIcon);
-    //             }
-    //         }
-
-    //         tileScript.isOpen = true;
-    //         openedTiles.Add(tileScript);
-    //     }
-    // }
-
-
-
 
     private void DeactivateNeighbors()
     {
