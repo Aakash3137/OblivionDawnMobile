@@ -8,6 +8,7 @@ public struct BuildRequestData
     public string tileName;
     public string buildingName;
     public int ownerSide;
+    public string factionName;
 }
 public class NetworkBuildingManager : NetworkBehaviour
 {
@@ -17,11 +18,17 @@ public class NetworkBuildingManager : NetworkBehaviour
     public string mainBuildingName = "MainBuilding";
     private bool mainBuildingsSpawned = false;
     private float spawnCheckDelay = 1f;
+    
+    [Header("Faction Manager")]
+    public MP_FactionManager factionManager;
 
     private void Awake()
     {
         Instance = this;
         NetworkEventCore.AddListener(EventCode.BuildRequest, OnBuildRequestReceived);
+        
+        if (factionManager == null)
+            factionManager = FindObjectOfType<MP_FactionManager>();
     }
 
     public override void Spawned()
@@ -37,7 +44,6 @@ public class NetworkBuildingManager : NetworkBehaviour
         if (mainBuildingsSpawned) return;
         mainBuildingsSpawned = true;
 
-        // Find all NetworkPlayers and sort by SpawnId
         NetworkPlayer[] allPlayers = FindObjectsOfType<NetworkPlayer>();
         
         if (allPlayers.Length < 2)
@@ -55,23 +61,101 @@ public class NetworkBuildingManager : NetworkBehaviour
             else if (player.SpawnId == 1) player1 = player;
         }
 
-        // Find tiles at (4,4) and (12,12)
         NetworkTile tile1 = FindTileByCoord(4, 4);
         NetworkTile tile2 = FindTileByCoord(12, 12);
 
         if (tile1 != null && player0 != null)
         {
-            // Spawn for player with SpawnId 0
-            SpawnBuilding(tile1, mainBuildingName, NetworkSide.Player, player0.Object.InputAuthority);
+            SpawnFactionMainBuilding(tile1, player0.Object.InputAuthority, NetworkSide.Player, player0.FactionName.ToString());
             Debug.Log($"[NBM] Main building spawned at (4,4) for Player SpawnId 0");
         }
 
         if (tile2 != null && player1 != null)
         {
-            // Spawn for player with SpawnId 1
-            SpawnBuilding(tile2, mainBuildingName, NetworkSide.Player, player1.Object.InputAuthority);
+            SpawnFactionMainBuilding(tile2, player1.Object.InputAuthority, NetworkSide.Player, player1.FactionName.ToString());
             Debug.Log($"[NBM] Main building spawned at (12,12) for Player SpawnId 1");
         }
+    }
+    
+    private void SpawnFactionMainBuilding(NetworkTile tile, PlayerRef owner, NetworkSide ownerSide,  string factionName)
+    {
+        if (!Runner.IsServer) return;
+
+        MP_Faction faction = factionManager.GetFactionByName(factionName);
+        if (faction == null)
+        {
+            Debug.LogError($"[NBM] Faction not found: {factionName}");
+            return;
+        }
+
+        GameObject mainBuildingPrefab = faction.mainBuildingPrefab;
+        if (mainBuildingPrefab == null)
+        {
+            Debug.LogError($"[NBM] No main building prefab for faction: {factionName}");
+            return;
+        }
+
+        Vector3 pos = tile.transform.position + Vector3.up;
+
+        var spawnedObj = Runner.Spawn(mainBuildingPrefab, pos, Quaternion.identity, owner, (runner, obj) =>
+        {
+            var building = obj.GetComponent<NetworkBuilding>();
+            if (building != null)
+                building.OwnerSide = ownerSide;
+        });
+
+        if (spawnedObj != null)
+        {
+            tile.OccupyTile();
+            NetworkCubeGridManager.Instance?.UpdateTileLists();
+            Debug.Log($"[NBM] ✓ Faction main building spawned for player {owner} ({factionName})");
+        }
+        /*if (!Runner.IsServer) return;
+        
+        GameObject mainBuildingPrefab = GetMainBuildingPrefab();
+        if (mainBuildingPrefab == null)
+        {
+            Debug.LogError($"[NBM] No main building prefab found for faction: {GameData.SelectedFactionName}");
+            return;
+        }
+
+        Vector3 pos = tile.transform.position + Vector3.up;
+        var spawnedObj = Runner.Spawn(mainBuildingPrefab, pos, Quaternion.identity, owner, (runner, obj) =>
+        {
+            var building = obj.GetComponent<NetworkBuilding>();
+            if (building != null)
+            {
+                building.OwnerSide = ownerSide;
+            }
+        });
+        
+        if (spawnedObj != null)
+        {
+            tile.OccupyTile();
+            NetworkCubeGridManager.Instance?.UpdateTileLists();
+            Debug.Log($"[NBM] ✓ Faction main building spawned for player {owner}");
+        }*/
+    }
+    
+    private GameObject GetMainBuildingPrefab()
+    {
+        if (GameData.SelectedMPFaction != null && GameData.SelectedMPFaction.mainBuildingPrefab != null)
+        {
+            return GameData.SelectedMPFaction.mainBuildingPrefab;
+        }
+        
+        if (factionManager != null && factionManager.allFactions != null)
+        {
+            foreach (var faction in factionManager.allFactions)
+            {
+                if (faction.factionName == GameData.SelectedFactionName)
+                {
+                    return faction.mainBuildingPrefab;
+                }
+            }
+        }
+        
+        return null;
     }
 
     // ---------------- CLIENT → HOST ----------------
@@ -83,7 +167,8 @@ public class NetworkBuildingManager : NetworkBehaviour
         {
             tileName = tile.name,
             buildingName = building,
-            ownerSide = (int)tile.CurrentVisualOwner
+            ownerSide = (int)tile.CurrentVisualOwner,
+            factionName = GameData.SelectedFactionName
         };
         
         if (Runner.IsServer)
@@ -106,7 +191,6 @@ public class NetworkBuildingManager : NetworkBehaviour
         BuildRequestData data = JsonUtility.FromJson<BuildRequestData>(json);
         Debug.Log($"[NBM] Host received build request for tile {data.tileName}, building: {data.buildingName}");
         
-        // Find the client player who sent this request
         PlayerRef clientPlayer = NetworkEventCore.LastEventSender;
         ProcessBuildRequest(data, clientPlayer);
     }
@@ -129,7 +213,7 @@ public class NetworkBuildingManager : NetworkBehaviour
 
         NetworkSide ownerSide = (NetworkSide)data.ownerSide;
         Debug.Log($"[NBM] Host spawning building {data.buildingName} for player {requester}");
-        SpawnBuilding(tile, data.buildingName, ownerSide, requester);
+        SpawnBuilding(tile, data.buildingName, ownerSide, requester, data.factionName);
     }
 
     private NetworkTile FindTileByName(string tileName)
@@ -154,32 +238,64 @@ public class NetworkBuildingManager : NetworkBehaviour
         return null;
     }
 
-    private void SpawnBuilding(NetworkTile tile, string buildingName, NetworkSide ownerSide, PlayerRef owner)
+    private void SpawnBuilding(NetworkTile tile, string buildingName, NetworkSide ownerSide, PlayerRef owner, string factionName)
     {
         if (!Runner.IsServer) return;
 
-        BuildingEntry entry = BuildingRegistry.Instance?.GetBuildingEntry(buildingName);
-        if (entry?.playerBuildingPrefab == null)
+        MP_Faction faction = factionManager.GetFactionByName(factionName);
+        if (faction == null)
         {
-            Debug.LogError($"[NBM] No player prefab found for: {buildingName}");
+            Debug.LogError($"[NBM] Faction not found: {factionName}");
+            return;
+        }
+
+        GameObject prefab = ResolveBuildingPrefab(faction, buildingName);
+        if (prefab == null)
+        {
+            Debug.LogError($"[NBM] No prefab for {buildingName} in faction {factionName}");
             return;
         }
 
         Vector3 pos = tile.transform.position + Vector3.up;
-        var spawnedObj = Runner.Spawn(entry.playerBuildingPrefab, pos, Quaternion.identity, owner, (runner, obj) =>
+
+        Runner.Spawn(prefab, pos, Quaternion.identity, owner, (runner, obj) =>
         {
             var building = obj.GetComponent<NetworkBuilding>();
             if (building != null)
-            {
                 building.OwnerSide = ownerSide;
-            }
         });
+
+        tile.OccupyTile();
+        NetworkCubeGridManager.Instance?.UpdateTileLists();
+
+        Debug.Log($"[NBM] ✓ {buildingName} spawned for {owner} ({factionName})");
         
-        if (spawnedObj != null)
+    }
+    
+    private GameObject ResolveBuildingPrefab(MP_Faction faction, string buildingName)
+    {
+        switch (buildingName)
         {
-            tile.OccupyTile();
-            NetworkCubeGridManager.Instance?.UpdateTileLists();
-            Debug.Log($"[NBM] ✓ {buildingName} spawned for player {owner}");
+            case "MainBuilding":
+            case "MainBuild":
+                return faction.mainBuildingPrefab;
+
+            case "UnitBuilding":
+            case "UnitBuild":
+                return faction.unitBuildingPrefab;
+
+            case "DefenceBuilding":
+            case "DefenceTurret":        
+                return faction.defenceBuildingPrefab;
+
+            case "ResourceBuilding":
+            case "GoldResource":
+                return faction.resourceBuildingPrefab;
+
+            default:
+                Debug.LogWarning($"[NBM] Unknown building type: {buildingName}");
+                return null;
         }
     }
+
 }

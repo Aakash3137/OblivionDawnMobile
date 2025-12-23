@@ -6,25 +6,57 @@ public class MP_FactionManager : MonoBehaviour
     public MP_Faction[] allFactions;
 
     public static MP_Faction LocalFaction;
+    
+    private static MP_FactionManager instance;
+    public static MP_FactionManager Instance => instance;
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     void Start()
     {
-        //LoadFaction();
+        LoadFaction();
     }
 
-    void LoadFaction()
+    public void LoadFaction()
     {
+        if (string.IsNullOrEmpty(GameData.SelectedFactionName))
+        {
+            Debug.LogWarning("[MP_FactionManager] No faction name set in GameData");
+            return;
+        }
+        
         foreach (var faction in allFactions)
         {
             if (faction.factionName == GameData.SelectedFactionName)
             {
                 LocalFaction = faction;
-                Debug.Log("Loaded faction: " + faction.factionName);
+                GameData.SelectedMPFaction = faction;
+                Debug.Log($"[MP_FactionManager] Loaded faction: {faction.factionName}");
                 return;
             }
         }
 
-        // if faction not found in this list, log an error
-        Debug.LogError("Faction not found: " + GameData.SelectedFactionName);
+        Debug.LogError($"[MP_FactionManager] Faction not found: {GameData.SelectedFactionName}");
+    }
+    
+    public MP_Faction GetFactionByName(string factionName)
+    {
+        foreach (var faction in allFactions)
+        {
+            if (faction.factionName == factionName)
+                return faction;
+        }
+        return null;
     }
 }

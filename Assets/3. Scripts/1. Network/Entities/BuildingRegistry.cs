@@ -13,7 +13,8 @@ public class BuildingRegistry : MonoBehaviour
 {
     public static BuildingRegistry Instance;
 
-    [Header("Building Prefabs")] public List<BuildingEntry> buildings = new List<BuildingEntry>();
+    [Header("Building Prefabs")] 
+    public List<BuildingEntry> buildings = new List<BuildingEntry>();
 
     private Dictionary<string, BuildingEntry> buildingDict;
 
@@ -25,6 +26,14 @@ public class BuildingRegistry : MonoBehaviour
             Destroy(gameObject);
 
         InitializeDictionary();
+    }
+    
+    private void Start()
+    {
+        if (buildingDict == null)
+            InitializeDictionary();
+        
+        RegisterFactionBuildings();
     }
 
     private void InitializeDictionary()
@@ -38,6 +47,42 @@ public class BuildingRegistry : MonoBehaviour
                 buildingDict[entry.buildingName.ToLower()] = entry;
                 Debug.Log($"[BuildingRegistry] Registered: {entry.buildingName}");
             }
+        }
+    }
+    
+    private void RegisterFactionBuildings()
+    {
+        if (GameData.SelectedMPFaction == null)
+        {
+            Debug.LogWarning("[BuildingRegistry] No faction selected, skipping faction building registration");
+            return;
+        }
+        
+        var faction = GameData.SelectedMPFaction;
+        
+        RegisterBuilding(faction.mainBuildingPrefab);
+        RegisterBuilding(faction.defenceBuildingPrefab);
+        RegisterBuilding(faction.unitBuildingPrefab);
+        RegisterBuilding(faction.resourceBuildingPrefab);
+        
+        Debug.Log($"[BuildingRegistry] Registered buildings for faction: {faction.factionName}");
+    }
+    
+    private void RegisterBuilding(GameObject prefab)
+    {
+        if (prefab == null) return;
+        
+        string buildingName = prefab.name.ToLower();
+        if (!buildingDict.ContainsKey(buildingName))
+        {
+            var entry = new BuildingEntry
+            {
+                buildingName = prefab.name,
+                playerBuildingPrefab = prefab
+            };
+            buildingDict[buildingName] = entry;
+            buildings.Add(entry);
+            Debug.Log($"[BuildingRegistry] Dynamically registered: {prefab.name}");
         }
     }
 
@@ -59,5 +104,4 @@ public class BuildingRegistry : MonoBehaviour
         Debug.LogWarning($"[BuildingRegistry] No entry found for: {buildingName}");
         return null;
     }
-
 }

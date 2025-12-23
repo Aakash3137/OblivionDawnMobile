@@ -17,6 +17,7 @@ public class NetworkPlayer : NetworkBehaviour
     [Networked] public Quaternion NetworkRotation { get; set; }
     [Networked] public int SpawnId { get; set; }
 
+    [Networked] public NetworkString<_32> FactionName { get; set; }
     #endregion
 
     #region Public Fields
@@ -46,6 +47,12 @@ public class NetworkPlayer : NetworkBehaviour
         InitializeVisualAppearance();
         InitializeGameMode();
         SubscribeToEvents();
+
+        // ✅ ADDED: Send faction to host ONCE
+        if (Object.HasInputAuthority && string.IsNullOrEmpty(FactionName.ToString()))
+        {
+            RPC_SetFaction(GameData.SelectedFactionName);
+        }
 
 
         // Apply transform from network state immediately
@@ -229,6 +236,14 @@ public class NetworkPlayer : NetworkBehaviour
         
         Debug.Log($"[NetworkPlayer] Profile set: {name} (Rank: {rank}) for {Object.InputAuthority}");
         RefreshPlayerUI();
+    }
+    
+    // ✅ ADDED (DO NOT REMOVE)
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    private void RPC_SetFaction(string factionName)
+    {
+        FactionName = factionName;
+        Debug.Log($"[NetworkPlayer] Faction synced: {factionName}");
     }
     
     #endregion
