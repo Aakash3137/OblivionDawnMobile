@@ -4,9 +4,8 @@ public class SpriteHealthBar : MonoBehaviour
 {
     public SpriteRenderer foregroundBar;
     public Health targetHealth;
-    private Transform cam;
-
-    private float initialWidth;
+    Transform cam;
+    float initialWidth;
 
     void Start()
     {
@@ -15,7 +14,6 @@ public class SpriteHealthBar : MonoBehaviour
         if (foregroundBar != null)
             initialWidth = foregroundBar.transform.localScale.x;
     }
-
     void Update()
     {
         // Always face the camera

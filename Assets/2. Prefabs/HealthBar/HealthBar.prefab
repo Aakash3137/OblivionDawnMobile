@@ -77,7 +77,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.8862745}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -97,6 +97,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3669278942575001135}
   - component: {fileID: 8549107271087293899}
+  - component: {fileID: 884793415049308032}
   m_Layer: 0
   m_Name: HealthBar
   m_TagString: Untagged
@@ -114,8 +115,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 8.8, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 8599280973693432375}
   - {fileID: 947429652604960380}
@@ -135,6 +136,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foregroundBar: {fileID: 8274982335624968745}
   targetHealth: {fileID: 0}
+--- !u!114 &884793415049308032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4236839032462663952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db6119d6b269e0148bec8f3a5fe6658d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  renderers:
+  - {fileID: 5640691182208792424}
+  - {fileID: 8274982335624968745}
+  fadeDuration: 1
+  visibleTime: 5
 --- !u!1 &9091648706081851063
 GameObject:
   m_ObjectHideFlags: 0
