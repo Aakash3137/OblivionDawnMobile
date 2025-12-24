@@ -3,13 +3,19 @@ using UnityEngine;
 [System.Serializable]
 public class BuildingUpgradeData
 {
+    public int buildingLevel;
     public Mesh buildingMesh;
     public float buildingHealth;
     public float buildingFireRate;
     public float buildingAttackDamage;
     public float buildingAttackRange;
     public float buildingBuildTime;
-
-    [Tooltip("Resources array 0 = Gold, 1 = Food, 2 = Power, 3 = Metal")]
-    public float[] buildingResourcesCost;
+    [Tooltip("Resource costs required for this upgrade")]
+    public BuildingUpgradeCost[] buildingUpgradeCosts;
+}
+[System.Serializable]
+public struct BuildingUpgradeCost
+{
+    public ResourceType resourceType;
+    public float resourceCost;
 }

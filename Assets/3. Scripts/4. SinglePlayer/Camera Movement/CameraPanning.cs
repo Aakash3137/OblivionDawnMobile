@@ -12,13 +12,14 @@ public class CameraPanning : MonoBehaviour
     public float touchZoomSpeed = 0.01f;
     public float minZoomIn = 5f;
     public float maxZoomOut = 12.5f;
+    private float defaultZoom;
 
     [Header("Clamp Bounds")]
     public Vector3 cameraMinBounds = new Vector3(-5, 10, -5);
     public Vector3 cameraMaxBounds = new Vector3(25, 10, 25);
 
     [Header("Idle Reset")]
-    public float maxIdleDuration = 3f;
+    public float maxIdleDuration = 10f;
     public float smoothingSpeed = 5f;
 
     private Vector3 initialCameraPosition;
@@ -36,6 +37,7 @@ public class CameraPanning : MonoBehaviour
     {
         initialCameraPosition = transform.position;
         cam = GetComponentInChildren<CinemachineCamera>();
+        defaultZoom = cam.Lens.OrthographicSize;
     }
 
     void Update()
@@ -208,6 +210,7 @@ public class CameraPanning : MonoBehaviour
         if (idleTimer >= maxIdleDuration)
         {
             transform.position = Vector3.Lerp(transform.position, initialCameraPosition, smoothingSpeed * Time.deltaTime);
+            cam.Lens.OrthographicSize = Mathf.Lerp(cam.Lens.OrthographicSize, defaultZoom, smoothingSpeed * Time.deltaTime);
         }
     }
 }
