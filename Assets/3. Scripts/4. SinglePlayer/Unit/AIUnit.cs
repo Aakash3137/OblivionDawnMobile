@@ -3,7 +3,7 @@ using UnityEngine.AI;
 using System.Collections;
 using System.Collections.Generic;
 
-public enum UnitState { Moving, Fighting }
+public enum UnitState { Moving, Fighting, Dead }
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class AIUnit : MonoBehaviour
@@ -16,118 +16,117 @@ public class AIUnit : MonoBehaviour
 
     [Header("Animation")]
     public Animator animator;
-    private UnitSide unitSide;
-    private Transform primaryTarget;
-    private Transform tempTarget;
-    private NavMeshAgent agent;
-    private float lastAttackTime;
-    private UnitState state = UnitState.Moving;
+    UnitSide unitSide;
+    Transform primaryTarget;
+    Transform tempTarget;
+    NavMeshAgent agent;
+    float lastAttackTime;
+    UnitState state = UnitState.Moving;
 
-    private Vector2Int currentCoord;
+    Vector2Int currentCoord;
+    bool isDead = false;
 
     void Awake()
     {
         unitSide = GetComponent<UnitSide>();
         agent = GetComponent<NavMeshAgent>();
+        if (agent == null)
+        {
+            Debug.LogError($"{name}: NavMeshAgent missing. AIUnit cannot run.");
+            enabled = false;
+            return;
+        }
+
         agent.stoppingDistance = attackRange;
+        agent.radius = 0.5f;
+        agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
+        agent.avoidancePriority = Random.Range(30, 70);
 
         TryAssignAnimator();
     }
 
     void Start()
     {
-        // Safe grid entry
         if (CubeGridManager.Instance != null)
         {
             currentCoord = CubeGridManager.Instance.WorldToGrid(transform.position);
             EnterTile(currentCoord);
         }
-        else
-        {
-            Debug.LogWarning($"{name}: CubeGridManager.Instance is null, skipping tile entry.");
-        }
     }
 
     void Update()
     {
-        if (animator == null)
-            TryAssignAnimator();
+        if (isDead) return;
 
         if (animator != null)
             animator.SetFloat("Move", agent.velocity.magnitude);
 
-        if (state == UnitState.Fighting)
-        {
-            if (tempTarget == null || TargetIsDead(tempTarget))
-            {
-                tempTarget = null;
-                state = UnitState.Moving;
-                SetPrimaryTarget();
-            }
-            else
-            {
-                EngageTempTarget();
-            }
-
-            UpdateTileOwnership();
-            return;
-        }
-
+        // --- Priority 1: Units ---
         tempTarget = FindClosestEnemyUnitInAggroRadius();
         if (tempTarget != null && !TargetIsDead(tempTarget))
         {
             state = UnitState.Fighting;
+            EngageTempTarget();
             return;
         }
 
+        // --- Priority 2: Other buildings (not MainBuilding) ---
+        Transform buildingTarget = FindClosestEnemyBuildingInAggroRadius();
+        if (buildingTarget != null && !TargetIsDead(buildingTarget))
+        {
+            tempTarget = buildingTarget;
+            state = UnitState.Fighting;
+            EngageTempTarget();
+            return;
+        }
+
+        // --- Priority 3: MainBuilding ---
         if (primaryTarget == null || TargetIsDead(primaryTarget))
         {
-            SetPrimaryTarget();
+            SetPrimaryTarget(); // finds MainBuilding
             return;
         }
 
-        agent.isStopped = false;
-        agent.SetDestination(primaryTarget.position);
-
-        if (Vector3.Distance(transform.position, primaryTarget.position) <= attackRange)
+        float dist = Vector3.Distance(transform.position, primaryTarget.position);
+        if (dist <= attackRange)
+        {
+            agent.isStopped = true;
+            agent.updateRotation = false;
+            FaceTarget(primaryTarget);
             TryAttack(primaryTarget);
+        }
+        else
+        {
+            agent.isStopped = false;
+            agent.updateRotation = true;
+            agent.SetDestination(primaryTarget.position);
+        }
 
         UpdateTileOwnership();
     }
 
     void TryAssignAnimator()
     {
-        if (transform.childCount > 1)
-        {
-            Transform child2 = transform.GetChild(1);
-            if (child2.childCount > 1)
-            {
-                Transform subChild2 = child2.GetChild(1);
-                Animator found = subChild2.GetComponent<Animator>();
-                if (found != null)
-                {
-                    animator = found;
-                    Debug.Log($"{name}: Animator bound from Child2/SubChild2");
-                    return;
-                }
-            }
-        }
-
         if (animator == null)
             animator = GetComponentInChildren<Animator>(true);
     }
 
     void EngageTempTarget()
     {
+        if (tempTarget == null) return;
+
         float dist = Vector3.Distance(transform.position, tempTarget.position);
         if (dist <= attackRange)
         {
             agent.isStopped = true;
+            agent.updateRotation = false;
+            FaceTarget(tempTarget);
             TryAttack(tempTarget);
         }
         else
         {
             agent.isStopped = false;
+            agent.updateRotation = true;
             agent.SetDestination(tempTarget.position);
         }
     }
@@ -164,46 +163,12 @@ public class AIUnit : MonoBehaviour
 
     void SetPrimaryTarget()
     {
-        primaryTarget = FindPriorityTarget();
+        primaryTarget = FindClosestMainBuilding();
         if (primaryTarget != null)
             agent.SetDestination(primaryTarget.position);
     }
 
-    Transform FindPriorityTarget()
-    {
-        var main = FindClosestEnemyByType<BuildingHealth>("MainBuilding");
-        if (main != null) return main;
-
-        var bld = FindClosestEnemyByType<BuildingHealth>();
-        if (bld != null) return bld;
-
-        return FindClosestEnemyByType<UnitHealth>();
-    }
-
-    Transform FindClosestEnemyByType<T>(string requireTag = null) where T : Component
-    {
-        T[] objs = Object.FindObjectsByType<T>(FindObjectsSortMode.None);
-        float best = Mathf.Infinity;
-        Transform pick = null;
-
-        foreach (var obj in objs)
-        {
-            if (!string.IsNullOrEmpty(requireTag) && !obj.CompareTag(requireTag)) continue;
-
-            var otherSide = obj.GetComponent<UnitSide>();
-            if (otherSide == null || unitSide == null) continue;
-            if (otherSide.side == unitSide.side) continue;
-
-            float d = Vector3.Distance(transform.position, obj.transform.position);
-            if (d < best)
-            {
-                best = d;
-                pick = obj.transform;
-            }
-        }
-        return pick;
-    }
-
+    // --- Targeting helpers ---
     Transform FindClosestEnemyUnitInAggroRadius()
     {
         UnitHealth[] allUnits = Object.FindObjectsByType<UnitHealth>(FindObjectsSortMode.None);
@@ -226,7 +191,55 @@ public class AIUnit : MonoBehaviour
         return pick;
     }
 
-    // --- Tile ownership (CubeGrid version) ---
+    Transform FindClosestEnemyBuildingInAggroRadius()
+    {
+        BuildingHealth[] allBuildings = Object.FindObjectsByType<BuildingHealth>(FindObjectsSortMode.None);
+        float best = Mathf.Infinity;
+        Transform pick = null;
+
+        foreach (var b in allBuildings)
+        {
+            if (b.CompareTag("MainBuilding")) continue; // skip main building
+
+            var otherSide = b.GetComponent<UnitSide>();
+            if (otherSide != null && otherSide.side != unitSide.side)
+            {
+                float d = Vector3.Distance(transform.position, b.transform.position);
+                if (d < best && d <= aggroRadius)
+                {
+                    best = d;
+                    pick = b.transform;
+                }
+            }
+        }
+        return pick;
+    }
+
+    Transform FindClosestMainBuilding()
+    {
+        BuildingHealth[] allBuildings = Object.FindObjectsByType<BuildingHealth>(FindObjectsSortMode.None);
+        float best = Mathf.Infinity;
+        Transform pick = null;
+
+        foreach (var b in allBuildings)
+        {
+            if (!b.CompareTag("MainBuilding")) continue;
+
+            var otherSide = b.GetComponent<UnitSide>();
+            if (otherSide != null && otherSide.side != unitSide.side)
+            {
+                float d = Vector3.Distance(transform.position, b.transform.position);
+                if (d < best)
+                {
+                    best = d;
+                    pick = b.transform;
+                }
+            }
+        }
+        return pick;
+    }
+
+    // --- Tile ownership ---
     void UpdateTileOwnership()
     {
         if (CubeGridManager.Instance == null) return;
@@ -262,6 +275,20 @@ public class AIUnit : MonoBehaviour
             tile.Vacate(unitSide);
     }
 
+    void FaceTarget(Transform target)
+    {
+        if (target == null) return;
+
+        Vector3 direction = (target.position - transform.position).normalized;
+        direction.y = 0;
+
+        if (direction.sqrMagnitude > 0.001f)
+        {
+            Quaternion lookRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 8f);
+        }
+    }
+
     public void OnHit()
     {
         if (animator != null)
@@ -270,11 +297,10 @@ public class AIUnit : MonoBehaviour
 
     public void OnDeath()
     {
-        if (animator != null)
-            animator.SetTrigger("Death");
-
+        if (animator != null) animator.SetTrigger("Death");
         agent.isStopped = true;
-        enabled = false;
+        agent.enabled = false;
+        isDead = true;
     }
 
     void OnDrawGizmosSelected()
@@ -284,5 +310,16 @@ public class AIUnit : MonoBehaviour
 
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, aggroRadius);
+
+        if (primaryTarget != null)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(transform.position, primaryTarget.position);
+        }
+        if (tempTarget != null)
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(transform.position, tempTarget.position);
+        }
     }
 }

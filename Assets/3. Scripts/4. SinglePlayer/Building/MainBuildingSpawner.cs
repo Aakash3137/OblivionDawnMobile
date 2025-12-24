@@ -25,7 +25,7 @@ public class MainBuildingSpawner : MonoBehaviour
         // Use the faction selected in the menu
         var playerFaction = GameData.SelectedFaction;
         var playerSlots = GetFactionSlots(playerFaction);
-        var enemySlots  = GetFactionSlots(GetRandomEnemyFaction(playerFaction));
+        var enemySlots = GetFactionSlots(GetRandomEnemyFaction(playerFaction));
 
         if (playerSlots == null || enemySlots == null) return;
 
@@ -38,13 +38,13 @@ public class MainBuildingSpawner : MonoBehaviour
         switch (name)
         {
             case FactionName.Past:
-                return new [] { data.pastMainBuilding, data.pastTurretBuilding, data.pastUnitBuilding, data.pastGoldMine };
+                return new[] { data.pastMainBuilding, data.pastTurretBuilding, data.pastUnitBuilding, data.pastGoldMine };
             case FactionName.Present:
-                return new [] { data.presentMainBuilding, data.presentTurretBuilding, data.presentUnitBuilding, data.presentGoldMine };
+                return new[] { data.presentMainBuilding, data.presentTurretBuilding, data.presentUnitBuilding, data.presentGoldMine };
             case FactionName.Future:
-                return new [] { data.futureMainBuilding, data.futureTurretBuilding, data.futureUnitBuilding, data.futureGoldMine };
+                return new[] { data.futureMainBuilding, data.futureTurretBuilding, data.futureUnitBuilding, data.futureGoldMine };
             case FactionName.Monster:
-                return new [] { data.monsterMainBuilding, data.monsterTurretBuilding, data.monsterUnitBuilding, data.monsterGoldMine };
+                return new[] { data.monsterMainBuilding, data.monsterTurretBuilding, data.monsterUnitBuilding, data.monsterGoldMine };
             default: return null;
         }
     }
@@ -64,12 +64,12 @@ public class MainBuildingSpawner : MonoBehaviour
         SpawnEntry(rootPoint, slots[0], side, "MainBuilding");
     }
 
-    void SpawnEntry(Transform point, AllFactionsData.BuildingSlot slot, Side side, string label)
+ void SpawnEntry(Transform point, AllFactionsData.BuildingSlot slot, Side side, string label)
     {
         if (slot == null || slot.prefab == null) return;
 
         var pos = point.position + Vector3.up * yOffset;
-        var go  = Instantiate(slot.prefab, pos, Quaternion.identity, point);
+        var go = Instantiate(slot.prefab, pos, Quaternion.identity, point);
 
         var unitSide = go.GetComponent<UnitSide>();
         if (unitSide != null)
@@ -79,5 +79,25 @@ public class MainBuildingSpawner : MonoBehaviour
         }
 
         Debug.Log($"[Spawner] Spawned {label} for {side}: {slot.prefab.name}");
+
+        // If this is the main building, mark the tile as occupied
+        if (label == "MainBuilding")
+        {
+            // Find the tile at the spawn point
+            if (CubeGridManager.Instance != null)
+            {
+                Vector2Int coord = CubeGridManager.Instance.WorldToGrid(point.position);
+                var tileGO = CubeGridManager.Instance.GetCube(coord);
+                if (tileGO != null)
+                {
+                    var tile = tileGO.GetComponent<Tile>();
+                    if (tile != null)
+                    {
+                        tile.SetBuildingPlaced();
+                        Debug.Log($"[Spawner] Tile at {coord} marked as building placed for {side}");
+                    }
+                }
+            }
+        }
     }
 }

@@ -175,8 +175,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   side: 0
-  faction: 2
-  buildingType: GoldMine
 --- !u!114 &2289749596056121463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -212,17 +210,15 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4320449579214391836}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 992b46bf958c0124c810ab2674b9d7a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyBuildingPrefabs:
-  - {fileID: 4320449579214391836, guid: e84dab7c790e30542bf029885ad0c3d3, type: 3}
-  - {fileID: 4320449579214391836, guid: 96f6385441429ec4190cda7b6411f210, type: 3}
-  - {fileID: 4320449579214391836, guid: f042475ee4aec3d438dc6e0182ea890d, type: 3}
-  minDelay: 3
-  maxDelay: 6
+  allFactionsData: {fileID: 11400000, guid: b4c4f87a58a4fc841b315c31d4d53920, type: 2}
+  enemyBuildingPrefabs: []
+  minDelay: 5
+  maxDelay: 10
   yOffset: 2
 --- !u!1001 &1512948493298473283
 PrefabInstance:

@@ -13,22 +13,7 @@ public class AllFactionsData : ScriptableObject
         public Material playerMaterial;
         public Material enemyMaterial;
     }
-
-
-    // [System.Serializable]
-    // public class FactionBlock
-    // {
-    //     public BuildingSlot mainBuilding;
-    //     public BuildingSlot goldMine;
-    //     public BuildingSlot unitBuilding;
-    //     public BuildingSlot turretBuilding;
-    // }
-    // public FactionBlock past;
-    // public FactionBlock present;
-    // public FactionBlock future;
-    // public FactionBlock monster;
-
-
+    
     // -------------------------
     // Past Faction
     // -------------------------
