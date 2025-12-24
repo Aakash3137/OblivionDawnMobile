@@ -336,7 +336,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -734,6 +734,10 @@ PrefabInstance:
       propertyPath: m_Color.a
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6320224447002516430, guid: 0cf7aaa432a96477da342a126e922b6a, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6320224447002516431, guid: 0cf7aaa432a96477da342a126e922b6a, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1030,6 +1034,10 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0.15294118
       objectReference: {fileID: 0}
+    - target: {fileID: 8277955267355516058, guid: 9dc5dd2cc79004f1abc9b1748a584d5f, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8277955267355516059, guid: 9dc5dd2cc79004f1abc9b1748a584d5f, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1126,13 +1134,33 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8277955267355516059, guid: 9dc5dd2cc79004f1abc9b1748a584d5f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 157426634692522893}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8277955267355516036, guid: 9dc5dd2cc79004f1abc9b1748a584d5f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1793020503878583192}
   m_SourcePrefab: {fileID: 100100000, guid: 9dc5dd2cc79004f1abc9b1748a584d5f, type: 3}
 --- !u!224 &5504681808614986411 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8277955267355516059, guid: 9dc5dd2cc79004f1abc9b1748a584d5f, type: 3}
   m_PrefabInstance: {fileID: 4505212085151567408}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &5504681808614986420 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8277955267355516036, guid: 9dc5dd2cc79004f1abc9b1748a584d5f, type: 3}
+  m_PrefabInstance: {fileID: 4505212085151567408}
+  m_PrefabAsset: {fileID: 0}
+--- !u!225 &1793020503878583192
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5504681808614986420}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1001 &5933806180360698564
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1317,6 +1345,10 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6320224447002516430, guid: 0cf7aaa432a96477da342a126e922b6a, type: 3}
       propertyPath: m_Color.a
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6320224447002516430, guid: 0cf7aaa432a96477da342a126e922b6a, type: 3}
+      propertyPath: m_RaycastTarget
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6320224447002516431, guid: 0cf7aaa432a96477da342a126e922b6a, type: 3}
