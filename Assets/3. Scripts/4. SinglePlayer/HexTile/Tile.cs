@@ -130,8 +130,8 @@ public class Tile : MonoBehaviour
     // Called when a building is placed
     public void SetBuildingPlaced()
     {
-        hasBuilding = true;
         isOpen = false;
+        hasBuilding = true;
 
         // Hide PlusIcon if present
         Transform cubeChild = transform.Find("Cube");

@@ -4,8 +4,11 @@ using System.Collections.Generic;
 
 public class EnemyBuildingSpawner : MonoBehaviour
 {
-    [Header("Building Prefabs")]
-    public GameObject[] enemyBuildingPrefabs; // assign in inspector
+    [Header("Faction Data")]
+    public AllFactionsData allFactionsData;   // assign in inspector
+
+    [Header("Building Prefabs (auto-filled)")]
+    public GameObject[] enemyBuildingPrefabs; // will be filled at runtime
 
     [Header("Spawn Settings")]
     public float minDelay = 3f;
@@ -28,6 +31,9 @@ public class EnemyBuildingSpawner : MonoBehaviour
             return;
         }
 
+        // Fill enemyBuildingPrefabs based on enemy faction
+        PopulateEnemyBuildings();
+
         // Find grid coord of this MainBuilding
         myCoord = grid.WorldToGrid(transform.position);
 
@@ -48,20 +54,87 @@ public class EnemyBuildingSpawner : MonoBehaviour
         StartCoroutine(SpawnLoop());
     }
 
+    private void PopulateEnemyBuildings()
+    {
+        // Detect which faction this enemy MainBuilding belongs to by prefab name
+        string mainName = gameObject.name; // or use prefab reference
+
+        List<GameObject> list = new List<GameObject>();
+
+        if (mainName.Contains("Past"))
+        {
+            list.Add(allFactionsData.pastGoldMine.prefab);
+            list.Add(allFactionsData.pastUnitBuilding.prefab);
+            list.Add(allFactionsData.pastTurretBuilding.prefab);
+        }
+        else if (mainName.Contains("Present"))
+        {
+            list.Add(allFactionsData.presentGoldMine.prefab);
+            list.Add(allFactionsData.presentUnitBuilding.prefab);
+            list.Add(allFactionsData.presentTurretBuilding.prefab);
+        }
+        else if (mainName.Contains("Future"))
+        {
+            list.Add(allFactionsData.futureGoldMine.prefab);
+            list.Add(allFactionsData.futureUnitBuilding.prefab);
+            list.Add(allFactionsData.futureTurretBuilding.prefab);
+        }
+        else if (mainName.Contains("Monster"))
+        {
+            list.Add(allFactionsData.monsterGoldMine.prefab);
+            list.Add(allFactionsData.monsterUnitBuilding.prefab);
+            list.Add(allFactionsData.monsterTurretBuilding.prefab);
+        }
+
+        enemyBuildingPrefabs = list.ToArray();
+
+        Debug.Log($"[EnemyBuildingSpawner] Enemy faction buildings loaded: {enemyBuildingPrefabs.Length}");
+    }
+
+    // private IEnumerator SpawnLoop()
+    // {
+    //     while (true)
+    //     {
+    //         yield return new WaitForSeconds(Random.Range(minDelay, maxDelay));
+    //         TrySpawnBuilding();
+    //     }
+    // }
+
+
+
     private IEnumerator SpawnLoop()
     {
         while (true)
         {
+            // Stop if no enemy buildings remain
+            if (!AnyEnemyBuildingsAlive())
+            {
+                Debug.Log("[EnemyBuildingSpawner] All enemy buildings destroyed. Stopping spawn loop.");
+                yield break;
+            }
+
             yield return new WaitForSeconds(Random.Range(minDelay, maxDelay));
             TrySpawnBuilding();
         }
     }
 
+    private bool AnyEnemyBuildingsAlive()
+    {
+        BuildingHealth[] allBuildings = Object.FindObjectsByType<BuildingHealth>(FindObjectsSortMode.None);
+        foreach (var b in allBuildings)
+        {
+            var side = b.GetComponent<UnitSide>();
+            if (side != null && side.side == Side.Enemy && b.currentHealth > 0)
+                return true;
+        }
+        return false;
+    }
+
+
     private void TrySpawnBuilding()
     {
         // Get neighbors of this MainBuilding tile
         List<Vector2Int> neighbors = grid.GetCardinalNeighbors(myCoord);
-
         List<Tile> candidateTiles = new List<Tile>();
 
         foreach (var coord in neighbors)
@@ -72,21 +145,16 @@ public class EnemyBuildingSpawner : MonoBehaviour
             Tile tile = tileObj.GetComponent<Tile>();
             if (tile == null) continue;
 
-            // Only allow tiles that belong to Enemy
             if (tile.ownerSide != Side.Enemy) continue;
 
-            // Mark tile open for AI (but PlusIcon won't show because it's Enemy side)
             if (!tile.hasBuilding)
                 tile.SetOpen(true);
 
-            // Must be open and not already occupied
             if (tile.isOpen && !tile.hasBuilding)
-            {
                 candidateTiles.Add(tile);
-            }
         }
 
-        if (candidateTiles.Count == 0) return;
+        if (candidateTiles.Count == 0 || enemyBuildingPrefabs == null || enemyBuildingPrefabs.Length == 0) return;
 
         // Pick random tile + random building prefab
         Tile chosenTile = candidateTiles[Random.Range(0, candidateTiles.Count)];
@@ -99,9 +167,43 @@ public class EnemyBuildingSpawner : MonoBehaviour
         UnitSide side = building.GetComponent<UnitSide>();
         if (side != null) side.side = Side.Enemy;
 
+        // Apply enemy material from the correct BuildingSlot
+        AllFactionsData.BuildingSlot slot = FindSlotForPrefab(prefab);
+        if (slot != null)
+        {
+            Renderer rend = building.GetComponentInChildren<Renderer>();
+            if (rend != null && slot.enemyMaterial != null)
+            {
+                rend.material = slot.enemyMaterial;
+            }
+        }
+
         // Mark tile as occupied
         chosenTile.SetBuildingPlaced();
 
         Debug.Log($"Enemy spawned {prefab.name} at {chosenTile.name}");
     }
+
+    // Helper: find the BuildingSlot that owns this prefab
+    private AllFactionsData.BuildingSlot FindSlotForPrefab(GameObject prefab)
+    {
+        if (prefab == allFactionsData.pastGoldMine.prefab) return allFactionsData.pastGoldMine;
+        if (prefab == allFactionsData.pastUnitBuilding.prefab) return allFactionsData.pastUnitBuilding;
+        if (prefab == allFactionsData.pastTurretBuilding.prefab) return allFactionsData.pastTurretBuilding;
+
+        if (prefab == allFactionsData.presentGoldMine.prefab) return allFactionsData.presentGoldMine;
+        if (prefab == allFactionsData.presentUnitBuilding.prefab) return allFactionsData.presentUnitBuilding;
+        if (prefab == allFactionsData.presentTurretBuilding.prefab) return allFactionsData.presentTurretBuilding;
+
+        if (prefab == allFactionsData.futureGoldMine.prefab) return allFactionsData.futureGoldMine;
+        if (prefab == allFactionsData.futureUnitBuilding.prefab) return allFactionsData.futureUnitBuilding;
+        if (prefab == allFactionsData.futureTurretBuilding.prefab) return allFactionsData.futureTurretBuilding;
+
+        if (prefab == allFactionsData.monsterGoldMine.prefab) return allFactionsData.monsterGoldMine;
+        if (prefab == allFactionsData.monsterUnitBuilding.prefab) return allFactionsData.monsterUnitBuilding;
+        if (prefab == allFactionsData.monsterTurretBuilding.prefab) return allFactionsData.monsterTurretBuilding;
+
+        return null;
+    }
+
 }
