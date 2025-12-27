@@ -9,7 +9,7 @@ public class Tile : MonoBehaviour
     public Renderer tileRenderer;     // Renderer for the tile mesh
 
     private SideManager sideManager;
-    private UnitSide occupant;        // Track current occupant (optional)
+    private SideScenario occupant;        // Track current occupant (optional)
 
     public bool isOpen = false; // set true when PlusIcon is activated
 
@@ -90,7 +90,7 @@ public class Tile : MonoBehaviour
             TileCounterUI.Instance.InitializeCounts();
         }
 
-        Debug.Log($"Tile at {transform.position} open={isOpen}, side={ownerSide}");
+        //// Debug.Log($"Tile at {transform.position} open={isOpen}, side={ownerSide}");
     }
 
 
@@ -111,7 +111,7 @@ public class Tile : MonoBehaviour
     }
 
     // Called when a unit steps onto this tile
-    public void Occupy(UnitSide unit)
+    public void Occupy(SideScenario unit)
     {
         // Always flip ownership to the entering unit’s side
         // occupant = unit;   // update occupant reference
@@ -119,7 +119,7 @@ public class Tile : MonoBehaviour
     }
 
     // Called when a unit leaves
-    public void Vacate(UnitSide unit)
+    public void Vacate(SideScenario unit)
     {
         // Clear occupant only if this unit was tracked
         // if (occupant == unit)

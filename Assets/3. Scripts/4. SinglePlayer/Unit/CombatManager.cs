@@ -17,7 +17,7 @@ public class CombatManager : MonoBehaviour
         if (statsA == null || statsB == null) return;
 
         // Simple combat: higher attack wins
-        if (statsA.attackPower >= statsB.attackPower)
+        if (statsA.attackDamage >= statsB.attackDamage)
         {
             Destroy(unitB);
             Debug.Log($"{unitA.name} defeated {unitB.name}");

@@ -71,7 +71,7 @@ public class MainBuildingSpawner : MonoBehaviour
         var pos = point.position + Vector3.up * yOffset;
         var go = Instantiate(slot.prefab, pos, Quaternion.identity, point);
 
-        var unitSide = go.GetComponent<UnitSide>();
+        var unitSide = go.GetComponent<SideScenario>();
         if (unitSide != null)
         {
             unitSide.side = side;

@@ -32,7 +32,7 @@ public class TileUIPanel : MonoBehaviour
         Vector3 spawnPos = currentTile.transform.position + Vector3.up * 2f;
         var go = Instantiate(slot.prefab, spawnPos, Quaternion.identity, currentTile.transform);
 
-        var unitSide = go.GetComponent<UnitSide>();
+        var unitSide = go.GetComponent<SideScenario>();
         if (unitSide != null)
         {
             unitSide.side = currentTile.ownerSide;

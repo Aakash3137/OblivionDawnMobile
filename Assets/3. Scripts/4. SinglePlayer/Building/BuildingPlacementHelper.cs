@@ -40,9 +40,9 @@ public class BuildingPlacementHelper : MonoBehaviour
             ? gm.GetAllNeighbors(currentCoord)
             : gm.GetCardinalNeighbors(currentCoord);
 
-        Debug.Log(useDiagonals
-            ? $"Checking 8 neighbors around {currentCoord}"
-            : $"Checking 4 neighbors around {currentCoord}");
+        //// Debug.Log(useDiagonals
+        ////     ? $"Checking 8 neighbors around {currentCoord}"
+        ////     : $"Checking 4 neighbors around {currentCoord}");
 
         foreach (var coord in neighbors)
         {
@@ -60,7 +60,7 @@ public class BuildingPlacementHelper : MonoBehaviour
             if (tileScript.hasBuilding)
                 continue;
 
-            Debug.Log($"Player-side neighbor: {tileObj.name} at {coord}");
+            //// Debug.Log($"Player-side neighbor: {tileObj.name} at {coord}");
 
             // Show PlusIcon
             Transform cubeChild = tileObj.transform.Find("Cube");

@@ -100,6 +100,7 @@ GameObject:
   - component: {fileID: 8957070321639914992}
   - component: {fileID: 2289749596056121463}
   - component: {fileID: 5551679913311386414}
+  - component: {fileID: 4859236886961000867}
   - component: {fileID: 5711781814223891004}
   m_Layer: 13
   m_Name: Future_GoldMineBuilding
@@ -187,9 +188,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70d1d5b1f2adb50469c34f2d8410670a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 200
+  maxHealth: 0
   currentHealth: 0
+  Level: 0
+  armour: 0
   healthBarFade: {fileID: 1781305936830987971}
+  buildingStats: {fileID: 11400000, guid: b157ab9c5d431834f9e61e169ee1aa89, type: 2}
 --- !u!114 &5551679913311386414
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -203,6 +207,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useDiagonals: 1
+--- !u!114 &4859236886961000867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4320449579214391836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b33db35be1a57d944890ba1c7951116a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buildingResourceData: {fileID: 11400000, guid: f272c1b4f35724a4a8e95682b310aaae, type: 2}
+  autoProduce: 1
+  ResourceName: 
+  resourceType: 0
+  GenerateResourceAmount: 0
 --- !u!114 &5711781814223891004
 MonoBehaviour:
   m_ObjectHideFlags: 0

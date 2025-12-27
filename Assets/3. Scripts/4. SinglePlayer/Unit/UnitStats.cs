@@ -1,7 +1,11 @@
 using UnityEngine;
 
-public class UnitStats : MonoBehaviour
+public class UnitStats : Stats
 {
-    public int health;
-    public int attackPower;
+    [Header("Editor view only Unit Specific Stats")]
+    public float unitBuildTime;
+    public float unitAttackDamage;
+    public float unitFireRate;
+    public float unitAttackRange;
+    public float attackDamage;
 }

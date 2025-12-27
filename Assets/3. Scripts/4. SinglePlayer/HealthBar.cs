@@ -3,13 +3,14 @@ using UnityEngine;
 public class SpriteHealthBar : MonoBehaviour
 {
     public SpriteRenderer foregroundBar;
-    public Health targetHealth;
+    public Stats targetHealth;
     Transform cam;
     float initialWidth;
 
     void Start()
     {
         cam = Camera.main.transform;
+        targetHealth = GetComponentInParent<Stats>();
 
         if (foregroundBar != null)
             initialWidth = foregroundBar.transform.localScale.x;

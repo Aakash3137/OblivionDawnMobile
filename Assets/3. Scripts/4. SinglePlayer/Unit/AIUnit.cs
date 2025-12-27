@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
-using System.Collections.Generic;
 
 public enum UnitState { Moving, Fighting, Dead }
 
@@ -12,11 +11,11 @@ public class AIUnit : MonoBehaviour
     public float attackRange = 1.2f;
     public float aggroRadius = 3f;
     public float attackInterval = 0.5f;
-    public int attackDamage = 10;
+    public float attackDamage = 10;
 
     [Header("Animation")]
     public Animator animator;
-    UnitSide unitSide;
+    SideScenario unitSide;
     Transform primaryTarget;
     Transform tempTarget;
     NavMeshAgent agent;
@@ -28,7 +27,7 @@ public class AIUnit : MonoBehaviour
 
     void Awake()
     {
-        unitSide = GetComponent<UnitSide>();
+        unitSide = GetComponent<SideScenario>();
         agent = GetComponent<NavMeshAgent>();
         if (agent == null)
         {
@@ -133,14 +132,15 @@ public class AIUnit : MonoBehaviour
 
     bool TargetIsDead(Transform t)
     {
-        var h = t.GetComponent<Health>();
+        //Stats get inherited on both Buildings and Units
+        var h = t.GetComponent<Stats>();        
         return h == null || h.currentHealth <= 0;
     }
 
     void TryAttack(Transform t)
     {
         if (Time.time - lastAttackTime < attackInterval) return;
-        var h = t.GetComponent<Health>();
+        var h = t.GetComponent<Stats>();
         if (h != null)
         {
             h.TakeDamage(attackDamage);
@@ -171,13 +171,13 @@ public class AIUnit : MonoBehaviour
     // --- Targeting helpers ---
     Transform FindClosestEnemyUnitInAggroRadius()
     {
-        UnitHealth[] allUnits = Object.FindObjectsByType<UnitHealth>(FindObjectsSortMode.None);
+        UnitStats[] allUnits = Object.FindObjectsByType<UnitStats>(FindObjectsSortMode.None);
         float best = Mathf.Infinity;
         Transform pick = null;
 
         foreach (var u in allUnits)
         {
-            var otherSide = u.GetComponent<UnitSide>();
+            var otherSide = u.GetComponent<SideScenario>();
             if (otherSide != null && otherSide.side != unitSide.side)
             {
                 float d = Vector3.Distance(transform.position, u.transform.position);
@@ -193,7 +193,7 @@ public class AIUnit : MonoBehaviour
 
     Transform FindClosestEnemyBuildingInAggroRadius()
     {
-        BuildingHealth[] allBuildings = Object.FindObjectsByType<BuildingHealth>(FindObjectsSortMode.None);
+        BuildingStats[] allBuildings = Object.FindObjectsByType<BuildingStats>(FindObjectsSortMode.None);
         float best = Mathf.Infinity;
         Transform pick = null;
 
@@ -201,7 +201,7 @@ public class AIUnit : MonoBehaviour
         {
             if (b.CompareTag("MainBuilding")) continue; // skip main building
 
-            var otherSide = b.GetComponent<UnitSide>();
+            var otherSide = b.GetComponent<SideScenario>();
             if (otherSide != null && otherSide.side != unitSide.side)
             {
                 float d = Vector3.Distance(transform.position, b.transform.position);
@@ -217,7 +217,7 @@ public class AIUnit : MonoBehaviour
 
     Transform FindClosestMainBuilding()
     {
-        BuildingHealth[] allBuildings = Object.FindObjectsByType<BuildingHealth>(FindObjectsSortMode.None);
+        BuildingStats[] allBuildings = Object.FindObjectsByType<BuildingStats>(FindObjectsSortMode.None);
         float best = Mathf.Infinity;
         Transform pick = null;
 
@@ -225,7 +225,7 @@ public class AIUnit : MonoBehaviour
         {
             if (!b.CompareTag("MainBuilding")) continue;
 
-            var otherSide = b.GetComponent<UnitSide>();
+            var otherSide = b.GetComponent<SideScenario>();
             if (otherSide != null && otherSide.side != unitSide.side)
             {
                 float d = Vector3.Distance(transform.position, b.transform.position);
@@ -258,16 +258,21 @@ public class AIUnit : MonoBehaviour
         if (TileManager.Instance != null)
             TileManager.Instance.TryEnterTile(gameObject, coord);
 
-        var tileGO = CubeGridManager.Instance?.GetCube(coord);
+        var tileGO = CubeGridManager.Instance.GetCube(coord);
         var tile = tileGO != null ? tileGO.GetComponent<Tile>() : null;
         if (tile != null)
-            tile.Occupy(unitSide);
+        {
+            tile.Occupy(unitSide);            
+        }
     }
 
     void LeaveTile(Vector2Int coord)
     {
         if (TileManager.Instance != null)
+        {
             TileManager.Instance.LeaveTile(coord, gameObject);
+            //Debug.Log($"Tile Vacated at {coord}");
+        }
 
         var tileGO = CubeGridManager.Instance?.GetCube(coord);
         var tile = tileGO != null ? tileGO.GetComponent<Tile>() : null;

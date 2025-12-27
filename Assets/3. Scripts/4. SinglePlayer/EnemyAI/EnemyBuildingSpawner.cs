@@ -16,13 +16,13 @@ public class EnemyBuildingSpawner : MonoBehaviour
     public float yOffset = 1f;
 
     private CubeGridManager grid;
-    private UnitSide unitSide; // which side this MainBuilding belongs to
+    private SideScenario unitSide; // which side this MainBuilding belongs to
     private Vector2Int myCoord;
 
     void Start()
     {
         grid = CubeGridManager.Instance;
-        unitSide = GetComponent<UnitSide>();
+        unitSide = GetComponent<SideScenario>();
 
         // Only run if this building is Enemy
         if (unitSide == null || unitSide.side != Side.Enemy)
@@ -88,7 +88,7 @@ public class EnemyBuildingSpawner : MonoBehaviour
 
         enemyBuildingPrefabs = list.ToArray();
 
-        Debug.Log($"[EnemyBuildingSpawner] Enemy faction buildings loaded: {enemyBuildingPrefabs.Length}");
+       //// Debug.Log($"[EnemyBuildingSpawner] Enemy faction buildings loaded: {enemyBuildingPrefabs.Length}");
     }
 
     // private IEnumerator SpawnLoop()
@@ -120,10 +120,10 @@ public class EnemyBuildingSpawner : MonoBehaviour
 
     private bool AnyEnemyBuildingsAlive()
     {
-        BuildingHealth[] allBuildings = Object.FindObjectsByType<BuildingHealth>(FindObjectsSortMode.None);
+        BuildingStats[] allBuildings = Object.FindObjectsByType<BuildingStats>(FindObjectsSortMode.None);
         foreach (var b in allBuildings)
         {
-            var side = b.GetComponent<UnitSide>();
+            var side = b.GetComponent<SideScenario>();
             if (side != null && side.side == Side.Enemy && b.currentHealth > 0)
                 return true;
         }
@@ -164,7 +164,7 @@ public class EnemyBuildingSpawner : MonoBehaviour
         GameObject building = Instantiate(prefab, pos, Quaternion.identity);
 
         // Assign side
-        UnitSide side = building.GetComponent<UnitSide>();
+        SideScenario side = building.GetComponent<SideScenario>();
         if (side != null) side.side = Side.Enemy;
 
         // Apply enemy material from the correct BuildingSlot
@@ -181,7 +181,7 @@ public class EnemyBuildingSpawner : MonoBehaviour
         // Mark tile as occupied
         chosenTile.SetBuildingPlaced();
 
-        Debug.Log($"Enemy spawned {prefab.name} at {chosenTile.name}");
+        //// Debug.Log($"Enemy spawned {prefab.name} at {chosenTile.name}");
     }
 
     // Helper: find the BuildingSlot that owns this prefab

@@ -4,6 +4,9 @@ using UnityEngine;
 public class ResourceGen : MonoBehaviour
 {
     [SerializeField] private ResourceGenerationStatsSO buildingResourceData;
+    public bool autoProduce = true;
+    private SideScenario buildingSide;   // building's faction marker
+    private BuildingStats buildingStats;
 
     [Header("Editor View purpose only")]
     public string ResourceName;
@@ -13,15 +16,13 @@ public class ResourceGen : MonoBehaviour
     private float resourceTimeToProduce;
     private float resourceGenerationRate;
     //Generation Data
-    [SerializeField] private int lifetimeResourcesGenerated;
-    [SerializeField] private int currentResourceAmount;
+    [SerializeField] private int GenerateResourceAmount;
 
-    protected virtual void Awake()
+    private void Awake()
     {
         //set values
-        lifetimeResourcesGenerated = 0;
         buildingCurrentLevel = 0;
-        currentResourceAmount = 0;
+        GenerateResourceAmount = 0;
 
         //Registering resource type and resource name        
         resourceType = buildingResourceData.resourceType;
@@ -31,6 +32,9 @@ public class ResourceGen : MonoBehaviour
         resourceAmountPerBatch = buildingResourceData.resourceGenerationData[buildingCurrentLevel].resourceAmountPerBatch;
         resourceTimeToProduce = buildingResourceData.resourceGenerationData[buildingCurrentLevel].resourceTimeToProduce;
         resourceGenerationRate = buildingResourceData.resourceGenerationData[buildingCurrentLevel].resourceGenerationRate;
+
+        buildingSide = GetComponent<SideScenario>();
+        buildingStats = GetComponent<BuildingStats>();
     }
 
     void Start()
@@ -54,27 +58,20 @@ public class ResourceGen : MonoBehaviour
 
     public void UseResource(int amount)
     {
-        currentResourceAmount -= amount;
+        GenerateResourceAmount -= amount;
     }
-
-    public int GetCurrentResourceAmount()
+    public float GetResourceGenerationRate()
     {
-        return currentResourceAmount;
+        return resourceGenerationRate;
     }
-
-    public int GetLifetimeResourcesGenerated()
-    {
-        return lifetimeResourcesGenerated;
-    }
-
     private IEnumerator StartResourceGeneration()
     {
-        while (true)
+        while (autoProduce && buildingSide.side == Side.Player && buildingStats.currentHealth > 0)
         {
+            Debug.Log($"Generating {resourceAmountPerBatch} {ResourceName}.... at {resourceGenerationRate} per second");
             yield return new WaitForSeconds(resourceTimeToProduce);
-            currentResourceAmount += resourceAmountPerBatch;
-            lifetimeResourcesGenerated += resourceAmountPerBatch;
-
+            GenerateResourceAmount += resourceAmountPerBatch;
+            Debug.Log($"Generated {ResourceName}. Current amount: {GenerateResourceAmount}");
         }
     }
 }
