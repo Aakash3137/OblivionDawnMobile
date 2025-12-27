@@ -35,7 +35,7 @@ public class NetworkBuildingManager : NetworkBehaviour
     {
         if (Runner.IsServer && !mainBuildingsSpawned)
         {
-            Invoke(nameof(SpawnMainBuildings), 1f);
+            Invoke(nameof(SpawnMainBuildings), 2f);
         }
     }
 
@@ -49,6 +49,8 @@ public class NetworkBuildingManager : NetworkBehaviour
         if (allPlayers.Length < 2)
         {
             Debug.LogWarning($"[NBM] Not enough players to spawn main buildings. Count: {allPlayers.Length}");
+            // Try again later if players haven't connected yet
+            Invoke(nameof(SpawnMainBuildings), 1f);
             return;
         }
 
@@ -66,12 +68,14 @@ public class NetworkBuildingManager : NetworkBehaviour
 
         if (tile1 != null && player0 != null)
         {
+            Debug.Log($"[NBM] Main building spawned at (4,4) for Player SpawnId 0 faction name is: " + player0.FactionName);
             SpawnFactionMainBuilding(tile1, player0.Object.InputAuthority, NetworkSide.Player, player0.FactionName.ToString());
             Debug.Log($"[NBM] Main building spawned at (4,4) for Player SpawnId 0");
         }
 
         if (tile2 != null && player1 != null)
         {
+            Debug.Log($"[NBM] Main building spawned at (12,12) for Player SpawnId 1 faction name is: " + player1.FactionName);
             SpawnFactionMainBuilding(tile2, player1.Object.InputAuthority, NetworkSide.Player, player1.FactionName.ToString());
             Debug.Log($"[NBM] Main building spawned at (12,12) for Player SpawnId 1");
         }
@@ -162,7 +166,8 @@ public class NetworkBuildingManager : NetworkBehaviour
     public void RequestBuild(NetworkTile tile, string building)
     {
         if (tile == null) return;
-
+        
+        
         BuildRequestData data = new BuildRequestData
         {
             tileName = tile.name,
@@ -190,7 +195,7 @@ public class NetworkBuildingManager : NetworkBehaviour
 
         BuildRequestData data = JsonUtility.FromJson<BuildRequestData>(json);
         Debug.Log($"[NBM] Host received build request for tile {data.tileName}, building: {data.buildingName}");
-        
+        Debug.Log($"[NBM] Host received build request for factionName: {data.factionName}");
         PlayerRef clientPlayer = NetworkEventCore.LastEventSender;
         ProcessBuildRequest(data, clientPlayer);
     }
@@ -213,6 +218,7 @@ public class NetworkBuildingManager : NetworkBehaviour
 
         NetworkSide ownerSide = (NetworkSide)data.ownerSide;
         Debug.Log($"[NBM] Host spawning building {data.buildingName} for player {requester}");
+        Debug.Log("Faction name in Process Build request :"+ data.factionName);
         SpawnBuilding(tile, data.buildingName, ownerSide, requester, data.factionName);
     }
 
@@ -241,6 +247,12 @@ public class NetworkBuildingManager : NetworkBehaviour
     private void SpawnBuilding(NetworkTile tile, string buildingName, NetworkSide ownerSide, PlayerRef owner, string factionName)
     {
         if (!Runner.IsServer) return;
+        
+        if(factionName == null)
+        {
+            Debug.Log($"[NBM] Faction name is null!");
+            return;
+        }
 
         MP_Faction faction = factionManager.GetFactionByName(factionName);
         if (faction == null)

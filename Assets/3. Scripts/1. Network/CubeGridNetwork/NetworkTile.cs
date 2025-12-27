@@ -120,12 +120,12 @@ public class NetworkTile : NetworkBehaviour
 
         if (localSelected && selectionMaterial != null)
         {
-            Debug.Log($"[NetworkTile] Applying selection material to {name}");
+            //Debug.Log($"[NetworkTile] Applying selection material to {name}");
             tileRenderer.material = selectionMaterial;
         }
         else
         {
-            Debug.Log($"[NetworkTile] Applying owner visual to {name} (localSelected: {localSelected}, selectionMaterial: {selectionMaterial != null})");
+           // Debug.Log($"[NetworkTile] Applying owner visual to {name} (localSelected: {localSelected}, selectionMaterial: {selectionMaterial != null})");
             ApplyOwnerVisual();
         }
     }

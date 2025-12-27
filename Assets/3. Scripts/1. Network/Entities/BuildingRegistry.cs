@@ -52,9 +52,15 @@ public class BuildingRegistry : MonoBehaviour
     
     private void RegisterFactionBuildings()
     {
-        if (GameData.SelectedMPFaction == null)
+        if (GameData.SelectedFactionName == null)
         {
             Debug.LogWarning("[BuildingRegistry] No faction selected, skipping faction building registration");
+            return;
+        }
+        
+        if (GameData.SelectedMPFaction == null)
+        {
+            Debug.LogWarning("[BuildingRegistry] No MP faction selected, skipping faction building registration");
             return;
         }
         
