@@ -8,21 +8,20 @@ public class ResourceGen : MonoBehaviour
     private SideScenario buildingSide;   // building's faction marker
     private BuildingStats buildingStats;
 
-    [Header("Editor View purpose only")]
-    public string ResourceName;
+    [Header(" EDITOR VIEW ONLY ")]
+    [SerializeField] private int GeneratedResourceAmount; //Generation Data
+    private string ResourceName;
     private int buildingCurrentLevel;
-    [SerializeField] private ScenarioResourceType resourceType;
+    private ScenarioResourceType resourceType;
     private int resourceAmountPerBatch;
     private float resourceTimeToProduce;
     private float resourceGenerationRate;
-    //Generation Data
-    [SerializeField] private int GenerateResourceAmount;
 
     private void Awake()
     {
         //set values
         buildingCurrentLevel = 0;
-        GenerateResourceAmount = 0;
+        GeneratedResourceAmount = 0;
 
         //Registering resource type and resource name        
         resourceType = buildingResourceData.resourceType;
@@ -55,23 +54,23 @@ public class ResourceGen : MonoBehaviour
     {
         StartCoroutine(StartResourceGeneration());
     }
-
-    public void UseResource(int amount)
-    {
-        GenerateResourceAmount -= amount;
-    }
-    public float GetResourceGenerationRate()
-    {
-        return resourceGenerationRate;
-    }
     private IEnumerator StartResourceGeneration()
     {
-        while (autoProduce && buildingSide.side == Side.Player && buildingStats.currentHealth > 0)
+        if (buildingSide.side != Side.Player)
+            yield break;
+
+        PlayerResourceManager.Instance.SetResourceGenerationRate(resourceType, resourceGenerationRate);
+
+        while (autoProduce && buildingStats.currentHealth > 0)
         {
-            Debug.Log($"Generating {resourceAmountPerBatch} {ResourceName}.... at {resourceGenerationRate} per second");
             yield return new WaitForSeconds(resourceTimeToProduce);
-            GenerateResourceAmount += resourceAmountPerBatch;
-            Debug.Log($"Generated {ResourceName}. Current amount: {GenerateResourceAmount}");
+            PlayerResourceManager.Instance.AddResources(resourceType, resourceAmountPerBatch);
+            GeneratedResourceAmount += resourceAmountPerBatch;
+            // Debug.Log($"Generated {ResourceName}. Current amount: {GeneratedResourceAmount}");
         }
+    }
+    void OnDisable()
+    {
+        PlayerResourceManager.Instance.SetResourceGenerationRate(resourceType, -resourceGenerationRate);
     }
 }

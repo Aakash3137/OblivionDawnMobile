@@ -7,12 +7,13 @@ public class UnitSpawnerScenario : MonoBehaviour
     public UnitProduceStatsSO unitProduceStats;   // ScriptableObject reference
     public Transform spawnPoint;     // empty child where units appear
     public bool autoProduce = true;  // keep producing continuously
+
+    [Header(" EDITOR VIEW ONLY ")]
+    [SerializeField] private int unitSpawnLevel;
     private SideScenario buildingSide;   // building's faction marker
     private Transform unitPool;      // found by tag "UnitPool"
     private UnitStats unitStats;
-    public int unitSpawnLevel;
-    // Reference to the faction Building
-    private BuildingStats buildingStats;
+    private BuildingStats buildingStats;    // Reference to the faction Building
 
     private void Start()
     {

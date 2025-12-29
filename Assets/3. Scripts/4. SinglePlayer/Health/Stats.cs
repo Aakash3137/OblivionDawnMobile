@@ -2,11 +2,12 @@ using UnityEngine;
 
 public class Stats : MonoBehaviour
 {
-    [Header("For Editor view only")]
+    [Header(" EDITOR VIEW ONLY ")]
     public float maxHealth;
     public float currentHealth;
     public int Level;
     public float armour;
+
     [Header("Assign in Inspector")]
     public FadeHealthBar healthBarFade; // assign in Inspector
 

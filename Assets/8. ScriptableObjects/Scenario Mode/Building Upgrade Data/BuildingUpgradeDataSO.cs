@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 
 [CreateAssetMenu(fileName = "Building Upgrade Data", menuName = "Upgrade Data/Building Upgrade Data")]
 public class BuildingUpgradeDataSO : ScriptableObject
@@ -20,11 +21,25 @@ public class BuildingUpgradeDataSO : ScriptableObject
         for (int i = 0; i < buildingLevelData.Length; i++)
         {
             buildingLevelData[i].buildingLevel = i;
+
+            var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
+
+            // Only create the array if it doesn't exist or size is wrong
+            if (buildingLevelData[i].buildingUpgradeCosts == null || buildingLevelData[i].buildingUpgradeCosts.Length != enumValues.Length)
+            {
+                buildingLevelData[i].buildingUpgradeCosts = new BuildingUpgradeCost[enumValues.Length];
+            }
+
+            for (int j = 0; j < enumValues.Length; j++)
+            {
+                // Set the resource type
+                buildingLevelData[i].buildingUpgradeCosts[j].resourceType = (ScenarioResourceType)enumValues.GetValue(j);
+            }
         }
     }
 }
 
-[System.Serializable]
+[Serializable]
 public class BuildingUpgradeData
 {
     public int buildingLevel;
@@ -32,12 +47,14 @@ public class BuildingUpgradeData
     public float buildingHealth;
     public float buildingArmour;
     public float buildingBuildTime;
-    [Tooltip("Resource costs required for this upgrade")]
+
+    [Header("Resource costs required for this upgrade")]
+    [Tooltip("Resource Type are auto set from enum values of ScenarioResourceType")]
     public BuildingUpgradeCost[] buildingUpgradeCosts;
 }
-[System.Serializable]
+[Serializable]
 public struct BuildingUpgradeCost
 {
-    public ResourceType resourceType;
-    public float resourceCost;
+    public ScenarioResourceType resourceType;
+    public int resourceCost;
 }
