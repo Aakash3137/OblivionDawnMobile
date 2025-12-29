@@ -1,5 +1,7 @@
 using Fusion;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
+using UnityEngine.AI;
 
 public enum UnitType { Soldier, Tank, Aircraft }
 
@@ -8,17 +10,21 @@ public class NetworkUnit : NetworkBehaviour
     [Header("Unit Settings")]
     public UnitType unitType;
     [SerializeField] private float moveSpeed = 3f;
-    [SerializeField] private float detectionRange = 5f;
     [SerializeField] private float attackRange = 2f;
     [SerializeField] private float attackDamage = 10f;
     [SerializeField] private float attackCooldown = 1f;
-    
+    public float aggroRadius = 3f;
+    [SerializeField] internal NavMeshAgent agent;
     [Networked] public NetworkSide OwnerSide { get; set; }
+    
+    public UnitState unitState = UnitState.Moving;
 
     private Transform targetMainBuilding;
     private Transform currentTarget;
     private TickTimer attackTimer;
 
+    [Header("Animation")]
+    public Animator animator;
     // TODO: Add animation references
     // private Animator animator;
     // Animation states: Idle, Move, Attack, Death
@@ -27,8 +33,11 @@ public class NetworkUnit : NetworkBehaviour
     {
         if (Object.HasStateAuthority)
         {
+            Debug.Log("Unit spawned on " + OwnerSide + " side");
             FindEnemyMainBuilding();
             attackTimer = TickTimer.CreateFromSeconds(Runner, attackCooldown);
+            agent = GetComponent<NavMeshAgent>();
+            agent.stoppingDistance = attackRange;
         }
     }
 
@@ -39,22 +48,39 @@ public class NetworkUnit : NetworkBehaviour
             NetworkCubeGridManager.Instance.MainBuildingTile2 
         };
 
+       // Debug.Log("Finding enemy main building");
         foreach (var mainTile in mainTiles)
         {
+            Debug.Log(" main tile");
             if (mainTile == null || !mainTile.IsOccupied) continue;
 
-            GameObject tileObj = NetworkCubeGridManager.Instance.GetCube(mainTile.Coord);
-            if (tileObj == null) continue;
-
-            foreach (Transform child in tileObj.transform)
+            Debug.Log(" main tile is at " + mainTile.Coord);
+            foreach (var enemyTile in NetworkCubeGridManager.Instance.enemyTiles)
             {
-                NetworkBuilding building = child.GetComponent<NetworkBuilding>();
-                if (building != null && building.OwnerSide != OwnerSide)
+                Debug.Log("Checking enemy tile at " + enemyTile.Coord);
+                if (enemyTile.Coord == mainTile.Coord)
                 {
-                    targetMainBuilding = building.enemyVisual != null ? building.enemyVisual.transform : building.transform;
+                    Debug.Log("Enemy main building found at " + enemyTile.Coord);
+                    targetMainBuilding = NetworkCubeGridManager.Instance.GetCube(mainTile.Coord).transform;
+                    Debug.Log("Enemy main building found at " + targetMainBuilding.position);
                     return;
-                }
+                } 
             }
+           
+            
+            /* GameObject tileObj = NetworkCubeGridManager.Instance.GetCube(mainTile.Coord);
+             if (tileObj == null) continue;
+
+             foreach (Transform child in tileObj.transform)
+             {
+                 NetworkBuilding building = child.GetComponent<NetworkBuilding>();
+                 if (building != null && building.OwnerSide != OwnerSide)
+                 {
+                     targetMainBuilding = building.enemyVisual != null ? building.enemyVisual.transform : building.transform;
+                     Debug.Log("Enemy main building found at " + targetMainBuilding.position);
+                     return;
+                 }
+             }*/
         }
     }
 
@@ -64,19 +90,27 @@ public class NetworkUnit : NetworkBehaviour
 
         FindNearbyEnemy();
 
+        if (animator == null)
+            TryAssignAnimator();
+
+        if (animator != null)
+            animator.SetFloat("Move", agent.velocity.magnitude);
+        
         if (currentTarget != null)
         {
+            Debug.Log("Attacking enemy");
             AttackTarget();
         }
         else if (targetMainBuilding != null)
-        {
+        {   Debug.Log(" MoveTowards targetMainBuilding");
             MoveTowards(targetMainBuilding.position);
         }
     }
 
     private void FindNearbyEnemy()
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, detectionRange);
+        Debug.Log("Finding nearby enemy");
+        Collider[] hits = Physics.OverlapSphere(transform.position, aggroRadius);
         float closestDist = float.MaxValue;
         Transform closest = null;
 
@@ -132,7 +166,12 @@ public class NetworkUnit : NetworkBehaviour
         // TODO: Play move animation
         // animator.SetBool("IsMoving", true);
 
-        Vector3 direction = (targetPos - transform.position).normalized;
+        Debug.Log("Moving towards " + targetPos);
+        
+        if (targetPos != null)
+            agent.SetDestination(targetPos);
+        
+        /*Vector3 direction = (targetPos - transform.position).normalized;
         direction.y = 0;
         
         if (direction != Vector3.zero)
@@ -140,7 +179,7 @@ public class NetworkUnit : NetworkBehaviour
             transform.rotation = Quaternion.LookRotation(direction);
         }
         
-        transform.position += direction * moveSpeed * Runner.DeltaTime;
+        transform.position += direction * moveSpeed * Runner.DeltaTime;*/
     }
 
     private void DealDamage()
@@ -165,6 +204,28 @@ public class NetworkUnit : NetworkBehaviour
         // }
     }
 
+    void TryAssignAnimator()
+    {
+        if (transform.childCount > 1)
+        {
+            Transform child2 = transform.GetChild(1);
+            if (child2.childCount > 1)
+            {
+                Transform subChild2 = child2.GetChild(1);
+                Animator found = subChild2.GetComponent<Animator>();
+                if (found != null)
+                {
+                    animator = found;
+                    Debug.Log($"{name}: Animator bound from Child2/SubChild2");
+                    return;
+                }
+            }
+        }
+
+        if (animator == null)
+            animator = GetComponentInChildren<Animator>(true);
+    }
+    
     private void Die()
     {
         // TODO: Play death animation

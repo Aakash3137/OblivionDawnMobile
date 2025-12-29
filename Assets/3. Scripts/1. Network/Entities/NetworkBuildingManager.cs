@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using Fusion;
 using System.Collections.Generic;
@@ -68,17 +69,13 @@ public class NetworkBuildingManager : NetworkBehaviour
 
         if (tile1 != null && player0 != null)
         {
-            Debug.Log($"[NBM] Main building spawned at (4,4) for Player SpawnId 0 faction name is: " + player0.FactionName);
             SpawnFactionMainBuilding(tile1, player0.Object.InputAuthority, NetworkSide.Player, player0.FactionName.ToString());
-            Debug.Log($"[NBM] Main building spawned at (4,4) for Player SpawnId 0");
-        }
+          }
 
         if (tile2 != null && player1 != null)
         {
-            Debug.Log($"[NBM] Main building spawned at (12,12) for Player SpawnId 1 faction name is: " + player1.FactionName);
-            SpawnFactionMainBuilding(tile2, player1.Object.InputAuthority, NetworkSide.Player, player1.FactionName.ToString());
-            Debug.Log($"[NBM] Main building spawned at (12,12) for Player SpawnId 1");
-        }
+           SpawnFactionMainBuilding(tile2, player1.Object.InputAuthority, NetworkSide.Player, player1.FactionName.ToString());
+           }
     }
     
     private void SpawnFactionMainBuilding(NetworkTile tile, PlayerRef owner, NetworkSide ownerSide,  string factionName)
@@ -101,6 +98,7 @@ public class NetworkBuildingManager : NetworkBehaviour
 
         Vector3 pos = tile.transform.position + Vector3.up;
 
+       
         var spawnedObj = Runner.Spawn(mainBuildingPrefab, pos, Quaternion.identity, owner, (runner, obj) =>
         {
             var building = obj.GetComponent<NetworkBuilding>();
@@ -108,6 +106,12 @@ public class NetworkBuildingManager : NetworkBehaviour
                 building.OwnerSide = ownerSide;
         });
 
+        //Wall spawning logic
+
+       // StartCoroutine(WaitForWallMainBuildingsSetup( pos, tile.transform, owner));
+        //NetworkWallManager.Instance.PlaceWallsOnMainBuilding(pos, tile.transform, owner);
+
+        
         if (spawnedObj != null)
         {
             tile.OccupyTile();
@@ -219,6 +223,10 @@ public class NetworkBuildingManager : NetworkBehaviour
         NetworkSide ownerSide = (NetworkSide)data.ownerSide;
         Debug.Log($"[NBM] Host spawning building {data.buildingName} for player {requester}");
         Debug.Log("Faction name in Process Build request :"+ data.factionName);
+        
+        //Walls spawn logic 
+        
+        //NetworkWallManager.Instance.PlaceWalls(tile.transform);
         SpawnBuilding(tile, data.buildingName, ownerSide, requester, data.factionName);
     }
 
@@ -310,4 +318,12 @@ public class NetworkBuildingManager : NetworkBehaviour
         }
     }
 
+    private IEnumerator WaitForWallMainBuildingsSetup(Vector3 pos, Transform tileTransform, PlayerRef owner)
+    {
+        yield return new WaitForSeconds(2);
+        
+        //Wall spawning logic
+        NetworkWallManager.Instance.PlaceWallsOnMainBuilding(pos, tileTransform, owner);
+
+    }
 }

@@ -4,7 +4,8 @@ using UnityEngine;
 public class UnitSpawner : NetworkBehaviour
 {
     [Header("Spawn Settings")]
-    [SerializeField] private NetworkPrefabRef unitPrefab;
+    [SerializeField] internal NetworkPrefabRef unitPrefab;
+   // [SerializeField] internal MP_UnitStats unitStats;
     [SerializeField] private float spawnInterval = 5f;
     [SerializeField] private bool allowSpawning = true;
 

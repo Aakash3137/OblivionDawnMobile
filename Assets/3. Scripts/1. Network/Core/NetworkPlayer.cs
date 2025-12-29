@@ -22,6 +22,8 @@ public class NetworkPlayer : NetworkBehaviour
 
     #region Public Fields
     [SerializeField] internal Camera MainCamera;
+
+    [SerializeField] internal GameObject cameraPanning;
     #endregion
 
     #region Private Fields
@@ -350,17 +352,20 @@ public class NetworkPlayer : NetworkBehaviour
             if (sceneName.Equals("GameScene", System.StringComparison.OrdinalIgnoreCase))
             {
                 MainCamera.gameObject.SetActive(true);
+                cameraPanning.SetActive(true);
                 Debug.Log($"[NetworkPlayer] Camera activated for {PlayerName} in GameScene");
             }
             else
             {
                 MainCamera.gameObject.SetActive(false);
+                cameraPanning.SetActive(false);
                 Debug.Log($"[NetworkPlayer] Camera deactivated for {PlayerName} in {sceneName}");
             }
         }
         else
         {
             MainCamera.gameObject.SetActive(false);
+            cameraPanning.SetActive(false);
             Debug.Log($"[NetworkPlayer] Camera deactivated for remote player {PlayerName}");
         }
     }
