@@ -105,7 +105,10 @@ public class FactionButton : MonoBehaviour
         GameData.SelectedFaction = faction;   // <-- critical line
         GameData.AllFactionsData = data;
 
+        GameData.SelectedFactionName = faction.ToString();
         Debug.Log($"[FactionButton] Player faction selected: {GameData.SelectedFaction}");
+        Debug.Log($"[FactionButton] Player faction name selected: {GameData.SelectedFactionName}");
+        Debug.Log($"[FactionButton] Player MP faction selected: {GameData.SelectedMPFaction.factionName}");
 
         if (GameData.GameModeType == "Campaign")
         {

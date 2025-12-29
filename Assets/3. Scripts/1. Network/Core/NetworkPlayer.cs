@@ -22,6 +22,8 @@ public class NetworkPlayer : NetworkBehaviour
 
     #region Public Fields
     [SerializeField] internal Camera MainCamera;
+
+    [SerializeField] internal GameObject cameraPanning;
     #endregion
 
     #region Private Fields
@@ -42,19 +44,23 @@ public class NetworkPlayer : NetworkBehaviour
         Debug.Log($"[NetworkPlayer] Spawned - InputAuthority: {Object.InputAuthority}, Scene: {gameObject.scene.name}");
         DontDestroyOnLoad(gameObject);
         
+        InitializePlayerFaction();
+        
         //InitializeNetworkPosition();
         InitializePlayerProfile();
+        
         InitializeVisualAppearance();
         InitializeGameMode();
         SubscribeToEvents();
 
-        // ✅ ADDED: Send faction to host ONCE
-        if (Object.HasInputAuthority && string.IsNullOrEmpty(FactionName.ToString()))
+        Debug.Log("[NP] Selected faction name in RequestBuild is: " + GameData.SelectedFactionName);
+        if(GameData.SelectedMPFaction != null)
         {
-            RPC_SetFaction(GameData.SelectedFactionName);
+            Debug.Log("[NP] SelectedMPFaction  name in RequestBuild is: " + GameData.SelectedMPFaction.factionName);
         }
-
-
+        
+        //FactionName = GameData.SelectedFactionName;
+        
         // Apply transform from network state immediately
         transform.position = NetworkPosition;
         transform.rotation = NetworkRotation;
@@ -83,14 +89,7 @@ public class NetworkPlayer : NetworkBehaviour
 
     #region Initialization Methods
 
-    /* private void InitializeNetworkPosition()
-     {
-         if (Object.HasStateAuthority)
-         {
-             NetworkPosition = transform.position;
-         }
-     }*/
-
+   
     private void InitializePlayerProfile()
     {
         if (Object.HasInputAuthority && !IsProfileSet)
@@ -110,6 +109,26 @@ public class NetworkPlayer : NetworkBehaviour
             SetNetworkPlayerColor();
         }
         SetPlayerColor();
+    }
+    
+    private void InitializePlayerFaction()
+    {
+        if (Object.HasInputAuthority)
+        {
+            string factionName = GameData.SelectedFactionName;
+            if (string.IsNullOrEmpty(factionName))
+            {
+                Debug.LogError($"[NetworkPlayer] No faction selected for player!");
+                factionName = "DefaultFaction"; // Fallback
+            }
+        
+            Debug.Log($"[NetworkPlayer] Sending RPC_SetFaction: {factionName} for player {Object.InputAuthority}");
+            RPC_SetFaction(factionName);
+        }
+        else
+        {
+            Debug.Log($"[NetworkPlayer] Remote player, waiting for faction sync...");
+        }
     }
     
     private void InitializeGameMode()
@@ -242,8 +261,15 @@ public class NetworkPlayer : NetworkBehaviour
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     private void RPC_SetFaction(string factionName)
     {
+        if (string.IsNullOrEmpty(factionName))
+        {
+            Debug.LogError($"[NetworkPlayer] RPC_SetFaction received empty faction from {Object.InputAuthority}");
+            factionName = "DefaultFaction";
+        }
+    
         FactionName = factionName;
-        Debug.Log($"[NetworkPlayer] Faction synced: {factionName}");
+        Debug.Log($"[NetworkPlayer] ✓ Faction set for player {Object.InputAuthority}: {factionName}");
+        
     }
     
     #endregion
@@ -326,17 +352,20 @@ public class NetworkPlayer : NetworkBehaviour
             if (sceneName.Equals("GameScene", System.StringComparison.OrdinalIgnoreCase))
             {
                 MainCamera.gameObject.SetActive(true);
+                cameraPanning.SetActive(true);
                 Debug.Log($"[NetworkPlayer] Camera activated for {PlayerName} in GameScene");
             }
             else
             {
                 MainCamera.gameObject.SetActive(false);
+                cameraPanning.SetActive(false);
                 Debug.Log($"[NetworkPlayer] Camera deactivated for {PlayerName} in {sceneName}");
             }
         }
         else
         {
             MainCamera.gameObject.SetActive(false);
+            cameraPanning.SetActive(false);
             Debug.Log($"[NetworkPlayer] Camera deactivated for remote player {PlayerName}");
         }
     }
