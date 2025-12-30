@@ -4,19 +4,22 @@ using System;
 [CreateAssetMenu(fileName = "Building Upgrade Data", menuName = "Upgrade Data/Building Upgrade Data")]
 public class BuildingUpgradeDataSO : ScriptableObject
 {
-
-    [Header("Upgrade data is stored in array 0 represents Base Level. 1-n can represent level of upgrade")]
+    [Header("Building health stats and Resource cost for upgrades")]
     public string buildingName;
     public GameObject buildingPrefab;
-    public BuildingType buildingType;
+    public ScenarioBuildingType buildingType;
     public FactionName buildingFactionName;
 
     [Tooltip("Level 0 = base building")]
     public BuildingUpgradeData[] buildingLevelData;
 
-    private void OnValidate()
+    protected virtual void ValidateBase()
     {
-        if (buildingLevelData == null) return;
+        if (buildingLevelData == null)
+        {
+            buildingLevelData = new BuildingUpgradeData[1];
+            buildingLevelData[0] = new BuildingUpgradeData();
+        }
 
         for (int i = 0; i < buildingLevelData.Length; i++)
         {
@@ -24,19 +27,25 @@ public class BuildingUpgradeDataSO : ScriptableObject
 
             var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
 
-            // Only create the array if it doesn't exist or size is wrong
-            if (buildingLevelData[i].buildingUpgradeCosts == null || buildingLevelData[i].buildingUpgradeCosts.Length != enumValues.Length)
+            if (buildingLevelData[i].buildingUpgradeCosts == null ||
+                buildingLevelData[i].buildingUpgradeCosts.Length != enumValues.Length)
             {
-                buildingLevelData[i].buildingUpgradeCosts = new BuildingUpgradeCost[enumValues.Length];
+                buildingLevelData[i].buildingUpgradeCosts =
+                    new BuildingUpgradeCost[enumValues.Length];
             }
 
             for (int j = 0; j < enumValues.Length; j++)
             {
-                // Set the resource type
-                buildingLevelData[i].buildingUpgradeCosts[j].resourceType = (ScenarioResourceType)enumValues.GetValue(j);
+                buildingLevelData[i].buildingUpgradeCosts[j].resourceType =
+                    (ScenarioResourceType)enumValues.GetValue(j);
             }
         }
     }
+    private void OnValidate()
+    {
+        ValidateBase();
+    }
+
 }
 
 [Serializable]
