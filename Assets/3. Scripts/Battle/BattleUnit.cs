@@ -6,7 +6,7 @@ public class BattleUnit : MonoBehaviour
 {
     [Header("References")]
     public BattleUnitEnum battleUnitEnum;
-
+    public BulletShooter bulletShooter;
     [SerializeField] internal FadeHealthBar healthBarFade;
 
     [Header("Stats")]
@@ -26,6 +26,10 @@ public class BattleUnit : MonoBehaviour
     public float separationRadius = 1.5f;
     public float separationStrength = 2f;
 
+    [Header("Targeting Vision")]
+    public float narrowViewAngle = 10f; // straight ahead
+    public float wideViewAngle = 45f;   // front arc
+    
     public UnitStats unitStats;
     
     public NavMeshAgent agent;
@@ -131,24 +135,62 @@ public class BattleUnit : MonoBehaviour
     {
         Collider[] hits = Physics.OverlapSphere(transform.position, DetectionRange);
 
+        BattleUnit bestTarget = null;
+        float bestScore = float.MaxValue;
+
+        Vector3 forward = transform.forward;
+        Side mySide = GetComponent<SideScenario>().side;
+
         foreach (Collider hit in hits)
         {
             BattleUnit unit = hit.GetComponent<BattleUnit>();
-            if (unit != null && unit != this)
+            if (unit == null || unit == this)
+                continue;
+
+            // Ignore same side
+            if (unit.GetComponent<SideScenario>().side == mySide)
+                continue;
+
+            Vector3 dir = unit.transform.position - transform.position;
+            float distance = dir.magnitude;
+            float angle = Vector3.Angle(forward, dir);
+
+            float score;
+
+            // 1️⃣ Straight ahead → highest priority
+            if (angle <= narrowViewAngle)
             {
-                // Check side
-                if (unit.GetComponent<SideScenario>().side !=
-                    GetComponent<SideScenario>().side)
-                {
-                    target = unit.gameObject;
-                    attackTimer = 0f;
-                    agent.ResetPath();
-                    agent.isStopped = false;
-                    return;
-                }
+                score = distance;
+            }
+            // 2️⃣ Front arc
+            else if (angle <= wideViewAngle)
+            {
+                score = distance + 5f;
+            }
+            // 3️⃣ Fallback: anywhere
+            else
+            {
+                score = distance + 15f;
+            }
+
+            // Pick best candidate
+            if (score < bestScore)
+            {
+                bestScore = score;
+                bestTarget = unit;
             }
         }
+
+        // Assign target exactly like before
+        if (bestTarget != null)
+        {
+            target = bestTarget.gameObject;
+            attackTimer = 0f;
+            agent.ResetPath();
+            agent.isStopped = false;
+        }
     }
+
 
     void FaceTarget()
     {
@@ -214,8 +256,8 @@ public class BattleUnit : MonoBehaviour
                 BattleUnit enemy = target.GetComponent<BattleUnit>();
                 if (enemy != null)
                 {
-                    enemy.TakeDamage(attackDamage);
-                    
+                    //enemy.TakeDamage(attackDamage);
+                    bulletShooter.Fire(enemy.transform, attackDamage);
                     if (animator != null)
                     {
                         animator.SetBool("Fire", true);
@@ -225,6 +267,7 @@ public class BattleUnit : MonoBehaviour
             }
         }
     }
+    
 
     IEnumerator ResetFire()
     {

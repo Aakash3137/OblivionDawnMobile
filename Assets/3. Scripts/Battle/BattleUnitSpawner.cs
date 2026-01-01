@@ -71,6 +71,7 @@ public class BattleUnitSpawner : MonoBehaviour
 
         Instantiate(prefab, spawnPoint.position, Quaternion.identity, playerUnitPool);
 
+        //instantiate the unit and set the target
     }
 
     private void SpawnEnemyUnit(Button button)

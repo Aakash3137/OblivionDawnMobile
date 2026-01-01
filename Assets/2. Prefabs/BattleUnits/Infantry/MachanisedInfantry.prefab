@@ -462,6 +462,7 @@ GameObject:
   - component: {fileID: 8664771199282882645}
   - component: {fileID: 161548652620798157}
   - component: {fileID: 5098338205219749656}
+  - component: {fileID: -4211263753082433027}
   - component: {fileID: -1095470802614212120}
   m_Layer: 7
   m_Name: MachanisedInfantry
@@ -681,6 +682,21 @@ MonoBehaviour:
   unitFireRate: 0
   unitAttackRange: 0
   attackDamage: 0
+--- !u!114 &-4211263753082433027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1690844357168965693}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05a0242ed80d27840b56c0dcd66e0e3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  muzzlePoint: {fileID: 5191936741283097179}
+  bulletSpeed: 20
+  bulletLifeTime: 2
 --- !u!114 &-1095470802614212120
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -694,8 +710,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   battleUnitEnum: 0
+  bulletShooter: {fileID: -4211263753082433027}
   healthBarFade: {fileID: 1670812886041853120}
-  currentHealth: 0
   DetectionRange: 30
   AttackRange: 5
   moveSpeed: 1.5
@@ -703,6 +719,8 @@ MonoBehaviour:
   attackCooldown: 1
   separationRadius: 1.5
   separationStrength: 2
+  narrowViewAngle: 10
+  wideViewAngle: 45
   unitStats: {fileID: 5098338205219749656}
   agent: {fileID: 2533861858427572245}
   animator: {fileID: 1442437726733883778}

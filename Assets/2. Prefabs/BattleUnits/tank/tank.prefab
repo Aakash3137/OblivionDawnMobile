@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7085954598940104464
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8072048961939860573}
+  m_Layer: 0
+  m_Name: FirePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8072048961939860573
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7085954598940104464}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.024, y: 0.606, z: 2.715}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8958401705000738122}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &6690528292445755181
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -183,6 +214,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 2e0a719b6ed4843488e82591f2800946, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7940529804219967746}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 2e0a719b6ed4843488e82591f2800946, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8072048961939860573}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2e0a719b6ed4843488e82591f2800946, type: 3}
       insertIndex: -1
@@ -199,6 +233,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2e0a719b6ed4843488e82591f2800946, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2337374514683609302}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2e0a719b6ed4843488e82591f2800946, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7235389321724902457}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2e0a719b6ed4843488e82591f2800946, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7234458516524931379}
@@ -308,6 +345,21 @@ MonoBehaviour:
   unitFireRate: 0
   unitAttackRange: 0
   attackDamage: 0
+--- !u!114 &7235389321724902457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8582016250964789232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05a0242ed80d27840b56c0dcd66e0e3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  muzzlePoint: {fileID: 8072048961939860573}
+  bulletSpeed: 30
+  bulletLifeTime: 2
 --- !u!114 &7234458516524931379
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -321,6 +373,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   battleUnitEnum: 1
+  bulletShooter: {fileID: 7235389321724902457}
   healthBarFade: {fileID: 5809330042084290733}
   DetectionRange: 40
   AttackRange: 5
@@ -329,6 +382,8 @@ MonoBehaviour:
   attackCooldown: 1
   separationRadius: 1.5
   separationStrength: 2
+  narrowViewAngle: 10
+  wideViewAngle: 45
   unitStats: {fileID: 2337374514683609302}
   agent: {fileID: 4637335217204809781}
   animator: {fileID: 0}

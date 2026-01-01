@@ -8,7 +8,9 @@ public class UnitButton : MonoBehaviour
 
    private void Start()
    {
+      //assigning enum to button name
       buttonname = BattleUnitEnum.ToString();
+      
    }
    
 }
