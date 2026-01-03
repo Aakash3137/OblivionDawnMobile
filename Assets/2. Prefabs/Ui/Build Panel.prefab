@@ -88,7 +88,7 @@ GameObject:
   - component: {fileID: 7878344551183569154}
   - component: {fileID: 7177256336842253730}
   m_Layer: 5
-  m_Name: Background-Container
+  m_Name: Defense-Background-Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -185,7 +185,7 @@ GameObject:
   - component: {fileID: 4593017025768165189}
   - component: {fileID: 6126169755713436118}
   m_Layer: 5
-  m_Name: Coin Buildings Button
+  m_Name: Resource-Buildings Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -533,7 +533,7 @@ GameObject:
   - component: {fileID: 1414045102992599275}
   - component: {fileID: 4977832260952705270}
   m_Layer: 5
-  m_Name: Background-Container
+  m_Name: Resource-Background-Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1015,7 +1015,7 @@ GameObject:
   - component: {fileID: 3040279232364298629}
   - component: {fileID: 5604310350001282820}
   m_Layer: 5
-  m_Name: Background-Container
+  m_Name: Offense-Background-Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1209,11 +1209,7 @@ MonoBehaviour:
   defenseType: 0
   resourceType: 0
   unitType: 1
-  costPanel: {fileID: 7499252235247720126}
-  foodText: {fileID: 4177366592739455648}
-  goldText: {fileID: 5298719941720068510}
-  metalText: {fileID: 2040759474115380025}
-  powerText: {fileID: 6670956474257523682}
+  costPanelManager: {fileID: 5673814415555892172}
 --- !u!1 &1950762732486859252
 GameObject:
   m_ObjectHideFlags: 0
@@ -1323,11 +1319,7 @@ MonoBehaviour:
   defenseType: 0
   resourceType: 3
   unitType: 0
-  costPanel: {fileID: 7499252235247720126}
-  foodText: {fileID: 4177366592739455648}
-  goldText: {fileID: 5298719941720068510}
-  metalText: {fileID: 2040759474115380025}
-  powerText: {fileID: 6670956474257523682}
+  costPanelManager: {fileID: 5673814415555892172}
 --- !u!1 &2099998708337776000
 GameObject:
   m_ObjectHideFlags: 0
@@ -1437,11 +1429,7 @@ MonoBehaviour:
   defenseType: 0
   resourceType: 2
   unitType: 0
-  costPanel: {fileID: 7499252235247720126}
-  foodText: {fileID: 4177366592739455648}
-  goldText: {fileID: 5298719941720068510}
-  metalText: {fileID: 2040759474115380025}
-  powerText: {fileID: 6670956474257523682}
+  costPanelManager: {fileID: 5673814415555892172}
 --- !u!1 &2138156990869543395
 GameObject:
   m_ObjectHideFlags: 0
@@ -1551,11 +1539,7 @@ MonoBehaviour:
   defenseType: 1
   resourceType: 0
   unitType: 0
-  costPanel: {fileID: 7499252235247720126}
-  foodText: {fileID: 4177366592739455648}
-  goldText: {fileID: 5298719941720068510}
-  metalText: {fileID: 2040759474115380025}
-  powerText: {fileID: 6670956474257523682}
+  costPanelManager: {fileID: 5673814415555892172}
 --- !u!1 &2155043584168382498
 GameObject:
   m_ObjectHideFlags: 0
@@ -1874,11 +1858,7 @@ MonoBehaviour:
   defenseType: 0
   resourceType: 1
   unitType: 0
-  costPanel: {fileID: 7499252235247720126}
-  foodText: {fileID: 4177366592739455648}
-  goldText: {fileID: 5298719941720068510}
-  metalText: {fileID: 2040759474115380025}
-  powerText: {fileID: 6670956474257523682}
+  costPanelManager: {fileID: 5673814415555892172}
 --- !u!1 &2370291075725173297
 GameObject:
   m_ObjectHideFlags: 0
@@ -2408,11 +2388,7 @@ MonoBehaviour:
   defenseType: 0
   resourceType: 0
   unitType: 0
-  costPanel: {fileID: 7499252235247720126}
-  foodText: {fileID: 4177366592739455648}
-  goldText: {fileID: 5298719941720068510}
-  metalText: {fileID: 2040759474115380025}
-  powerText: {fileID: 6670956474257523682}
+  costPanelManager: {fileID: 5673814415555892172}
 --- !u!1 &3623189368291656993
 GameObject:
   m_ObjectHideFlags: 0
@@ -2522,11 +2498,7 @@ MonoBehaviour:
   defenseType: 0
   resourceType: 0
   unitType: 2
-  costPanel: {fileID: 7499252235247720126}
-  foodText: {fileID: 4177366592739455648}
-  goldText: {fileID: 5298719941720068510}
-  metalText: {fileID: 2040759474115380025}
-  powerText: {fileID: 6670956474257523682}
+  costPanelManager: {fileID: 5673814415555892172}
 --- !u!1 &3711739251563581095
 GameObject:
   m_ObjectHideFlags: 0
@@ -2538,10 +2510,10 @@ GameObject:
   - component: {fileID: 7193623597361878241}
   - component: {fileID: 5098888531954351379}
   - component: {fileID: 1474899275150623520}
-  - component: {fileID: 6874257561012461838}
   - component: {fileID: 4126653188900821437}
   - component: {fileID: 6003070852606754904}
   - component: {fileID: 2783311439384863004}
+  - component: {fileID: 8112006273877300084}
   m_Layer: 5
   m_Name: Build Panel
   m_TagString: Untagged
@@ -2593,7 +2565,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0.15294118, g: 0.16862746, b: 0.20392159, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -2609,18 +2581,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!225 &6874257561012461838
-CanvasGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3711739251563581095}
-  m_Enabled: 1
-  m_Alpha: 0
-  m_Interactable: 0
-  m_BlocksRaycasts: 0
-  m_IgnoreParentGroups: 0
 --- !u!114 &4126653188900821437
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2651,20 +2611,11 @@ MonoBehaviour:
   _offenseBuildPanel: {fileID: 452390126911651174}
   _defenseBG: {fileID: 193917064256270123}
   _defenseBuildPanel: {fileID: 3816035376911908079}
-  _coinBG: {fileID: 630530852568677406}
-  _coinBuildPanel: {fileID: 2222564569186748157}
-  _offenseOptionImages:
-  - {fileID: 1534889246128179783}
-  - {fileID: 1086568212340262879}
-  - {fileID: 4691889937713087487}
-  _defenseOptionImages:
-  - {fileID: 4408194769578762001}
-  - {fileID: 5461122822120675456}
-  - {fileID: 7814913493072159236}
-  _coinOptionImages:
-  - {fileID: 5957442351460467085}
-  - {fileID: 3301443771613459177}
-  - {fileID: 3798169925695135528}
+  _resourceBG: {fileID: 630530852568677406}
+  _resourceBuildPanel: {fileID: 2222564569186748157}
+  _offenseButton: {fileID: 5666800620008697373}
+  _defenseButton: {fileID: 1396737895519325080}
+  _resourceButton: {fileID: 6126169755713436118}
   canvasGroup: {fileID: 0}
   fadeDuration: 0.3
 --- !u!114 &2783311439384863004
@@ -2687,6 +2638,20 @@ MonoBehaviour:
   goldIcons: []
   metalIcons: []
   powerIcons: []
+--- !u!114 &8112006273877300084
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3711739251563581095}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c7453cda82d89b4fb968a875a6223ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canvasRect: {fileID: 0}
+  yOffset: {x: 0, y: 360}
 --- !u!1 &3798169925695135528
 GameObject:
   m_ObjectHideFlags: 0
@@ -3538,7 +3503,7 @@ GameObject:
   - component: {fileID: 2065963369520117517}
   - component: {fileID: 5298719941720068510}
   m_Layer: 5
-  m_Name: Label-Title
+  m_Name: Label-Gold
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4177,11 +4142,7 @@ MonoBehaviour:
   defenseType: 0
   resourceType: 0
   unitType: 0
-  costPanel: {fileID: 7499252235247720126}
-  foodText: {fileID: 4177366592739455648}
-  goldText: {fileID: 5298719941720068510}
-  metalText: {fileID: 2040759474115380025}
-  powerText: {fileID: 6670956474257523682}
+  costPanelManager: {fileID: 5673814415555892172}
 --- !u!1 &5788024258974554738
 GameObject:
   m_ObjectHideFlags: 0
@@ -4611,7 +4572,7 @@ GameObject:
   - component: {fileID: 1285129279608845788}
   - component: {fileID: 2040759474115380025}
   m_Layer: 5
-  m_Name: Label-Title
+  m_Name: Label-Metal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5324,7 +5285,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 2361145013526463928}
   m_OnClick:
     m_PersistentCalls:
@@ -5346,11 +5307,7 @@ MonoBehaviour:
   defenseType: 0
   resourceType: 0
   unitType: 0
-  costPanel: {fileID: 7499252235247720126}
-  foodText: {fileID: 4177366592739455648}
-  goldText: {fileID: 5298719941720068510}
-  metalText: {fileID: 2040759474115380025}
-  powerText: {fileID: 6670956474257523682}
+  costPanelManager: {fileID: 5673814415555892172}
 --- !u!1 &7137866958243187452
 GameObject:
   m_ObjectHideFlags: 0
@@ -5597,6 +5554,7 @@ GameObject:
   - component: {fileID: 5713948063285453132}
   - component: {fileID: 841623686613750546}
   - component: {fileID: 6205137992027877122}
+  - component: {fileID: 5673814415555892172}
   m_Layer: 5
   m_Name: CostPanel
   m_TagString: Untagged
@@ -5691,6 +5649,26 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &5673814415555892172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7499252235247720126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c77a80b8f54e5c04487166e7d982f643, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  foodText: {fileID: 4177366592739455648}
+  goldText: {fileID: 5298719941720068510}
+  metalText: {fileID: 2040759474115380025}
+  powerText: {fileID: 6670956474257523682}
+  foodRoot: {fileID: 7471646497642677691}
+  goldRoot: {fileID: 6761920291215398015}
+  metalRoot: {fileID: 531993889372830220}
+  powerRoot: {fileID: 5549171664879981716}
 --- !u!1 &7628986581284732658
 GameObject:
   m_ObjectHideFlags: 0
@@ -6074,11 +6052,7 @@ MonoBehaviour:
   defenseType: 0
   resourceType: 0
   unitType: 0
-  costPanel: {fileID: 7499252235247720126}
-  foodText: {fileID: 4177366592739455648}
-  goldText: {fileID: 5298719941720068510}
-  metalText: {fileID: 2040759474115380025}
-  powerText: {fileID: 6670956474257523682}
+  costPanelManager: {fileID: 5673814415555892172}
 --- !u!1 &8166864112886028857
 GameObject:
   m_ObjectHideFlags: 0
@@ -6166,7 +6140,7 @@ GameObject:
   - component: {fileID: 4826144229771430261}
   - component: {fileID: 6670956474257523682}
   m_Layer: 5
-  m_Name: Label-Title
+  m_Name: Label-Power
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6303,7 +6277,7 @@ GameObject:
   - component: {fileID: 4346261687496294035}
   - component: {fileID: 4177366592739455648}
   m_Layer: 5
-  m_Name: Label-Title
+  m_Name: Label-Food
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6762,11 +6736,7 @@ MonoBehaviour:
   defenseType: 0
   resourceType: 0
   unitType: 0
-  costPanel: {fileID: 7499252235247720126}
-  foodText: {fileID: 4177366592739455648}
-  goldText: {fileID: 5298719941720068510}
-  metalText: {fileID: 2040759474115380025}
-  powerText: {fileID: 6670956474257523682}
+  costPanelManager: {fileID: 5673814415555892172}
 --- !u!1 &9088785447875926366
 GameObject:
   m_ObjectHideFlags: 0
@@ -6955,8 +6925,4 @@ MonoBehaviour:
   defenseType: 2
   resourceType: 0
   unitType: 0
-  costPanel: {fileID: 7499252235247720126}
-  foodText: {fileID: 4177366592739455648}
-  goldText: {fileID: 5298719941720068510}
-  metalText: {fileID: 2040759474115380025}
-  powerText: {fileID: 6670956474257523682}
+  costPanelManager: {fileID: 5673814415555892172}

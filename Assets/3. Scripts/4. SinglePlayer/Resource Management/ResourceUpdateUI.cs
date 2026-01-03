@@ -15,14 +15,14 @@ public class ResourceUpdateUI : MonoBehaviour
     {
         //Subscribe to the event
         if (prmReference != null)
-            prmReference.OnResourcesChanged.AddListener(UpdateUI);
+            prmReference.OnResourcesChanged += UpdateUI;
     }
 
     void OnDisable()
     {
         //Unsubscribe from the event
         if (prmReference != null)
-            prmReference.OnResourcesChanged.RemoveListener(UpdateUI);
+            prmReference.OnResourcesChanged -= UpdateUI;
     }
 
     public void UpdateUI()

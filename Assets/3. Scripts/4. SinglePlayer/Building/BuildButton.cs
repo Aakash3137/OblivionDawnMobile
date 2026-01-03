@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using TMPro;
 
 public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
@@ -12,66 +11,47 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     [SerializeField] private ScenarioUnitType unitType;
     private Button button;
 
-    [SerializeField] private GameObject costPanel;
-    [SerializeField] private TMP_Text foodText;
-    [SerializeField] private TMP_Text goldText;
-    [SerializeField] private TMP_Text metalText;
-    [SerializeField] private TMP_Text powerText;
+    [SerializeField] private CostPanelManager costPanelManager;
+    private BuildingUpgradeCost[] cachedCosts;
 
-    private void OnEnable()
+    private async Awaitable OnEnable()
     {
-        PlayerResourceManager.Instance.OnResourcesChanged.AddListener(UpdateButtonInteractivity);
+        button.onClick.AddListener(OnClick);
+
+        await Awaitable.WaitForSecondsAsync(0.1f);
+        PlayerResourceManager.Instance.OnResourcesChanged += UpdateButtonInteractivity;
     }
 
-    private void OnDestroy()
+    private async Awaitable OnDisable()
     {
         button.onClick.RemoveListener(OnClick);
-        PlayerResourceManager.Instance.OnResourcesChanged.RemoveListener(UpdateButtonInteractivity);
+
+        await Awaitable.WaitForSecondsAsync(0.1f);
+        PlayerResourceManager.Instance.OnResourcesChanged -= UpdateButtonInteractivity;
     }
+    private async Awaitable Awake()
+    {
+        button = GetComponent<Button>();
+
+        await Awaitable.WaitForSecondsAsync(0.1f);
+        var slot = GetSlot(GameData.SelectedFaction, buildingType);
+        cachedCosts = slot.prefab.GetComponent<BuildingStats>().buildingStats.buildingLevelData[0].buildingUpgradeCosts;
+
+        UpdateButtonInteractivity();
+    }
+
     public void OnPointerEnter(PointerEventData eventData)
     {
-        var slot = GetSlot(GameData.SelectedFaction, buildingType);
-        BuildingUpgradeCost[] buildingUpgradeData = slot.prefab.GetComponent<BuildingStats>().buildingStats.buildingLevelData[0].buildingUpgradeCosts;
-
-        foodText.text = buildingUpgradeData[0].resourceCost.ToString();
-        goldText.text = buildingUpgradeData[1].resourceCost.ToString();
-        metalText.text = buildingUpgradeData[2].resourceCost.ToString();
-        powerText.text = buildingUpgradeData[3].resourceCost.ToString();
-
-        if (buildingUpgradeData[0].resourceCost == 0)
-            foodText.transform.parent.gameObject.SetActive(false);
-        if (buildingUpgradeData[1].resourceCost == 0)
-            goldText.transform.parent.gameObject.SetActive(false);
-        if (buildingUpgradeData[2].resourceCost == 0)
-            metalText.transform.parent.gameObject.SetActive(false);
-        if (buildingUpgradeData[3].resourceCost == 0)
-            powerText.transform.parent.gameObject.SetActive(false);
-
-        costPanel.SetActive(true);
+        costPanelManager.Show(cachedCosts);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        costPanel.SetActive(false);
-
-        foodText.transform.parent.gameObject.SetActive(true);
-        goldText.transform.parent.gameObject.SetActive(true);
-        metalText.transform.parent.gameObject.SetActive(true);
-        powerText.transform.parent.gameObject.SetActive(true);
+        costPanelManager.Hide();
     }
-    void Awake()
-    {
-        button = GetComponent<Button>();
-        button.onClick.AddListener(OnClick);
-        UpdateButtonInteractivity();
-    }
-
     private void UpdateButtonInteractivity()
     {
-        var slot = GetSlot(GameData.SelectedFaction, buildingType);
-        BuildingUpgradeCost[] buildingUpgradeData = slot.prefab.GetComponent<BuildingStats>().buildingStats.buildingLevelData[0].buildingUpgradeCosts;
-
-        if (buildingUpgradeData == null || !PlayerResourceManager.Instance.HasResources(buildingUpgradeData))
+        if (cachedCosts == null || !PlayerResourceManager.Instance.HasResources(cachedCosts))
             button.interactable = false;
         else
             button.interactable = true;
@@ -83,6 +63,7 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         if (slot != null && slot.prefab != null)
         {
             tileUIPanel.PlaceBuilding(slot);
+            costPanelManager.Hide();
         }
     }
 
@@ -93,8 +74,8 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         {
             case FactionName.Medieval:
                 if (type == ScenarioBuildingType.MainBuilding) return data.pastMainBuilding;
-                if (type == ScenarioBuildingType.DefenseBuilding) return data.pastTurretBuilding;
-                if (type == ScenarioBuildingType.UnitBuilding) return data.pastInfantryBuilding;
+                if (type == ScenarioBuildingType.DefenseBuilding) return GetMedievalDefenseBuilding(data);
+                if (type == ScenarioBuildingType.UnitBuilding) return GetMedievalUnitBuilding(data);
                 if (type == ScenarioBuildingType.ResourceBuilding) return GetMedievalResourceBuilding(data);
                 break;
             case FactionName.Present:

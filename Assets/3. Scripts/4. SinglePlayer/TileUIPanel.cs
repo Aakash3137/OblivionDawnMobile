@@ -14,7 +14,10 @@ public class TileUIPanel : MonoBehaviour
     public void Open(Tile tile)
     {
         currentTile = tile;
+
         gameObject.SetActive(true);
+
+        //Debug.Log($"<color=green>[TileUIPanel] Opened for tile {tile.name}</color>");
     }
 
     public void Close()

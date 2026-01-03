@@ -1,10 +1,11 @@
 using UnityEngine;
 using System;
-using UnityEngine.Events;
+
 
 public class PlayerResourceManager : MonoBehaviour
 {
     [Header("Set Starting Resources")]
+    [HideInInspector]
     [SerializeField] private BuildingUpgradeCost[] startingResources;
     public static PlayerResourceManager Instance;
     public int currentFood { get; private set; }
@@ -23,7 +24,7 @@ public class PlayerResourceManager : MonoBehaviour
     public float currentPowerGenerationRate { get; private set; }
 
     [HideInInspector]
-    public UnityEvent OnResourcesChanged = new UnityEvent();
+    public Action OnResourcesChanged;
 
     private void Awake()
     {
