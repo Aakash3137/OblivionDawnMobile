@@ -37,14 +37,14 @@ public class MainBuildingSpawner : MonoBehaviour
     {
         switch (name)
         {
-            case FactionName.Past:
-                return new[] { data.pastMainBuilding, data.pastTurretBuilding, data.pastUnitBuilding, data.pastGoldMine };
+            case FactionName.Medieval:
+                return new[] { data.pastMainBuilding, data.pastTurretBuilding, data.pastInfantryBuilding, data.pastGoldBuilding };
             case FactionName.Present:
-                return new[] { data.presentMainBuilding, data.presentTurretBuilding, data.presentUnitBuilding, data.presentGoldMine };
-            case FactionName.Future:
-                return new[] { data.futureMainBuilding, data.futureTurretBuilding, data.futureUnitBuilding, data.futureGoldMine };
-            case FactionName.Monster:
-                return new[] { data.monsterMainBuilding, data.monsterTurretBuilding, data.monsterUnitBuilding, data.monsterGoldMine };
+                return new[] { data.presentMainBuilding, data.presentTurretBuilding, data.presentInfantryBuilding, data.presentGoldBuilding };
+            case FactionName.Futuristic:
+                return new[] { data.futureMainBuilding, data.futureTurretBuilding, data.futureInfantryBuilding, data.futureGoldBuilding };
+            case FactionName.Galvadore:
+                return new[] { data.monsterMainBuilding, data.monsterTurretBuilding, data.monsterInfantryBuilding, data.monsterGoldBuilding };
             default: return null;
         }
     }

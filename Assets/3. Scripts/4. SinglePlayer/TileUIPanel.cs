@@ -3,10 +3,9 @@ using UnityEngine;
 
 public class TileUIPanel : MonoBehaviour
 {
+    [Header("Assign in Inspector")]
     [SerializeField] private BuildPanel buildPanel;
-
     [SerializeField] private WallParent _wallPrefab;
-
 
     private bool _mainWallPlaced = false;
     private float _wallYOffset = 1f;
@@ -15,7 +14,10 @@ public class TileUIPanel : MonoBehaviour
     public void Open(Tile tile)
     {
         currentTile = tile;
+
         gameObject.SetActive(true);
+
+        //Debug.Log($"<color=green>[TileUIPanel] Opened for tile {tile.name}</color>");
     }
 
     public void Close()
@@ -28,6 +30,12 @@ public class TileUIPanel : MonoBehaviour
     {
         if (currentTile == null || slot == null || slot.prefab == null) return;
         if (currentTile.hasBuilding) return;
+
+        if (!CanPlaceBuilding(slot))
+        {
+            if (buildPanel != null) buildPanel.gameObject.SetActive(false);
+            return;
+        }
 
         Vector3 spawnPos = currentTile.transform.position + Vector3.up * 2f;
         var go = Instantiate(slot.prefab, spawnPos, Quaternion.identity, currentTile.transform);
@@ -49,33 +57,54 @@ public class TileUIPanel : MonoBehaviour
         Close();
     }
 
+    private bool CanPlaceBuilding(AllFactionsData.BuildingSlot slot)
+    {
+        BuildingUpgradeCost[] buildingUpgradeData = slot.prefab.GetComponent<BuildingStats>().buildingStats.buildingLevelData[0].buildingUpgradeCosts;
+        if (buildingUpgradeData == null || !PlayerResourceManager.Instance.HasResources(buildingUpgradeData, true))
+        {
+            Debug.Log("<color=red>Insufficient Resources Building cannot be placed/upgraded</color>");
+            return false;
+        }
+
+        PlayerResourceManager.Instance.SpendResources(buildingUpgradeData);
+        return true;
+    }
 
     // Wall logic (unchanged)
     private void PlaceWalls()
     {
         Vector3 _currentTileCords = currentTile.transform.position;
+        var cgmInstance = CubeGridManager.Instance;
 
-        List<Vector2Int> adjacentTileCords = CubeGridManager.Instance.GetCardinalNeighbors(
-            new Vector2Int((int)(_currentTileCords.x / CubeGridManager.Instance.cellSize),
-                           (int)(_currentTileCords.z / CubeGridManager.Instance.cellSize)));
+        List<Vector2Int> adjacentTileCords = cgmInstance.GetCardinalNeighbors(
+            new Vector2Int((int)(_currentTileCords.x / cgmInstance.cellSize),
+                           (int)(_currentTileCords.z / cgmInstance.cellSize)));
 
-        List<Tile> adjacentTiles = new List<Tile>();
+        Tile[] adjacentTiles = new Tile[4]; // 0 : Right, 1 : Left, 2 : Up, 3 : Down;
 
-        foreach (var cord in adjacentTileCords)
-        {
-            if (CubeGridManager.Instance.GetCube(cord) == null)
-                adjacentTiles.Add(new GameObject().AddComponent<Tile>());
-            else
-                adjacentTiles.Add(CubeGridManager.Instance.GetCube(cord).GetComponent<Tile>());
-        }
+        // Directions are fixed with index 0 : Right, 1 : Left, 2 : Up, 3 : Down
+        adjacentTiles[0] = cgmInstance.GetCube(adjacentTileCords[0])?.GetComponent<Tile>();
+        adjacentTiles[1] = cgmInstance.GetCube(adjacentTileCords[1])?.GetComponent<Tile>();
+        adjacentTiles[2] = cgmInstance.GetCube(adjacentTileCords[2])?.GetComponent<Tile>();
+        adjacentTiles[3] = cgmInstance.GetCube(adjacentTileCords[3])?.GetComponent<Tile>();
+
+        // List<Tile> adjacentTiles = new List<Tile>();
+
+        // foreach (var cord in adjacentTileCords)
+        // {
+        //     if (cgmInstance.GetCube(cord) == null)
+        //         adjacentTiles.Add(new GameObject().AddComponent<Tile>());
+        //     else
+        //         adjacentTiles.Add(cgmInstance.GetCube(cord).GetComponent<Tile>());
+        // }
 
         WallParent currentWall = Instantiate(_wallPrefab,
             new Vector3(_currentTileCords.x, _wallYOffset, _currentTileCords.z),
             Quaternion.identity, currentTile.transform);
 
-        for (int i = 0; i < adjacentTiles.Count; i++)
+        for (int i = 0; i < adjacentTiles.Length; i++)
         {
-            if (adjacentTiles[i].ownerSide == Side.Enemy)
+            if (adjacentTiles[i] == null || adjacentTiles[i].ownerSide == Side.Enemy)
                 continue;
 
             if (adjacentTiles[i].hasBuilding)

@@ -1,7 +1,7 @@
-public enum BuildingType
+public enum ScenarioBuildingType
 {
     MainBuilding,
-    DefenceBuilding,
+    DefenseBuilding,
     UnitBuilding,
     ResourceBuilding
 }

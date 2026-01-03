@@ -13,6 +13,7 @@ public class ResourceGenerationStatsSO : ScriptableObject
         for (int i = 0; i < resourceGenerationData.Length; i++)
         {
             resourceGenerationData[i].resourceGenerationRate = resourceGenerationData[i].resourceAmountPerBatch / resourceGenerationData[i].resourceTimeToProduce;
+            resourceGenerationData[i].level = i;
         }
     }
 }
@@ -20,6 +21,7 @@ public class ResourceGenerationStatsSO : ScriptableObject
 [System.Serializable]
 public class ResourceGenerationData
 {
+    public int level;
     public int resourceAmountPerBatch;
     public float resourceTimeToProduce;
     public float resourceGenerationRate;

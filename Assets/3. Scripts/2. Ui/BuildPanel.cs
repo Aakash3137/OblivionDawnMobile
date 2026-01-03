@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class BuildPanel : MonoBehaviour
 {
@@ -8,13 +9,18 @@ public class BuildPanel : MonoBehaviour
     [SerializeField] private GameObject _offenseBuildPanel;
     [SerializeField] private GameObject _defenseBG;
     [SerializeField] private GameObject _defenseBuildPanel;
-    [SerializeField] private GameObject _coinBG;
-    [SerializeField] private GameObject _coinBuildPanel;
+    [SerializeField] private GameObject _resourceBG;
+    [SerializeField] private GameObject _resourceBuildPanel;
 
-    [Header("Option Images")]
-    [SerializeField] private GameObject[] _offenseOptionImages;
-    [SerializeField] private GameObject[] _defenseOptionImages;
-    [SerializeField] private GameObject[] _coinOptionImages;
+    // [Header("Option Images")]
+    // [SerializeField] private GameObject[] _offenseOptionImages;
+    // [SerializeField] private GameObject[] _defenseOptionImages;
+    // [SerializeField] private GameObject[] _resourceOptionImages;
+
+    [Header("Buttons")]
+    [SerializeField] private Button _offenseButton;
+    [SerializeField] private Button _defenseButton;
+    [SerializeField] private Button _resourceButton;
 
     [Header("Fade Settings")]
     [SerializeField] private CanvasGroup canvasGroup;
@@ -24,7 +30,9 @@ public class BuildPanel : MonoBehaviour
 
     void Start()
     {
-        StartSettings();
+        OnClickOffense();
+        AddListeners();
+
         if (canvasGroup != null)
         {
             canvasGroup.alpha = 1f;
@@ -33,55 +41,52 @@ public class BuildPanel : MonoBehaviour
         }
     }
 
-    public void OnClickOffense()
+    void AddListeners()
     {
-        _offenseBG.SetActive(true);
-        _offenseBuildPanel.SetActive(true);
-        _defenseBG.SetActive(false);
-        _defenseBuildPanel.SetActive(false);
-        _coinBG.SetActive(false);
-        _coinBuildPanel.SetActive(false);
+        _offenseButton.onClick.AddListener(OnClickOffense);
+        _defenseButton.onClick.AddListener(OnClickDefense);
+        _resourceButton.onClick.AddListener(OnClickResource);
     }
 
-    public void OnClickDefense()
+    private void OnClickOffense()
+    {
+        ActivatePanels(_offenseBG, _offenseBuildPanel);
+    }
+
+    private void OnClickDefense()
+    {
+        ActivatePanels(_defenseBG, _defenseBuildPanel);
+    }
+
+    private void OnClickResource()
+    {
+        ActivatePanels(_resourceBG, _resourceBuildPanel);
+    }
+
+    private void ActivatePanels(GameObject Panel1, GameObject Panel2)
+    {
+        DisableAllPanels();
+        Panel1.SetActive(true);
+        Panel2.SetActive(true);
+    }
+    private void DisableAllPanels()
     {
         _offenseBG.SetActive(false);
         _offenseBuildPanel.SetActive(false);
-        _defenseBG.SetActive(true);
-        _defenseBuildPanel.SetActive(true);
-        _coinBG.SetActive(false);
-        _coinBuildPanel.SetActive(false);
-    }
-
-    public void OnClickCoin()
-    {
-        _offenseBG.SetActive(false);
-        _offenseBuildPanel.SetActive(false);
         _defenseBG.SetActive(false);
         _defenseBuildPanel.SetActive(false);
-        _coinBG.SetActive(true);
-        _coinBuildPanel.SetActive(true);
+        _resourceBG.SetActive(false);
+        _resourceBuildPanel.SetActive(false);
     }
-
-    public void StartSettings()
-    {
-        _offenseBG.SetActive(true);
-        _offenseBuildPanel.SetActive(true);
-        _defenseBG.SetActive(false);
-        _defenseBuildPanel.SetActive(false);
-        _coinBG.SetActive(false);
-        _coinBuildPanel.SetActive(false);
-    }
-
     // --- Fade Methods ---
-    public void FadeOut()
+    private void FadeOut()
     {
         if (canvasGroup == null) { gameObject.SetActive(false); return; }
         if (fadeRoutine != null) StopCoroutine(fadeRoutine);
         fadeRoutine = StartCoroutine(FadeCanvas(1f, 0f, false));
     }
 
-    public void FadeIn()
+    private void FadeIn()
     {
         if (canvasGroup == null) { gameObject.SetActive(true); return; }
         gameObject.SetActive(true);

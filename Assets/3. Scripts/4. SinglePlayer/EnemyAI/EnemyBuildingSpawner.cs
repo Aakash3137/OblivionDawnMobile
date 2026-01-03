@@ -63,26 +63,26 @@ public class EnemyBuildingSpawner : MonoBehaviour
 
         if (mainName.Contains("Past"))
         {
-            list.Add(allFactionsData.pastGoldMine.prefab);
-            list.Add(allFactionsData.pastUnitBuilding.prefab);
+            list.Add(allFactionsData.pastGoldBuilding.prefab);
+            list.Add(allFactionsData.pastInfantryBuilding.prefab);
             list.Add(allFactionsData.pastTurretBuilding.prefab);
         }
         else if (mainName.Contains("Present"))
         {
-            list.Add(allFactionsData.presentGoldMine.prefab);
-            list.Add(allFactionsData.presentUnitBuilding.prefab);
+            list.Add(allFactionsData.presentGoldBuilding.prefab);
+            list.Add(allFactionsData.presentInfantryBuilding.prefab);
             list.Add(allFactionsData.presentTurretBuilding.prefab);
         }
         else if (mainName.Contains("Future"))
         {
-            list.Add(allFactionsData.futureGoldMine.prefab);
-            list.Add(allFactionsData.futureUnitBuilding.prefab);
+            list.Add(allFactionsData.futureGoldBuilding.prefab);
+            list.Add(allFactionsData.futureInfantryBuilding.prefab);
             list.Add(allFactionsData.futureTurretBuilding.prefab);
         }
         else if (mainName.Contains("Monster"))
         {
-            list.Add(allFactionsData.monsterGoldMine.prefab);
-            list.Add(allFactionsData.monsterUnitBuilding.prefab);
+            list.Add(allFactionsData.monsterGoldBuilding.prefab);
+            list.Add(allFactionsData.monsterInfantryBuilding.prefab);
             list.Add(allFactionsData.monsterTurretBuilding.prefab);
         }
 
@@ -187,20 +187,20 @@ public class EnemyBuildingSpawner : MonoBehaviour
     // Helper: find the BuildingSlot that owns this prefab
     private AllFactionsData.BuildingSlot FindSlotForPrefab(GameObject prefab)
     {
-        if (prefab == allFactionsData.pastGoldMine.prefab) return allFactionsData.pastGoldMine;
-        if (prefab == allFactionsData.pastUnitBuilding.prefab) return allFactionsData.pastUnitBuilding;
+        if (prefab == allFactionsData.pastGoldBuilding.prefab) return allFactionsData.pastGoldBuilding;
+        if (prefab == allFactionsData.pastInfantryBuilding.prefab) return allFactionsData.pastInfantryBuilding;
         if (prefab == allFactionsData.pastTurretBuilding.prefab) return allFactionsData.pastTurretBuilding;
 
-        if (prefab == allFactionsData.presentGoldMine.prefab) return allFactionsData.presentGoldMine;
-        if (prefab == allFactionsData.presentUnitBuilding.prefab) return allFactionsData.presentUnitBuilding;
+        if (prefab == allFactionsData.presentGoldBuilding.prefab) return allFactionsData.presentGoldBuilding;
+        if (prefab == allFactionsData.presentInfantryBuilding.prefab) return allFactionsData.presentInfantryBuilding;
         if (prefab == allFactionsData.presentTurretBuilding.prefab) return allFactionsData.presentTurretBuilding;
 
-        if (prefab == allFactionsData.futureGoldMine.prefab) return allFactionsData.futureGoldMine;
-        if (prefab == allFactionsData.futureUnitBuilding.prefab) return allFactionsData.futureUnitBuilding;
+        if (prefab == allFactionsData.futureGoldBuilding.prefab) return allFactionsData.futureGoldBuilding;
+        if (prefab == allFactionsData.futureInfantryBuilding.prefab) return allFactionsData.futureInfantryBuilding;
         if (prefab == allFactionsData.futureTurretBuilding.prefab) return allFactionsData.futureTurretBuilding;
 
-        if (prefab == allFactionsData.monsterGoldMine.prefab) return allFactionsData.monsterGoldMine;
-        if (prefab == allFactionsData.monsterUnitBuilding.prefab) return allFactionsData.monsterUnitBuilding;
+        if (prefab == allFactionsData.monsterGoldBuilding.prefab) return allFactionsData.monsterGoldBuilding;
+        if (prefab == allFactionsData.monsterInfantryBuilding.prefab) return allFactionsData.monsterInfantryBuilding;
         if (prefab == allFactionsData.monsterTurretBuilding.prefab) return allFactionsData.monsterTurretBuilding;
 
         return null;

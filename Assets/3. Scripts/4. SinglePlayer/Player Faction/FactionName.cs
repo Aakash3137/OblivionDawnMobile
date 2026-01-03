@@ -1,7 +1,7 @@
 public enum FactionName
 {
-    Past,
+    Medieval,
     Present,
-    Future,
-    Monster
+    Futuristic,
+    Galvadore
 }

@@ -12,67 +12,184 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b35799b2f2276a644b871f4f15b106e2, type: 3}
   m_Name: AllFactionsData
   m_EditorClassIdentifier: 
+  playerResourceMaterial: {fileID: 0}
+  enemyResourceMaterial: {fileID: 2100000, guid: d60a9cb645302c24d968fec8499213c0, type: 2}
+  playerUnitMaterial: {fileID: 2100000, guid: bb9e30fb8e3e30046b9505bd1ff8f567, type: 2}
+  enemyUnitMaterial: {fileID: 2100000, guid: 5a50fa0fa8be63f48b502fa57e0c55af, type: 2}
+  turretMat: {fileID: 2100000, guid: 5f45ddf4f71ebd64081d0a545cd4a5f5, type: 2}
   pastMainBuilding:
     prefab: {fileID: 4320449579214391836, guid: f3958121b9deb4a42a4c6b9a10dbe8a7, type: 3}
     playerMaterial: {fileID: 2100000, guid: bb9e30fb8e3e30046b9505bd1ff8f567, type: 2}
     enemyMaterial: {fileID: 2100000, guid: 5a50fa0fa8be63f48b502fa57e0c55af, type: 2}
-  pastGoldMine:
-    prefab: {fileID: 4320449579214391836, guid: 9c0119b0888298a49848dfb26a8c6db7, type: 3}
+  pastFoodBuilding:
+    prefab: {fileID: 4320449579214391836, guid: cb1013640954f094f902eb1f1e7a22d7, type: 3}
     playerMaterial: {fileID: 2100000, guid: 79e5e159d8228d540b8c87b57db66d63, type: 2}
     enemyMaterial: {fileID: 2100000, guid: d60a9cb645302c24d968fec8499213c0, type: 2}
-  pastUnitBuilding:
+  pastGoldBuilding:
+    prefab: {fileID: 4320449579214391836, guid: 9ebe59da298c76a47ac60bed71784eae, type: 3}
+    playerMaterial: {fileID: 2100000, guid: 79e5e159d8228d540b8c87b57db66d63, type: 2}
+    enemyMaterial: {fileID: 2100000, guid: d60a9cb645302c24d968fec8499213c0, type: 2}
+  pastMetalBuilding:
+    prefab: {fileID: 4320449579214391836, guid: fd3abb4c2c3a9e241b18d2afa5b44a7c, type: 3}
+    playerMaterial: {fileID: 2100000, guid: 79e5e159d8228d540b8c87b57db66d63, type: 2}
+    enemyMaterial: {fileID: 2100000, guid: d60a9cb645302c24d968fec8499213c0, type: 2}
+  pastPowerBuilding:
+    prefab: {fileID: 4320449579214391836, guid: 859c3c8b86ccfd24e99f19b68e966fd1, type: 3}
+    playerMaterial: {fileID: 2100000, guid: f20a27cc840f48c49add941def34a04f, type: 2}
+    enemyMaterial: {fileID: 2100000, guid: d60a9cb645302c24d968fec8499213c0, type: 2}
+  pastAirBuilding:
+    prefab: {fileID: 4320449579214391836, guid: 877f1ede9b75ffe4fb7e3230b08c811c, type: 3}
+    playerMaterial: {fileID: 2100000, guid: bb9e30fb8e3e30046b9505bd1ff8f567, type: 2}
+    enemyMaterial: {fileID: 2100000, guid: 5a50fa0fa8be63f48b502fa57e0c55af, type: 2}
+  pastInfantryBuilding:
     prefab: {fileID: 4320449579214391836, guid: 36ee402f7c72af24d84eaeb0cf7accf2, type: 3}
     playerMaterial: {fileID: 2100000, guid: bb9e30fb8e3e30046b9505bd1ff8f567, type: 2}
     enemyMaterial: {fileID: 2100000, guid: 5a50fa0fa8be63f48b502fa57e0c55af, type: 2}
+  pastTankBuilding:
+    prefab: {fileID: 4320449579214391836, guid: 1e57b4086b706aa40a9899fd2c500a28, type: 3}
+    playerMaterial: {fileID: 2100000, guid: bb9e30fb8e3e30046b9505bd1ff8f567, type: 2}
+    enemyMaterial: {fileID: 2100000, guid: 5a50fa0fa8be63f48b502fa57e0c55af, type: 2}
+  pastAntiAirBuilding:
+    prefab: {fileID: 4320449579214391836, guid: 3bcbe834135dab64489caf5ac0e72688, type: 3}
+    playerMaterial: {fileID: 2100000, guid: 5f45ddf4f71ebd64081d0a545cd4a5f5, type: 2}
+    enemyMaterial: {fileID: 2100000, guid: 5f45ddf4f71ebd64081d0a545cd4a5f5, type: 2}
+  pastAntiTankBuilding:
+    prefab: {fileID: 4320449579214391836, guid: d2b86209a2f70db4cb68c802925e5189, type: 3}
+    playerMaterial: {fileID: 2100000, guid: 5f45ddf4f71ebd64081d0a545cd4a5f5, type: 2}
+    enemyMaterial: {fileID: 2100000, guid: 5f45ddf4f71ebd64081d0a545cd4a5f5, type: 2}
   pastTurretBuilding:
     prefab: {fileID: 4320449579214391836, guid: 7d7189359bc946548af7b54db8b36df3, type: 3}
-    playerMaterial: {fileID: 2100000, guid: 36f127df384334344bdb3108b508f99b, type: 2}
+    playerMaterial: {fileID: 2100000, guid: 5f45ddf4f71ebd64081d0a545cd4a5f5, type: 2}
     enemyMaterial: {fileID: 2100000, guid: 5f45ddf4f71ebd64081d0a545cd4a5f5, type: 2}
   presentMainBuilding:
     prefab: {fileID: 4320449579214391836, guid: 91354f5fe4a35b547ad2848ec23d7ee3, type: 3}
     playerMaterial: {fileID: 2100000, guid: bb9e30fb8e3e30046b9505bd1ff8f567, type: 2}
     enemyMaterial: {fileID: 2100000, guid: 5a50fa0fa8be63f48b502fa57e0c55af, type: 2}
-  presentGoldMine:
+  presentFoodBuilding:
+    prefab: {fileID: 4320449579214391836, guid: 84e07c1603ff65c44903cd76b64af558, type: 3}
+    playerMaterial: {fileID: 2100000, guid: 79e5e159d8228d540b8c87b57db66d63, type: 2}
+    enemyMaterial: {fileID: 2100000, guid: d60a9cb645302c24d968fec8499213c0, type: 2}
+  presentGoldBuilding:
     prefab: {fileID: 4320449579214391836, guid: dc09b9b5d508d9a47bd096fd3efad32e, type: 3}
     playerMaterial: {fileID: 2100000, guid: 79e5e159d8228d540b8c87b57db66d63, type: 2}
     enemyMaterial: {fileID: 2100000, guid: d60a9cb645302c24d968fec8499213c0, type: 2}
-  presentUnitBuilding:
+  presentMetalBuilding:
+    prefab: {fileID: 4320449579214391836, guid: 89e739f16eda9534c889391384ab1a5b, type: 3}
+    playerMaterial: {fileID: 2100000, guid: 79e5e159d8228d540b8c87b57db66d63, type: 2}
+    enemyMaterial: {fileID: 2100000, guid: d60a9cb645302c24d968fec8499213c0, type: 2}
+  presentPowerBuilding:
+    prefab: {fileID: 4320449579214391836, guid: 3220b21bb50dfb44c9581f1c7f61686c, type: 3}
+    playerMaterial: {fileID: 2100000, guid: 79e5e159d8228d540b8c87b57db66d63, type: 2}
+    enemyMaterial: {fileID: 2100000, guid: d60a9cb645302c24d968fec8499213c0, type: 2}
+  presentAirBuilding:
+    prefab: {fileID: 0}
+    playerMaterial: {fileID: 0}
+    enemyMaterial: {fileID: 0}
+  presentInfantryBuilding:
     prefab: {fileID: 4320449579214391836, guid: 4904e593e1744ad4db3e9f4252c47f8f, type: 3}
     playerMaterial: {fileID: 2100000, guid: bb9e30fb8e3e30046b9505bd1ff8f567, type: 2}
     enemyMaterial: {fileID: 2100000, guid: 5a50fa0fa8be63f48b502fa57e0c55af, type: 2}
+  presentTankBuilding:
+    prefab: {fileID: 0}
+    playerMaterial: {fileID: 0}
+    enemyMaterial: {fileID: 0}
+  presentAntiAirBuilding:
+    prefab: {fileID: 0}
+    playerMaterial: {fileID: 0}
+    enemyMaterial: {fileID: 0}
+  presentAntiTankBuilding:
+    prefab: {fileID: 0}
+    playerMaterial: {fileID: 0}
+    enemyMaterial: {fileID: 0}
   presentTurretBuilding:
     prefab: {fileID: 4320449579214391836, guid: edca38794c55e0a4096050e6ee21ce45, type: 3}
-    playerMaterial: {fileID: 2100000, guid: 36f127df384334344bdb3108b508f99b, type: 2}
+    playerMaterial: {fileID: 2100000, guid: 5f45ddf4f71ebd64081d0a545cd4a5f5, type: 2}
     enemyMaterial: {fileID: 2100000, guid: 5f45ddf4f71ebd64081d0a545cd4a5f5, type: 2}
   futureMainBuilding:
     prefab: {fileID: 4320449579214391836, guid: 268e918510f12384f919505e2d17621b, type: 3}
     playerMaterial: {fileID: 2100000, guid: bb9e30fb8e3e30046b9505bd1ff8f567, type: 2}
     enemyMaterial: {fileID: 2100000, guid: 5a50fa0fa8be63f48b502fa57e0c55af, type: 2}
-  futureGoldMine:
+  futureFoodBuilding:
     prefab: {fileID: 4320449579214391836, guid: 546bf24ad69ac1c48abef7626415dabb, type: 3}
     playerMaterial: {fileID: 2100000, guid: 79e5e159d8228d540b8c87b57db66d63, type: 2}
     enemyMaterial: {fileID: 2100000, guid: d60a9cb645302c24d968fec8499213c0, type: 2}
-  futureUnitBuilding:
+  futureGoldBuilding:
+    prefab: {fileID: 4320449579214391836, guid: cfae674bc52e7e14ab3ae18ae64dcc48, type: 3}
+    playerMaterial: {fileID: 2100000, guid: 79e5e159d8228d540b8c87b57db66d63, type: 2}
+    enemyMaterial: {fileID: 2100000, guid: d60a9cb645302c24d968fec8499213c0, type: 2}
+  futureMetalBuilding:
+    prefab: {fileID: 4320449579214391836, guid: 909455aad7ffa304ab30f5b3656bc269, type: 3}
+    playerMaterial: {fileID: 2100000, guid: 79e5e159d8228d540b8c87b57db66d63, type: 2}
+    enemyMaterial: {fileID: 2100000, guid: d60a9cb645302c24d968fec8499213c0, type: 2}
+  futurePowerBuilding:
+    prefab: {fileID: 4320449579214391836, guid: a324a56ce1968384cab4738d2a46ae65, type: 3}
+    playerMaterial: {fileID: 2100000, guid: 79e5e159d8228d540b8c87b57db66d63, type: 2}
+    enemyMaterial: {fileID: 2100000, guid: d60a9cb645302c24d968fec8499213c0, type: 2}
+  futureAirBuilding:
+    prefab: {fileID: 0}
+    playerMaterial: {fileID: 0}
+    enemyMaterial: {fileID: 0}
+  futureInfantryBuilding:
     prefab: {fileID: 4320449579214391836, guid: 6018eb63da63e1e46a31540ac0c206b9, type: 3}
     playerMaterial: {fileID: 2100000, guid: bb9e30fb8e3e30046b9505bd1ff8f567, type: 2}
     enemyMaterial: {fileID: 2100000, guid: 5a50fa0fa8be63f48b502fa57e0c55af, type: 2}
+  futureTankBuilding:
+    prefab: {fileID: 0}
+    playerMaterial: {fileID: 0}
+    enemyMaterial: {fileID: 0}
+  futureAntiAirBuilding:
+    prefab: {fileID: 0}
+    playerMaterial: {fileID: 0}
+    enemyMaterial: {fileID: 0}
+  futureAntiTankBuilding:
+    prefab: {fileID: 0}
+    playerMaterial: {fileID: 0}
+    enemyMaterial: {fileID: 0}
   futureTurretBuilding:
     prefab: {fileID: 4320449579214391836, guid: 7bff0eeb9190c4440afcb9c65ffc7fa8, type: 3}
-    playerMaterial: {fileID: 2100000, guid: 36f127df384334344bdb3108b508f99b, type: 2}
+    playerMaterial: {fileID: 2100000, guid: 5f45ddf4f71ebd64081d0a545cd4a5f5, type: 2}
     enemyMaterial: {fileID: 2100000, guid: 5f45ddf4f71ebd64081d0a545cd4a5f5, type: 2}
   monsterMainBuilding:
     prefab: {fileID: 4320449579214391836, guid: 2ba6c276caf378c40b53af9a33024c7f, type: 3}
     playerMaterial: {fileID: 2100000, guid: bb9e30fb8e3e30046b9505bd1ff8f567, type: 2}
     enemyMaterial: {fileID: 2100000, guid: 5a50fa0fa8be63f48b502fa57e0c55af, type: 2}
-  monsterGoldMine:
+  monsterFoodBuilding:
+    prefab: {fileID: 4320449579214391836, guid: cb099142cff04ce44aef10d584f029b1, type: 3}
+    playerMaterial: {fileID: 2100000, guid: 79e5e159d8228d540b8c87b57db66d63, type: 2}
+    enemyMaterial: {fileID: 2100000, guid: d60a9cb645302c24d968fec8499213c0, type: 2}
+  monsterGoldBuilding:
     prefab: {fileID: 4320449579214391836, guid: 2167ac2d1126013488853b0b62f274f9, type: 3}
     playerMaterial: {fileID: 2100000, guid: 79e5e159d8228d540b8c87b57db66d63, type: 2}
     enemyMaterial: {fileID: 2100000, guid: d60a9cb645302c24d968fec8499213c0, type: 2}
-  monsterUnitBuilding:
+  monsterMetalBuilding:
+    prefab: {fileID: 4320449579214391836, guid: e4c833e57ed0623479d779cd0b2b9fbc, type: 3}
+    playerMaterial: {fileID: 2100000, guid: 79e5e159d8228d540b8c87b57db66d63, type: 2}
+    enemyMaterial: {fileID: 2100000, guid: d60a9cb645302c24d968fec8499213c0, type: 2}
+  monsterPowerBuilding:
+    prefab: {fileID: 4320449579214391836, guid: e5f0ee721be42834ab2a6be3ccfd66b5, type: 3}
+    playerMaterial: {fileID: 2100000, guid: 79e5e159d8228d540b8c87b57db66d63, type: 2}
+    enemyMaterial: {fileID: 2100000, guid: d60a9cb645302c24d968fec8499213c0, type: 2}
+  monsterAirBuilding:
+    prefab: {fileID: 0}
+    playerMaterial: {fileID: 0}
+    enemyMaterial: {fileID: 0}
+  monsterInfantryBuilding:
     prefab: {fileID: 4320449579214391836, guid: a337c240be6e9224e86403d7e7f2c774, type: 3}
     playerMaterial: {fileID: 2100000, guid: bb9e30fb8e3e30046b9505bd1ff8f567, type: 2}
     enemyMaterial: {fileID: 2100000, guid: 5a50fa0fa8be63f48b502fa57e0c55af, type: 2}
+  monsterTankBuilding:
+    prefab: {fileID: 0}
+    playerMaterial: {fileID: 0}
+    enemyMaterial: {fileID: 0}
+  monsterAntiAirBuilding:
+    prefab: {fileID: 0}
+    playerMaterial: {fileID: 0}
+    enemyMaterial: {fileID: 0}
+  monsterAntiTankBuilding:
+    prefab: {fileID: 0}
+    playerMaterial: {fileID: 0}
+    enemyMaterial: {fileID: 0}
   monsterTurretBuilding:
     prefab: {fileID: 4320449579214391836, guid: 2a57ec980be15a643b8ca6b7f43cc0dc, type: 3}
-    playerMaterial: {fileID: 2100000, guid: 36f127df384334344bdb3108b508f99b, type: 2}
+    playerMaterial: {fileID: 2100000, guid: 5f45ddf4f71ebd64081d0a545cd4a5f5, type: 2}
     enemyMaterial: {fileID: 2100000, guid: 5f45ddf4f71ebd64081d0a545cd4a5f5, type: 2}
