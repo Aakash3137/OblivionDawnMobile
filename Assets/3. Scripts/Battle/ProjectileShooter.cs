@@ -22,6 +22,16 @@ public class ProjectileShooter : MonoBehaviour
     {
         if (target == null) return;
 
+        // 🔥 LAUNCH VFX
+        if (projectile.launchVFX != null && muzzlePoint != null)
+        {
+            Instantiate(
+                projectile.launchVFX,
+                muzzlePoint.position,
+                muzzlePoint.rotation
+            );
+        }
+        
         Projectile proj =
             ProjectilePoolManager.Instance.Get(projectile.projectileType);
 

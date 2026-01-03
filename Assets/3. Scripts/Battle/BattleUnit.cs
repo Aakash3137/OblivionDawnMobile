@@ -38,12 +38,15 @@ public class BattleUnit : MonoBehaviour
     public Animator animator;
     public GameObject target;
     
+    SideScenario unitSide;
+    Vector2Int currentCoord;
     private float targetCheckTimer;
     private const float targetCheckInterval = 0.5f;
 
     private void Start()
     {
         unitStats = GetComponent<UnitStats>();
+        unitSide = GetComponent<SideScenario>();
         
         unitStats.currentHealth = unitStats.maxHealth;
         agent.speed = moveSpeed;
@@ -122,8 +125,55 @@ public class BattleUnit : MonoBehaviour
                 return;
             }
         }
+        
+        //update tile ownership
+        UpdateTileOwnership();
 
     }
+    
+    #region Tile Ownership
+    // --- Tile ownership ---
+    void UpdateTileOwnership()
+    {
+        if (CubeGridManager.Instance == null) return;
+
+        Vector2Int coord = CubeGridManager.Instance.WorldToGrid(transform.position);
+        if (coord != currentCoord)
+        {
+            LeaveTile(currentCoord);
+            currentCoord = coord;
+            EnterTile(currentCoord);
+        }
+    }
+
+    void EnterTile(Vector2Int coord)
+    {
+        if (TileManager.Instance != null)
+            TileManager.Instance.TryEnterTile(gameObject, coord);
+
+        var tileGO = CubeGridManager.Instance.GetCube(coord);
+        var tile = tileGO != null ? tileGO.GetComponent<Tile>() : null;
+        if (tile != null)
+        {
+            tile.Occupy(unitSide);            
+        }
+    }
+
+    void LeaveTile(Vector2Int coord)
+    {
+        if (TileManager.Instance != null)
+        {
+            TileManager.Instance.LeaveTile(coord, gameObject);
+            //Debug.Log($"Tile Vacated at {coord}");
+        }
+
+        var tileGO = CubeGridManager.Instance?.GetCube(coord);
+        var tile = tileGO != null ? tileGO.GetComponent<Tile>() : null;
+        if (tile != null)
+            tile.Vacate(unitSide);
+    }
+    
+    #endregion
     
     private void ArrangeRotation()
     {

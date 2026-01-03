@@ -73,7 +73,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 884793415049308032, guid: 7fb759797837b7142a321406fb49ef94, type: 3}
       propertyPath: Isvisible
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 884793415049308032, guid: 7fb759797837b7142a321406fb49ef94, type: 3}
       propertyPath: fadeDuration
@@ -227,14 +227,14 @@ PrefabInstance:
     - target: {fileID: -7635826562936255635, guid: 2e0a719b6ed4843488e82591f2800946, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 84b730c71dfbc7248b10f84896bf9714, type: 2}
+      objectReference: {fileID: 2100000, guid: e15991f5e11ea4a4cac02a8ca192bd87, type: 2}
     - target: {fileID: 919132149155446097, guid: 2e0a719b6ed4843488e82591f2800946, type: 3}
       propertyPath: m_Name
       value: tankEnemy
       objectReference: {fileID: 0}
     - target: {fileID: 1151388028547126963, guid: 2e0a719b6ed4843488e82591f2800946, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.5
+      value: -1.3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -393,8 +393,8 @@ MonoBehaviour:
     lifeTime: 3
     hasTrail: 1
     launchVFX: {fileID: 0}
-    hitVFX: {fileID: 0}
-  damage: 50
+    hitVFX: {fileID: 1447540632109744634, guid: 9d301d5973fbf9349818b1638f122a78, type: 3}
+  damage: 100
   playerTrailMaterial: {fileID: 2100000, guid: 82c3733d49fb2334b8ef2f0d90268a35, type: 2}
   enemyTrailMaterial: {fileID: 2100000, guid: 50dfd5dfaa2bc9f49835088eefefbf7a, type: 2}
 --- !u!114 &7234458516524931379
@@ -416,8 +416,8 @@ MonoBehaviour:
   DetectionRange: 50
   AttackRange: 10
   moveSpeed: 1
-  attackDamage: 50
-  attackCooldown: 1.5
+  attackDamage: 100
+  attackCooldown: 2
   separationRadius: 1.5
   separationStrength: 2
   narrowViewAngle: 10

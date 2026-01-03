@@ -11,13 +11,16 @@ public class Projectile : MonoBehaviour
     private float timer;
 
     private ProjectileMotion motion;
+    private ProjectileDefinition definition;
+
+    private bool hasHit; //  prevent double hit
 
     [Header("Visuals")]
     [SerializeField] private TrailRenderer[] trails;
 
     void Awake()
     {
-        // VERY IMPORTANT: break shared material reference ONCE
+        // Break shared material references once
         if (trails != null)
         {
             foreach (var t in trails)
@@ -36,14 +39,16 @@ public class Projectile : MonoBehaviour
     )
     {
         targetUnit = target;
-        targetCollider = target.hitCollider;
+        targetCollider = target != null ? target.hitCollider : null;
 
         this.damage = damage;
         speed = def.speed;
         lifeTime = def.lifeTime;
         motion = def.motion;
+        definition = def;
 
         timer = 0f;
+        hasHit = false;
 
         if (trails == null) return;
 
@@ -56,22 +61,18 @@ public class Projectile : MonoBehaviour
             t.emitting = false;
 
             if (trailMaterial != null)
-            {
-                // VERY IMPORTANT: instance the material (pool-safe)
                 t.material = new Material(trailMaterial);
-            }
 
             t.startColor = Color.white;
-            t.endColor   = new Color(1, 1, 1, 0);
+            t.endColor = new Color(1, 1, 1, 0);
 
             t.emitting = true;
         }
-
     }
 
     void Update()
     {
-        if (targetUnit == null || targetCollider == null)
+        if (hasHit || targetUnit == null || targetCollider == null)
         {
             Disable();
             return;
@@ -91,14 +92,33 @@ public class Projectile : MonoBehaviour
 
         if (Vector3.Distance(transform.position, hitPoint) <= 0.15f)
         {
-            targetUnit.TakeDamage(damage);
-            Disable();
+            OnHit(hitPoint);
         }
     }
 
     void Move(Vector3 dir)
     {
         transform.position += dir * speed * Time.deltaTime;
+    }
+
+    void OnHit(Vector3 hitPoint)
+    {
+        hasHit = true;
+
+        if (definition.hitVFX != null)
+        {
+            GameObject vfx = Instantiate(
+                definition.hitVFX,
+                hitPoint,
+                Quaternion.identity
+            );
+
+            Destroy(vfx, 5f);
+        }
+
+
+        targetUnit.TakeDamage(damage);
+        Disable();
     }
 
     void Disable()
