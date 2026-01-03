@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 7332550828865652683}
   - component: {fileID: 9819967315807438}
   - component: {fileID: 4144888775109735493}
-  - component: {fileID: 8558818441891024108}
   - component: {fileID: 6959221332306049346}
   - component: {fileID: 2934622512959119278}
   m_Layer: 0
@@ -89,27 +88,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &8558818441891024108
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7295586403758307949}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &6959221332306049346
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -122,6 +100,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f4b2f654a1a5d04e8b1d638b0faf6c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  trails:
+  - {fileID: 2934622512959119278}
 --- !u!96 &2934622512959119278
 TrailRenderer:
   serializedVersion: 3
@@ -146,7 +126,7 @@ TrailRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 11c17b8fcae4d7e4cad16f116bda6c80, type: 2}
+  - {fileID: 2100000, guid: 50dfd5dfaa2bc9f49835088eefefbf7a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -198,8 +178,8 @@ TrailRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 1, g: 0.76847947, b: 0.2971698, a: 1}
-      key1: {r: 1, g: 0.76847947, b: 0.2971698, a: 0.98595506}
+      key0: {r: 1, g: 1, b: 1, a: 1}
+      key1: {r: 1, g: 1, b: 1, a: 0.98595506}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
@@ -216,16 +196,16 @@ TrailRenderer:
       ctime7: 0
       atime0: 0
       atime1: 12567
-      atime2: 58365
-      atime3: 0
+      atime2: 27216
+      atime3: 58365
       atime4: 0
       atime5: 0
       atime6: 0
       atime7: 0
-      m_Mode: 0
-      m_ColorSpace: -1
+      m_Mode: 1
+      m_ColorSpace: 0
       m_NumColorKeys: 2
-      m_NumAlphaKeys: 3
+      m_NumAlphaKeys: 4
     numCornerVertices: 0
     numCapVertices: 0
     alignment: 0

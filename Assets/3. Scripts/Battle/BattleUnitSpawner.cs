@@ -95,6 +95,11 @@ public class BattleUnitSpawner : MonoBehaviour
     #region Spawn Point Selection (FAST vs NORMAL)
     private Transform GetPlayerSpawnPoint()
     {
+        if (!BattleUnit.AnyPlayerAlive())
+        {
+            usedPlayerSpawnPoints.Clear();
+        }
+        
         bool anyTarget = BattleUnit.AnyPlayerHasTarget();
 
         // NO TARGET → limited spawning
@@ -124,6 +129,12 @@ public class BattleUnitSpawner : MonoBehaviour
 
     private Transform GetEnemySpawnPoint()
     {
+        if (!BattleUnit.AnyEnemyAlive())
+        {
+            usedEnemySpawnPoints.Clear();
+        }
+
+        
         bool anyTarget = BattleUnit.AnyEnemyHasTarget();
 
         if (!anyTarget)

@@ -6,7 +6,9 @@ public class BattleUnit : MonoBehaviour
 {
     [Header("References")]
     public BattleUnitEnum battleUnitEnum;
-    public BulletShooter bulletShooter;
+    public ProjectileShooter projectileShooter;
+    public Collider hitCollider;
+
     [SerializeField] internal FadeHealthBar healthBarFade;
 
     [Header("Stats")]
@@ -70,8 +72,12 @@ public class BattleUnit : MonoBehaviour
                 targetCheckTimer = 0f;
                 FindTarget();
             }
-
+            
             agent.isStopped = true;
+
+            if (animator != null)
+                animator.SetFloat("Move", 0f);
+
             return;
         }
 
@@ -257,7 +263,7 @@ public class BattleUnit : MonoBehaviour
                 if (enemy != null)
                 {
                     //enemy.TakeDamage(attackDamage);
-                    bulletShooter.Fire(enemy.transform, attackDamage);
+                    projectileShooter.Fire(enemy);
                     if (animator != null)
                     {
                         animator.SetBool("Fire", true);
@@ -344,6 +350,31 @@ public class BattleUnit : MonoBehaviour
 
     #endregion
 
+    #region Helper
+
+    public static bool AnyPlayerAlive()
+    {
+        foreach (var unit in FindObjectsOfType<BattleUnit>())
+        {
+            if (unit.GetComponent<SideScenario>().side == Side.Player)
+                return true;
+        }
+        return false;
+    }
+
+    public static bool AnyEnemyAlive()
+    {
+        foreach (var unit in FindObjectsOfType<BattleUnit>())
+        {
+            if (unit.GetComponent<SideScenario>().side == Side.Enemy)
+                return true;
+        }
+        return false;
+    }
+
+
+    #endregion
+    
     #region Gizmos
     void OnDrawGizmosSelected()
     {

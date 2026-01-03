@@ -1,5 +1,37 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6016014078370969869
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9137684795684301954}
+  m_Layer: 0
+  m_Name: Weapon
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9137684795684301954
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6016014078370969869}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2384362291200936118}
+  m_Father: {fileID: 8958401705000738122}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6939293705774196317
 GameObject:
   m_ObjectHideFlags: 0
@@ -24,12 +56,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6939293705774196317}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.024, y: 0.606, z: 2.715}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8958401705000738122}
+  m_Father: {fileID: 9137684795684301954}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1845614349355926166
 PrefabInstance:
@@ -202,7 +234,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1151388028547126963, guid: 2e0a719b6ed4843488e82591f2800946, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2
+      value: -1.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -212,7 +244,7 @@ PrefabInstance:
       addedObject: {fileID: 3131995950570650809}
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 2e0a719b6ed4843488e82591f2800946, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2384362291200936118}
+      addedObject: {fileID: 9137684795684301954}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2e0a719b6ed4843488e82591f2800946, type: 3}
       insertIndex: -1
@@ -261,7 +293,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 3, y: 3, z: 5}
-  m_Center: {x: 0, y: 1.5, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!195 &4637335217204809781
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -354,8 +386,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   muzzlePoint: {fileID: 2384362291200936118}
-  bulletSpeed: 30
-  bulletLifeTime: 2
+  projectile:
+    projectileType: 2
+    motion: 0
+    speed: 15
+    lifeTime: 3
+    hasTrail: 1
+    launchVFX: {fileID: 0}
+    hitVFX: {fileID: 0}
+  damage: 50
+  playerTrailMaterial: {fileID: 2100000, guid: 82c3733d49fb2334b8ef2f0d90268a35, type: 2}
+  enemyTrailMaterial: {fileID: 2100000, guid: 50dfd5dfaa2bc9f49835088eefefbf7a, type: 2}
 --- !u!114 &7234458516524931379
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -369,13 +410,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   battleUnitEnum: 1
-  bulletShooter: {fileID: -2395505477580250251}
+  projectileShooter: {fileID: -2395505477580250251}
+  hitCollider: {fileID: 3876055320010897752}
   healthBarFade: {fileID: 1575022458197976342}
-  DetectionRange: 40
-  AttackRange: 5
+  DetectionRange: 50
+  AttackRange: 10
   moveSpeed: 1
-  attackDamage: 40
-  attackCooldown: 1
+  attackDamage: 50
+  attackCooldown: 1.5
   separationRadius: 1.5
   separationStrength: 2
   narrowViewAngle: 10
