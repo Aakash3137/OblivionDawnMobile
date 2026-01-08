@@ -20,23 +20,24 @@ public class ProjectileShooter : MonoBehaviour
 
     public void Fire(BattleUnit target)
     {
-        if (target == null) return;
+        if (target == null || projectile == null)
+            return;
 
         // 🔥 LAUNCH VFX
         if (projectile.launchVFX != null && muzzlePoint != null)
         {
             Instantiate(
                 projectile.launchVFX,
-                muzzlePoint.position,
-                muzzlePoint.rotation
+                muzzlePoint.position, 
+                gameObject.transform.rotation
             );
         }
-        
+
         Projectile proj =
             ProjectilePoolManager.Instance.Get(projectile.projectileType);
 
         proj.transform.position = muzzlePoint.position;
-        proj.transform.rotation = Quaternion.identity;
+        proj.transform.rotation = gameObject.transform.rotation;
         proj.gameObject.SetActive(true);
 
         proj.Init(

@@ -2,5 +2,7 @@ public enum ProjectileMotion
 {
     Straight,
     Ballistic,
-    Homing
+    Homing,
+    GroundToAir,
+    AirToGround
 }

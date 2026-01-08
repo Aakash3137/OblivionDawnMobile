@@ -16,6 +16,7 @@ public class SpriteHealthBar : MonoBehaviour
             initialWidth = foregroundBar.transform.localScale.x;
        
     }
+    
     void Update()
     {
         // Always face the camera

@@ -15,7 +15,7 @@ public class BattleUnit : MonoBehaviour
     //public float currentHealth;
     public float DetectionRange = 10f;
     public float AttackRange = 3f;
-    
+
     [Header("Movement")]
     public float moveSpeed = 3.5f;
 
@@ -31,13 +31,19 @@ public class BattleUnit : MonoBehaviour
     [Header("Targeting Vision")]
     public float narrowViewAngle = 10f; // straight ahead
     public float wideViewAngle = 45f;   // front arc
-    
+
+    //  ADD — air / ground rules (NO other code depends on this)
+    [Header("Unit Type")]
+    public bool isAirUnit;               // Is this unit flying?
+    public bool canAttackAir = false;    // Can this unit hit air targets?
+    public bool canAttackGround = true;  // Can this unit hit ground targets?
+
     public UnitStats unitStats;
-    
+
     public NavMeshAgent agent;
     public Animator animator;
     public GameObject target;
-    
+
     SideScenario unitSide;
     Vector2Int currentCoord;
     private float targetCheckTimer;
@@ -47,16 +53,16 @@ public class BattleUnit : MonoBehaviour
     {
         unitStats = GetComponent<UnitStats>();
         unitSide = GetComponent<SideScenario>();
-        
+
         unitStats.currentHealth = unitStats.maxHealth;
         agent.speed = moveSpeed;
         agent.stoppingDistance = AttackRange;
         agent.updateRotation = true;
-        
+
         ArrangeRotation();
         ApplySeparation();
     }
-    
+
     private void Update()
     {
         // Validate target FIRST
@@ -65,17 +71,17 @@ public class BattleUnit : MonoBehaviour
             target = null;
             agent.isStopped = true;
         }
-        
+
         if (target == null)
         {
             targetCheckTimer += Time.deltaTime;
-            
+
             if (targetCheckTimer >= targetCheckInterval)
             {
                 targetCheckTimer = 0f;
                 FindTarget();
             }
-            
+
             agent.isStopped = true;
 
             if (animator != null)
@@ -91,7 +97,7 @@ public class BattleUnit : MonoBehaviour
             agent.isStopped = false;
             agent.SetDestination(target.transform.position);
         }
-        
+
         if (distance > AttackRange)
         {
             agent.isStopped = false;
@@ -110,12 +116,12 @@ public class BattleUnit : MonoBehaviour
             agent.ResetPath();
             if (animator != null)
                 animator.SetFloat("Move", agent.velocity.magnitude);
-            
+
             ApplySeparation();
             FaceTarget();
             Attack();
         }
-        
+
         if (target != null)
         {
             if (!target || target.GetComponent<BattleUnit>() == null)
@@ -125,12 +131,11 @@ public class BattleUnit : MonoBehaviour
                 return;
             }
         }
-        
+
         //update tile ownership
         UpdateTileOwnership();
-
     }
-    
+
     #region Tile Ownership
     // --- Tile ownership ---
     void UpdateTileOwnership()
@@ -155,7 +160,7 @@ public class BattleUnit : MonoBehaviour
         var tile = tileGO != null ? tileGO.GetComponent<Tile>() : null;
         if (tile != null)
         {
-            tile.Occupy(unitSide);            
+            tile.Occupy(unitSide);
         }
     }
 
@@ -172,9 +177,8 @@ public class BattleUnit : MonoBehaviour
         if (tile != null)
             tile.Vacate(unitSide);
     }
-    
     #endregion
-    
+
     private void ArrangeRotation()
     {
         if (GetComponent<SideScenario>().side == Side.Player)
@@ -186,7 +190,7 @@ public class BattleUnit : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, -135, 0);
         }
     }
-    
+
     void FindTarget()
     {
         Collider[] hits = Physics.OverlapSphere(transform.position, DetectionRange);
@@ -205,6 +209,13 @@ public class BattleUnit : MonoBehaviour
 
             // Ignore same side
             if (unit.GetComponent<SideScenario>().side == mySide)
+                continue;
+
+            //  ADD — air / ground filtering (SAFE, OPTIONAL)
+            if (unit.isAirUnit && !canAttackAir)
+                continue;
+
+            if (!unit.isAirUnit && !canAttackGround)
                 continue;
 
             Vector3 dir = unit.transform.position - transform.position;
@@ -247,7 +258,6 @@ public class BattleUnit : MonoBehaviour
         }
     }
 
-
     void FaceTarget()
     {
         Vector3 dir = (target.transform.position - transform.position).normalized;
@@ -256,10 +266,14 @@ public class BattleUnit : MonoBehaviour
         if (dir != Vector3.zero)
         {
             Quaternion lookRot = Quaternion.LookRotation(dir);
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookRot, 10f * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                lookRot,
+                10f * Time.deltaTime
+            );
         }
     }
-    
+
     void ApplySeparation()
     {
         Collider[] hits = Physics.OverlapSphere(transform.position, separationRadius);
@@ -298,7 +312,6 @@ public class BattleUnit : MonoBehaviour
         }
     }
 
-    
     void Attack()
     {
         attackTimer += Time.deltaTime;
@@ -323,7 +336,6 @@ public class BattleUnit : MonoBehaviour
             }
         }
     }
-    
 
     IEnumerator ResetFire()
     {
@@ -331,30 +343,32 @@ public class BattleUnit : MonoBehaviour
         if (animator != null)
             animator.SetBool("Fire", false);
     }
-    
+
     // here units get damage from enemies
     public void TakeDamage(float damage)
     {
         unitStats.currentHealth -= damage;
-        unitStats.currentHealth = Mathf.Clamp(unitStats.currentHealth, 0, unitStats.maxHealth);
+        unitStats.currentHealth =
+            Mathf.Clamp(unitStats.currentHealth, 0, unitStats.maxHealth);
+
         if (healthBarFade != null)
         {
             healthBarFade.ShowOnHit();
             healthBarFade.Isvisible = true;
         }
+
         if (unitStats.currentHealth <= 0)
         {
             Die();
         }
-        
     }
-    
+
     //Destroy enemy
     public void Die()
     {
         Destroy(gameObject);
     }
-    
+
     private void OnDestroy()
     {
         BattleUnit[] units = FindObjectsOfType<BattleUnit>();
@@ -368,7 +382,6 @@ public class BattleUnit : MonoBehaviour
     }
 
     #region TargetDetection
-    
     public static bool AnyPlayerHasTarget()
     {
         BattleUnit[] units = FindObjectsOfType<BattleUnit>();
@@ -396,12 +409,9 @@ public class BattleUnit : MonoBehaviour
         }
         return false;
     }
-
-
     #endregion
 
     #region Helper
-
     public static bool AnyPlayerAlive()
     {
         foreach (var unit in FindObjectsOfType<BattleUnit>())
@@ -421,10 +431,8 @@ public class BattleUnit : MonoBehaviour
         }
         return false;
     }
-
-
     #endregion
-    
+
     #region Gizmos
     void OnDrawGizmosSelected()
     {

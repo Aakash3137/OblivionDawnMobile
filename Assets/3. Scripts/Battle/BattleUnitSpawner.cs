@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,9 +25,13 @@ public class BattleUnitSpawner : MonoBehaviour
     [SerializeField] private float spawnCooldown = 0.1f;
     [SerializeField] private float fastClickThreshold = 1f;
 
+    //ACTION (EXTERNAL SPAWNING)
+    public Action<BattleUnitEnum, Side, Transform> OnSpawnUnitByEnum;
+    //call this action to spawn units from unit building with spawn position or tile position
+    
     private HashSet<int> usedPlayerSpawnPoints = new HashSet<int>();
     private HashSet<int> usedEnemySpawnPoints = new HashSet<int>();
-    
+
     // --- Player tracking ---
     private float lastPlayerClickTime = -10f;
     private float lastPlayerSpawnTime;
@@ -43,6 +48,17 @@ public class BattleUnitSpawner : MonoBehaviour
         RegisterButtons(enemySpawnButtons, SpawnEnemyUnit);
     }
 
+    private void OnEnable()
+    {
+        //Subscribe spawn action
+        OnSpawnUnitByEnum += SpawnUnitByEnum;
+    }
+
+    private void OnDisable()
+    {
+        OnSpawnUnitByEnum -= SpawnUnitByEnum;
+    }
+
     #region Button Registration
 
     private void RegisterButtons(List<Button> buttons, System.Action<Button> callback)
@@ -56,7 +72,7 @@ public class BattleUnitSpawner : MonoBehaviour
 
     #endregion
 
-    #region Spawn Logic
+    #region ORIGINAL BUTTON SPAWN LOGIC
 
     private void SpawnPlayerUnit(Button button)
     {
@@ -64,14 +80,12 @@ public class BattleUnitSpawner : MonoBehaviour
             return;
 
         GameObject prefab = GetUnitPrefab(playerUnits, button);
-        
+
         Transform spawnPoint = GetPlayerSpawnPoint();
         if (spawnPoint == null)
-            return; // STOP spawning
+            return;
 
         Instantiate(prefab, spawnPoint.position, Quaternion.identity, playerUnitPool);
-
-        //instantiate the unit and set the target
     }
 
     private void SpawnEnemyUnit(Button button)
@@ -83,26 +97,66 @@ public class BattleUnitSpawner : MonoBehaviour
         if (prefab == null) return;
 
         Transform spawnPoint = GetEnemySpawnPoint();
-        
         if (spawnPoint == null)
-            return; // STOP spawning
+            return;
 
         Instantiate(prefab, spawnPoint.position, Quaternion.identity, enemyUnitPool);
     }
 
     #endregion
 
-    #region Spawn Point Selection (FAST vs NORMAL)
+    #region ENUM-BASED SPAWN SYSTEM
+
+    private void SpawnUnitByEnum(BattleUnitEnum unitEnum, Side side, Transform SpawnPosition)
+    {
+        if (side == Side.Player)
+            SpawnPlayerUnit(unitEnum, SpawnPosition);
+        else
+            SpawnEnemyUnit(unitEnum, SpawnPosition);
+    }
+
+    // spawn player unit by enum at specified location set by spawned unit building.
+    private void SpawnPlayerUnit(BattleUnitEnum unitEnum, Transform SpawnPoint)
+    {
+        if (!CanSpawn(ref lastPlayerSpawnTime))
+            return;
+
+        GameObject prefab = GetUnitPrefabByEnum(playerUnits, unitEnum);
+        if (prefab == null) return;
+
+        Transform spawnPoint = SpawnPoint;
+        if (spawnPoint == null) return;
+
+        Instantiate(prefab, spawnPoint.position, Quaternion.identity, playerUnitPool);
+    }
+
+    private void SpawnEnemyUnit(BattleUnitEnum unitEnum, Transform SpawnPoint)
+    {
+        if (!CanSpawn(ref lastEnemySpawnTime))
+            return;
+
+        GameObject prefab = GetUnitPrefabByEnum(enemyUnits, unitEnum);
+        if (prefab == null) return;
+
+        Transform spawnPoint = SpawnPoint;
+        if (spawnPoint == null) return;
+
+        Instantiate(prefab, spawnPoint.position, Quaternion.identity, enemyUnitPool);
+    }
+
+    #endregion
+
+    #region Spawn Point Selection 
+
     private Transform GetPlayerSpawnPoint()
     {
         if (!BattleUnit.AnyPlayerAlive())
         {
             usedPlayerSpawnPoints.Clear();
         }
-        
+
         bool anyTarget = BattleUnit.AnyPlayerHasTarget();
 
-        // NO TARGET → limited spawning
         if (!anyTarget)
         {
             for (int i = 0; i < playerSpawnPoints.Count; i++)
@@ -113,15 +167,11 @@ public class BattleUnitSpawner : MonoBehaviour
                     return playerSpawnPoints[i];
                 }
             }
-
-            // All spawn points used → STOP spawning
             return null;
         }
 
-        // TARGET EXISTS → reset restrictions
         usedPlayerSpawnPoints.Clear();
 
-        // normal fast-click logic (cycle freely)
         Transform point = playerSpawnPoints[playerFastSpawnIndex];
         playerFastSpawnIndex = (playerFastSpawnIndex + 1) % playerSpawnPoints.Count;
         return point;
@@ -134,7 +184,6 @@ public class BattleUnitSpawner : MonoBehaviour
             usedEnemySpawnPoints.Clear();
         }
 
-        
         bool anyTarget = BattleUnit.AnyEnemyHasTarget();
 
         if (!anyTarget)
@@ -147,7 +196,6 @@ public class BattleUnitSpawner : MonoBehaviour
                     return enemySpawnPoints[i];
                 }
             }
-
             return null;
         }
 
@@ -160,7 +208,7 @@ public class BattleUnitSpawner : MonoBehaviour
 
     #endregion
 
-    #region Helpers
+    #region Helpers (UNCHANGED + ADDON)
 
     private bool CanSpawn(ref float lastSpawnTime)
     {
@@ -187,6 +235,22 @@ public class BattleUnitSpawner : MonoBehaviour
         }
 
         Debug.LogWarning($"No unit prefab found for button: {unitButton.buttonname}");
+        return null;
+    }
+
+    // NEW ENUM LOOKUP
+    private GameObject GetUnitPrefabByEnum(List<GameObject> units, BattleUnitEnum unitEnum)
+    {
+        foreach (GameObject unit in units)
+        {
+            BattleUnit battleUnit = unit.GetComponent<BattleUnit>();
+            if (battleUnit != null && battleUnit.battleUnitEnum == unitEnum)
+            {
+                return unit;
+            }
+        }
+
+        Debug.LogWarning($"No unit prefab found for enum: {unitEnum}");
         return null;
     }
 

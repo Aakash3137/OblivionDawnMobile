@@ -57,7 +57,7 @@ Transform:
   m_GameObject: {fileID: 7085954598940104464}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.024, y: 0.60599995, z: 2.715}
+  m_LocalPosition: {x: -0.01, y: 1.37, z: 2.96}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -391,10 +391,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   muzzlePoint: {fileID: 8072048961939860573}
   projectile:
-    projectileType: 2
-    motion: 0
-    speed: 15
+    projectileType: 3
+    motion: 2
+    speed: 5
+    maxRange: 0
+    arcHeight: 0
     lifeTime: 3
+    isAreaDamage: 1
+    damageRadius: 2
+    canHitAir: 1
+    canHitGround: 1
     hasTrail: 1
     launchVFX: {fileID: 0}
     hitVFX: {fileID: 1447540632109744634, guid: 9d301d5973fbf9349818b1638f122a78, type: 3}
@@ -426,6 +432,9 @@ MonoBehaviour:
   separationStrength: 2
   narrowViewAngle: 10
   wideViewAngle: 45
+  isAirUnit: 0
+  canAttackAir: 0
+  canAttackGround: 1
   unitStats: {fileID: 2337374514683609302}
   agent: {fileID: 4637335217204809781}
   animator: {fileID: 0}
