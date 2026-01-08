@@ -5,7 +5,6 @@ using System;
 public class PlayerResourceManager : MonoBehaviour
 {
     [Header("Set Starting Resources")]
-    [HideInInspector]
     [SerializeField] private BuildingUpgradeCost[] startingResources;
     public static PlayerResourceManager Instance;
     public int currentFood { get; private set; }
@@ -96,6 +95,8 @@ public class PlayerResourceManager : MonoBehaviour
                 currentPowerGenerationRate += amount;
                 break;
         }
+
+        OnResourcesChanged?.Invoke();
     }
     public bool HasResources(BuildingUpgradeCost[] resources, bool debug = false)
     {

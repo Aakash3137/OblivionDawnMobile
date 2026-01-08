@@ -4,7 +4,6 @@ public class BuildPanelManager : MonoBehaviour
 {
     private TileUIPanel tileUIPanel;
     [SerializeField] private RectTransform canvasRect;
-    private Vector3 buildPanelPosition;
     private RectTransform buildPanelTransform;
     private RectTransform buildPanelContainer;
     [SerializeField] private Vector2 yOffset = new Vector3(0, 250f);
@@ -23,13 +22,7 @@ public class BuildPanelManager : MonoBehaviour
 
         Vector3 mousePosition = Input.mousePosition;
         SetPanelPosition(mousePosition);
-
-        // buildPanelPosition = mousePosition + yOffset * scaleFactor;
-
-        // buildPanelTransform.position = buildPanelPosition;
-
         Clamp();
-
     }
 
     public void CloseBuildPanel()
@@ -37,7 +30,20 @@ public class BuildPanelManager : MonoBehaviour
         tileUIPanel.Close();
     }
 
-    public void Clamp()
+    private void SetPanelPosition(Vector2 mousePosition)
+    {
+        Vector2 localPoint;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvasRect,
+            mousePosition,
+            null,
+            out localPoint
+        );
+
+        buildPanelTransform.anchoredPosition = localPoint + yOffset;
+    }
+
+    private void Clamp()
     {
         Vector2 panelPosition = buildPanelTransform.anchoredPosition;
 
@@ -50,16 +56,5 @@ public class BuildPanelManager : MonoBehaviour
         buildPanelTransform.anchoredPosition = panelPosition;
 
     }
-    void SetPanelPosition(Vector2 mousePosition)
-    {
-        Vector2 localPoint;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            canvasRect,
-            mousePosition,
-            null,
-            out localPoint
-        );
 
-        buildPanelTransform.anchoredPosition = localPoint + yOffset;
-    }
 }

@@ -14,7 +14,7 @@ public class TileClickManager : MonoBehaviour
             Debug.LogError("MainCamera not found! Make sure your camera has the 'MainCamera' tag.");
     }
 
-    void Update()
+    private void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {
@@ -36,6 +36,10 @@ public class TileClickManager : MonoBehaviour
                     buildPanel.OpenBuildPanel(tile);
                 else
                     buildPanel.CloseBuildPanel();
+            }
+            else
+            {
+                buildPanel.CloseBuildPanel();
             }
         }
     }

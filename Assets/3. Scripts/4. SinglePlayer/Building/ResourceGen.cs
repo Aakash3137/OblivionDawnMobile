@@ -14,7 +14,7 @@ public class ResourceGen : MonoBehaviour
     private int buildingCurrentLevel;
     private ScenarioResourceType resourceType;
     private int resourceAmountPerBatch;
-    private float resourceTimeToProduce;
+    public float resourceTimeToProduce { get; private set; }
     private float resourceGenerationRate;
 
     private void Awake()
@@ -36,11 +36,10 @@ public class ResourceGen : MonoBehaviour
         buildingStats = GetComponent<BuildingStats>();
     }
 
-    void Start()
+    private async Awaitable Start()
     {
         GenerateResource();
     }
-
     public void UpgradeBuilding()
     {
         //Upgrade building and updating resource generation values
@@ -69,6 +68,7 @@ public class ResourceGen : MonoBehaviour
             // Debug.Log($"Generated {ResourceName}. Current amount: {GeneratedResourceAmount}");
         }
     }
+
     void OnDisable()
     {
         PlayerResourceManager.Instance.SetResourceGenerationRate(resourceType, -resourceGenerationRate);
