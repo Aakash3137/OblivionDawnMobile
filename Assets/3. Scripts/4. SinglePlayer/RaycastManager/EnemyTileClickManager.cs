@@ -16,30 +16,50 @@ public class EnemyTileClickManager : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Application.isMobilePlatform)
         {
-            if (EventSystem.current.IsPointerOverGameObject()) return;
-
-            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-
-            if (Physics.Raycast(ray, out RaycastHit hit, 1000f, tileLayerMask))
+            if (Input.touchCount == 1)
             {
-                Tile tile = hit.collider.GetComponentInParent<Tile>();
-
-                if (tile == null)
+                Touch touch = Input.GetTouch(0);
+                if (touch.phase == TouchPhase.Ended)
                 {
-                    return;
+                    HandleBuildPanel();
                 }
-
-                if (tile.ownerSide == Side.Enemy)
-                    enemyBuildPanel.OpenBuildPanel(tile);
-                else
-                    enemyBuildPanel.CloseBuildPanel();
             }
-            else
+        }
+        // EDITOR / DESKTOP (mouse)
+        else
+        {
+            if (Input.GetMouseButtonUp(0))
             {
-                enemyBuildPanel.CloseBuildPanel();
+                HandleBuildPanel();
             }
+        }
+    }
+
+    void HandleBuildPanel()
+    {
+        if (EventSystem.current.IsPointerOverGameObject()) return;
+
+        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(ray, out RaycastHit hit, 1000f, tileLayerMask))
+        {
+            Tile tile = hit.collider.GetComponentInParent<Tile>();
+
+            if (tile == null)
+            {
+                return;
+            }
+
+            if (tile.ownerSide == Side.Enemy)
+                enemyBuildPanel.OpenBuildPanel(tile);
+            else
+                enemyBuildPanel.CloseBuildPanel();
+        }
+        else
+        {
+            enemyBuildPanel.CloseBuildPanel();
         }
     }
 }

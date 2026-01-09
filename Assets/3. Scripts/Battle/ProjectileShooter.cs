@@ -5,7 +5,7 @@ public class ProjectileShooter : MonoBehaviour
     [Header("Weapon")]
     public Transform muzzlePoint;
     public ProjectileDefinition projectile;
-    public float damage = 10f;
+    public float damage = 1f;
 
     [Header("Trail Materials")]
     public Material playerTrailMaterial;
@@ -18,7 +18,7 @@ public class ProjectileShooter : MonoBehaviour
         sideScenario = GetComponent<SideScenario>();
     }
 
-    public void Fire(BattleUnit target)
+    public void Fire(Stats target)
     {
         if (target == null || projectile == null)
             return;
@@ -26,11 +26,7 @@ public class ProjectileShooter : MonoBehaviour
         // 🔥 LAUNCH VFX
         if (projectile.launchVFX != null && muzzlePoint != null)
         {
-            Instantiate(
-                projectile.launchVFX,
-                muzzlePoint.position, 
-                gameObject.transform.rotation
-            );
+            Instantiate(projectile.launchVFX, muzzlePoint.position, gameObject.transform.rotation);
         }
 
         Projectile proj =
@@ -40,12 +36,7 @@ public class ProjectileShooter : MonoBehaviour
         proj.transform.rotation = gameObject.transform.rotation;
         proj.gameObject.SetActive(true);
 
-        proj.Init(
-            target,
-            damage,
-            projectile,
-            GetTrailMaterial()
-        );
+        proj.Init(target, damage, projectile, GetTrailMaterial());
     }
 
     Material GetTrailMaterial()

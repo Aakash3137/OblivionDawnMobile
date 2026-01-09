@@ -13,13 +13,13 @@ public class UnitProgress : ProgressManager
 
     private void Update()
     {
-        if (currentTime > unitSpawnStats.GetBuildTime())
+        if (currentTime > unitSpawnStats.unitBuildTime)
         {
             currentTime = 0f;
         }
 
         currentTime += Time.deltaTime;
-        progressAmount = currentTime / unitSpawnStats.GetBuildTime();
+        progressAmount = currentTime / unitSpawnStats.unitBuildTime;
         UpdateFillAmount(progressAmount);
     }
 }

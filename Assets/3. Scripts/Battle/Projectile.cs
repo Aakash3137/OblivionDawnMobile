@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    private BattleUnit targetUnit;
+    private Stats targetUnit;
     private Collider targetCollider;
 
     private float speed;
@@ -27,7 +27,7 @@ public class Projectile : MonoBehaviour
     [SerializeField] float sideRayAngle = 30f;
     [SerializeField] LayerMask obstacleMask;
 
-    
+
     void Awake()
     {
         // Break shared material references once
@@ -41,14 +41,10 @@ public class Projectile : MonoBehaviour
         }
     }
 
-    public void Init(
-        BattleUnit target,
-        float damage,
-        ProjectileDefinition def,
-        Material trailMaterial
-    )
+    public void Init(Stats target, float damage, ProjectileDefinition def, Material trailMaterial)
     {
         targetUnit = target;
+
         targetCollider = target != null ? target.hitCollider : null;
 
         this.damage = damage;
@@ -157,7 +153,7 @@ public class Projectile : MonoBehaviour
         Vector3 targetPos = targetUnit.transform.position;
 
         Debug.DrawRay(transform.position, transform.forward * 5f, Color.blue);
-        
+
         // SEEK (object position, not ClosestPoint)
         Vector3 seekDir = (targetPos - transform.position).normalized;
 
@@ -325,7 +321,7 @@ public class Projectile : MonoBehaviour
 
         gameObject.SetActive(false);
     }
-    
+
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;

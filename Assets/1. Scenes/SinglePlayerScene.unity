@@ -6431,22 +6431,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1210770639}
     m_Modifications:
-    - target: {fileID: 701689291887582311, guid: 85cea2e9a80e0684cbcd700a6c7a5c7c, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 127052df629a24e24b65efe4ea0310e0, type: 3}
-    - target: {fileID: 2611929029312178300, guid: 85cea2e9a80e0684cbcd700a6c7a5c7c, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 5e5271f6c096a4ff8ab68c2a2e6a692f, type: 3}
     - target: {fileID: 3711739251563581095, guid: 85cea2e9a80e0684cbcd700a6c7a5c7c, type: 3}
       propertyPath: m_Name
       value: Build Panel
       objectReference: {fileID: 0}
-    - target: {fileID: 4915647981580663144, guid: 85cea2e9a80e0684cbcd700a6c7a5c7c, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 515bd44f601aa41c6b5f18bcb10402c2, type: 3}
     - target: {fileID: 5309041435398557994, guid: 85cea2e9a80e0684cbcd700a6c7a5c7c, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -6462,14 +6450,6 @@ PrefabInstance:
     - target: {fileID: 5309041435398557994, guid: 85cea2e9a80e0684cbcd700a6c7a5c7c, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6044833724060615767, guid: 85cea2e9a80e0684cbcd700a6c7a5c7c, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: b5a0a4b168f6644768df0038b3b93e91, type: 3}
-    - target: {fileID: 6144761476384356557, guid: 85cea2e9a80e0684cbcd700a6c7a5c7c, type: 3}
-      propertyPath: unitType
-      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7193623597361878241, guid: 85cea2e9a80e0684cbcd700a6c7a5c7c, type: 3}
       propertyPath: m_Pivot.x
@@ -6597,10 +6577,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7614116941080953034, guid: 85cea2e9a80e0684cbcd700a6c7a5c7c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7628986581284732658, guid: 85cea2e9a80e0684cbcd700a6c7a5c7c, type: 3}
-      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8112006273877300084, guid: 85cea2e9a80e0684cbcd700a6c7a5c7c, type: 3}
@@ -28269,6 +28245,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: CameraPanner
       objectReference: {fileID: 0}
+    - target: {fileID: 8643426178985476689, guid: 4d6473ae3e0a6a24fb3baaa31f2b2db6, type: 3}
+      propertyPath: maxIdleDuration
+      value: 100
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -33030,10 +33010,10 @@ MonoBehaviour:
     size: 40
   - type: 2
     prefab: {fileID: 6959221332306049346, guid: 9a37cf9600806d042b530ea49484c7ac, type: 3}
-    size: 20
+    size: 60
   - type: 3
     prefab: {fileID: 6959221332306049346, guid: 94912dcb7130c6446a42db18cc3cfcc6, type: 3}
-    size: 20
+    size: 60
 --- !u!4 &1847155673
 Transform:
   m_ObjectHideFlags: 0
@@ -33043,7 +33023,7 @@ Transform:
   m_GameObject: {fileID: 1847155671}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 707.0692, y: 1450.8795, z: 6.677386}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -37961,7 +37941,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 1
-  m_AdditionalShaderChannelsFlag: 25
+  m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0

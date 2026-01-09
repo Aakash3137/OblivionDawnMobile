@@ -13,6 +13,7 @@ public class UnitSpawnerScenario : MonoBehaviour
 
     [Header(" EDITOR VIEW ONLY ")]
     [SerializeField] private int unitSpawnLevel;
+    public float unitBuildTime;
     private SideScenario buildingSide;   // building's faction marker
     private Tile currentTile;
     private Tile nearestTile;
@@ -36,7 +37,7 @@ public class UnitSpawnerScenario : MonoBehaviour
         unitStats = unitProduceStats.unitPrefab.GetComponent<UnitStats>();
         unitSpawnLevel = buildingStats.Level;
 
-        unitStats.unitBuildTime = unitProduceStats.unitLevelData[unitSpawnLevel].unitBuildTime;
+        unitBuildTime = unitProduceStats.unitLevelData[unitSpawnLevel].unitBuildTime;
         unitStats.maxHealth = unitProduceStats.unitLevelData[unitSpawnLevel].unitHealth;
         unitStats.armour = unitProduceStats.unitLevelData[unitSpawnLevel].unitArmour;
         unitStats.unitAttackDamage = unitProduceStats.unitLevelData[unitSpawnLevel].unitAttackDamage;
@@ -58,7 +59,7 @@ public class UnitSpawnerScenario : MonoBehaviour
     {
         while (autoProduce && buildingStats.currentHealth > 0)
         {
-            yield return new WaitForSeconds(unitStats.unitBuildTime);
+            yield return new WaitForSeconds(unitBuildTime);
             SpawnUnit();
         }
     }
@@ -131,7 +132,7 @@ public class UnitSpawnerScenario : MonoBehaviour
     public void UpgradeProduction()
     {
         unitSpawnLevel++;
-        unitStats.unitBuildTime = unitProduceStats.unitLevelData[unitSpawnLevel].unitBuildTime;
+        unitBuildTime = unitProduceStats.unitLevelData[unitSpawnLevel].unitBuildTime;
         unitStats.maxHealth = unitProduceStats.unitLevelData[unitSpawnLevel].unitHealth;
         unitStats.armour = unitProduceStats.unitLevelData[unitSpawnLevel].unitArmour;
         unitStats.unitAttackDamage = unitProduceStats.unitLevelData[unitSpawnLevel].unitAttackDamage;
@@ -139,10 +140,5 @@ public class UnitSpawnerScenario : MonoBehaviour
         unitStats.unitFireRate = unitProduceStats.unitLevelData[unitSpawnLevel].unitFireRate;
 
         Debug.Log($"{buildingSide?.side} building upgraded to level {unitSpawnLevel}");
-    }
-
-    public float GetBuildTime()
-    {
-        return unitStats.unitBuildTime;
     }
 }

@@ -193,6 +193,8 @@ MonoBehaviour:
   currentHealth: 0
   Level: 0
   armour: 0
+  hitCollider: {fileID: 0}
+  healthBarFade: {fileID: 0}
   healthBar: {fileID: 0}
   buildingStats: {fileID: 11400000, guid: 61324e6a72fa49d44b7e7849a9843f0c, type: 2}
 --- !u!114 &5551679913311386414
@@ -362,6 +364,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0.366
       objectReference: {fileID: 0}
+    - target: {fileID: 1567222794316545940, guid: 74ecb513f07c2124c8c5d43bf706458d, type: 3}
+      propertyPath: generateResourceImageTransform
+      value: 
+      objectReference: {fileID: 2773346693268579860}
     - target: {fileID: 1911343588057572892, guid: 74ecb513f07c2124c8c5d43bf706458d, type: 3}
       propertyPath: m_Name
       value: WorldCanvasBuilding
@@ -454,5 +460,10 @@ PrefabInstance:
 --- !u!224 &2000616423369117537 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3828384782369519359, guid: 74ecb513f07c2124c8c5d43bf706458d, type: 3}
+  m_PrefabInstance: {fileID: 3378466786757310878}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &2773346693268579860 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 621023662985240458, guid: 74ecb513f07c2124c8c5d43bf706458d, type: 3}
   m_PrefabInstance: {fileID: 3378466786757310878}
   m_PrefabAsset: {fileID: 0}

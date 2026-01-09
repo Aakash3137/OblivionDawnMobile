@@ -38,21 +38,38 @@ public class BattleUnit : MonoBehaviour
     public bool canAttackAir = false;    // Can this unit hit air targets?
     public bool canAttackGround = true;  // Can this unit hit ground targets?
 
-    public UnitStats unitStats;
+    public Stats unitStats;
 
     public NavMeshAgent agent;
     public Animator animator;
     public GameObject target;
+    public GameObject primaryTarget;
+    public GameObject secondaryTarget;
 
+    [Header("Target priority settings high score = target priority")]
+    public float distanceWeight = 500f;
+    public float lowHealthBonus = 40f;
+    public float narrowAngleBonus = 30f;
+    public float wideAngleBonus = 20f;
+    public float peripheralAngleBonus = 10f;
+    public float unitWeight = 10f;
+    public float buildingWeight = 0f;
+    Vector3 forward;
     SideScenario unitSide;
     Vector2Int currentCoord;
-    private float targetCheckTimer;
+    private float targetCheckTimer = 0f;
     private const float targetCheckInterval = 0.5f;
+    public const float checkRadiusOffset = 0.5f;
 
     private void Start()
     {
         unitStats = GetComponent<UnitStats>();
         unitSide = GetComponent<SideScenario>();
+        forward = transform.forward;
+        agent.isStopped = true;
+
+        if (animator != null)
+            animator.SetFloat("Move", 0f);
 
         unitStats.currentHealth = unitStats.maxHealth;
         agent.speed = moveSpeed;
@@ -65,76 +82,42 @@ public class BattleUnit : MonoBehaviour
 
     private void Update()
     {
-        // Validate target FIRST
-        if (target != null && (!target || target.GetComponent<BattleUnit>() == null))
+        targetCheckTimer += Time.deltaTime;
+        if (targetCheckTimer >= targetCheckInterval)
         {
-            target = null;
-            agent.isStopped = true;
+            FindTarget();
+            targetCheckTimer = 0f;
         }
 
         if (target == null)
         {
-            targetCheckTimer += Time.deltaTime;
-
-            if (targetCheckTimer >= targetCheckInterval)
-            {
-                targetCheckTimer = 0f;
-                FindTarget();
-            }
-
             agent.isStopped = true;
-
-            if (animator != null)
-                animator.SetFloat("Move", 0f);
-
+            if (animator != null) animator.SetFloat("Move", 0f);
             return;
         }
 
         float distance = Vector3.Distance(transform.position, target.transform.position);
-
-        if (!agent.hasPath && distance > AttackRange)
-        {
-            agent.isStopped = false;
-            agent.SetDestination(target.transform.position);
-        }
-
         if (distance > AttackRange)
         {
             agent.isStopped = false;
-
             if (!agent.hasPath || agent.remainingDistance > AttackRange)
-            {
                 agent.SetDestination(target.transform.position);
-            }
-
-            if (animator != null)
-                animator.SetFloat("Move", agent.velocity.magnitude);
         }
         else
         {
             agent.isStopped = true;
             agent.ResetPath();
-            if (animator != null)
-                animator.SetFloat("Move", agent.velocity.magnitude);
-
             ApplySeparation();
             FaceTarget();
             Attack();
         }
 
-        if (target != null)
-        {
-            if (!target || target.GetComponent<BattleUnit>() == null)
-            {
-                target = null;
-                agent.isStopped = true;
-                return;
-            }
-        }
+        if (animator != null)
+            animator.SetFloat("Move", agent.velocity.magnitude);
 
-        //update tile ownership
         UpdateTileOwnership();
     }
+
 
     #region Tile Ownership
     // --- Tile ownership ---
@@ -191,71 +174,124 @@ public class BattleUnit : MonoBehaviour
         }
     }
 
-    void FindTarget()
+    private void FindTarget()
     {
+        primaryTarget = null;
+        secondaryTarget = null;
+
         Collider[] hits = Physics.OverlapSphere(transform.position, DetectionRange);
 
-        BattleUnit bestTarget = null;
-        float bestScore = float.MaxValue;
-
-        Vector3 forward = transform.forward;
+        Stats bestTarget = null;
+        float bestScore = 0f;
         Side mySide = GetComponent<SideScenario>().side;
 
         foreach (Collider hit in hits)
         {
-            BattleUnit unit = hit.GetComponent<BattleUnit>();
-            if (unit == null || unit == this)
-                continue;
+            Stats unit;
+            float score = 0f;
 
-            // Ignore same side
-            if (unit.GetComponent<SideScenario>().side == mySide)
-                continue;
-
-            //  ADD — air / ground filtering (SAFE, OPTIONAL)
-            if (unit.isAirUnit && !canAttackAir)
-                continue;
-
-            if (!unit.isAirUnit && !canAttackGround)
-                continue;
-
-            Vector3 dir = unit.transform.position - transform.position;
-            float distance = dir.magnitude;
-            float angle = Vector3.Angle(forward, dir);
-
-            float score;
-
-            // 1️⃣ Straight ahead → highest priority
-            if (angle <= narrowViewAngle)
+            if (hit.TryGetComponent<UnitStats>(out var unitStat))
             {
-                score = distance;
+                unit = unitStat;
+                score = unitWeight;
             }
-            // 2️⃣ Front arc
-            else if (angle <= wideViewAngle)
+            else if (hit.TryGetComponent<BuildingStats>(out var buildingStats))
             {
-                score = distance + 5f;
+                unit = buildingStats;
+                score = buildingWeight;
             }
-            // 3️⃣ Fallback: anywhere
             else
             {
-                score = distance + 15f;
+                continue;
             }
 
-            // Pick best candidate
-            if (score < bestScore)
+            // Ignore self & same side
+            if (unit == this || unit.GetComponent<SideScenario>().side == mySide)
+                continue;
+
+            // if (unit.isAirUnit && !canAttackAir)
+            //     continue;
+
+            // if (!unit.isAirUnit && !canAttackGround)
+            //     continue;
+
+            score = CalculateScore(unit, score);
+
+            // Is this a better candidate?
+            if (score > bestScore && (target == null || ShouldSwitchTarget(target?.GetComponent<Stats>(), unit)))
             {
                 bestScore = score;
                 bestTarget = unit;
             }
         }
 
-        // Assign target exactly like before
-        if (bestTarget != null)
+        // Assign target
+        if (bestTarget != null && (target == null || bestTarget != target.GetComponent<Stats>()))
         {
+            // only assign if switching
             target = bestTarget.gameObject;
             attackTimer = 0f;
             agent.ResetPath();
             agent.isStopped = false;
+
+            if (bestTarget is UnitStats)
+                primaryTarget = target;
+            else
+                secondaryTarget = target;
         }
+    }
+
+    private float CalculateScore(Stats unit, float score)
+    {
+        // Distance score
+        float distance = Vector3.Distance(transform.position, unit.transform.position);
+        score += distanceWeight / Mathf.Max(distance, 0.1f);
+
+        // Low health bonus
+        float healthPercent = unit.currentHealth / unit.maxHealth;
+        if (healthPercent <= 0.3f) score += lowHealthBonus;
+
+        // View angle
+        float angle = Vector3.Angle(forward, unit.transform.position - transform.position);
+
+        if (angle <= narrowViewAngle)
+            score += narrowAngleBonus;
+        else if (angle <= wideViewAngle)
+            score += wideAngleBonus;
+        else
+            score += peripheralAngleBonus;
+        return score;
+    }
+
+    bool ShouldSwitchTarget(Stats current, Stats candidate)
+    {
+        // no target, always switch
+        if (current == null)
+            return true;
+
+        // never switch from unit to building
+        if (current is UnitStats && candidate is BuildingStats)
+            return false;
+
+        if (current is BuildingStats)
+        {
+            if (candidate == null)
+                return false;
+
+            // check if building is low health
+            float buildingHealthPercent = current.currentHealth / current.maxHealth;
+            if (buildingHealthPercent < 0.3f)
+                return false; // stick with low-health building
+
+            // if candidate is unit, switch
+            if (candidate is UnitStats)
+            {
+                float dist = Vector3.Distance(transform.position, candidate.transform.position);
+                return dist <= AttackRange + checkRadiusOffset;
+            }
+        }
+
+        return false; // default: do not switch 
     }
 
     void FaceTarget()
@@ -322,7 +358,7 @@ public class BattleUnit : MonoBehaviour
 
             if (target != null)
             {
-                BattleUnit enemy = target.GetComponent<BattleUnit>();
+                Stats enemy = target.GetComponent<Stats>();
                 if (enemy != null)
                 {
                     //enemy.TakeDamage(attackDamage);
@@ -348,8 +384,7 @@ public class BattleUnit : MonoBehaviour
     public void TakeDamage(float damage)
     {
         unitStats.currentHealth -= damage;
-        unitStats.currentHealth =
-            Mathf.Clamp(unitStats.currentHealth, 0, unitStats.maxHealth);
+        unitStats.currentHealth = Mathf.Clamp(unitStats.currentHealth, 0, unitStats.maxHealth);
 
         if (healthBarFade != null)
         {

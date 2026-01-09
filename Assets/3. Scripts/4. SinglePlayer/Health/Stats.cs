@@ -7,14 +7,16 @@ public class Stats : MonoBehaviour
     public float currentHealth;
     public int Level;
     public float armour;
+    public Collider hitCollider;
 
     [Header("Assign in Inspector")]
     public FadeHealthBar healthBarFade;
     public HealthProgress healthBar; // assign in Inspector
 
-    private void Start()
+    internal virtual void Start()
     {
         healthBar = GetComponentInChildren<HealthProgress>();
+        hitCollider = GetComponent<Collider>();
 
         if (healthBar != null)
         {
@@ -22,7 +24,7 @@ public class Stats : MonoBehaviour
         }
         else
         {
-            Debug.Log($"<color=#FFC0CB>{name} missing HealthBar. Assign the script.</color>");
+            //Debug.Log($"<color=#FFC0CB>{name} missing HealthBar. Assign the script.</color>");
         }
     }
     public void TakeDamage(float amount)
@@ -34,14 +36,15 @@ public class Stats : MonoBehaviour
             healthBar.FadeInHealthBar();
             healthBar.UpdateFillAmount(currentHealth / maxHealth);
         }
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
         if (healthBarFade != null)
         {
             healthBarFade.ShowOnHit();
             healthBarFade.Isvisible = true;
+        }
+
+        if (currentHealth <= 0)
+        {
+            Die();
         }
     }
 
