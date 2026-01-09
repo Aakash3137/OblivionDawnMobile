@@ -1084,13 +1084,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startingResources:
   - resourceType: 0
-    resourceCost: 100
+    resourceCost: 1000
   - resourceType: 1
-    resourceCost: 100
+    resourceCost: 1000
   - resourceType: 2
-    resourceCost: 100
+    resourceCost: 1000
   - resourceType: 3
-    resourceCost: 100
+    resourceCost: 1000
   <currentFoodGenerationRate>k__BackingField: 0
   <currentGoldGenerationRate>k__BackingField: 0
   <currentMetalGenerationRate>k__BackingField: 0
@@ -9715,7 +9715,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: f78344448d0c888479aea12e7f5dbad9, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -14144,6 +14144,7 @@ GameObject:
   - component: {fileID: 783353730}
   - component: {fileID: 783353729}
   - component: {fileID: 783353728}
+  - component: {fileID: 783353731}
   m_Layer: 5
   m_Name: Enemy UI Panel
   m_TagString: Untagged
@@ -14212,15 +14213,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Color: {r: 0.21717648, g: 0.23935296, b: 0.30588236, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 98893fe78603c4147890440822770bc7, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -14237,6 +14238,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 783353726}
   m_CullTransparentMesh: 1
+--- !u!114 &783353731
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 783353726}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04a2c523f5e99484baafd185738d69d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyAirBuilding: {fileID: 1801261173}
+  enemyInfantryBuilding: {fileID: 142784388}
+  enemyTankBuilding: {fileID: 335787311}
+  factionData: {fileID: 11400000, guid: b4c4f87a58a4fc841b315c31d4d53920, type: 2}
 --- !u!1001 &787027739
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -26400,7 +26417,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: b3bf0b149881f4077bd3aa1b3a018e69, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -28522,7 +28539,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: f20fc7f48cb462149bbcff0a7f63f825, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -30764,6 +30781,7 @@ GameObject:
   - component: {fileID: 1772300665}
   - component: {fileID: 1772300667}
   - component: {fileID: 1772300668}
+  - component: {fileID: 1772300669}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -30854,6 +30872,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerText: {fileID: 0}
   enemyText: {fileID: 0}
+--- !u!114 &1772300669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1772300662}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2577fa00822c1ef498c52faef45f61df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyBuildPanel: {fileID: 783353731}
+  tileLayerMask:
+    serializedVersion: 2
+    m_Bits: 8192
 --- !u!1001 &1773037533
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -32961,6 +32995,60 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5162495419593765877, guid: 80b1a9e57c42ee44f8b84627a1098d63, type: 3}
   m_PrefabInstance: {fileID: 1839272426}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1847155671
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1847155673}
+  - component: {fileID: 1847155672}
+  m_Layer: 0
+  m_Name: Prj pool Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1847155672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1847155671}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f0b6773f725742408e84bc480c6855b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pools:
+  - type: 0
+    prefab: {fileID: 6959221332306049346, guid: be809f9d505b7a7428fd95703c74098d, type: 3}
+    size: 40
+  - type: 2
+    prefab: {fileID: 6959221332306049346, guid: 9a37cf9600806d042b530ea49484c7ac, type: 3}
+    size: 20
+  - type: 3
+    prefab: {fileID: 6959221332306049346, guid: 94912dcb7130c6446a42db18cc3cfcc6, type: 3}
+    size: 20
+--- !u!4 &1847155673
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1847155671}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 707.0692, y: 1450.8795, z: 6.677386}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1850709358
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -37974,3 +38062,4 @@ SceneRoots:
   - {fileID: 8287601602775836342}
   - {fileID: 918893362}
   - {fileID: 56707503}
+  - {fileID: 1847155673}
