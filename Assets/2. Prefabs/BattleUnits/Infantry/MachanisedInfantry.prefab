@@ -682,11 +682,12 @@ MonoBehaviour:
     projectileType: 0
     motion: 0
     speed: 25
+    maxRange: 10
     arcHeight: 4
     lifeTime: 3
     isAreaDamage: 0
     damageRadius: 3
-    canHitAir: 0
+    canHitAir: 1
     canHitGround: 1
     hasTrail: 1
     launchVFX: {fileID: 0}
@@ -713,6 +714,7 @@ MonoBehaviour:
   DetectionRange: 40
   AttackRange: 7
   moveSpeed: 2
+  flyHeight: 5
   attackDamage: 20
   attackCooldown: 1
   separationRadius: 1.5
@@ -720,8 +722,11 @@ MonoBehaviour:
   narrowViewAngle: 10
   wideViewAngle: 45
   isAirUnit: 0
-  canAttackAir: 0
+  canAttackAir: 1
   canAttackGround: 1
+  takeoffRunDistance: 1.5
+  takeoffRunSpeed: 3
+  ascentSpeed: 2
   unitStats: {fileID: 5098338205219749656}
   agent: {fileID: 2533861858427572245}
   animator: {fileID: 1442437726733883778}

@@ -18,6 +18,7 @@ public class BattleUnit : MonoBehaviour
 
     [Header("Movement")]
     public float moveSpeed = 3.5f;
+    public float flyHeight = 5f; // Air units only
 
     [Header("Combat")]
     public float attackDamage = 10f;
@@ -32,12 +33,13 @@ public class BattleUnit : MonoBehaviour
     public float narrowViewAngle = 10f; // straight ahead
     public float wideViewAngle = 45f;   // front arc
 
-    //  ADD — air / ground rules (NO other code depends on this)
     [Header("Unit Type")]
-    public bool isAirUnit;               // Is this unit flying?
-    public bool canAttackAir = false;    // Can this unit hit air targets?
-    public bool canAttackGround = true;  // Can this unit hit ground targets?
+    public bool isAirUnit;
+    public bool canAttackAir = false;
+    public bool canAttackGround = true;
 
+    private AirUnit airUnit;
+    
     public UnitStats unitStats;
 
     public NavMeshAgent agent;
@@ -53,11 +55,19 @@ public class BattleUnit : MonoBehaviour
     {
         unitStats = GetComponent<UnitStats>();
         unitSide = GetComponent<SideScenario>();
-
         unitStats.currentHealth = unitStats.maxHealth;
-        agent.speed = moveSpeed;
-        agent.stoppingDistance = AttackRange;
-        agent.updateRotation = true;
+
+        if (isAirUnit)
+        {
+            airUnit = GetComponent<AirUnit>();
+            if (agent != null) agent.enabled = false;
+        }
+        else
+        {
+            agent.speed = moveSpeed;
+            agent.stoppingDistance = AttackRange;
+            agent.updateRotation = true;
+        }
 
         ArrangeRotation();
         ApplySeparation();
@@ -65,34 +75,36 @@ public class BattleUnit : MonoBehaviour
 
     private void Update()
     {
-        // Validate target FIRST
         if (target != null && (!target || target.GetComponent<BattleUnit>() == null))
         {
             target = null;
-            agent.isStopped = true;
+            if (!isAirUnit) agent.isStopped = true;
+        }
+
+        // Air units: don't find targets until airborne
+        if (isAirUnit && airUnit != null && !airUnit.IsAirborne())
+        {
+            if (animator != null) animator.SetFloat("Move", moveSpeed);
+            return;
         }
 
         if (target == null)
         {
             targetCheckTimer += Time.deltaTime;
-
             if (targetCheckTimer >= targetCheckInterval)
             {
                 targetCheckTimer = 0f;
                 FindTarget();
             }
 
-            agent.isStopped = true;
-
-            if (animator != null)
-                animator.SetFloat("Move", 0f);
-
+            if (!isAirUnit) agent.isStopped = true;
+            if (animator != null) animator.SetFloat("Move", 0f);
             return;
         }
 
         float distance = Vector3.Distance(transform.position, target.transform.position);
 
-        if (!agent.hasPath && distance > AttackRange)
+        if (!isAirUnit && !agent.hasPath && distance > AttackRange)
         {
             agent.isStopped = false;
             agent.SetDestination(target.transform.position);
@@ -100,41 +112,44 @@ public class BattleUnit : MonoBehaviour
 
         if (distance > AttackRange)
         {
-            agent.isStopped = false;
-
-            if (!agent.hasPath || agent.remainingDistance > AttackRange)
+            if (isAirUnit)
             {
-                agent.SetDestination(target.transform.position);
+                airUnit.FlyTowards(target.transform.position);
+                Attack();
+            }
+            else
+            {
+                agent.isStopped = false;
+                if (!agent.hasPath || agent.remainingDistance > AttackRange)
+                    agent.SetDestination(target.transform.position);
             }
 
             if (animator != null)
-                animator.SetFloat("Move", agent.velocity.magnitude);
+                animator.SetFloat("Move", isAirUnit ? moveSpeed : agent.velocity.magnitude);
         }
         else
         {
-            agent.isStopped = true;
-            agent.ResetPath();
-            if (animator != null)
-                animator.SetFloat("Move", agent.velocity.magnitude);
-
-            ApplySeparation();
-            FaceTarget();
-            Attack();
-        }
-
-        if (target != null)
-        {
-            if (!target || target.GetComponent<BattleUnit>() == null)
+            if (isAirUnit && airUnit != null)
             {
-                target = null;
+                airUnit.FlyTowards(target.transform.position);
+                if (animator != null) animator.SetFloat("Move", moveSpeed);
+                Attack();
+            }
+            else if (!isAirUnit)
+            {
                 agent.isStopped = true;
-                return;
+                agent.ResetPath();
+                if (animator != null)
+                    animator.SetFloat("Move", agent.velocity.magnitude);
+                ApplySeparation();
+                FaceTarget();
+                Attack();
             }
         }
 
-        //update tile ownership
-        UpdateTileOwnership();
+        if (!isAirUnit) UpdateTileOwnership();
     }
+
 
     #region Tile Ownership
     // --- Tile ownership ---
@@ -204,43 +219,27 @@ public class BattleUnit : MonoBehaviour
         foreach (Collider hit in hits)
         {
             BattleUnit unit = hit.GetComponent<BattleUnit>();
-            if (unit == null || unit == this)
-                continue;
+            if (unit == null || unit == this) continue;
 
-            // Ignore same side
-            if (unit.GetComponent<SideScenario>().side == mySide)
-                continue;
+            if (unit.GetComponent<SideScenario>().side == mySide) continue;
 
-            //  ADD — air / ground filtering (SAFE, OPTIONAL)
-            if (unit.isAirUnit && !canAttackAir)
-                continue;
+            // Can't target air units during takeoff
+            if (unit.isAirUnit)
+            {
+                AirUnit targetAir = unit.GetComponent<AirUnit>();
+                if (targetAir != null && !targetAir.CanBeTargeted()) continue;
+                if (!canAttackAir) continue;
+            }
 
-            if (!unit.isAirUnit && !canAttackGround)
-                continue;
+            if (!unit.isAirUnit && !canAttackGround) continue;
 
             Vector3 dir = unit.transform.position - transform.position;
             float distance = dir.magnitude;
             float angle = Vector3.Angle(forward, dir);
 
-            float score;
+            float score = angle <= narrowViewAngle ? distance : 
+                         angle <= wideViewAngle ? distance + 5f : distance + 15f;
 
-            // 1️⃣ Straight ahead → highest priority
-            if (angle <= narrowViewAngle)
-            {
-                score = distance;
-            }
-            // 2️⃣ Front arc
-            else if (angle <= wideViewAngle)
-            {
-                score = distance + 5f;
-            }
-            // 3️⃣ Fallback: anywhere
-            else
-            {
-                score = distance + 15f;
-            }
-
-            // Pick best candidate
             if (score < bestScore)
             {
                 bestScore = score;
@@ -248,13 +247,15 @@ public class BattleUnit : MonoBehaviour
             }
         }
 
-        // Assign target exactly like before
         if (bestTarget != null)
         {
             target = bestTarget.gameObject;
             attackTimer = 0f;
-            agent.ResetPath();
-            agent.isStopped = false;
+            if (!isAirUnit)
+            {
+                agent.ResetPath();
+                agent.isStopped = false;
+            }
         }
     }
 
@@ -277,23 +278,19 @@ public class BattleUnit : MonoBehaviour
     void ApplySeparation()
     {
         Collider[] hits = Physics.OverlapSphere(transform.position, separationRadius);
-
         Vector3 separation = Vector3.zero;
         int count = 0;
 
         foreach (Collider hit in hits)
         {
             BattleUnit unit = hit.GetComponent<BattleUnit>();
-
             if (unit != null && unit != this)
             {
-                // only separate from same side
-                if (unit.GetComponent<SideScenario>().side ==
-                    GetComponent<SideScenario>().side)
+                if (unit.GetComponent<SideScenario>().side == GetComponent<SideScenario>().side
+                    && unit.isAirUnit == isAirUnit)
                 {
                     Vector3 dir = transform.position - unit.transform.position;
                     float dist = dir.magnitude;
-
                     if (dist > 0.01f)
                     {
                         separation += dir.normalized / dist;
@@ -306,26 +303,53 @@ public class BattleUnit : MonoBehaviour
         if (count > 0)
         {
             Vector3 move = separation.normalized * separationStrength;
-            agent.Move(move * Time.deltaTime);
-            if (animator != null)
-                animator.SetFloat("Move", agent.velocity.magnitude);
+            if (isAirUnit && airUnit != null)
+            {
+                airUnit.ApplySeparation(move);
+            }
+            else if (!isAirUnit)
+            {
+                agent.Move(move * Time.deltaTime);
+                if (animator != null)
+                    animator.SetFloat("Move", agent.velocity.magnitude);
+            }
         }
     }
 
     void Attack()
     {
-        attackTimer += Time.deltaTime;
+        if (isAirUnit && airUnit != null)
+        {
+            if (!airUnit.CanAttack()) return;
+            
+            if (airUnit.ShouldFireBurst(target))
+            {
+                if (target != null)
+                {
+                    BattleUnit enemy = target.GetComponent<BattleUnit>();
+                    if (enemy != null)
+                    {
+                        projectileShooter.Fire(enemy);
+                        if (animator != null)
+                        {
+                            animator.SetBool("Fire", true);
+                            StartCoroutine(ResetFire());
+                        }
+                    }
+                }
+            }
+            return;
+        }
 
+        attackTimer += Time.deltaTime;
         if (attackTimer >= attackCooldown)
         {
             attackTimer = 0f;
-
             if (target != null)
             {
                 BattleUnit enemy = target.GetComponent<BattleUnit>();
                 if (enemy != null)
                 {
-                    //enemy.TakeDamage(attackDamage);
                     projectileShooter.Fire(enemy);
                     if (animator != null)
                     {
@@ -344,12 +368,14 @@ public class BattleUnit : MonoBehaviour
             animator.SetBool("Fire", false);
     }
 
-    // here units get damage from enemies
     public void TakeDamage(float damage)
     {
+        // Air units invulnerable during takeoff
+        if (isAirUnit && airUnit != null && !airUnit.CanBeTargeted())
+            return;
+
         unitStats.currentHealth -= damage;
-        unitStats.currentHealth =
-            Mathf.Clamp(unitStats.currentHealth, 0, unitStats.maxHealth);
+        unitStats.currentHealth = Mathf.Clamp(unitStats.currentHealth, 0, unitStats.maxHealth);
 
         if (healthBarFade != null)
         {
@@ -358,12 +384,9 @@ public class BattleUnit : MonoBehaviour
         }
 
         if (unitStats.currentHealth <= 0)
-        {
             Die();
-        }
     }
 
-    //Destroy enemy
     public void Die()
     {
         Destroy(gameObject);
