@@ -690,7 +690,12 @@ MonoBehaviour:
   currentHealth: 0
   Level: 0
   armour: 0
+  hitCollider: {fileID: 0}
   healthBarFade: {fileID: 4820686349321759560}
+  healthBar: {fileID: 0}
+  isAirUnit: 1
+  canAttackAir: 1
+  canAttackGround: 1
   unitBuildTime: 0
   unitAttackDamage: 0
   unitFireRate: 0
@@ -753,12 +758,19 @@ MonoBehaviour:
   narrowViewAngle: 15
   wideViewAngle: 180
   isAirUnit: 1
-  canAttackAir: 1
-  canAttackGround: 1
   unitStats: {fileID: 4022108238406871403}
   agent: {fileID: 4773561428658858200}
   animator: {fileID: 0}
   target: {fileID: 0}
+  primaryTarget: {fileID: 0}
+  secondaryTarget: {fileID: 0}
+  distanceWeight: 500
+  lowHealthBonus: 40
+  narrowAngleBonus: 30
+  wideAngleBonus: 20
+  peripheralAngleBonus: 10
+  unitWeight: 10
+  buildingWeight: 0
 --- !u!114 &3178270743560080631
 MonoBehaviour:
   m_ObjectHideFlags: 0

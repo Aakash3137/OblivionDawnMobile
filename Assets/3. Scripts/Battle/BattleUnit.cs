@@ -35,8 +35,6 @@ public class BattleUnit : MonoBehaviour
 
     [Header("Unit Type")]
     public bool isAirUnit;
-    public bool canAttackAir = false;
-    public bool canAttackGround = true;
 
     public Stats unitStats;
     private AirUnit airUnit;
@@ -128,9 +126,6 @@ public class BattleUnit : MonoBehaviour
 
         if (distance > AttackRange)
         {
-            agent.isStopped = false;
-            if (!agent.hasPath || agent.remainingDistance > AttackRange)
-                agent.SetDestination(target.transform.position);
             if (isAirUnit)
             {
                 airUnit.FlyTowards(target.transform.position);
@@ -148,9 +143,6 @@ public class BattleUnit : MonoBehaviour
         }
         else
         {
-
-        if (animator != null)
-            animator.SetFloat("Move", agent.velocity.magnitude);
             if (isAirUnit && airUnit != null)
             {
                 airUnit.FlyTowards(target.transform.position);
@@ -227,6 +219,7 @@ public class BattleUnit : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, -135, 0);
         }
     }
+    
 
     void FindTarget()
     {
@@ -266,8 +259,16 @@ public class BattleUnit : MonoBehaviour
             // if (unit.isAirUnit && !canAttackAir)
             //     continue;
 
-            // if (!unit.isAirUnit && !canAttackGround)
-            //     continue;
+            // Can't target air units during takeoff
+            if (unit.isAirUnit)
+            {
+                AirUnit targetAir = unit.GetComponent<AirUnit>();
+                if (targetAir != null && !targetAir.CanBeTargeted()) continue;
+                if (!unitStats.canAttackAir) continue;
+            }
+            
+            if (!unit.isAirUnit && !unitStats.canAttackGround)
+                continue;
 
             score = CalculateScore(unit, score);
 
@@ -285,9 +286,13 @@ public class BattleUnit : MonoBehaviour
             // only assign if switching
             target = bestTarget.gameObject;
             attackTimer = 0f;
-            agent.ResetPath();
-            agent.isStopped = false;
-
+            
+            if (!isAirUnit)
+            {
+                agent.ResetPath();
+                agent.isStopped = false;
+            }
+            
             if (bestTarget is UnitStats)
                 primaryTarget = target;
             else

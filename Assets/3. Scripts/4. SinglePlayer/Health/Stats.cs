@@ -13,6 +13,10 @@ public class Stats : MonoBehaviour
     public FadeHealthBar healthBarFade;
     public HealthProgress healthBar; // assign in Inspector
 
+    [Header("Unit Type")]
+    public bool isAirUnit;
+    public bool canAttackAir = false;
+    public bool canAttackGround = true;
     internal virtual void Start()
     {
         healthBar = GetComponentInChildren<HealthProgress>();
