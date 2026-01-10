@@ -16,6 +16,7 @@ public class Stats : MonoBehaviour
     internal virtual void Start()
     {
         healthBar = GetComponentInChildren<HealthProgress>();
+        healthBarFade = GetComponentInChildren<FadeHealthBar>();
         hitCollider = GetComponent<Collider>();
 
         if (healthBar != null)

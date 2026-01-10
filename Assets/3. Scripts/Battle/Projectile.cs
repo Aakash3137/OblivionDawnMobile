@@ -298,7 +298,7 @@ public class Projectile : MonoBehaviour
             Collider[] hits = Physics.OverlapSphere(hitPoint, definition.damageRadius);
             foreach (Collider hit in hits)
             {
-                BattleUnit unit = hit.GetComponent<BattleUnit>();
+                Stats unit = hit.GetComponent<Stats>();
                 if (unit != null)
                     unit.TakeDamage(damage);
             }
