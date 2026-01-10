@@ -27,18 +27,13 @@ public class AirUnit : MonoBehaviour
     public bool invulnerableDuringTakeoff = true;
 
     private AirState airState = AirState.Ascending;
-    private BattleUnit battleUnit;
     private int shotsFired = 0;
     private float burstTimer = 0f;
     private Vector3 evadeCenter;
     private float evadeAngle = 0f;
     private int evadeDirection = 1;
-
-    void Start()
-    {
-        battleUnit = GetComponent<BattleUnit>();
-    }
-
+    private float idleAngle = 0f;
+    
     void Update()
     {
         if (airState == AirState.Ascending)
@@ -80,6 +75,45 @@ public class AirUnit : MonoBehaviour
     }
 
     /* ===================== NORMAL FLIGHT ===================== */
+
+    public void IdleCircle()
+    {
+        if (airState == AirState.Ascending || airState == AirState.Evading)
+            return;
+
+        idleAngle += 45f * Time.deltaTime;
+
+        float rad = idleAngle * Mathf.Deg2Rad;
+        float circleRadius = 20f;
+
+        Vector3 center = transform.position;
+        float x = Mathf.Cos(rad) * circleRadius;
+        float z = Mathf.Sin(rad) * circleRadius;
+
+        Vector3 targetPos = center + new Vector3(x, 0, z);
+        targetPos.y = flyHeight;
+
+        Vector3 dir = (targetPos - transform.position).normalized;
+        if (dir == Vector3.zero) return;
+
+        Vector3 flatForward = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
+        Vector3 flatDir = Vector3.ProjectOnPlane(dir, Vector3.up).normalized;
+
+        if (flatDir == Vector3.zero) return;
+
+        float signedAngle = Vector3.SignedAngle(flatForward, flatDir, Vector3.up);
+        float bank = Mathf.Clamp(signedAngle * 0.5f, -bankAngle, bankAngle);
+
+        Quaternion yawRotation = Quaternion.LookRotation(flatDir);
+        Quaternion bankRotation = Quaternion.AngleAxis(-bank, Vector3.forward);
+        Quaternion finalRotation = yawRotation * bankRotation;
+
+        transform.rotation = Quaternion.Slerp(transform.rotation, finalRotation, turnSpeed * Time.deltaTime);
+
+        Vector3 pos = transform.position + transform.forward * moveSpeed * Time.deltaTime;
+        pos.y = flyHeight;
+        transform.position = pos;
+    }
 
     public void FlyTowards(Vector3 targetPosition)
     {

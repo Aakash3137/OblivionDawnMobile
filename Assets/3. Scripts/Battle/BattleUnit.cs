@@ -91,10 +91,12 @@ public class BattleUnit : MonoBehaviour
 
     private void Update()
     {
+        //no navmesh agent need for air units
         if (target != null)
         {
             if (!isAirUnit) agent.isStopped = true;
         }
+        
         // air units dont find targets until airborne
         if (isAirUnit && airUnit != null && !airUnit.IsAirborne())
         {
@@ -102,6 +104,8 @@ public class BattleUnit : MonoBehaviour
                 animator.SetFloat("Move", moveSpeed);
             return;
         }
+        
+        // find target
         if (target == null)
         {
             targetCheckTimer += Time.deltaTime;
@@ -111,8 +115,15 @@ public class BattleUnit : MonoBehaviour
                 targetCheckTimer = 0f;
             }
 
-            if(!isAirUnit) agent.isStopped = true;
-            if (animator != null) animator.SetFloat("Move", 0f);
+            if (isAirUnit && airUnit != null)
+            {
+                airUnit.IdleCircle();
+                if (animator != null) animator.SetFloat("Move", moveSpeed);
+            }
+            else
+            {
+                if (animator != null) animator.SetFloat("Move", 0f);
+            }
             return;
         }
 

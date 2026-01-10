@@ -11,7 +11,7 @@ public class Projectile : MonoBehaviour
     private float timer;
 
     private ProjectileType projectileType;
-    private ProjectileMotion motion; // ✅ FIX 1: ADD THIS
+    private ProjectileMotion motion; //  FIX 1: ADD THIS
     private ProjectileDefinition definition;
 
     private bool hasHit; // prevent double hit
@@ -51,7 +51,7 @@ public class Projectile : MonoBehaviour
         speed = def.speed;
         lifeTime = def.lifeTime;
         projectileType = def.projectileType;
-        motion = def.motion; // ✅ FIX 2: ASSIGN MOTION
+        motion = def.motion; //  FIX 2: ASSIGN MOTION
         definition = def;
 
         timer = 0f;
@@ -94,7 +94,7 @@ public class Projectile : MonoBehaviour
 
         Vector3 hitPoint = targetCollider.ClosestPoint(transform.position);
 
-        switch (motion) // ✅ NOW VALID
+        switch (motion) //  NOW VALID
         {
             case ProjectileMotion.Straight:
                 MoveStraight(hitPoint);
@@ -172,7 +172,7 @@ public class Projectile : MonoBehaviour
             // Ignore target collider
             if (hit.collider != targetCollider)
             {
-                // ✅ YOU ASKED FOR THIS
+                //  YOU ASKED FOR THIS
                 Debug.Log("MISSILE RAY HIT: " + hit.collider.name);
 
                 // Determine side step direction
