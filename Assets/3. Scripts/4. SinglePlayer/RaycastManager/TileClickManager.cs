@@ -14,29 +14,52 @@ public class TileClickManager : MonoBehaviour
             Debug.LogError("MainCamera not found! Make sure your camera has the 'MainCamera' tag.");
     }
 
-    void Update()
+    private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Application.isMobilePlatform)
         {
-            if (EventSystem.current.IsPointerOverGameObject()) return;
-
-            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-
-            if (Physics.Raycast(ray, out RaycastHit hit, 1000f, tileLayerMask))
+            if (Input.touchCount == 1)
             {
-                Tile tile = hit.collider.GetComponentInParent<Tile>();
-
-                if (tile == null)
+                Touch touch = Input.GetTouch(0);
+                if (touch.phase == TouchPhase.Ended)
                 {
-                    buildPanel.CloseBuildPanel();
-                    return;
+                    HandleBuildPanel();
                 }
-
-                if (tile.isOpen && tile.ownerSide == Side.Player)
-                    buildPanel.OpenBuildPanel(tile);
-                else
-                    buildPanel.CloseBuildPanel();
             }
+        }
+        // EDITOR / DESKTOP (mouse)
+        else
+        {
+            if (Input.GetMouseButtonUp(0))
+            {
+                HandleBuildPanel();
+            }
+        }
+    }
+    void HandleBuildPanel()
+    {
+        if (EventSystem.current.IsPointerOverGameObject()) return;
+
+        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(ray, out RaycastHit hit, 1000f, tileLayerMask))
+        {
+            Tile tile = hit.collider.GetComponentInParent<Tile>();
+
+            if (tile == null)
+            {
+                buildPanel.CloseBuildPanel();
+                return;
+            }
+
+            if (tile.isOpen && tile.ownerSide == Side.Player)
+                buildPanel.OpenBuildPanel(tile);
+            else
+                buildPanel.CloseBuildPanel();
+        }
+        else
+        {
+            buildPanel.CloseBuildPanel();
         }
     }
 }

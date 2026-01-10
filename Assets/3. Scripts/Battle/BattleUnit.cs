@@ -38,23 +38,41 @@ public class BattleUnit : MonoBehaviour
     public bool canAttackAir = false;
     public bool canAttackGround = true;
 
+    public Stats unitStats;
     private AirUnit airUnit;
-    
-    public UnitStats unitStats;
 
     public NavMeshAgent agent;
     public Animator animator;
     public GameObject target;
+    public GameObject primaryTarget;
+    public GameObject secondaryTarget;
 
+    [Header("Target priority settings high score = target priority")]
+    public float distanceWeight = 500f;
+    public float lowHealthBonus = 40f;
+    public float narrowAngleBonus = 30f;
+    public float wideAngleBonus = 20f;
+    public float peripheralAngleBonus = 10f;
+    public float unitWeight = 10f;
+    public float buildingWeight = 0f;
+    Vector3 forward;
+    
     SideScenario unitSide;
     Vector2Int currentCoord;
-    private float targetCheckTimer;
+    private float targetCheckTimer = 0f;
     private const float targetCheckInterval = 0.5f;
+    public const float checkRadiusOffset = 0.5f;
 
     private void Start()
     {
         unitStats = GetComponent<UnitStats>();
         unitSide = GetComponent<SideScenario>();
+        forward = transform.forward;
+        agent.isStopped = true;
+
+        if (animator != null)
+            animator.SetFloat("Move", 0f);
+
         unitStats.currentHealth = unitStats.maxHealth;
 
         if (isAirUnit)
@@ -75,29 +93,27 @@ public class BattleUnit : MonoBehaviour
 
     private void Update()
     {
-        if (target != null && (!target || target.GetComponent<BattleUnit>() == null))
+        if (target != null)
         {
-            target = null;
             if (!isAirUnit) agent.isStopped = true;
         }
-
-        // Air units: don't find targets until airborne
+        // air units dont find targets until airborne
         if (isAirUnit && airUnit != null && !airUnit.IsAirborne())
         {
-            if (animator != null) animator.SetFloat("Move", moveSpeed);
+            if (animator != null)
+                animator.SetFloat("Move", moveSpeed);
             return;
         }
-
         if (target == null)
         {
             targetCheckTimer += Time.deltaTime;
             if (targetCheckTimer >= targetCheckInterval)
             {
-                targetCheckTimer = 0f;
                 FindTarget();
+                targetCheckTimer = 0f;
             }
 
-            if (!isAirUnit) agent.isStopped = true;
+            if(!isAirUnit) agent.isStopped = true;
             if (animator != null) animator.SetFloat("Move", 0f);
             return;
         }
@@ -112,6 +128,9 @@ public class BattleUnit : MonoBehaviour
 
         if (distance > AttackRange)
         {
+            agent.isStopped = false;
+            if (!agent.hasPath || agent.remainingDistance > AttackRange)
+                agent.SetDestination(target.transform.position);
             if (isAirUnit)
             {
                 airUnit.FlyTowards(target.transform.position);
@@ -129,6 +148,9 @@ public class BattleUnit : MonoBehaviour
         }
         else
         {
+
+        if (animator != null)
+            animator.SetFloat("Move", agent.velocity.magnitude);
             if (isAirUnit && airUnit != null)
             {
                 airUnit.FlyTowards(target.transform.position);
@@ -149,7 +171,7 @@ public class BattleUnit : MonoBehaviour
 
         if (!isAirUnit) UpdateTileOwnership();
     }
-
+    
 
     #region Tile Ownership
     // --- Tile ownership ---
@@ -208,55 +230,122 @@ public class BattleUnit : MonoBehaviour
 
     void FindTarget()
     {
+        primaryTarget = null;
+        secondaryTarget = null;
+
         Collider[] hits = Physics.OverlapSphere(transform.position, DetectionRange);
 
-        BattleUnit bestTarget = null;
-        float bestScore = float.MaxValue;
-
-        Vector3 forward = transform.forward;
+        Stats bestTarget = null;
+        float bestScore = 0f;
         Side mySide = GetComponent<SideScenario>().side;
 
         foreach (Collider hit in hits)
         {
-            BattleUnit unit = hit.GetComponent<BattleUnit>();
-            if (unit == null || unit == this) continue;
+            Stats unit;
+            float score = 0f;
 
-            if (unit.GetComponent<SideScenario>().side == mySide) continue;
-
-            // Can't target air units during takeoff
-            if (unit.isAirUnit)
+            if (hit.TryGetComponent<UnitStats>(out var unitStat))
             {
-                AirUnit targetAir = unit.GetComponent<AirUnit>();
-                if (targetAir != null && !targetAir.CanBeTargeted()) continue;
-                if (!canAttackAir) continue;
+                unit = unitStat;
+                score = unitWeight;
+            }
+            else if (hit.TryGetComponent<BuildingStats>(out var buildingStats))
+            {
+                unit = buildingStats;
+                score = buildingWeight;
+            }
+            else
+            {
+                continue;
             }
 
-            if (!unit.isAirUnit && !canAttackGround) continue;
+            // Ignore self & same side
+            if (unit == this || unit.GetComponent<SideScenario>().side == mySide)
+                continue;
 
-            Vector3 dir = unit.transform.position - transform.position;
-            float distance = dir.magnitude;
-            float angle = Vector3.Angle(forward, dir);
+            // if (unit.isAirUnit && !canAttackAir)
+            //     continue;
 
-            float score = angle <= narrowViewAngle ? distance : 
-                         angle <= wideViewAngle ? distance + 5f : distance + 15f;
+            // if (!unit.isAirUnit && !canAttackGround)
+            //     continue;
 
-            if (score < bestScore)
+            score = CalculateScore(unit, score);
+
+            // Is this a better candidate?
+            if (score > bestScore && (target == null || ShouldSwitchTarget(target?.GetComponent<Stats>(), unit)))
             {
                 bestScore = score;
                 bestTarget = unit;
             }
         }
 
-        if (bestTarget != null)
+        // Assign target
+        if (bestTarget != null && (target == null || bestTarget != target.GetComponent<Stats>()))
         {
+            // only assign if switching
             target = bestTarget.gameObject;
             attackTimer = 0f;
-            if (!isAirUnit)
+            agent.ResetPath();
+            agent.isStopped = false;
+
+            if (bestTarget is UnitStats)
+                primaryTarget = target;
+            else
+                secondaryTarget = target;
+        }
+    }
+
+    private float CalculateScore(Stats unit, float score)
+    {
+        // Distance score
+        float distance = Vector3.Distance(transform.position, unit.transform.position);
+        score += distanceWeight / Mathf.Max(distance, 0.1f);
+
+        // Low health bonus
+        float healthPercent = unit.currentHealth / unit.maxHealth;
+        if (healthPercent <= 0.3f) score += lowHealthBonus;
+
+        // View angle
+        float angle = Vector3.Angle(forward, unit.transform.position - transform.position);
+
+        if (angle <= narrowViewAngle)
+            score += narrowAngleBonus;
+        else if (angle <= wideViewAngle)
+            score += wideAngleBonus;
+        else
+            score += peripheralAngleBonus;
+        return score;
+    }
+
+    bool ShouldSwitchTarget(Stats current, Stats candidate)
+    {
+        // no target, always switch
+        if (current == null)
+            return true;
+
+        // never switch from unit to building
+        if (current is UnitStats && candidate is BuildingStats)
+            return false;
+
+        if (current is BuildingStats)
+        {
+            if (candidate == null)
+                return false;
+
+            // check if building is low health
+            float buildingHealthPercent = current.currentHealth / current.maxHealth;
+            if (buildingHealthPercent < 0.3f)
+                return false; // stick with low-health building
+
+            // if candidate is unit, switch
+            if (candidate is UnitStats)
             {
-                agent.ResetPath();
-                agent.isStopped = false;
+                float dist = Vector3.Distance(transform.position, candidate.transform.position);
+                return dist <= AttackRange + checkRadiusOffset;
             }
         }
+
+        return false; // default: do not switch 
     }
 
     void FaceTarget()
@@ -278,12 +367,14 @@ public class BattleUnit : MonoBehaviour
     void ApplySeparation()
     {
         Collider[] hits = Physics.OverlapSphere(transform.position, separationRadius);
+
         Vector3 separation = Vector3.zero;
         int count = 0;
 
         foreach (Collider hit in hits)
         {
             BattleUnit unit = hit.GetComponent<BattleUnit>();
+
             if (unit != null && unit != this)
             {
                 if (unit.GetComponent<SideScenario>().side == GetComponent<SideScenario>().side
@@ -291,6 +382,7 @@ public class BattleUnit : MonoBehaviour
                 {
                     Vector3 dir = transform.position - unit.transform.position;
                     float dist = dir.magnitude;
+
                     if (dist > 0.01f)
                     {
                         separation += dir.normalized / dist;
@@ -326,7 +418,7 @@ public class BattleUnit : MonoBehaviour
             {
                 if (target != null)
                 {
-                    BattleUnit enemy = target.GetComponent<BattleUnit>();
+                    Stats enemy = target.GetComponent<Stats>();
                     if (enemy != null)
                     {
                         projectileShooter.Fire(enemy);
@@ -342,12 +434,14 @@ public class BattleUnit : MonoBehaviour
         }
 
         attackTimer += Time.deltaTime;
+
         if (attackTimer >= attackCooldown)
         {
             attackTimer = 0f;
+
             if (target != null)
             {
-                BattleUnit enemy = target.GetComponent<BattleUnit>();
+                Stats enemy = target.GetComponent<Stats>();
                 if (enemy != null)
                 {
                     projectileShooter.Fire(enemy);
@@ -368,6 +462,7 @@ public class BattleUnit : MonoBehaviour
             animator.SetBool("Fire", false);
     }
 
+    // here units get damage from enemies
     public void TakeDamage(float damage)
     {
         // Air units invulnerable during takeoff
@@ -375,7 +470,8 @@ public class BattleUnit : MonoBehaviour
             return;
 
         unitStats.currentHealth -= damage;
-        unitStats.currentHealth = Mathf.Clamp(unitStats.currentHealth, 0, unitStats.maxHealth);
+        unitStats.currentHealth =
+            Mathf.Clamp(unitStats.currentHealth, 0, unitStats.maxHealth);
 
         if (healthBarFade != null)
         {
@@ -384,9 +480,12 @@ public class BattleUnit : MonoBehaviour
         }
 
         if (unitStats.currentHealth <= 0)
+        {
             Die();
+        }
     }
 
+    //Destroy enemy
     public void Die()
     {
         Destroy(gameObject);

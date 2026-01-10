@@ -75,10 +75,9 @@ public class TileUIPanel : MonoBehaviour
     {
         Vector3 _currentTileCords = currentTile.transform.position;
         var cgmInstance = CubeGridManager.Instance;
+        Vector2Int currentGrid = cgmInstance.WorldToGrid(_currentTileCords);
 
-        List<Vector2Int> adjacentTileCords = cgmInstance.GetCardinalNeighbors(
-            new Vector2Int((int)(_currentTileCords.x / cgmInstance.cellSize),
-                           (int)(_currentTileCords.z / cgmInstance.cellSize)));
+        List<Vector2Int> adjacentTileCords = cgmInstance.GetCardinalNeighbors(currentGrid);
 
         Tile[] adjacentTiles = new Tile[4]; // 0 : Right, 1 : Left, 2 : Up, 3 : Down;
 
@@ -139,7 +138,8 @@ public class TileUIPanel : MonoBehaviour
         Transform mainBuildingTile = MainBuildingSpawner.Instance.playerSpawnPoint;
         Instantiate(_wallPrefab,
             new Vector3(mainBuildingTile.position.x, _wallYOffset, mainBuildingTile.position.z),
-            Quaternion.identity, mainBuildingTile);
+            Quaternion.identity,
+            mainBuildingTile);
 
         _mainWallPlaced = true;
     }

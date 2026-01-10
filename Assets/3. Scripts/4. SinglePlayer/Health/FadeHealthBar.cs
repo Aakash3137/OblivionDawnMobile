@@ -54,11 +54,11 @@ public class FadeHealthBar : MonoBehaviour
         }
         Isvisible = true;
 
-       
+
         // Wait 5 seconds AFTER LAST HIT
         yield return new WaitForSeconds(visibleTime);
 
-        
+
         /*// 🔑 Check again before fading out
         if (Isvisible)
         {
@@ -66,7 +66,7 @@ public class FadeHealthBar : MonoBehaviour
             fadeRoutine = null;
             yield break;
         }*/
-        
+
 
         // Fade out
         time = 0f;

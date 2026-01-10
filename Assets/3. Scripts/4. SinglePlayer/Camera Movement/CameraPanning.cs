@@ -11,7 +11,7 @@ public class CameraPanning : MonoBehaviour
     public float mouseZoomSpeed = 0.1f;
     public float touchZoomSpeed = 0.01f;
     public float minZoomIn = 5f;
-    public float maxZoomOut = 12.5f;
+    public float maxZoomOut = 18f;
     private float defaultZoom;
 
     [Header("Clamp Bounds")]
@@ -158,8 +158,8 @@ public class CameraPanning : MonoBehaviour
         transform.position += delta;
         // Apply fixed bounds
         transform.position = new Vector3(
-                Mathf.Clamp(transform.position.x, cameraMinBounds.x, cameraMaxBounds.x), 
-                Mathf.Clamp(transform.position.y, cameraMinBounds.y, cameraMaxBounds.y), 
+                Mathf.Clamp(transform.position.x, cameraMinBounds.x, cameraMaxBounds.x),
+                Mathf.Clamp(transform.position.y, cameraMinBounds.y, cameraMaxBounds.y),
                 Mathf.Clamp(transform.position.z, cameraMinBounds.z, cameraMaxBounds.z));
     }
 

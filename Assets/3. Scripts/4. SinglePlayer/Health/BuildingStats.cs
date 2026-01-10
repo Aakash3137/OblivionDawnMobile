@@ -5,8 +5,10 @@ public class BuildingStats : Stats
     public BuildingUpgradeDataSO buildingStats;
     BuildingUpgradeCost[] upgradeCosts;
 
-    private void Start()
+    internal override void Start()
     {
+        base.Start();
+
         if (buildingStats == null)
             Debug.Log($"<color=red>Building {name} missing BuildingStats. Assign the script.</color>");
 
@@ -14,7 +16,7 @@ public class BuildingStats : Stats
         maxHealth = buildingStats.buildingLevelData[Level].buildingHealth;
         armour = buildingStats.buildingLevelData[Level].buildingArmour;
         currentHealth = maxHealth;
-        upgradeCosts = buildingStats.buildingLevelData[Level].buildingUpgradeCosts;        
+        upgradeCosts = buildingStats.buildingLevelData[Level].buildingUpgradeCosts;
     }
     public void UpgradeBuilding()
     {
@@ -32,5 +34,11 @@ public class BuildingStats : Stats
     public bool canUpgrade()
     {
         return PlayerResourceManager.Instance.HasResources(upgradeCosts);
+    }
+    void OnDestroy()
+    {
+        Tile currentTile = GetComponent<Tile>();
+        if (currentTile != null)
+            currentTile.hasBuilding = false;
     }
 }

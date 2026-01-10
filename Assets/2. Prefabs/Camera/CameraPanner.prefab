@@ -66,7 +66,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.01
+  near clip plane: -5
   far clip plane: 1000
   field of view: 60
   orthographic: 1
@@ -220,10 +220,10 @@ MonoBehaviour:
   mouseZoomSpeed: 0.1
   touchZoomSpeed: 0.01
   minZoomIn: 5
-  maxZoomOut: 12.5
+  maxZoomOut: 18
   cameraMinBounds: {x: -5, y: 10, z: -5}
   cameraMaxBounds: {x: 25, y: 10, z: 25}
-  maxIdleDuration: 3
+  maxIdleDuration: 6
   smoothingSpeed: 5
 --- !u!1 &7101433107695260180
 GameObject:
@@ -283,7 +283,7 @@ MonoBehaviour:
   Lens:
     FieldOfView: 60
     OrthographicSize: 11
-    NearClipPlane: 0.01
+    NearClipPlane: -5
     FarClipPlane: 1000
     Dutch: 0
     ModeOverride: 0

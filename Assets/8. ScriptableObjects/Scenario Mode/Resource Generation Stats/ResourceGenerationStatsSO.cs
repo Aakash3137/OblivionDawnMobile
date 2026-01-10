@@ -12,7 +12,8 @@ public class ResourceGenerationStatsSO : ScriptableObject
         if (resourceGenerationData == null) return;
         for (int i = 0; i < resourceGenerationData.Length; i++)
         {
-            resourceGenerationData[i].resourceGenerationRate = resourceGenerationData[i].resourceAmountPerBatch / resourceGenerationData[i].resourceTimeToProduce;
+            //resourceGenerationData[i].resourceGenerationRate = resourceGenerationData[i].resourceAmountPerBatch / resourceGenerationData[i].resourceTimeToProduce;
+            resourceGenerationData[i].resourceGenerationRate = resourceGenerationData[i].resourceAmountPerBatch;
             resourceGenerationData[i].level = i;
         }
     }
