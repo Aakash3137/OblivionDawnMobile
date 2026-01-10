@@ -3,20 +3,22 @@ using UnityEngine;
 public class Stats : MonoBehaviour
 {
     [Header(" EDITOR VIEW ONLY ")]
+    public int level;
+    public BasicStats basicStats;
+    public Visuals visuals;
     public float maxHealth;
     public float currentHealth;
-    public int Level;
-    public float armour;
     public Collider hitCollider;
 
-    [Header("Assign in Inspector")]
-    public FadeHealthBar healthBarFade;
-    public HealthProgress healthBar; // assign in Inspector
+    [Header("Fade Health Bar is OLD UI in world space. Health Progress is NEW UI on world Canvas")]
+    private FadeHealthBar healthBarFade;
+    private HealthProgress healthBar;
 
     [Header("Unit Type")]
     public bool isAirUnit;
     public bool canAttackAir = false;
     public bool canAttackGround = true;
+
     internal virtual void Start()
     {
         healthBar = GetComponentInChildren<HealthProgress>();

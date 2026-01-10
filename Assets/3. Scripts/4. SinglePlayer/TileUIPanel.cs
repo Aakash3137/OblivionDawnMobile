@@ -59,7 +59,7 @@ public class TileUIPanel : MonoBehaviour
 
     private bool CanPlaceBuilding(AllFactionsData.BuildingSlot slot)
     {
-        BuildingUpgradeCost[] buildingUpgradeData = slot.prefab.GetComponent<BuildingStats>().buildingStats.buildingLevelData[0].buildingUpgradeCosts;
+        UpgradeCost[] buildingUpgradeData = slot.prefab.GetComponent<BuildingStats>().buildingStats.buildingLevelData[0].buildingUpgradeCosts;
         if (buildingUpgradeData == null || !PlayerResourceManager.Instance.HasResources(buildingUpgradeData, true))
         {
             Debug.Log("<color=red>Insufficient Resources Building cannot be placed/upgraded</color>");

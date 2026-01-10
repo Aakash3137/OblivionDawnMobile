@@ -16,36 +16,43 @@ MonoBehaviour:
   unitType: 1
   unitPrefab: {fileID: 1690844357168965693, guid: 0edf8653de4ec7942affb4b7eeceae7a, type: 3}
   unitFactionName: 0
+  isAirUnit: 0
+  unitPopulationCost: 0
+  unitSpawnLevel: 0
   unitLevelData:
-  - level: 0
-    unitHealth: 100
-    unitArmour: 0
-    unitFireRate: 0.2
-    unitAttackDamage: 30
-    unitMoveSpeed: 0
-    unitAttackRange: 5
-    unitBuildTime: 5
-  - level: 1
-    unitHealth: 150
-    unitArmour: 0
-    unitFireRate: 0.18
-    unitAttackDamage: 35
-    unitMoveSpeed: 0
-    unitAttackRange: 6
-    unitBuildTime: 5
-  - level: 2
-    unitHealth: 200
-    unitArmour: 0
-    unitFireRate: 0.15
-    unitAttackDamage: 40
-    unitMoveSpeed: 0
-    unitAttackRange: 7
-    unitBuildTime: 5
-  - level: 3
-    unitHealth: 300
-    unitArmour: 0
-    unitFireRate: 0.1
-    unitAttackDamage: 45
-    unitMoveSpeed: 0
-    unitAttackRange: 8
-    unitBuildTime: 5
+  - unitLevel: 0
+    unitBuildTime: 10
+    unitVisuals:
+      upgradeMesh: {fileID: 0}
+      playerUnitMaterial: {fileID: 0}
+      enemyUnitMaterial: {fileID: 0}
+    unitBasicStats:
+      maxHealth: 200
+      armour: 0
+    unitMobilityStats:
+      moveSpeed: 0
+    unitRangeStats:
+      DetectionRange: 0
+      AttackRange: 0
+    unitVisionAngles:
+      narrowViewAngle: 0
+      wideViewAngle: 0
+    unitAttackTargets:
+      canAttackAir: 0
+      canAttackGround: 0
+    unitFlyStats:
+      flyHeight: 0
+      climbAngle: 0
+      turnSpeed: 0
+      bankAngle: 0
+      evadeRadius: 0
+      attackAngleTolerance: 0
+    unitUpgradeCosts:
+    - resourceType: 0
+      resourceCost: 0
+    - resourceType: 1
+      resourceCost: 0
+    - resourceType: 2
+      resourceCost: 10
+    - resourceType: 3
+      resourceCost: 10

@@ -17,7 +17,7 @@ public class CostPanelManager : MonoBehaviour
 
     private bool isVisible = false;
 
-    public void Show(BuildingUpgradeCost[] costs)
+    public void Show(UpgradeCost[] costs)
     {
         if (isVisible) return;
 
@@ -38,7 +38,7 @@ public class CostPanelManager : MonoBehaviour
         isVisible = false;
     }
 
-    private static void SetCostValue(BuildingUpgradeCost cost, TMP_Text text, GameObject root)
+    private static void SetCostValue(UpgradeCost cost, TMP_Text text, GameObject root)
     {
         int value = cost.resourceCost;
 

@@ -3,7 +3,9 @@ using UnityEngine;
 public class BuildingStats : Stats
 {
     public BuildingUpgradeDataSO buildingStats;
-    BuildingUpgradeCost[] upgradeCosts;
+    public BuildingUpgradeData buildingData { get; private set; }
+    public UpgradeCost[] buildingUpgradeCosts { get; private set; }
+
 
     internal override void Start()
     {
@@ -12,32 +14,37 @@ public class BuildingStats : Stats
         if (buildingStats == null)
             Debug.Log($"<color=red>Building {name} missing BuildingStats. Assign the script.</color>");
 
-        Level = 0;
-        maxHealth = buildingStats.buildingLevelData[Level].buildingHealth;
-        armour = buildingStats.buildingLevelData[Level].buildingArmour;
+        level = buildingStats.buildingSpawnLevel;
+        buildingData = buildingStats.buildingLevelData[level];
+        visuals = buildingData.buildingVisuals;
+        basicStats = buildingData.buildingBasicStats;
+
+        maxHealth = basicStats.maxHealth;
         currentHealth = maxHealth;
-        upgradeCosts = buildingStats.buildingLevelData[Level].buildingUpgradeCosts;
-    }
-    public void UpgradeBuilding()
-    {
-        //Upgrade building and updating resource generation values
-        Level++;
-        maxHealth = buildingStats.buildingLevelData[Level].buildingHealth;
-        armour = buildingStats.buildingLevelData[Level].buildingArmour;
-        upgradeCosts = buildingStats.buildingLevelData[Level].buildingUpgradeCosts;
-    }
-    public BuildingUpgradeCost[] GetUpgradeCosts()
-    {
-        return upgradeCosts;
+
+        buildingUpgradeCosts = buildingData.buildingUpgradeCosts;
     }
 
-    public bool canUpgrade()
-    {
-        return PlayerResourceManager.Instance.HasResources(upgradeCosts);
-    }
+    // public void UpgradeBuilding()
+    // {
+    //     //Upgrade building and updating resource generation values
+    //     level++;
+    //     buildingData = buildingStats.buildingLevelData[level];
+    //     maxHealth = buildingData.buildingBasicStats.maxHealth;
+
+    //     visuals = buildingData.buildingVisuals;
+    //     basicStats = buildingData.buildingBasicStats;
+
+    //     buildingUpgradeCosts = buildingData.buildingUpgradeCosts;
+    // }
+    // public bool canUpgrade()
+    // {
+    //     return PlayerResourceManager.Instance.HasResources(buildingUpgradeCosts);
+    // }
+
     void OnDestroy()
     {
-        Tile currentTile = GetComponent<Tile>();
+        Tile currentTile = GetComponentInParent<Tile>();
         if (currentTile != null)
             currentTile.hasBuilding = false;
     }

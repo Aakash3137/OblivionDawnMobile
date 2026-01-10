@@ -12,7 +12,7 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     private Button button;
 
     [SerializeField] private CostPanelManager costPanelManager;
-    private BuildingUpgradeCost[] cachedCosts;
+    private UpgradeCost[] cachedCosts;
 
     private async Awaitable OnEnable()
     {

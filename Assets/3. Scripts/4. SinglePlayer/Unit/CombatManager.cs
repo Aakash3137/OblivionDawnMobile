@@ -14,18 +14,18 @@ public class CombatManager : MonoBehaviour
         UnitStats statsA = unitA.GetComponent<UnitStats>();
         UnitStats statsB = unitB.GetComponent<UnitStats>();
 
-        if (statsA == null || statsB == null) return;
+        // if (statsA == null || statsB == null) return;
 
-        // Simple combat: higher attack wins
-        if (statsA.attackDamage >= statsB.attackDamage)
-        {
-            Destroy(unitB);
-            Debug.Log($"{unitA.name} defeated {unitB.name}");
-        }
-        else
-        {
-            Destroy(unitA);
-            Debug.Log($"{unitB.name} defeated {unitA.name}");
-        }
+        // // Simple combat: higher attack wins
+        // if (statsA.attackDamage >= statsB.attackDamage)
+        // {
+        //     Destroy(unitB);
+        //     Debug.Log($"{unitA.name} defeated {unitB.name}");
+        // }
+        // else
+        // {
+        //     Destroy(unitA);
+        //     Debug.Log($"{unitB.name} defeated {unitA.name}");
+        // }
     }
 }

@@ -9,11 +9,12 @@ public class BuildingUpgradeDataSO : ScriptableObject
     public GameObject buildingPrefab;
     public ScenarioBuildingType buildingType;
     public FactionName buildingFactionName;
+    public int buildingSpawnLevel;
 
-    [Tooltip("Level 0 = base building")]
+    [Header("Building starts at Level 0 and goes up")]
     public BuildingUpgradeData[] buildingLevelData;
 
-    protected virtual void ValidateBase()
+    private void ValidateBase()
     {
         if (buildingLevelData == null)
         {
@@ -31,7 +32,7 @@ public class BuildingUpgradeDataSO : ScriptableObject
                 buildingLevelData[i].buildingUpgradeCosts.Length != enumValues.Length)
             {
                 buildingLevelData[i].buildingUpgradeCosts =
-                    new BuildingUpgradeCost[enumValues.Length];
+                    new UpgradeCost[enumValues.Length];
             }
 
             for (int j = 0; j < enumValues.Length; j++)
@@ -52,18 +53,11 @@ public class BuildingUpgradeDataSO : ScriptableObject
 public class BuildingUpgradeData
 {
     public int buildingLevel;
-    public Mesh buildingMesh;
-    public float buildingHealth;
-    public float buildingArmour;
     public float buildingBuildTime;
+    public Visuals buildingVisuals;
+    public BasicStats buildingBasicStats;
 
     [Header("Resource costs required for this upgrade")]
     [Tooltip("Resource Type are auto set from enum values of ScenarioResourceType")]
-    public BuildingUpgradeCost[] buildingUpgradeCosts;
-}
-[Serializable]
-public struct BuildingUpgradeCost
-{
-    public ScenarioResourceType resourceType;
-    public int resourceCost;
+    public UpgradeCost[] buildingUpgradeCosts;
 }
