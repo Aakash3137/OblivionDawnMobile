@@ -686,7 +686,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d1587fe307d4464095b285f69ba8e1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 150
+  maxHealth: 200
   currentHealth: 0
   Level: 0
   armour: 0
@@ -697,9 +697,9 @@ MonoBehaviour:
   canAttackAir: 1
   canAttackGround: 1
   unitBuildTime: 0
-  unitAttackDamage: 0
-  unitFireRate: 0
-  unitAttackRange: 0
+  unitAttackDamage: 10
+  unitFireRate: 0.1
+  unitAttackRange: 5
   attackDamage: 0
 --- !u!114 &7416070766645631762
 MonoBehaviour:
@@ -753,8 +753,8 @@ MonoBehaviour:
   flyHeight: 4
   attackDamage: 30
   attackCooldown: 0.5
-  separationRadius: 1.5
-  separationStrength: 2
+  separationRadius: 1
+  separationStrength: 1
   narrowViewAngle: 15
   wideViewAngle: 180
   isAirUnit: 1

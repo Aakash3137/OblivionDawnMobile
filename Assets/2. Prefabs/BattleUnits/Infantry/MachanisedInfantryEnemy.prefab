@@ -597,7 +597,7 @@ NavMeshAgent:
   m_Radius: 0.5
   m_Speed: 2
   m_Acceleration: 8
-  avoidancePriority: 50
+  avoidancePriority: 60
   m_AngularSpeed: 120
   m_StoppingDistance: 4
   m_AutoTraverseOffMeshLink: 1
@@ -659,11 +659,16 @@ MonoBehaviour:
   currentHealth: 0
   Level: 0
   armour: 0
+  hitCollider: {fileID: 0}
   healthBarFade: {fileID: 1670812886041853120}
+  healthBar: {fileID: 0}
+  isAirUnit: 0
+  canAttackAir: 0
+  canAttackGround: 1
   unitBuildTime: 0
-  unitAttackDamage: 0
-  unitFireRate: 0
-  unitAttackRange: 0
+  unitAttackDamage: 30
+  unitFireRate: 0.2
+  unitAttackRange: 5
   attackDamage: 0
 --- !u!114 &-6942228788631822797
 MonoBehaviour:
@@ -717,20 +722,24 @@ MonoBehaviour:
   flyHeight: 5
   attackDamage: 20
   attackCooldown: 1
-  separationRadius: 1.5
-  separationStrength: 2
+  separationRadius: 0.5
+  separationStrength: 0
   narrowViewAngle: 10
   wideViewAngle: 45
   isAirUnit: 0
-  canAttackAir: 1
-  canAttackGround: 1
-  takeoffRunDistance: 1.5
-  takeoffRunSpeed: 3
-  ascentSpeed: 2
   unitStats: {fileID: 5098338205219749656}
   agent: {fileID: 2533861858427572245}
   animator: {fileID: 1442437726733883778}
   target: {fileID: 0}
+  primaryTarget: {fileID: 0}
+  secondaryTarget: {fileID: 0}
+  distanceWeight: 500
+  lowHealthBonus: 40
+  narrowAngleBonus: 30
+  wideAngleBonus: 20
+  peripheralAngleBonus: 10
+  unitWeight: 10
+  buildingWeight: 0
 --- !u!1 &1711389978421059022
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,21 +11,27 @@ public class Projectile : MonoBehaviour
     private float timer;
 
     private ProjectileType projectileType;
-    private ProjectileMotion motion; //  FIX 1: ADD THIS
+    private ProjectileMotion motion;
     private ProjectileDefinition definition;
 
-    private bool hasHit; // prevent double hit
+    private Vector3 fixedHitPoint;
+    private bool hasHit;
     private Vector3 startPosition;
+    private Vector3 lastPosition;
+    private Vector3 aimPoint;
+    private bool passedAimPoint;
 
-    [Header("Visuals")]
-    [SerializeField] private TrailRenderer[] trails;
 
-    [Header("Homing Steering")]
-    [SerializeField] float turnSpeed = 360f;
+    [Header("Visuals")] [SerializeField] private TrailRenderer[] trails;
+
+    [Header("Homing Steering")] [SerializeField]
+    float turnSpeed = 360f;
+
     [SerializeField] float avoidanceDistance = 3f;
     [SerializeField] float avoidanceStrength = 2f;
     [SerializeField] float sideRayAngle = 30f;
     [SerializeField] LayerMask obstacleMask;
+    [SerializeField] LayerMask groundMask;
 
 
     void Awake()
@@ -51,12 +57,26 @@ public class Projectile : MonoBehaviour
         speed = def.speed;
         lifeTime = def.lifeTime;
         projectileType = def.projectileType;
-        motion = def.motion; //  FIX 2: ASSIGN MOTION
+        motion = def.motion;
         definition = def;
 
         timer = 0f;
         hasHit = false;
         startPosition = transform.position;
+
+        aimPoint = targetCollider != null
+            ? targetCollider.bounds.center
+            : transform.position + transform.forward * definition.maxRange;
+
+        passedAimPoint = false;
+
+
+        //  LOCK TARGET POSITION ON FIRE
+        if (targetCollider != null)
+            fixedHitPoint = targetCollider.ClosestPoint(transform.position);
+        else
+            fixedHitPoint = transform.position + transform.forward * def.maxRange;
+
 
         if (trails == null) return;
 
@@ -75,11 +95,21 @@ public class Projectile : MonoBehaviour
             t.endColor = new Color(1, 1, 1, 0);
             t.emitting = true;
         }
+
+
+        lastPosition = transform.position;
     }
 
     void Update()
     {
-        if (hasHit || targetUnit == null || targetCollider == null)
+        if (hasHit)
+        {
+            Disable();
+            return;
+        }
+
+        if (motion == ProjectileMotion.Homing &&
+            (targetUnit == null || targetCollider == null))
         {
             Disable();
             return;
@@ -92,7 +122,8 @@ public class Projectile : MonoBehaviour
             return;
         }
 
-        Vector3 hitPoint = targetCollider.ClosestPoint(transform.position);
+        Vector3 hitPoint = fixedHitPoint;
+        //Vector3 hitPoint = targetCollider.ClosestPoint(transform.position);
 
         switch (motion) //  NOW VALID
         {
@@ -116,32 +147,16 @@ public class Projectile : MonoBehaviour
                 MoveAirToGround(hitPoint);
                 break;
         }
+
+        lastPosition = transform.position;
     }
 
     // ---------------- MOVEMENT ----------------
 
     void MoveStraight(Vector3 hitPoint)
     {
-        Vector3 dir = (hitPoint - transform.position).normalized;
+        Vector3 dir = (hitPoint - startPosition).normalized;
         transform.position += dir * speed * Time.deltaTime;
-        CheckHit(hitPoint);
-    }
-
-    void MoveHoming(Vector3 hitPoint)
-    {
-        Vector3 dir = (hitPoint - transform.position).normalized;
-
-        float turnSpeed = 360f; // degrees per second
-
-        Vector3 newDir = Vector3.RotateTowards(
-            transform.forward,
-            dir,
-            turnSpeed * Mathf.Deg2Rad * Time.deltaTime,
-            0f
-        );
-
-        transform.forward = newDir;
-        transform.position += transform.forward * speed * Time.deltaTime;
 
         CheckHit(hitPoint);
     }
@@ -200,7 +215,12 @@ public class Projectile : MonoBehaviour
 
         transform.position += transform.forward * speed * Time.deltaTime;
 
-        CheckHit(targetPos);
+        Vector3 hitPoint =
+            targetCollider != null
+                ? targetCollider.ClosestPoint(transform.position)
+                : targetPos;
+
+        CheckHit(hitPoint);
     }
 
     // Ground → Air (spears, bullets)
@@ -215,52 +235,67 @@ public class Projectile : MonoBehaviour
     // Ballistic arc
     void MoveBallistic(Vector3 hitPoint)
     {
-        // Flattened positions
-        Vector3 startFlat = startPosition;
-        startFlat.y = 0f;
+        // HORIZONTAL MOVEMENT (XZ)
+        Vector3 currentXZ = new Vector3(transform.position.x, 0f, transform.position.z);
+        Vector3 startXZ = new Vector3(startPosition.x, 0f, startPosition.z);
+        Vector3 aimXZ = new Vector3(aimPoint.x, 0f, aimPoint.z);
 
-        Vector3 targetFlat = hitPoint;
-        targetFlat.y = 0f;
+        Vector3 flatDir = (aimXZ - startXZ).normalized;
+        transform.position += flatDir * speed * Time.deltaTime;
 
-        Vector3 currentFlat = transform.position;
-        currentFlat.y = 0f;
+        // PROGRESS BASED ON XZ DISTANCE
 
-        float totalDistance = Vector3.Distance(startFlat, targetFlat);
-        float traveledDistance = Vector3.Distance(startFlat, currentFlat);
+        float totalDistance = Vector3.Distance(startXZ, aimXZ);
+        float traveledDistance = Vector3.Distance(startXZ, currentXZ);
+        float progress = Mathf.Clamp01(traveledDistance / Mathf.Max(totalDistance, 0.01f));
 
-        // -------------------------
-        // SPEED SCALING (THE FIX)
-        // -------------------------
+        // ARC HEIGHT
 
-        // Weapon max range (IMPORTANT: comes from weapon, not unit)
-        float maxRange = definition.maxRange;
+        float distanceFactor = Mathf.Clamp01(totalDistance / definition.maxRange);
+        float arc = Mathf.Sin(progress * Mathf.PI) * definition.arcHeight * distanceFactor;
 
-        // How far this shot is compared to max range
-        float distanceFactor = Mathf.Clamp01(totalDistance / maxRange);
+        // VERTICAL POSITION (AIM POINT Y)
 
-        // Close = slower, Far = normal
-        float speedFactor = Mathf.Lerp(0.4f, 1f, distanceFactor);
+        if (!passedAimPoint)
+        {
+            float baseY = Mathf.Lerp(startPosition.y, aimPoint.y, progress);
+            transform.position = new Vector3(
+                transform.position.x,
+                baseY + arc,
+                transform.position.z
+            );
+        }
+        else
+        {
+            // AFTER AIM POINT → FALL DOWN
+            transform.position += Vector3.down * speed * Time.deltaTime;
+        }
 
-        Vector3 flatDir = (targetFlat - startFlat).normalized;
-        transform.position += flatDir * (speed * speedFactor) * Time.deltaTime;
-
-        // -------------------------
-        // ARC HEIGHT (ALREADY GOOD)
-        // -------------------------
-
-        float progress =
-            Mathf.Clamp01(traveledDistance / Mathf.Max(totalDistance, 0.01f));
-
-        float height =
-            Mathf.Sin(progress * Mathf.PI) * definition.arcHeight * distanceFactor;
-
-        transform.position = new Vector3(
-            transform.position.x,
-            startPosition.y + height,
-            transform.position.z
-        );
-
+        // CHECK COLLISIONS (ENEMY / WALL / GROUND)
         CheckHit(hitPoint);
+
+        // DETECT PASSING AIM POINT (XZ)
+        if (!passedAimPoint &&
+            Vector3.Distance(
+                new Vector3(transform.position.x, 0f, transform.position.z),
+                aimXZ) < 0.2f)
+        {
+            passedAimPoint = true;
+        }
+
+        // FINAL GROUND HIT (FALLBACK)
+        if (passedAimPoint)
+        {
+            if (Physics.Raycast(
+                    transform.position,
+                    Vector3.down,
+                    out RaycastHit hit,
+                    2f,
+                    groundMask))
+            {
+                OnHit(hit.point, false);
+            }
+        }
     }
 
 
@@ -273,16 +308,45 @@ public class Projectile : MonoBehaviour
     }
 
     // ---------------- HIT ----------------
-
+    
     void CheckHit(Vector3 hitPoint)
     {
-        if (Vector3.Distance(transform.position, hitPoint) <= 0.15f)
+        Vector3 move = transform.position - lastPosition;
+        float dist = move.magnitude;
+
+        if (dist <= 0f)
+            return;
+
+        // ONE authoritative sweep
+        if (Physics.Raycast(
+                lastPosition,
+                move.normalized,
+                out RaycastHit hit,
+                dist))
         {
-            OnHit(hitPoint);
+            // 1️⃣ GROUND HIT
+            if (((1 << hit.collider.gameObject.layer) & groundMask) != 0)
+            {
+                OnHit(hit.point, false);
+                return;
+            }
+
+            // 2️⃣ UNIT HIT (ANY unit)
+            Stats unit = hit.collider.GetComponent<Stats>();
+            if (unit != null)
+            {
+                targetUnit = unit;
+                targetCollider = hit.collider;
+                OnHit(hit.point, true);
+                return;
+            }
+
+            // 3️⃣ ANY OTHER COLLIDER (walls, props, etc.)
+            OnHit(hit.point, false);
         }
     }
 
-    void OnHit(Vector3 hitPoint)
+    void OnHit(Vector3 hitPoint, bool hitTarget)
     {
         hasHit = true;
 
@@ -292,7 +356,7 @@ public class Projectile : MonoBehaviour
             Destroy(vfx, 5f);
         }
 
-        // Area damage (cannon ball / bomb)
+        // AREA DAMAGE
         if (definition.isAreaDamage)
         {
             Collider[] hits = Physics.OverlapSphere(hitPoint, definition.damageRadius);
@@ -303,13 +367,15 @@ public class Projectile : MonoBehaviour
                     unit.TakeDamage(damage);
             }
         }
-        else
+        // DIRECT DAMAGE ONLY IF TARGET HIT
+        else if (hitTarget && targetUnit != null)
         {
             targetUnit.TakeDamage(damage);
         }
 
         Disable();
     }
+
 
     void Disable()
     {
@@ -334,5 +400,4 @@ public class Projectile : MonoBehaviour
         Gizmos.DrawRay(transform.position,
             Quaternion.Euler(0, -sideRayAngle, 0) * transform.forward * avoidanceDistance);
     }
-
 }
