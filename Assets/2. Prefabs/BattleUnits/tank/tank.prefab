@@ -383,21 +383,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d1587fe307d4464095b285f69ba8e1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 250
+  level: 0
+  side: 0
+  faction: 0
+  basicStats:
+    maxHealth: 0
+    armour: 0
+  visuals:
+    upgradeMesh: {fileID: 0}
+    playerUnitMaterial: {fileID: 0}
+    enemyUnitMaterial: {fileID: 0}
   currentHealth: 0
-  Level: 0
-  armour: 0
   hitCollider: {fileID: 0}
-  healthBarFade: {fileID: 1670812886041853120, guid: 5cfa558b14c47e148b8df9deb9f3e379, type: 3}
-  healthBar: {fileID: 0}
   isAirUnit: 0
   canAttackAir: 0
   canAttackGround: 1
-  unitBuildTime: 0
-  unitAttackDamage: 0
-  unitFireRate: 0
-  unitAttackRange: 0
-  attackDamage: 0
+  unitType: 0
+  unitMobilityStats:
+    moveSpeed: 0
+  rangeStats:
+    DetectionRange: 0
+    AttackRange: 0
+  visionAngles:
+    narrowViewAngle: 0
+    wideViewAngle: 0
+  attackTargets:
+    canAttackAir: 0
+    canAttackGround: 0
+  flyStats:
+    flyHeight: 0
+    climbAngle: 0
+    turnSpeed: 0
+    bankAngle: 0
+    evadeRadius: 0
+    attackAngleTolerance: 0
 --- !u!114 &7235389321724902457
 MonoBehaviour:
   m_ObjectHideFlags: 0
