@@ -54,8 +54,8 @@ public class BattleUnit : MonoBehaviour
     public float unitWeight = 10f;
     public float buildingWeight = 0f;
     Vector3 forward;
-    
-    SideScenario unitSide;
+
+    Side unitSide;
     Vector2Int currentCoord;
     private float targetCheckTimer = 0f;
     private const float targetCheckInterval = 0.5f;
@@ -64,14 +64,14 @@ public class BattleUnit : MonoBehaviour
     private void Start()
     {
         unitStats = GetComponent<UnitStats>();
-        unitSide = GetComponent<SideScenario>();
+        unitSide = unitStats.side;
         forward = transform.forward;
         agent.isStopped = true;
 
         if (animator != null)
             animator.SetFloat("Move", 0f);
 
-        unitStats.currentHealth = unitStats.maxHealth;
+        unitStats.currentHealth = unitStats.basicStats.maxHealth;
 
         if (isAirUnit)
         {
@@ -221,7 +221,7 @@ public class BattleUnit : MonoBehaviour
 
     private void ArrangeRotation()
     {
-        if (GetComponent<SideScenario>().side == Side.Player)
+        if (unitSide == Side.Player)
         {
             transform.rotation = Quaternion.Euler(0, 45, 0);
         }
@@ -241,7 +241,7 @@ public class BattleUnit : MonoBehaviour
 
         Stats bestTarget = null;
         float bestScore = 0f;
-        Side mySide = GetComponent<SideScenario>().side;
+        Side mySide = unitSide;
 
         foreach (Collider hit in hits)
         {
@@ -264,7 +264,7 @@ public class BattleUnit : MonoBehaviour
             }
 
             // Ignore self & same side
-            if (unit == this || unit.GetComponent<SideScenario>().side == mySide)
+            if (unit == this || unit.side == mySide)
                 continue;
 
             // if (unit.isAirUnit && !canAttackAir)
@@ -318,7 +318,7 @@ public class BattleUnit : MonoBehaviour
         score += distanceWeight / Mathf.Max(distance, 0.1f);
 
         // Low health bonus
-        float healthPercent = unit.currentHealth / unit.maxHealth;
+        float healthPercent = unit.currentHealth / unit.basicStats.maxHealth;
         if (healthPercent <= 0.3f) score += lowHealthBonus;
 
         // View angle
@@ -349,7 +349,7 @@ public class BattleUnit : MonoBehaviour
                 return false;
 
             // check if building is low health
-            float buildingHealthPercent = current.currentHealth / current.maxHealth;
+            float buildingHealthPercent = current.currentHealth / current.basicStats.maxHealth;
             if (buildingHealthPercent < 0.3f)
                 return false; // stick with low-health building
 
@@ -393,7 +393,7 @@ public class BattleUnit : MonoBehaviour
 
             if (unit != null && unit != this)
             {
-                if (unit.GetComponent<SideScenario>().side == GetComponent<SideScenario>().side
+                if (unit.unitSide == unitSide
                     && unit.isAirUnit == isAirUnit)
                 {
                     Vector3 dir = transform.position - unit.transform.position;
@@ -429,7 +429,7 @@ public class BattleUnit : MonoBehaviour
         if (isAirUnit && airUnit != null)
         {
             if (!airUnit.CanAttack()) return;
-            
+
             if (airUnit.ShouldFireBurst(target))
             {
                 if (target != null)
@@ -487,7 +487,7 @@ public class BattleUnit : MonoBehaviour
 
         unitStats.currentHealth -= damage;
         unitStats.currentHealth =
-            Mathf.Clamp(unitStats.currentHealth, 0, unitStats.maxHealth);
+            Mathf.Clamp(unitStats.currentHealth, 0, unitStats.basicStats.maxHealth);
 
         if (healthBarFade != null)
         {
@@ -525,7 +525,7 @@ public class BattleUnit : MonoBehaviour
         BattleUnit[] units = FindObjectsOfType<BattleUnit>();
         foreach (var unit in units)
         {
-            if (unit.GetComponent<SideScenario>().side == Side.Player &&
+            if (unit.unitSide == Side.Player &&
                 unit.target != null)
             {
                 return true;
@@ -539,7 +539,7 @@ public class BattleUnit : MonoBehaviour
         BattleUnit[] units = FindObjectsOfType<BattleUnit>();
         foreach (var unit in units)
         {
-            if (unit.GetComponent<SideScenario>().side == Side.Enemy &&
+            if (unit.unitSide == Side.Enemy &&
                 unit.target != null)
             {
                 return true;
@@ -554,7 +554,7 @@ public class BattleUnit : MonoBehaviour
     {
         foreach (var unit in FindObjectsOfType<BattleUnit>())
         {
-            if (unit.GetComponent<SideScenario>().side == Side.Player)
+            if (unit.unitSide == Side.Player)
                 return true;
         }
         return false;
@@ -564,7 +564,7 @@ public class BattleUnit : MonoBehaviour
     {
         foreach (var unit in FindObjectsOfType<BattleUnit>())
         {
-            if (unit.GetComponent<SideScenario>().side == Side.Enemy)
+            if (unit.unitSide == Side.Enemy)
                 return true;
         }
         return false;
@@ -584,5 +584,5 @@ public class BattleUnit : MonoBehaviour
         }
     }
     #endregion
-    
+
 }

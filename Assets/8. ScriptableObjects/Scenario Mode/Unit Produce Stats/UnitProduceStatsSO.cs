@@ -8,7 +8,9 @@ public class UnitProduceStatsSO : ScriptableObject
     public string unitName;
     public ScenarioUnitType unitType;
     public GameObject unitPrefab;
-    public FactionName unitFactionName;
+    public GameObject projectilePrefab;
+    public FactionName unitFaction;
+    public Side unitSide;
     public bool isAirUnit;
     public int unitPopulationCost;
     public int unitSpawnLevel;
@@ -61,11 +63,11 @@ public class UnitUpgradeData
     public float unitBuildTime;
     public Visuals unitVisuals;
     public BasicStats unitBasicStats;
-    public UnitMobilityStats unitMobilityStats;
-    public UnitRangeStats unitRangeStats;
-    public UnitVisionAngles unitVisionAngles;
-    public UnitAttackTargets unitAttackTargets;
-    public UnitFlyStats unitFlyStats;
+    public MobilityStats unitMobilityStats;
+    public RangeStats unitRangeStats;
+    public VisionAngles unitVisionAngles;
+    public AttackTargets unitAttackTargets;
+    public FlyStats unitFlyStats;
 
     [Header("Resource costs required for this upgrade")]
     [Tooltip("Resource Type are auto set from enum values of ScenarioResourceType")]
@@ -91,31 +93,31 @@ public struct UpgradeCost
     public int resourceCost;
 }
 [Serializable]
-public struct UnitMobilityStats
+public struct MobilityStats
 {
     public float moveSpeed;
 }
 
 [Serializable]
-public struct UnitVisionAngles
+public struct VisionAngles
 {
     public float narrowViewAngle;
     public float wideViewAngle;
 }
 [Serializable]
-public struct UnitRangeStats
+public struct RangeStats
 {
     public float DetectionRange;
     public float AttackRange;
 }
 [Serializable]
-public struct UnitAttackTargets
+public struct AttackTargets
 {
     public bool canAttackAir;
     public bool canAttackGround;
 }
 [Serializable]
-public struct UnitFlyStats
+public struct FlyStats
 {
     public float flyHeight;
     public float climbAngle;

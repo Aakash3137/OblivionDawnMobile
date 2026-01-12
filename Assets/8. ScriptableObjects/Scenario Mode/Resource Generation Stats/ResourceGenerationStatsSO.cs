@@ -5,6 +5,8 @@ public class ResourceGenerationStatsSO : ScriptableObject
 {
     public string resourceName;
     public ScenarioResourceType resourceType;
+    public FactionName resourceFaction;
+    public Side resourceSide;
     public ResourceGenerationData[] resourceGenerationData;
 
     private void OnValidate()

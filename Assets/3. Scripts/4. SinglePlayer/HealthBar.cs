@@ -14,9 +14,9 @@ public class SpriteHealthBar : MonoBehaviour
 
         if (foregroundBar != null)
             initialWidth = foregroundBar.transform.localScale.x;
-       
+
     }
-    
+
     void Update()
     {
         // Always face the camera
@@ -25,11 +25,11 @@ public class SpriteHealthBar : MonoBehaviour
         // Measure: max health should not be zero
         if (targetHealth != null && foregroundBar != null)
         {
-            if (targetHealth.maxHealth != 0)
+            if (targetHealth.basicStats.maxHealth != 0)
             {
-                float ratio = (float)targetHealth.currentHealth / targetHealth.maxHealth;
+                float ratio = (float)targetHealth.currentHealth / targetHealth.basicStats.maxHealth;
                 ratio = Mathf.Clamp01(ratio);
-                
+
                 // Scale only X
                 foregroundBar.transform.localScale = new Vector3(initialWidth * ratio, foregroundBar.transform.localScale.y, foregroundBar.transform.localScale.z);
             }

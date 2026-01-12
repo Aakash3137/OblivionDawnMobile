@@ -6,17 +6,16 @@ public class UnitStats : Stats
     private UnitUpgradeData unitData;
 
     [Header("Unit Specific Stats (DO NOT EDIT)")]
-    public UnitMobilityStats unitMobilityStats;
-    public UnitRangeStats rangeStats;
-    public UnitVisionAngles visionAngles;
-    public UnitAttackTargets attackTargets;
-    public UnitFlyStats flyStats;
+    public ScenarioUnitType unitType;
+    public MobilityStats unitMobilityStats;
+    public RangeStats rangeStats;
+    public VisionAngles visionAngles;
+    public AttackTargets attackTargets;
+    public FlyStats flyStats;
 
 
     internal override void Start()
     {
-        base.Start();
-
         spawnerBuilding = GetComponentInParent<UnitSpawnerScenario>();
         level = spawnerBuilding.unitSpawnLevel;
         unitData = spawnerBuilding.currentUnitLevelData;
@@ -29,28 +28,16 @@ public class UnitStats : Stats
         attackTargets = unitData.unitAttackTargets;
         flyStats = unitData.unitFlyStats;
 
-        maxHealth = basicStats.maxHealth;
-        currentHealth = maxHealth;
+        unitType = spawnerBuilding.unitProduceStats.unitType;
 
-        Renderer renderer = GetComponentInChildren<Renderer>();
+        side = spawnerBuilding.GetComponent<BuildingStats>().side;
 
-        if (renderer != null)
+        if (visuals.playerUnitMaterial == null)
         {
-            if (visuals.playerUnitMaterial == null)
-            {
-                Debug.Log($"<color=magenta>Assign materials for {name} on {spawnerBuilding.unitProduceStats.name} ScriptableObject</color>");
-                return;
-            }
-
-            switch (spawnerBuilding.buildingSide.side)
-            {
-                case Side.Player:
-                    renderer.material = visuals.playerUnitMaterial;
-                    break;
-                case Side.Enemy:
-                    renderer.material = visuals.enemyUnitMaterial;
-                    break;
-            }
+            Debug.Log($"<color=magenta>Assign materials for {name} on {spawnerBuilding.unitProduceStats.name} ScriptableObject</color>");
+            return;
         }
+
+        base.Start();
     }
 }

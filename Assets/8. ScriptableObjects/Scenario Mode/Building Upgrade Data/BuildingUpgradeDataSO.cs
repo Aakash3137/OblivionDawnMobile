@@ -6,9 +6,9 @@ public class BuildingUpgradeDataSO : ScriptableObject
 {
     [Header("Building health stats and Resource cost for upgrades")]
     public string buildingName;
-    public GameObject buildingPrefab;
     public ScenarioBuildingType buildingType;
-    public FactionName buildingFactionName;
+    public FactionName buildingFaction;
+    public Side buildingSide;
     public int buildingSpawnLevel;
 
     [Header("Building starts at Level 0 and goes up")]
@@ -41,6 +41,8 @@ public class BuildingUpgradeDataSO : ScriptableObject
                     (ScenarioResourceType)enumValues.GetValue(j);
             }
         }
+
+        buildingSpawnLevel = Mathf.Clamp(buildingSpawnLevel, 0, buildingLevelData.Length - 1);
     }
     private void OnValidate()
     {

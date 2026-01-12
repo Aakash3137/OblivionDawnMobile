@@ -4,9 +4,10 @@ public class Stats : MonoBehaviour
 {
     [Header(" EDITOR VIEW ONLY ")]
     public int level;
+    public Side side;
+    public FactionName faction;
     public BasicStats basicStats;
     public Visuals visuals;
-    public float maxHealth;
     public float currentHealth;
     public Collider hitCollider;
 
@@ -19,7 +20,7 @@ public class Stats : MonoBehaviour
     public bool canAttackAir = false;
     public bool canAttackGround = true;
 
-    internal virtual void Start()
+    private void Awake()
     {
         healthBar = GetComponentInChildren<HealthProgress>();
         healthBarFade = GetComponentInChildren<FadeHealthBar>();
@@ -27,21 +28,42 @@ public class Stats : MonoBehaviour
 
         if (healthBar != null)
         {
-            healthBar.UpdateFillAmount(currentHealth / maxHealth);
+            healthBar.UpdateFillAmount(currentHealth / basicStats.maxHealth);
         }
         else
         {
             //Debug.Log($"<color=#FFC0CB>{name} missing HealthBar. Assign the script.</color>");
         }
+
     }
-    public void TakeDamage(float amount)
+    internal virtual void Start()
+    {
+        currentHealth = basicStats.maxHealth;
+
+        Renderer renderer = GetComponentInChildren<Renderer>();
+
+        if (renderer != null)
+        {
+            switch (side)
+            {
+                case Side.Player:
+                    renderer.material = visuals.playerUnitMaterial;
+                    break;
+                case Side.Enemy:
+                    renderer.material = visuals.enemyUnitMaterial;
+                    break;
+            }
+        }
+    }
+
+    public virtual void TakeDamage(float amount)
     {
         currentHealth -= amount;
-        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        currentHealth = Mathf.Clamp(currentHealth, 0, basicStats.maxHealth);
         if (healthBar != null)
         {
             healthBar.FadeInHealthBar();
-            healthBar.UpdateFillAmount(currentHealth / maxHealth);
+            healthBar.UpdateFillAmount(currentHealth / basicStats.maxHealth);
         }
         if (healthBarFade != null)
         {

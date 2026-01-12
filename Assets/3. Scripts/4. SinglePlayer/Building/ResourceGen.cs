@@ -5,14 +5,14 @@ public class ResourceGen : MonoBehaviour
 {
     [SerializeField] private ResourceGenerationStatsSO buildingResourceData;
     public bool autoProduce = true;
-    private SideScenario buildingSide;
     private BuildingStats buildingStats;
+    private Side buildingSide;
 
     [Header(" EDITOR VIEW ONLY ")]
     [SerializeField] private int GeneratedResourceAmount;
     private string ResourceName;
-    private int buildingCurrentLevel;
     private ScenarioResourceType resourceType;
+    private int buildingCurrentLevel;
     private int resourceAmountPerBatch;
     public float resourceTimeToProduce { get; private set; }
     private float resourceGenerationRate;
@@ -34,8 +34,8 @@ public class ResourceGen : MonoBehaviour
         resourceTimeToProduce = buildingResourceData.resourceGenerationData[buildingCurrentLevel].resourceTimeToProduce;
         resourceGenerationRate = buildingResourceData.resourceGenerationData[buildingCurrentLevel].resourceGenerationRate;
 
-        buildingSide = GetComponent<SideScenario>();
         buildingStats = GetComponent<BuildingStats>();
+        buildingSide = buildingStats.side;
     }
 
     private async Awaitable Start()
@@ -58,7 +58,7 @@ public class ResourceGen : MonoBehaviour
     }
     private IEnumerator StartResourceGeneration()
     {
-        if (buildingSide.side != Side.Player)
+        if (buildingSide != Side.Player)
             yield break;
 
         prmInstance.SetResourceGenerationRate(resourceType, resourceGenerationRate);

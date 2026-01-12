@@ -188,12 +188,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70d1d5b1f2adb50469c34f2d8410670a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  level: 0
+  side: 0
+  faction: 0
+  basicStats:
+    maxHealth: 0
+    armour: 0
+  visuals:
+    upgradeMesh: {fileID: 0}
+    playerUnitMaterial: {fileID: 0}
+    enemyUnitMaterial: {fileID: 0}
   maxHealth: 0
   currentHealth: 0
-  Level: 0
-  armour: 0
-  healthBarFade: {fileID: 1781305936830987971}
-  buildingStats: {fileID: 11400000, guid: 61324e6a72fa49d44b7e7849a9843f0c, type: 2}
+  hitCollider: {fileID: 0}
+  isAirUnit: 0
+  canAttackAir: 0
+  canAttackGround: 1
+  <buildingStats>k__BackingField: {fileID: 11400000, guid: 61324e6a72fa49d44b7e7849a9843f0c, type: 2}
 --- !u!114 &5551679913311386414
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -316,17 +327,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7fb759797837b7142a321406fb49ef94, type: 3}
---- !u!114 &1781305936830987971 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 884793415049308032, guid: 7fb759797837b7142a321406fb49ef94, type: 3}
-  m_PrefabInstance: {fileID: 1512948493298473283}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: db6119d6b269e0148bec8f3a5fe6658d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &2744090075142055788 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3669278942575001135, guid: 7fb759797837b7142a321406fb49ef94, type: 3}

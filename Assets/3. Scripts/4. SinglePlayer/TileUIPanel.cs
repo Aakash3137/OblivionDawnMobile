@@ -40,19 +40,16 @@ public class TileUIPanel : MonoBehaviour
         Vector3 spawnPos = currentTile.transform.position + Vector3.up * 2f;
         var go = Instantiate(slot.prefab, spawnPos, Quaternion.identity, currentTile.transform);
 
-        var unitSide = go.GetComponent<SideScenario>();
-        if (unitSide != null)
-        {
-            unitSide.side = currentTile.ownerSide;
-            unitSide.ApplySideMaterial(slot);
-        }
-
         currentTile.SetBuildingPlaced();
 
         // Fade out build panel
-        if (buildPanel != null) buildPanel.gameObject.SetActive(false);
+        if (buildPanel != null)
+            buildPanel.gameObject.SetActive(false);
+
         PlaceWallsOnMainBuilding();
-        PlaceWalls();
+
+        if (go.GetComponent<Stats>() != null)
+            PlaceWalls();
 
         Close();
     }

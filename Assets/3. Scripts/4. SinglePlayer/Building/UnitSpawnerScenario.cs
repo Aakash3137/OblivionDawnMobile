@@ -4,13 +4,13 @@ using System.Collections;
 public class UnitSpawnerScenario : MonoBehaviour
 {
     [Header("Production stats variable")]
-    public UnitProduceStatsSO unitProduceStats;
+    [field: SerializeField]
+    public UnitProduceStatsSO unitProduceStats { get; private set; }
     private Vector3 spawnPoint;
 
     private PlayerResourceManager prmInstance;
 
     [Header("Building Faction and stats")]
-    public SideScenario buildingSide { get; private set; }
     private BuildingStats buildingStats;
     public bool autoProduce;
 
@@ -35,10 +35,9 @@ public class UnitSpawnerScenario : MonoBehaviour
         cgmInstance = CubeGridManager.Instance;
 
         currentTile = GetComponentInParent<Tile>();
-        buildingSide = GetComponent<SideScenario>();
         buildingStats = GetComponent<BuildingStats>();
-
     }
+
     private void Start()
     {
         unitPrefab = unitProduceStats.unitPrefab;
@@ -57,8 +56,6 @@ public class UnitSpawnerScenario : MonoBehaviour
 
         if (unitProduceStats != null)
             StartCoroutine(ProductionLoop());
-
-
     }
 
     private IEnumerator ProductionLoop()
@@ -69,7 +66,7 @@ public class UnitSpawnerScenario : MonoBehaviour
             {
                 yield return new WaitForSeconds(unitBuildTime);
                 SpawnUnit();
-                prmInstance.SpendResources(unitUpgradeCosts);
+                //prmInstance.SpendResources(unitUpgradeCosts);
             }
         }
     }
@@ -88,14 +85,7 @@ public class UnitSpawnerScenario : MonoBehaviour
 
         spawnPoint = nearestTile.transform.position + Vector3.up * 2f;
 
-        GameObject unit = Instantiate(unitPrefab, spawnPoint, Quaternion.identity, transform);
-
-        // Assign side
-        SideScenario unitSide = unit.GetComponent<SideScenario>();
-        if (unitSide != null && buildingSide != null)
-        {
-            unitSide.side = buildingSide.side;
-        }
+        Instantiate(unitPrefab, spawnPoint, Quaternion.identity, transform);
     }
 
     public bool HasResources()
