@@ -4,206 +4,206 @@ using System.Collections.Generic;
 
 public class EnemyBuildingSpawner : MonoBehaviour
 {
-    [Header("Faction Data")]
-    public AllFactionsData allFactionsData;   // assign in inspector
+    // [Header("Faction Data")]
+    // public AllFactionsData allFactionsData;   // assign in inspector
 
-    [Header("Building Prefabs (auto-filled)")]
-    public GameObject[] enemyBuildingPrefabs; // will be filled at runtime
+    // [Header("Building Prefabs (auto-filled)")]
+    // public GameObject[] enemyBuildingPrefabs; // will be filled at runtime
 
-    [Header("Spawn Settings")]
-    public float minDelay = 3f;
-    public float maxDelay = 6f;
-    public float yOffset = 1f;
+    // [Header("Spawn Settings")]
+    // public float minDelay = 3f;
+    // public float maxDelay = 6f;
+    // public float yOffset = 1f;
 
-    private CubeGridManager grid;
-    private SideScenario unitSide; // which side this MainBuilding belongs to
-    private Vector2Int myCoord;
+    // private CubeGridManager grid;
+    // private SideScenario unitSide; // which side this MainBuilding belongs to
+    // private Vector2Int myCoord;
 
-    void Start()
-    {
-        grid = CubeGridManager.Instance;
-        unitSide = GetComponent<SideScenario>();
+    // void Start()
+    // {
+    //     grid = CubeGridManager.Instance;
+    //     unitSide = GetComponent<SideScenario>();
 
-        // Only run if this building is Enemy
-        if (unitSide == null || unitSide.side != Side.Enemy)
-        {
-            enabled = false; // disable script for Player side
-            return;
-        }
+    //     // Only run if this building is Enemy
+    //     if (unitSide == null || unitSide.side != Side.Enemy)
+    //     {
+    //         enabled = false; // disable script for Player side
+    //         return;
+    //     }
 
-        // Fill enemyBuildingPrefabs based on enemy faction
-        PopulateEnemyBuildings();
+    //     // Fill enemyBuildingPrefabs based on enemy faction
+    //     PopulateEnemyBuildings();
 
-        // Find grid coord of this MainBuilding
-        myCoord = grid.WorldToGrid(transform.position);
+    //     // Find grid coord of this MainBuilding
+    //     myCoord = grid.WorldToGrid(transform.position);
 
-        // Claim the tile for Enemy
-        GameObject tileObj = grid.GetCube(myCoord);
-        if (tileObj != null)
-        {
-            Tile tile = tileObj.GetComponent<Tile>();
-            if (tile != null)
-            {
-                tile.ownerSide = Side.Enemy;
-                tile.hasBuilding = true;
-                tile.isOpen = false;
-            }
-        }
+    //     // Claim the tile for Enemy
+    //     GameObject tileObj = grid.GetCube(myCoord);
+    //     if (tileObj != null)
+    //     {
+    //         Tile tile = tileObj.GetComponent<Tile>();
+    //         if (tile != null)
+    //         {
+    //             tile.ownerSide = Side.Enemy;
+    //             tile.hasBuilding = true;
+    //             tile.isOpen = false;
+    //         }
+    //     }
 
-        // Start spawning loop
-        StartCoroutine(SpawnLoop());
-    }
+    //     // Start spawning loop
+    //     StartCoroutine(SpawnLoop());
+    // }
 
-    private void PopulateEnemyBuildings()
-    {
-        // Detect which faction this enemy MainBuilding belongs to by prefab name
-        string mainName = gameObject.name; // or use prefab reference
+    // private void PopulateEnemyBuildings()
+    // {
+    //     // Detect which faction this enemy MainBuilding belongs to by prefab name
+    //     string mainName = gameObject.name; // or use prefab reference
 
-        List<GameObject> list = new List<GameObject>();
+    //     List<GameObject> list = new List<GameObject>();
 
-        if (mainName.Contains("Past"))
-        {
-            list.Add(allFactionsData.pastGoldBuilding.prefab);
-            list.Add(allFactionsData.pastInfantryBuilding.prefab);
-            list.Add(allFactionsData.pastTurretBuilding.prefab);
-        }
-        else if (mainName.Contains("Present"))
-        {
-            list.Add(allFactionsData.presentGoldBuilding.prefab);
-            list.Add(allFactionsData.presentInfantryBuilding.prefab);
-            list.Add(allFactionsData.presentTurretBuilding.prefab);
-        }
-        else if (mainName.Contains("Future"))
-        {
-            list.Add(allFactionsData.futureGoldBuilding.prefab);
-            list.Add(allFactionsData.futureInfantryBuilding.prefab);
-            list.Add(allFactionsData.futureTurretBuilding.prefab);
-        }
-        else if (mainName.Contains("Monster"))
-        {
-            list.Add(allFactionsData.monsterGoldBuilding.prefab);
-            list.Add(allFactionsData.monsterInfantryBuilding.prefab);
-            list.Add(allFactionsData.monsterTurretBuilding.prefab);
-        }
+    //     if (mainName.Contains("Past"))
+    //     {
+    //         list.Add(allFactionsData.pastGoldBuilding.prefab);
+    //         list.Add(allFactionsData.pastInfantryBuilding.prefab);
+    //         list.Add(allFactionsData.pastTurretBuilding.prefab);
+    //     }
+    //     else if (mainName.Contains("Present"))
+    //     {
+    //         list.Add(allFactionsData.presentGoldBuilding.prefab);
+    //         list.Add(allFactionsData.presentInfantryBuilding.prefab);
+    //         list.Add(allFactionsData.presentTurretBuilding.prefab);
+    //     }
+    //     else if (mainName.Contains("Future"))
+    //     {
+    //         list.Add(allFactionsData.futureGoldBuilding.prefab);
+    //         list.Add(allFactionsData.futureInfantryBuilding.prefab);
+    //         list.Add(allFactionsData.futureTurretBuilding.prefab);
+    //     }
+    //     else if (mainName.Contains("Monster"))
+    //     {
+    //         list.Add(allFactionsData.monsterGoldBuilding.prefab);
+    //         list.Add(allFactionsData.monsterInfantryBuilding.prefab);
+    //         list.Add(allFactionsData.monsterTurretBuilding.prefab);
+    //     }
 
-        enemyBuildingPrefabs = list.ToArray();
+    //     enemyBuildingPrefabs = list.ToArray();
 
-       //// Debug.Log($"[EnemyBuildingSpawner] Enemy faction buildings loaded: {enemyBuildingPrefabs.Length}");
-    }
+    //    //// Debug.Log($"[EnemyBuildingSpawner] Enemy faction buildings loaded: {enemyBuildingPrefabs.Length}");
+    // }
+
+    // // private IEnumerator SpawnLoop()
+    // // {
+    // //     while (true)
+    // //     {
+    // //         yield return new WaitForSeconds(Random.Range(minDelay, maxDelay));
+    // //         TrySpawnBuilding();
+    // //     }
+    // // }
+
+
 
     // private IEnumerator SpawnLoop()
     // {
     //     while (true)
     //     {
+    //         // Stop if no enemy buildings remain
+    //         if (!AnyEnemyBuildingsAlive())
+    //         {
+    //             Debug.Log("[EnemyBuildingSpawner] All enemy buildings destroyed. Stopping spawn loop.");
+    //             yield break;
+    //         }
+
     //         yield return new WaitForSeconds(Random.Range(minDelay, maxDelay));
     //         TrySpawnBuilding();
     //     }
     // }
 
+    // private bool AnyEnemyBuildingsAlive()
+    // {
+    //     BuildingStats[] allBuildings = Object.FindObjectsByType<BuildingStats>(FindObjectsSortMode.None);
+    //     foreach (var b in allBuildings)
+    //     {
+    //         var side = b.GetComponent<SideScenario>();
+    //         if (side != null && side.side == Side.Enemy && b.currentHealth > 0)
+    //             return true;
+    //     }
+    //     return false;
+    // }
 
 
-    private IEnumerator SpawnLoop()
-    {
-        while (true)
-        {
-            // Stop if no enemy buildings remain
-            if (!AnyEnemyBuildingsAlive())
-            {
-                Debug.Log("[EnemyBuildingSpawner] All enemy buildings destroyed. Stopping spawn loop.");
-                yield break;
-            }
+    // private void TrySpawnBuilding()
+    // {
+    //     // Get neighbors of this MainBuilding tile
+    //     List<Vector2Int> neighbors = grid.GetCardinalNeighbors(myCoord);
+    //     List<Tile> candidateTiles = new List<Tile>();
 
-            yield return new WaitForSeconds(Random.Range(minDelay, maxDelay));
-            TrySpawnBuilding();
-        }
-    }
+    //     foreach (var coord in neighbors)
+    //     {
+    //         GameObject tileObj = grid.GetCube(coord);
+    //         if (tileObj == null) continue;
 
-    private bool AnyEnemyBuildingsAlive()
-    {
-        BuildingStats[] allBuildings = Object.FindObjectsByType<BuildingStats>(FindObjectsSortMode.None);
-        foreach (var b in allBuildings)
-        {
-            var side = b.GetComponent<SideScenario>();
-            if (side != null && side.side == Side.Enemy && b.currentHealth > 0)
-                return true;
-        }
-        return false;
-    }
+    //         Tile tile = tileObj.GetComponent<Tile>();
+    //         if (tile == null) continue;
 
+    //         if (tile.ownerSide != Side.Enemy) continue;
 
-    private void TrySpawnBuilding()
-    {
-        // Get neighbors of this MainBuilding tile
-        List<Vector2Int> neighbors = grid.GetCardinalNeighbors(myCoord);
-        List<Tile> candidateTiles = new List<Tile>();
+    //         if (!tile.hasBuilding)
+    //             tile.SetOpen(true);
 
-        foreach (var coord in neighbors)
-        {
-            GameObject tileObj = grid.GetCube(coord);
-            if (tileObj == null) continue;
+    //         if (tile.isOpen && !tile.hasBuilding)
+    //             candidateTiles.Add(tile);
+    //     }
 
-            Tile tile = tileObj.GetComponent<Tile>();
-            if (tile == null) continue;
+    //     if (candidateTiles.Count == 0 || enemyBuildingPrefabs == null || enemyBuildingPrefabs.Length == 0) return;
 
-            if (tile.ownerSide != Side.Enemy) continue;
+    //     // Pick random tile + random building prefab
+    //     Tile chosenTile = candidateTiles[Random.Range(0, candidateTiles.Count)];
+    //     GameObject prefab = enemyBuildingPrefabs[Random.Range(0, enemyBuildingPrefabs.Length)];
 
-            if (!tile.hasBuilding)
-                tile.SetOpen(true);
+    //     Vector3 pos = chosenTile.transform.position + Vector3.up * yOffset;
+    //     GameObject building = Instantiate(prefab, pos, Quaternion.identity);
 
-            if (tile.isOpen && !tile.hasBuilding)
-                candidateTiles.Add(tile);
-        }
+    //     // Assign side
+    //     SideScenario side = building.GetComponent<SideScenario>();
+    //     if (side != null) side.side = Side.Enemy;
 
-        if (candidateTiles.Count == 0 || enemyBuildingPrefabs == null || enemyBuildingPrefabs.Length == 0) return;
+    //     // Apply enemy material from the correct BuildingSlot
+    //     AllFactionsData.BuildingSlot slot = FindSlotForPrefab(prefab);
+    //     if (slot != null)
+    //     {
+    //         Renderer rend = building.GetComponentInChildren<Renderer>();
+    //         if (rend != null && slot.enemyMaterial != null)
+    //         {
+    //             rend.material = slot.enemyMaterial;
+    //         }
+    //     }
 
-        // Pick random tile + random building prefab
-        Tile chosenTile = candidateTiles[Random.Range(0, candidateTiles.Count)];
-        GameObject prefab = enemyBuildingPrefabs[Random.Range(0, enemyBuildingPrefabs.Length)];
+    //     // Mark tile as occupied
+    //     chosenTile.SetBuildingPlaced();
 
-        Vector3 pos = chosenTile.transform.position + Vector3.up * yOffset;
-        GameObject building = Instantiate(prefab, pos, Quaternion.identity);
+    //     //// Debug.Log($"Enemy spawned {prefab.name} at {chosenTile.name}");
+    // }
 
-        // Assign side
-        SideScenario side = building.GetComponent<SideScenario>();
-        if (side != null) side.side = Side.Enemy;
+    // // Helper: find the BuildingSlot that owns this prefab
+    // private AllFactionsData.BuildingSlot FindSlotForPrefab(GameObject prefab)
+    // {
+    //     if (prefab == allFactionsData.pastGoldBuilding.prefab) return allFactionsData.pastGoldBuilding;
+    //     if (prefab == allFactionsData.pastInfantryBuilding.prefab) return allFactionsData.pastInfantryBuilding;
+    //     if (prefab == allFactionsData.pastTurretBuilding.prefab) return allFactionsData.pastTurretBuilding;
 
-        // Apply enemy material from the correct BuildingSlot
-        AllFactionsData.BuildingSlot slot = FindSlotForPrefab(prefab);
-        if (slot != null)
-        {
-            Renderer rend = building.GetComponentInChildren<Renderer>();
-            if (rend != null && slot.enemyMaterial != null)
-            {
-                rend.material = slot.enemyMaterial;
-            }
-        }
+    //     if (prefab == allFactionsData.presentGoldBuilding.prefab) return allFactionsData.presentGoldBuilding;
+    //     if (prefab == allFactionsData.presentInfantryBuilding.prefab) return allFactionsData.presentInfantryBuilding;
+    //     if (prefab == allFactionsData.presentTurretBuilding.prefab) return allFactionsData.presentTurretBuilding;
 
-        // Mark tile as occupied
-        chosenTile.SetBuildingPlaced();
+    //     if (prefab == allFactionsData.futureGoldBuilding.prefab) return allFactionsData.futureGoldBuilding;
+    //     if (prefab == allFactionsData.futureInfantryBuilding.prefab) return allFactionsData.futureInfantryBuilding;
+    //     if (prefab == allFactionsData.futureTurretBuilding.prefab) return allFactionsData.futureTurretBuilding;
 
-        //// Debug.Log($"Enemy spawned {prefab.name} at {chosenTile.name}");
-    }
+    //     if (prefab == allFactionsData.monsterGoldBuilding.prefab) return allFactionsData.monsterGoldBuilding;
+    //     if (prefab == allFactionsData.monsterInfantryBuilding.prefab) return allFactionsData.monsterInfantryBuilding;
+    //     if (prefab == allFactionsData.monsterTurretBuilding.prefab) return allFactionsData.monsterTurretBuilding;
 
-    // Helper: find the BuildingSlot that owns this prefab
-    private AllFactionsData.BuildingSlot FindSlotForPrefab(GameObject prefab)
-    {
-        if (prefab == allFactionsData.pastGoldBuilding.prefab) return allFactionsData.pastGoldBuilding;
-        if (prefab == allFactionsData.pastInfantryBuilding.prefab) return allFactionsData.pastInfantryBuilding;
-        if (prefab == allFactionsData.pastTurretBuilding.prefab) return allFactionsData.pastTurretBuilding;
-
-        if (prefab == allFactionsData.presentGoldBuilding.prefab) return allFactionsData.presentGoldBuilding;
-        if (prefab == allFactionsData.presentInfantryBuilding.prefab) return allFactionsData.presentInfantryBuilding;
-        if (prefab == allFactionsData.presentTurretBuilding.prefab) return allFactionsData.presentTurretBuilding;
-
-        if (prefab == allFactionsData.futureGoldBuilding.prefab) return allFactionsData.futureGoldBuilding;
-        if (prefab == allFactionsData.futureInfantryBuilding.prefab) return allFactionsData.futureInfantryBuilding;
-        if (prefab == allFactionsData.futureTurretBuilding.prefab) return allFactionsData.futureTurretBuilding;
-
-        if (prefab == allFactionsData.monsterGoldBuilding.prefab) return allFactionsData.monsterGoldBuilding;
-        if (prefab == allFactionsData.monsterInfantryBuilding.prefab) return allFactionsData.monsterInfantryBuilding;
-        if (prefab == allFactionsData.monsterTurretBuilding.prefab) return allFactionsData.monsterTurretBuilding;
-
-        return null;
-    }
+    //     return null;
+    // }
 
 }

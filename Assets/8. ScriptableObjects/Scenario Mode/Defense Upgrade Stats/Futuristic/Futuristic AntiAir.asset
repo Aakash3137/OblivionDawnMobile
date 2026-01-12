@@ -13,21 +13,36 @@ MonoBehaviour:
   m_Name: Futuristic AntiAir
   m_EditorClassIdentifier: 
   defenseBuildingName: 
-  defenseBuildingType: 0
-  defenseUpgradeData:
-  - level: 0
-    buildingFireRate: 0
-    buildingAttackDamage: 0
-    buildingAttackRange: 0
-  - level: 1
-    buildingFireRate: 0
-    buildingAttackDamage: 0
-    buildingAttackRange: 0
-  - level: 2
-    buildingFireRate: 0
-    buildingAttackDamage: 0
-    buildingAttackRange: 0
-  - level: 3
-    buildingFireRate: 0
-    buildingAttackDamage: 0
-    buildingAttackRange: 0
+  defenseType: 0
+  projectilePrefab: {fileID: 0}
+  defenseFaction: 2
+  defenseSide: 0
+  defenseSpawnLevel: 0
+  defenseLevelData:
+  - defenseLevel: 0
+    defenseBuildTime: 0
+    defenseVisuals:
+      upgradeMesh: {fileID: 0}
+      playerUnitMaterial: {fileID: 0}
+      enemyUnitMaterial: {fileID: 0}
+    defenseBasicStats:
+      maxHealth: 0
+      armour: 0
+    defenseRangeStats:
+      DetectionRange: 0
+      AttackRange: 0
+    defenseVisionAngles:
+      narrowViewAngle: 0
+      wideViewAngle: 0
+    defenseAttackTargets:
+      canAttackAir: 0
+      canAttackGround: 0
+    defenseUpgradeCosts:
+    - resourceType: 0
+      resourceCost: 0
+    - resourceType: 1
+      resourceCost: 0
+    - resourceType: 2
+      resourceCost: 0
+    - resourceType: 3
+      resourceCost: 0

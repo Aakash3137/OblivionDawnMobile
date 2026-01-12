@@ -35,7 +35,19 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
         await Awaitable.WaitForSecondsAsync(0.1f);
         var slot = GetSlot(GameData.SelectedFaction, buildingType);
-        cachedCosts = slot.prefab.GetComponent<BuildingStats>().buildingStats.buildingLevelData[0].buildingUpgradeCosts;
+
+        if (slot.prefab.TryGetComponent<BuildingStats>(out var slotBuildingStats))
+            cachedCosts = slotBuildingStats.buildingStats.buildingLevelData[0].buildingUpgradeCosts;
+        else if (slot.prefab.TryGetComponent<WallParent>(out var wallParent))
+        {
+            //cachedCosts = wallParent.wallParentUpgradeCosts;
+            Debug.Log("Found wall");
+        }
+        else
+            Debug.Log("Wall not yet implemented");
+
+        if (cachedCosts == null)
+            Debug.Log("Not cached costs");
 
         UpdateButtonInteractivity();
     }
@@ -177,6 +189,8 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
                 return factionData.pastAntiTankBuilding;
             case ScenarioDefenseType.Turret:
                 return factionData.pastTurretBuilding;
+            case ScenarioDefenseType.Wall:
+                return factionData.pastWallBuilding;
             default:
                 return null;
         }
@@ -235,6 +249,8 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
                 return factionData.pastAirBuilding;
             case ScenarioUnitType.Infantry:
                 return factionData.pastInfantryBuilding;
+            case ScenarioUnitType.Melee:
+                return factionData.pastMeleeBuilding;
             case ScenarioUnitType.Tank:
                 return factionData.pastTankBuilding;
             default:

@@ -64,19 +64,13 @@ public class MainBuildingSpawner : MonoBehaviour
         SpawnEntry(rootPoint, slots[0], side, "MainBuilding");
     }
 
- void SpawnEntry(Transform point, AllFactionsData.BuildingSlot slot, Side side, string label)
+    void SpawnEntry(Transform point, AllFactionsData.BuildingSlot slot, Side side, string label)
     {
         if (slot == null || slot.prefab == null) return;
 
         var pos = point.position + Vector3.up * yOffset;
-        var go = Instantiate(slot.prefab, pos, Quaternion.identity, point);
 
-        var unitSide = go.GetComponent<SideScenario>();
-        if (unitSide != null)
-        {
-            unitSide.side = side;
-            unitSide.ApplySideMaterial(slot);
-        }
+        Instantiate(slot.prefab, pos, Quaternion.identity, point);
 
         Debug.Log($"[Spawner] Spawned {label} for {side}: {slot.prefab.name}");
 

@@ -2,15 +2,15 @@ using UnityEngine;
 
 public class BuildingStats : Stats
 {
-    public BuildingUpgradeDataSO buildingStats;
+    [field: SerializeField]
+    public BuildingUpgradeDataSO buildingStats { get; private set; }
+    public ScenarioBuildingType buildingType { get; private set; }
     public BuildingUpgradeData buildingData { get; private set; }
     public UpgradeCost[] buildingUpgradeCosts { get; private set; }
 
 
     internal override void Start()
     {
-        base.Start();
-
         if (buildingStats == null)
             Debug.Log($"<color=red>Building {name} missing BuildingStats. Assign the script.</color>");
 
@@ -19,10 +19,19 @@ public class BuildingStats : Stats
         visuals = buildingData.buildingVisuals;
         basicStats = buildingData.buildingBasicStats;
 
-        maxHealth = basicStats.maxHealth;
-        currentHealth = maxHealth;
-
         buildingUpgradeCosts = buildingData.buildingUpgradeCosts;
+
+        buildingType = buildingStats.buildingType;
+
+        side = GetComponentInParent<Tile>().ownerSide;
+
+        if (visuals.playerUnitMaterial == null)
+        {
+            Debug.Log($"<color=magenta>Assign materials for {name} on {buildingStats.name} ScriptableObject</color>");
+            return;
+        }
+
+        base.Start();
     }
 
     // public void UpgradeBuilding()
@@ -45,6 +54,7 @@ public class BuildingStats : Stats
     void OnDestroy()
     {
         Tile currentTile = GetComponentInParent<Tile>();
+
         if (currentTile != null)
             currentTile.hasBuilding = false;
     }

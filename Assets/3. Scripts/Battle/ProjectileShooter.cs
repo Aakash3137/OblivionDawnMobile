@@ -11,11 +11,11 @@ public class ProjectileShooter : MonoBehaviour
     public Material playerTrailMaterial;
     public Material enemyTrailMaterial;
 
-    private SideScenario sideScenario;
+    private Side projectileSide;
 
-    void Awake()
+    void Start()
     {
-        sideScenario = GetComponent<SideScenario>();
+        projectileSide = GetComponent<Stats>().side;
     }
 
     public void Fire(Stats target)
@@ -41,11 +41,6 @@ public class ProjectileShooter : MonoBehaviour
 
     Material GetTrailMaterial()
     {
-        if (sideScenario == null)
-            return null;
-
-        return sideScenario.side == Side.Player
-            ? playerTrailMaterial
-            : enemyTrailMaterial;
+        return projectileSide == Side.Player ? playerTrailMaterial : enemyTrailMaterial;
     }
 }
