@@ -3,18 +3,19 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Defense Upgrade Stats", menuName = "Scenario Stats/Defense Upgrade Stats")]
 public class DefenseUpgradeStatsSO : ScriptableObject
 {
-    [Header("Defense Building specific stats and stats per level")]
+    [Header("Defense health stats and Resource cost for upgrades")]
     public string defenseBuildingName;
     public ScenarioDefenseType defenseBuildingType;
+    public int defenseSpawnLevel;
 
-    [Tooltip("Defense building Stats per level")]
-    public DefenseUpgradeData[] defenseUpgradeData;
+    [Header("Defense starts at Level 0 and goes up")]
+    public DefenseUpgradeData[] defenseLevelData;
 
     private void OnValidate()
     {
-        for (int i = 0; i < defenseUpgradeData.Length; i++)
+        for (int i = 0; i < defenseLevelData.Length; i++)
         {
-            defenseUpgradeData[i].level = i;
+            defenseLevelData[i].level = i;
         }
     }
 }
@@ -23,7 +24,10 @@ public class DefenseUpgradeStatsSO : ScriptableObject
 public class DefenseUpgradeData
 {
     public int level;
-    public float buildingFireRate;
-    public float buildingAttackDamage;
-    public float buildingAttackRange;
+    public Visuals defenseVisuals;
+    public BasicStats defenseBasicStats;
+
+    [Header("Resource costs required for this upgrade")]
+    [Tooltip("Resource Type are auto set from enum values of ScenarioResourceType")]
+    public UpgradeCost[] defenseUpgradeCosts;
 }

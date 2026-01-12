@@ -5,17 +5,19 @@ public class ResourceGen : MonoBehaviour
 {
     [SerializeField] private ResourceGenerationStatsSO buildingResourceData;
     public bool autoProduce = true;
-    private SideScenario buildingSide;   // building's faction marker
+    private SideScenario buildingSide;
     private BuildingStats buildingStats;
 
     [Header(" EDITOR VIEW ONLY ")]
-    [SerializeField] private int GeneratedResourceAmount; //Generation Data
+    [SerializeField] private int GeneratedResourceAmount;
     private string ResourceName;
     private int buildingCurrentLevel;
     private ScenarioResourceType resourceType;
     private int resourceAmountPerBatch;
     public float resourceTimeToProduce { get; private set; }
     private float resourceGenerationRate;
+    private PlayerResourceManager prmInstance;
+
 
     private void Awake()
     {
@@ -38,6 +40,7 @@ public class ResourceGen : MonoBehaviour
 
     private async Awaitable Start()
     {
+        prmInstance = PlayerResourceManager.Instance;
         GenerateResource();
     }
     public void UpgradeBuilding()
@@ -58,19 +61,19 @@ public class ResourceGen : MonoBehaviour
         if (buildingSide.side != Side.Player)
             yield break;
 
-        PlayerResourceManager.Instance.SetResourceGenerationRate(resourceType, resourceGenerationRate);
+        prmInstance.SetResourceGenerationRate(resourceType, resourceGenerationRate);
 
         while (autoProduce && buildingStats.currentHealth > 0)
         {
             yield return new WaitForSeconds(resourceTimeToProduce);
-            PlayerResourceManager.Instance.AddResources(resourceType, resourceAmountPerBatch);
+            prmInstance.AddResources(resourceType, resourceAmountPerBatch);
             GeneratedResourceAmount += resourceAmountPerBatch;
             // Debug.Log($"Generated {ResourceName}. Current amount: {GeneratedResourceAmount}");
         }
     }
 
-    void OnDisable()
+    private void OnDestroy()
     {
-        PlayerResourceManager.Instance.SetResourceGenerationRate(resourceType, -resourceGenerationRate);
+        prmInstance.SetResourceGenerationRate(resourceType, -resourceGenerationRate);
     }
 }
