@@ -13,7 +13,7 @@ namespace Ricimi
         public GameObject popupPrefab;
 
         protected Canvas m_canvas;
-        public GameObject m_popup;
+        protected GameObject m_popup;
 
         protected void Start()
         {
@@ -25,13 +25,6 @@ namespace Ricimi
             m_popup = Instantiate(popupPrefab, m_canvas.transform, false);
             m_popup.SetActive(true);
             m_popup.GetComponent<Popup>().Open();
-        }
-
-        public void OnlyOpen()
-        {
-            m_popup = popupPrefab;
-            m_popup.SetActive(true);
-            //m_popup.GetComponent<Popup>().Open();
         }
     }
 }
