@@ -1,49 +1,32 @@
-using UnityEngine;
+using System;
 
-public class WallStats : Stats
+public class WallStats : BuildingStats
 {
-    [field: SerializeField]
-    public DefenseUpgradeStatsSO defenseStats { get; private set; }
-    public ScenarioDefenseType defenseType { get; private set; }
-    public DefenseUpgradeData defenseData { get; private set; }
-    public UpgradeCost[] defenseUpgradeCosts { get; private set; }
-
+    public Action<float, float> onWallEnableOrDisable;
+    public Action onWallDestroyed;
     private WallParent wallParent;
-
 
     internal override void Start()
     {
-        wallParent = GetComponentInParent<WallParent>();
-
-        if (defenseStats == null)
-            Debug.Log($"<color=red>Building {name} missing BuildingStats. Assign the script.</color>");
-
-        level = defenseStats.defenseSpawnLevel;
-        defenseData = defenseStats.defenseLevelData[level];
-        visuals = defenseData.defenseVisuals;
-        basicStats = defenseData.defenseBasicStats;
-        defenseUpgradeCosts = defenseData.defenseUpgradeCosts;
-
-        defenseType = defenseStats.defenseType;
-
-        side = GetComponentInParent<Tile>().ownerSide;
-
-        if (visuals.playerUnitMaterial == null)
-        {
-            Debug.Log($"<color=magenta>Assign materials for {name} on {defenseStats.name} ScriptableObject</color>");
-            return;
-        }
-
         base.Start();
+        wallParent = GetComponentInParent<WallParent>();
     }
 
     public override void TakeDamage(float amount)
     {
         wallParent.DamageWall(amount);
-
-        if (currentHealth <= 0)
-        {
-            gameObject.SetActive(false);
-        }
+        base.TakeDamage(amount);
+    }
+    private void OnEnable()
+    {
+        onWallEnableOrDisable?.Invoke(currentHealth, basicStats.maxHealth);
+    }
+    private void OnDisable()
+    {
+        onWallEnableOrDisable?.Invoke(currentHealth, basicStats.maxHealth);
+    }
+    internal override void OnDestroy()
+    {
+        onWallDestroyed?.Invoke();
     }
 }

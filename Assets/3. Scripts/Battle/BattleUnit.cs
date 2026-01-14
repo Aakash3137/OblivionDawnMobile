@@ -96,7 +96,7 @@ public class BattleUnit : MonoBehaviour
         {
             if (!isAirUnit) agent.isStopped = true;
         }
-        
+
         // air units dont find targets until airborne
         if (isAirUnit && airUnit != null && !airUnit.IsAirborne())
         {
@@ -104,7 +104,7 @@ public class BattleUnit : MonoBehaviour
                 animator.SetFloat("Move", moveSpeed);
             return;
         }
-        
+
         // find target
         if (target == null)
         {
@@ -174,7 +174,7 @@ public class BattleUnit : MonoBehaviour
 
         if (!isAirUnit) UpdateTileOwnership();
     }
-    
+
 
     #region Tile Ownership
     // --- Tile ownership ---
@@ -230,7 +230,7 @@ public class BattleUnit : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, -135, 0);
         }
     }
-    
+
 
     void FindTarget()
     {
@@ -277,7 +277,7 @@ public class BattleUnit : MonoBehaviour
                 if (targetAir != null && !targetAir.CanBeTargeted()) continue;
                 if (!unitStats.canAttackAir) continue;
             }
-            
+
             if (!unit.isAirUnit && !unitStats.canAttackGround)
                 continue;
 
@@ -297,13 +297,13 @@ public class BattleUnit : MonoBehaviour
             // only assign if switching
             target = bestTarget.gameObject;
             attackTimer = 0f;
-            
+
             if (!isAirUnit)
             {
                 agent.ResetPath();
                 agent.isStopped = false;
             }
-            
+
             if (bestTarget is UnitStats)
                 primaryTarget = target;
             else

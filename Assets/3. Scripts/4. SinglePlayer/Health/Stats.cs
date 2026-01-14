@@ -15,7 +15,7 @@ public class Stats : MonoBehaviour
     private FadeHealthBar healthBarFade;
     private HealthProgress healthBar;
 
-    [Header("Unit Type")]
+    [Header("Bools")]
     public bool isAirUnit;
     public bool canAttackAir = false;
     public bool canAttackGround = true;
@@ -27,13 +27,9 @@ public class Stats : MonoBehaviour
         hitCollider = GetComponent<Collider>();
 
         if (healthBar != null)
-        {
             healthBar.UpdateFillAmount(currentHealth / basicStats.maxHealth);
-        }
-        else
-        {
-            //Debug.Log($"<color=#FFC0CB>{name} missing HealthBar. Assign the script.</color>");
-        }
+        // else
+        //Debug.Log($"<color=#FFC0CB>{name} missing HealthBar. Assign the script.</color>");
 
     }
     internal virtual void Start()
@@ -62,7 +58,7 @@ public class Stats : MonoBehaviour
         currentHealth = Mathf.Clamp(currentHealth, 0, basicStats.maxHealth);
         if (healthBar != null)
         {
-            healthBar.FadeInHealthBar();
+            healthBar.UpdateHealthBar();
             healthBar.UpdateFillAmount(currentHealth / basicStats.maxHealth);
         }
         if (healthBarFade != null)
@@ -77,7 +73,7 @@ public class Stats : MonoBehaviour
         }
     }
 
-    protected virtual void Die()
+    internal virtual void Die()
     {
         Destroy(gameObject);
     }

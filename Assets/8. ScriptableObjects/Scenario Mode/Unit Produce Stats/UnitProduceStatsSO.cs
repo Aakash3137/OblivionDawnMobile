@@ -6,12 +6,11 @@ public class UnitProduceStatsSO : ScriptableObject
 {
     [Header("Unit health stats and Resource cost for upgrades")]
     public string unitName;
-    public ScenarioUnitType unitType;
+    public ScenarioOffenseType unitType;
     public GameObject unitPrefab;
     public GameObject projectilePrefab;
     public FactionName unitFaction;
     public Side unitSide;
-    public bool isAirUnit;
     public int unitPopulationCost;
     public int unitSpawnLevel;
 
@@ -42,11 +41,15 @@ public class UnitProduceStatsSO : ScriptableObject
             {
                 unitLevelData[i].unitUpgradeCosts[j].resourceType = (ScenarioResourceType)enumValues.GetValue(j);
             }
-        }
 
-        if (unitType == ScenarioUnitType.Air)
-        {
-            isAirUnit = true;
+            if (unitType == ScenarioOffenseType.Air)
+            {
+                unitLevelData[i].unitMobilityStats.canFly = true;
+            }
+            else
+            {
+                unitLevelData[i].unitMobilityStats.flySpeed = 0f;
+            }
         }
 
         unitSpawnLevel = Mathf.Clamp(unitSpawnLevel, 0, unitLevelData.Length - 1);
@@ -79,6 +82,7 @@ public struct BasicStats
     public float maxHealth;
     public float armour;
 }
+
 [Serializable]
 public struct Visuals
 {
@@ -86,16 +90,27 @@ public struct Visuals
     public Material playerUnitMaterial;
     public Material enemyUnitMaterial;
 }
+
 [Serializable]
 public struct UpgradeCost
 {
     public ScenarioResourceType resourceType;
     public int resourceCost;
 }
+
 [Serializable]
 public struct MobilityStats
 {
+    public bool canFly;
     public float moveSpeed;
+    public float flySpeed;
+}
+
+[Serializable]
+public struct AttackTargets
+{
+    public bool canAttackAir;
+    public bool canAttackGround;
 }
 
 [Serializable]
@@ -104,18 +119,14 @@ public struct VisionAngles
     public float narrowViewAngle;
     public float wideViewAngle;
 }
+
 [Serializable]
 public struct RangeStats
 {
     public float DetectionRange;
     public float AttackRange;
 }
-[Serializable]
-public struct AttackTargets
-{
-    public bool canAttackAir;
-    public bool canAttackGround;
-}
+
 [Serializable]
 public struct FlyStats
 {
@@ -126,3 +137,4 @@ public struct FlyStats
     public float evadeRadius;
     public float attackAngleTolerance;
 }
+

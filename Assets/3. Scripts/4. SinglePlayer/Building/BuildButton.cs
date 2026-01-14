@@ -4,53 +4,94 @@ using UnityEngine.EventSystems;
 
 public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    [SerializeField] private ScenarioBuildingType buildingType;
-    [SerializeField] private TileUIPanel tileUIPanel;
+    public ScenarioBuildingType buildingType;
+    public PlayerResourceManager prmInstance;
+    public TileUIPanel tileUIPanel;
+    public CostPanelManager costPanelManager;
+
+    [SerializeField] private ScenarioOffenseType offenseType;
     [SerializeField] private ScenarioDefenseType defenseType;
     [SerializeField] private ScenarioResourceType resourceType;
-    [SerializeField] private ScenarioUnitType unitType;
-    private Button button;
 
-    [SerializeField] private CostPanelManager costPanelManager;
+    public GameObject buildingToSpawn;
+    private Button button;
     private UpgradeCost[] cachedCosts;
 
-    private async Awaitable OnEnable()
-    {
-        button.onClick.AddListener(OnClick);
-
-        await Awaitable.WaitForSecondsAsync(0.1f);
-        PlayerResourceManager.Instance.OnResourcesChanged += UpdateButtonInteractivity;
-    }
-
-    private async Awaitable OnDisable()
-    {
-        button.onClick.RemoveListener(OnClick);
-
-        await Awaitable.WaitForSecondsAsync(0.1f);
-        PlayerResourceManager.Instance.OnResourcesChanged -= UpdateButtonInteractivity;
-    }
-    private async Awaitable Awake()
+    private void Start()
     {
         button = GetComponent<Button>();
 
-        await Awaitable.WaitForSecondsAsync(0.1f);
-        var slot = GetSlot(GameData.SelectedFaction, buildingType);
+        button.onClick.AddListener(OnClick);
 
-        if (slot.prefab.TryGetComponent<BuildingStats>(out var slotBuildingStats))
-            cachedCosts = slotBuildingStats.buildingStats.buildingLevelData[0].buildingUpgradeCosts;
-        else if (slot.prefab.TryGetComponent<WallParent>(out var wallParent))
+        buildingToSpawn = GetSlot(GameData.SelectedFaction, buildingType);
+
+        prmInstance.OnResourcesChanged += UpdateButtonInteractivity;
+
+        if (buildingToSpawn.TryGetComponent<BuildingStats>(out var spawnBuildingStats))
         {
-            //cachedCosts = wallParent.wallParentUpgradeCosts;
-            Debug.Log("Found wall");
+            int spawnLevel = spawnBuildingStats.buildingStats.buildingSpawnLevel;
+            cachedCosts = spawnBuildingStats.buildingStats.buildingLevelData[spawnLevel].buildingUpgradeCosts;
         }
         else
-            Debug.Log("Wall not yet implemented");
-
-        if (cachedCosts == null)
-            Debug.Log("Not cached costs");
-
-        UpdateButtonInteractivity();
+        {
+            Debug.Log($"<color=red>No BuildingStats found on {buildingToSpawn.name}</color>");
+        }
     }
+
+    private void UpdateButtonInteractivity()
+    {
+        if (cachedCosts == null || !prmInstance.HasResources(cachedCosts))
+        {
+            button.interactable = false;
+        }
+        else
+        {
+            button.interactable = true;
+        }
+    }
+
+    private void OnClick()
+    {
+        if (buildingToSpawn != null && buildingToSpawn != null)
+        {
+            tileUIPanel.PlaceBuilding(buildingToSpawn);
+            costPanelManager.Hide();
+        }
+    }
+
+    private GameObject GetSlot(FactionName faction, ScenarioBuildingType type)
+    {
+        var data = GameData.AllFactionsData;
+        switch (faction)
+        {
+            case FactionName.Medieval:
+                if (type == ScenarioBuildingType.MainBuilding) return data.medievalMainBuilding;
+                if (type == ScenarioBuildingType.DefenseBuilding) return GetMedievalDefenseBuilding(data);
+                if (type == ScenarioBuildingType.OffenseBuilding) return GetMedievalUnitBuilding(data);
+                if (type == ScenarioBuildingType.ResourceBuilding) return GetMedievalResourceBuilding(data);
+                break;
+            case FactionName.Present:
+                if (type == ScenarioBuildingType.MainBuilding) return data.presentMainBuilding;
+                if (type == ScenarioBuildingType.DefenseBuilding) return data.presentTurretBuilding;
+                if (type == ScenarioBuildingType.OffenseBuilding) return data.presentInfantryBuilding;
+                if (type == ScenarioBuildingType.ResourceBuilding) return GetPresentResourceBuilding(data);
+                break;
+            case FactionName.Futuristic:
+                if (type == ScenarioBuildingType.MainBuilding) return data.futureMainBuilding;
+                if (type == ScenarioBuildingType.DefenseBuilding) return data.futureTurretBuilding;
+                if (type == ScenarioBuildingType.OffenseBuilding) return data.futureInfantryBuilding;
+                if (type == ScenarioBuildingType.ResourceBuilding) return GetFuturisticResourceBuilding(data);
+                break;
+            case FactionName.Galvadore:
+                if (type == ScenarioBuildingType.MainBuilding) return data.galvadoreMainBuilding;
+                if (type == ScenarioBuildingType.DefenseBuilding) return data.galvadoreTurretBuilding;
+                if (type == ScenarioBuildingType.OffenseBuilding) return data.galvadoreInfantryBuilding;
+                if (type == ScenarioBuildingType.ResourceBuilding) return GetGalvadoreResourceBuilding(data);
+                break;
+        }
+        return null;
+    }
+
 
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -61,74 +102,31 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     {
         costPanelManager.Hide();
     }
-    private void UpdateButtonInteractivity()
+
+    private void OnDestroy()
     {
-        if (cachedCosts == null || !PlayerResourceManager.Instance.HasResources(cachedCosts))
-            button.interactable = false;
-        else
-            button.interactable = true;
+        button.onClick.RemoveListener(OnClick);
+        prmInstance.OnResourcesChanged -= UpdateButtonInteractivity;
     }
 
-    void OnClick()
-    {
-        var slot = GetSlot(GameData.SelectedFaction, buildingType);
-        if (slot != null && slot.prefab != null)
-        {
-            tileUIPanel.PlaceBuilding(slot);
-            costPanelManager.Hide();
-        }
-    }
-
-    AllFactionsData.BuildingSlot GetSlot(FactionName faction, ScenarioBuildingType type)
-    {
-        var data = GameData.AllFactionsData;
-        switch (faction)
-        {
-            case FactionName.Medieval:
-                if (type == ScenarioBuildingType.MainBuilding) return data.pastMainBuilding;
-                if (type == ScenarioBuildingType.DefenseBuilding) return GetMedievalDefenseBuilding(data);
-                if (type == ScenarioBuildingType.UnitBuilding) return GetMedievalUnitBuilding(data);
-                if (type == ScenarioBuildingType.ResourceBuilding) return GetMedievalResourceBuilding(data);
-                break;
-            case FactionName.Present:
-                if (type == ScenarioBuildingType.MainBuilding) return data.presentMainBuilding;
-                if (type == ScenarioBuildingType.DefenseBuilding) return data.presentTurretBuilding;
-                if (type == ScenarioBuildingType.UnitBuilding) return data.presentInfantryBuilding;
-                if (type == ScenarioBuildingType.ResourceBuilding) return GetPresentResourceBuilding(data);
-                break;
-            case FactionName.Futuristic:
-                if (type == ScenarioBuildingType.MainBuilding) return data.futureMainBuilding;
-                if (type == ScenarioBuildingType.DefenseBuilding) return data.futureTurretBuilding;
-                if (type == ScenarioBuildingType.UnitBuilding) return data.futureInfantryBuilding;
-                if (type == ScenarioBuildingType.ResourceBuilding) return GetFuturisticResourceBuilding(data);
-                break;
-            case FactionName.Galvadore:
-                if (type == ScenarioBuildingType.MainBuilding) return data.monsterMainBuilding;
-                if (type == ScenarioBuildingType.DefenseBuilding) return data.monsterTurretBuilding;
-                if (type == ScenarioBuildingType.UnitBuilding) return data.monsterInfantryBuilding;
-                if (type == ScenarioBuildingType.ResourceBuilding) return GetGalvadoreResourceBuilding(data);
-                break;
-        }
-        return null;
-    }
-
-    private AllFactionsData.BuildingSlot GetMedievalResourceBuilding(AllFactionsData factionData)
+    public GameObject GetMedievalResourceBuilding(AllFactionsData factionData)
     {
         switch (resourceType)
         {
             case ScenarioResourceType.Food:
-                return factionData.pastFoodBuilding;
+                return factionData.medievalFoodBuilding;
             case ScenarioResourceType.Gold:
-                return factionData.pastGoldBuilding;
+                return factionData.medievalGoldBuilding;
             case ScenarioResourceType.Metal:
-                return factionData.pastMetalBuilding;
+                return factionData.medievalMetalBuilding;
             case ScenarioResourceType.Power:
-                return factionData.pastPowerBuilding;
+                return factionData.medievalPowerBuilding;
             default:
                 return null;
         }
     }
-    private AllFactionsData.BuildingSlot GetPresentResourceBuilding(AllFactionsData factionData)
+
+    private GameObject GetPresentResourceBuilding(AllFactionsData factionData)
     {
         switch (resourceType)
         {
@@ -145,7 +143,7 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         }
     }
 
-    private AllFactionsData.BuildingSlot GetFuturisticResourceBuilding(AllFactionsData factionData)
+    private GameObject GetFuturisticResourceBuilding(AllFactionsData factionData)
     {
         switch (resourceType)
         {
@@ -162,41 +160,41 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         }
     }
 
-    private AllFactionsData.BuildingSlot GetGalvadoreResourceBuilding(AllFactionsData factionData)
+    private GameObject GetGalvadoreResourceBuilding(AllFactionsData factionData)
     {
         switch (resourceType)
         {
             case ScenarioResourceType.Food:
-                return factionData.monsterFoodBuilding;
+                return factionData.galvadoreFoodBuilding;
             case ScenarioResourceType.Gold:
-                return factionData.monsterGoldBuilding;
+                return factionData.galvadoreGoldBuilding;
             case ScenarioResourceType.Metal:
-                return factionData.monsterMetalBuilding;
+                return factionData.galvadoreMetalBuilding;
             case ScenarioResourceType.Power:
-                return factionData.monsterPowerBuilding;
+                return factionData.galvadorePowerBuilding;
             default:
                 return null;
         }
     }
 
-    private AllFactionsData.BuildingSlot GetMedievalDefenseBuilding(AllFactionsData factionData)
+    private GameObject GetMedievalDefenseBuilding(AllFactionsData factionData)
     {
         switch (defenseType)
         {
             case ScenarioDefenseType.AntiAir:
-                return factionData.pastAntiAirBuilding;
+                return factionData.medievalAntiAirBuilding;
             case ScenarioDefenseType.AntiTank:
-                return factionData.pastAntiTankBuilding;
+                return factionData.medievalAntiTankBuilding;
             case ScenarioDefenseType.Turret:
                 return factionData.pastTurretBuilding;
             case ScenarioDefenseType.Wall:
-                return factionData.pastWallBuilding;
+                return factionData.medievalWallBuilding;
             default:
                 return null;
         }
     }
 
-    private AllFactionsData.BuildingSlot GetPresentDefenseBuilding(AllFactionsData factionData)
+    private GameObject GetPresentDefenseBuilding(AllFactionsData factionData)
     {
         switch (defenseType)
         {
@@ -211,7 +209,7 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         }
     }
 
-    private AllFactionsData.BuildingSlot GetFuturisticDefenseBuilding(AllFactionsData factionData)
+    private GameObject GetFuturisticDefenseBuilding(AllFactionsData factionData)
     {
         switch (defenseType)
         {
@@ -226,78 +224,78 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         }
     }
 
-    private AllFactionsData.BuildingSlot GetGalvadoreDefenseBuilding(AllFactionsData factionData)
+    private GameObject GetGalvadoreDefenseBuilding(AllFactionsData factionData)
     {
         switch (defenseType)
         {
             case ScenarioDefenseType.AntiAir:
-                return factionData.monsterAntiAirBuilding;
+                return factionData.galvadoreAntiAirBuilding;
             case ScenarioDefenseType.AntiTank:
-                return factionData.monsterAntiTankBuilding;
+                return factionData.galvadoreAntiTankBuilding;
             case ScenarioDefenseType.Turret:
-                return factionData.monsterTurretBuilding;
+                return factionData.galvadoreTurretBuilding;
             default:
                 return null;
         }
     }
 
-    private AllFactionsData.BuildingSlot GetMedievalUnitBuilding(AllFactionsData factionData)
+    private GameObject GetMedievalUnitBuilding(AllFactionsData factionData)
     {
-        switch (unitType)
+        switch (offenseType)
         {
-            case ScenarioUnitType.Air:
-                return factionData.pastAirBuilding;
-            case ScenarioUnitType.Infantry:
-                return factionData.pastInfantryBuilding;
-            case ScenarioUnitType.Melee:
-                return factionData.pastMeleeBuilding;
-            case ScenarioUnitType.Tank:
-                return factionData.pastTankBuilding;
+            case ScenarioOffenseType.Air:
+                return factionData.medievalAirBuilding;
+            case ScenarioOffenseType.Infantry:
+                return factionData.medievalInfantryBuilding;
+            case ScenarioOffenseType.Melee:
+                return factionData.medievalMeleeBuilding;
+            case ScenarioOffenseType.Tank:
+                return factionData.medievalTankBuilding;
             default:
                 return null;
         }
     }
 
-    private AllFactionsData.BuildingSlot GetPresentUnitBuilding(AllFactionsData factionData)
+    private GameObject GetPresentUnitBuilding(AllFactionsData factionData)
     {
-        switch (unitType)
+        switch (offenseType)
         {
-            case ScenarioUnitType.Air:
+            case ScenarioOffenseType.Air:
                 return factionData.presentAirBuilding;
-            case ScenarioUnitType.Infantry:
+            case ScenarioOffenseType.Infantry:
                 return factionData.presentInfantryBuilding;
-            case ScenarioUnitType.Tank:
+            case ScenarioOffenseType.Tank:
                 return factionData.presentTankBuilding;
             default:
                 return null;
         }
     }
 
-    private AllFactionsData.BuildingSlot GetFuturisticUnitBuilding(AllFactionsData factionData)
+    private GameObject GetFuturisticUnitBuilding(AllFactionsData factionData)
     {
-        switch (unitType)
+        switch (offenseType)
         {
-            case ScenarioUnitType.Air:
+            case ScenarioOffenseType.Air:
                 return factionData.futureAirBuilding;
-            case ScenarioUnitType.Infantry:
+            case ScenarioOffenseType.Infantry:
                 return factionData.futureInfantryBuilding;
-            case ScenarioUnitType.Tank:
+            case ScenarioOffenseType.Tank:
                 return factionData.futureTankBuilding;
             default:
                 return null;
         }
     }
 
-    private AllFactionsData.BuildingSlot GetGalvadoreUnitBuilding(AllFactionsData factionData)
+    private GameObject GetGalvadoreUnitBuilding(AllFactionsData factionData)
     {
-        switch (unitType)
+        switch (offenseType)
         {
-            case ScenarioUnitType.Air:
-                return factionData.monsterAirBuilding;
-            case ScenarioUnitType.Infantry:
-                return factionData.monsterInfantryBuilding;
-            case ScenarioUnitType.Tank:
-                return factionData.monsterTankBuilding;
+            case ScenarioOffenseType.Air:
+                return factionData.galvadoreAirBuilding;
+            case ScenarioOffenseType.Infantry:
+                return factionData.galvadoreInfantryBuilding;
+            case ScenarioOffenseType.Tank:
+                return factionData.galvadoreTankBuilding;
             default:
                 return null;
         }

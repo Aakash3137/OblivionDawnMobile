@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using LitMotion;
 using LitMotion.Extensions;
 using UnityEngine;
@@ -6,31 +8,43 @@ using UnityEngine;
 public class HealthProgress : ProgressManager
 {
     private CanvasGroup canvasGroup;
+    [SerializeField] private float fadeTime;
+    [SerializeField] private float visibleTime;
+    [SerializeField] private bool isVisible;
+    private MotionHandle fadeHandle;
+    OperationCanceledException fadeCancelToken;
 
     private void Awake()
     {
         canvasGroup = GetComponent<CanvasGroup>();
         canvasGroup.alpha = 0f;
+        isVisible = false;
     }
-    private MotionHandle fadeHandle;
-
-    public void FadeOutHealthBar()
+    public void UpdateHealthBar()
     {
-        // Stop previous fade if still running
-        fadeHandle.TryCancel();
-        fadeHandle = LMotion.Create(1f, 0f, 1f)
-            .WithEase(Ease.OutQuad)
-            .BindToAlpha(canvasGroup)
-            .AddTo(this);
+        if (isVisible)
+            return;
+
+        _ = FadeInAndOutAsync();
     }
 
-    public void FadeInHealthBar()
+    private async Awaitable FadeInAndOutAsync()
     {
-        // Stop previous fade if still running
-        fadeHandle.TryCancel();
-        fadeHandle = LMotion.Create(0f, 1f, 1f)
+        await LMotion.Create(0f, 1f, fadeTime)
             .WithEase(Ease.OutQuad)
             .BindToAlpha(canvasGroup)
-            .AddTo(this);
+            .ToAwaitable(CancelBehavior.Complete, true, destroyCancellationToken);
+
+        isVisible = true;
+
+        await Awaitable.WaitForSecondsAsync(visibleTime);
+
+        await LMotion.Create(1f, 0f, fadeTime)
+            .WithEase(Ease.OutQuad)
+            .BindToAlpha(canvasGroup)
+            .ToAwaitable(CancelBehavior.Complete, true, destroyCancellationToken);
+
+        isVisible = false;
+
     }
 }

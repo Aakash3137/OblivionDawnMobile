@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class TileUIPanel : MonoBehaviour
@@ -6,16 +7,27 @@ public class TileUIPanel : MonoBehaviour
     [Header("Assign in Inspector")]
     [SerializeField] private BuildPanel buildPanel;
     [SerializeField] private WallParent _wallPrefab;
+    private PlayerResourceManager prmInstance;
 
+    private CanvasGroup canvasGroup;
     private bool _mainWallPlaced = false;
     private float _wallYOffset = 1f;
     private Tile currentTile;
+
+    private GameObject spawnedBuilding;
+
+    private void Start()
+    {
+        prmInstance = PlayerResourceManager.Instance;
+        canvasGroup = GetComponentInParent<CanvasGroup>();
+        buildPanel.HideBuildPanel(canvasGroup);
+    }
 
     public void Open(Tile tile)
     {
         currentTile = tile;
 
-        gameObject.SetActive(true);
+        buildPanel.ShowBuildPanel(canvasGroup);
 
         //Debug.Log($"<color=green>[TileUIPanel] Opened for tile {tile.name}</color>");
     }
@@ -23,47 +35,58 @@ public class TileUIPanel : MonoBehaviour
     public void Close()
     {
         currentTile = null;
-        gameObject.SetActive(false);
+        buildPanel.HideBuildPanel(canvasGroup);
     }
 
-    public void PlaceBuilding(AllFactionsData.BuildingSlot slot)
+    public void PlaceBuilding(GameObject buildingPrefab)
     {
-        if (currentTile == null || slot == null || slot.prefab == null) return;
+        if (currentTile == null || buildingPrefab == null || buildingPrefab == null) return;
         if (currentTile.hasBuilding) return;
 
-        if (!CanPlaceBuilding(slot))
+        if (!CanPlaceBuilding(buildingPrefab))
         {
-            if (buildPanel != null) buildPanel.gameObject.SetActive(false);
+            if (buildPanel != null)
+                buildPanel.HideBuildPanel(canvasGroup);
             return;
         }
 
         Vector3 spawnPos = currentTile.transform.position + Vector3.up * 2f;
-        var go = Instantiate(slot.prefab, spawnPos, Quaternion.identity, currentTile.transform);
+
+        spawnedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
 
         currentTile.SetBuildingPlaced();
 
         // Fade out build panel
         if (buildPanel != null)
-            buildPanel.gameObject.SetActive(false);
+            buildPanel.HideBuildPanel(canvasGroup);
 
         PlaceWallsOnMainBuilding();
-
-        if (go.GetComponent<Stats>() != null)
-            PlaceWalls();
-
+        PlaceWalls();
         Close();
     }
 
-    private bool CanPlaceBuilding(AllFactionsData.BuildingSlot slot)
+    private bool CanPlaceBuilding(GameObject buildingPrefab)
     {
-        UpgradeCost[] buildingUpgradeData = slot.prefab.GetComponent<BuildingStats>().buildingStats.buildingLevelData[0].buildingUpgradeCosts;
-        if (buildingUpgradeData == null || !PlayerResourceManager.Instance.HasResources(buildingUpgradeData, true))
+        UpgradeCost[] buildingUpgradeCost = null;
+
+        if (buildingPrefab.TryGetComponent<BuildingStats>(out var spawnBuildingStats))
+        {
+            int spawnLevel = spawnBuildingStats.buildingStats.buildingSpawnLevel;
+            buildingUpgradeCost = spawnBuildingStats.buildingStats.buildingLevelData[spawnLevel].buildingUpgradeCosts;
+        }
+        else
+        {
+            Debug.Log($"<color=red>No BuildingStats found on {buildingPrefab.name}</color>");
+        }
+
+        if (buildingUpgradeCost == null || !prmInstance.HasResources(buildingUpgradeCost, true))
         {
             Debug.Log("<color=red>Insufficient Resources Building cannot be placed/upgraded</color>");
             return false;
         }
 
-        PlayerResourceManager.Instance.SpendResources(buildingUpgradeData);
+        prmInstance.SpendResources(buildingUpgradeCost);
+
         return true;
     }
 
@@ -84,19 +107,9 @@ public class TileUIPanel : MonoBehaviour
         adjacentTiles[2] = cgmInstance.GetCube(adjacentTileCords[2])?.GetComponent<Tile>();
         adjacentTiles[3] = cgmInstance.GetCube(adjacentTileCords[3])?.GetComponent<Tile>();
 
-        // List<Tile> adjacentTiles = new List<Tile>();
-
-        // foreach (var cord in adjacentTileCords)
-        // {
-        //     if (cgmInstance.GetCube(cord) == null)
-        //         adjacentTiles.Add(new GameObject().AddComponent<Tile>());
-        //     else
-        //         adjacentTiles.Add(cgmInstance.GetCube(cord).GetComponent<Tile>());
-        // }
-
         WallParent currentWall = Instantiate(_wallPrefab,
             new Vector3(_currentTileCords.x, _wallYOffset, _currentTileCords.z),
-            Quaternion.identity, currentTile.transform);
+            Quaternion.identity, spawnedBuilding.transform);
 
         for (int i = 0; i < adjacentTiles.Length; i++)
         {

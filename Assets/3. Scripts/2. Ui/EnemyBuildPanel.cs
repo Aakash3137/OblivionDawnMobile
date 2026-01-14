@@ -19,29 +19,29 @@ public class EnemyBuildPanel : MonoBehaviour
     }
     public void PlaceEnemyAirBuilding()
     {
-        var slot = factionData.pastAirBuilding;
+        var slot = factionData.medievalAirBuilding;
         PlaceBuilding(slot);
     }
     public void PlaceEnemyInfantryBuilding()
     {
-        var slot = factionData.pastInfantryBuilding;
+        var slot = factionData.medievalInfantryBuilding;
         PlaceBuilding(slot);
     }
     public void PlaceEnemyTankBuilding()
     {
-        var slot = factionData.pastTankBuilding;
+        var slot = factionData.medievalTankBuilding;
         PlaceBuilding(slot);
     }
 
-    private void PlaceBuilding(AllFactionsData.BuildingSlot slot)
+    private void PlaceBuilding(GameObject buildingPrefab)
     {
-        if (currentTile == null || slot == null || slot.prefab == null) return;
+        if (currentTile == null || buildingPrefab == null || buildingPrefab == null) return;
 
         if (currentTile.hasBuilding) return;
 
         Vector3 spawnPos = currentTile.transform.position + Vector3.up * 2f;
 
-        Instantiate(slot.prefab, spawnPos, Quaternion.identity, currentTile.transform);
+        Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
 
         currentTile.SetBuildingPlaced();
 

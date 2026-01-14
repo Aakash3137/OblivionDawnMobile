@@ -33,18 +33,18 @@ public class MainBuildingSpawner : MonoBehaviour
         SpawnAllBuildings(enemySpawnPoint, enemySlots, Side.Enemy);
     }
 
-    AllFactionsData.BuildingSlot[] GetFactionSlots(FactionName name)
+    GameObject[] GetFactionSlots(FactionName name)
     {
         switch (name)
         {
             case FactionName.Medieval:
-                return new[] { data.pastMainBuilding, data.pastTurretBuilding, data.pastInfantryBuilding, data.pastGoldBuilding };
+                return new[] { data.medievalMainBuilding, data.pastTurretBuilding, data.medievalInfantryBuilding, data.medievalGoldBuilding };
             case FactionName.Present:
                 return new[] { data.presentMainBuilding, data.presentTurretBuilding, data.presentInfantryBuilding, data.presentGoldBuilding };
             case FactionName.Futuristic:
                 return new[] { data.futureMainBuilding, data.futureTurretBuilding, data.futureInfantryBuilding, data.futureGoldBuilding };
             case FactionName.Galvadore:
-                return new[] { data.monsterMainBuilding, data.monsterTurretBuilding, data.monsterInfantryBuilding, data.monsterGoldBuilding };
+                return new[] { data.galvadoreMainBuilding, data.galvadoreTurretBuilding, data.galvadoreInfantryBuilding, data.galvadoreGoldBuilding };
             default: return null;
         }
     }
@@ -57,22 +57,22 @@ public class MainBuildingSpawner : MonoBehaviour
         return pick;
     }
 
-    void SpawnAllBuildings(Transform rootPoint, AllFactionsData.BuildingSlot[] slots, Side side)
+    void SpawnAllBuildings(Transform rootPoint, GameObject[] buildingPrefabs, Side side)
     {
-        if (rootPoint == null || slots == null) return;
+        if (rootPoint == null || buildingPrefabs == null) return;
 
-        SpawnEntry(rootPoint, slots[0], side, "MainBuilding");
+        SpawnEntry(rootPoint, buildingPrefabs[0], side, "MainBuilding");
     }
 
-    void SpawnEntry(Transform point, AllFactionsData.BuildingSlot slot, Side side, string label)
+    void SpawnEntry(Transform point, GameObject buildingPrefab, Side side, string label)
     {
-        if (slot == null || slot.prefab == null) return;
+        if (buildingPrefab == null || buildingPrefab == null) return;
 
         var pos = point.position + Vector3.up * yOffset;
 
-        Instantiate(slot.prefab, pos, Quaternion.identity, point);
+        Instantiate(buildingPrefab, pos, Quaternion.identity, point);
 
-        Debug.Log($"[Spawner] Spawned {label} for {side}: {slot.prefab.name}");
+        Debug.Log($"[Spawner] Spawned {label} for {side}: {buildingPrefab.name}");
 
         // If this is the main building, mark the tile as occupied
         if (label == "MainBuilding")

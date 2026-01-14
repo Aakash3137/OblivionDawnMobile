@@ -6,11 +6,11 @@ public class BuildPanel : MonoBehaviour
 {
     [Header("Panel Sections")]
     [SerializeField] private GameObject _offenseBG;
-    [SerializeField] private GameObject _offenseBuildPanel;
+    [SerializeField] private CanvasGroup _offenseBuildPanel;
     [SerializeField] private GameObject _defenseBG;
-    [SerializeField] private GameObject _defenseBuildPanel;
+    [SerializeField] private CanvasGroup _defenseBuildPanel;
     [SerializeField] private GameObject _resourceBG;
-    [SerializeField] private GameObject _resourceBuildPanel;
+    [SerializeField] private CanvasGroup _resourceBuildPanel;
 
     // [Header("Option Images")]
     // [SerializeField] private GameObject[] _offenseOptionImages;
@@ -23,7 +23,6 @@ public class BuildPanel : MonoBehaviour
     [SerializeField] private Button _resourceButton;
 
     [Header("Fade Settings")]
-    [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private float fadeDuration = 0.3f;
 
     private Coroutine fadeRoutine;
@@ -32,7 +31,10 @@ public class BuildPanel : MonoBehaviour
     {
         OnClickOffense();
         AddListeners();
+    }
 
+    public void ShowBuildPanel(CanvasGroup canvasGroup)
+    {
         if (canvasGroup != null)
         {
             canvasGroup.alpha = 1f;
@@ -41,6 +43,15 @@ public class BuildPanel : MonoBehaviour
         }
     }
 
+    public void HideBuildPanel(CanvasGroup canvasGroup)
+    {
+        if (canvasGroup != null)
+        {
+            canvasGroup.alpha = 0f;
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
+        }
+    }
     void AddListeners()
     {
         _offenseButton.onClick.AddListener(OnClickOffense);
@@ -63,58 +74,58 @@ public class BuildPanel : MonoBehaviour
         ActivatePanels(_resourceBG, _resourceBuildPanel);
     }
 
-    private void ActivatePanels(GameObject Panel1, GameObject Panel2)
+    private void ActivatePanels(GameObject Panel1, CanvasGroup Panel2)
     {
         DisableAllPanels();
         Panel1.SetActive(true);
-        Panel2.SetActive(true);
+        ShowBuildPanel(Panel2);
     }
     private void DisableAllPanels()
     {
         _offenseBG.SetActive(false);
-        _offenseBuildPanel.SetActive(false);
+        HideBuildPanel(_offenseBuildPanel);
         _defenseBG.SetActive(false);
-        _defenseBuildPanel.SetActive(false);
+        HideBuildPanel(_defenseBuildPanel);
         _resourceBG.SetActive(false);
-        _resourceBuildPanel.SetActive(false);
+        HideBuildPanel(_resourceBuildPanel);
     }
-    // --- Fade Methods ---
-    private void FadeOut()
-    {
-        if (canvasGroup == null) { gameObject.SetActive(false); return; }
-        if (fadeRoutine != null) StopCoroutine(fadeRoutine);
-        fadeRoutine = StartCoroutine(FadeCanvas(1f, 0f, false));
-    }
+    // // --- Fade Methods ---
+    // private void FadeOut()
+    // {
+    //     if (canvasGroup == null) { gameObject.SetActive(false); return; }
+    //     if (fadeRoutine != null) StopCoroutine(fadeRoutine);
+    //     fadeRoutine = StartCoroutine(FadeCanvas(1f, 0f, false));
+    // }
 
-    private void FadeIn()
-    {
-        if (canvasGroup == null) { gameObject.SetActive(true); return; }
-        gameObject.SetActive(true);
-        if (fadeRoutine != null) StopCoroutine(fadeRoutine);
-        fadeRoutine = StartCoroutine(FadeCanvas(0f, 1f, true));
-    }
+    // private void FadeIn()
+    // {
+    //     if (canvasGroup == null) { gameObject.SetActive(true); return; }
+    //     gameObject.SetActive(true);
+    //     if (fadeRoutine != null) StopCoroutine(fadeRoutine);
+    //     fadeRoutine = StartCoroutine(FadeCanvas(0f, 1f, true));
+    // }
 
-    private IEnumerator FadeCanvas(float from, float to, bool enableAtEnd)
-    {
-        float elapsed = 0f;
-        canvasGroup.alpha = from;
-        canvasGroup.interactable = false;
-        canvasGroup.blocksRaycasts = false;
+    // private IEnumerator FadeCanvas(float from, float to, bool enableAtEnd)
+    // {
+    //     float elapsed = 0f;
+    //     canvasGroup.alpha = from;
+    //     canvasGroup.interactable = false;
+    //     canvasGroup.blocksRaycasts = false;
 
-        while (elapsed < fadeDuration)
-        {
-            elapsed += Time.deltaTime;
-            canvasGroup.alpha = Mathf.Lerp(from, to, elapsed / fadeDuration);
-            yield return null;
-        }
+    //     while (elapsed < fadeDuration)
+    //     {
+    //         elapsed += Time.deltaTime;
+    //         canvasGroup.alpha = Mathf.Lerp(from, to, elapsed / fadeDuration);
+    //         yield return null;
+    //     }
 
-        canvasGroup.alpha = to;
-        canvasGroup.interactable = to > 0.9f;
-        canvasGroup.blocksRaycasts = to > 0.9f;
+    //     canvasGroup.alpha = to;
+    //     canvasGroup.interactable = to > 0.9f;
+    //     canvasGroup.blocksRaycasts = to > 0.9f;
 
-        if (!enableAtEnd && to == 0f)
-            gameObject.SetActive(false);
+    //     if (!enableAtEnd && to == 0f)
+    //         gameObject.SetActive(false);
 
-        fadeRoutine = null;
-    }
+    //     fadeRoutine = null;
+    // }
 }

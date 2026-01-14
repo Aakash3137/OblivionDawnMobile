@@ -14,14 +14,13 @@ public class BuildingStats : Stats
         if (buildingStats == null)
             Debug.Log($"<color=red>Building {name} missing BuildingStats. Assign the script.</color>");
 
+        buildingType = buildingStats.buildingType;
         level = buildingStats.buildingSpawnLevel;
         buildingData = buildingStats.buildingLevelData[level];
+
         visuals = buildingData.buildingVisuals;
         basicStats = buildingData.buildingBasicStats;
-
         buildingUpgradeCosts = buildingData.buildingUpgradeCosts;
-
-        buildingType = buildingStats.buildingType;
 
         side = GetComponentInParent<Tile>().ownerSide;
 
@@ -51,7 +50,7 @@ public class BuildingStats : Stats
     //     return PlayerResourceManager.Instance.HasResources(buildingUpgradeCosts);
     // }
 
-    void OnDestroy()
+    internal virtual void OnDestroy()
     {
         Tile currentTile = GetComponentInParent<Tile>();
 

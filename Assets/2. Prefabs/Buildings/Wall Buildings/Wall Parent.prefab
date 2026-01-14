@@ -50,10 +50,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wallStats:
-  - {fileID: 13993555029620420}
-  - {fileID: 5005231930277669663}
-  - {fileID: 8872104378122525466}
-  - {fileID: 1734853475276999749}
+  - {fileID: 2449050879459374565}
+  - {fileID: 3575590164738440458}
+  - {fileID: 4039762486326010857}
+  - {fileID: 3413084340026665939}
   WallMaxHealth: 0
   wallCurrentHealth: 0
 --- !u!1 &4185960894569215226
@@ -68,7 +68,7 @@ GameObject:
   - component: {fileID: 4223331088013800498}
   - component: {fileID: 5791836751651091579}
   - component: {fileID: 809041082440131426}
-  - component: {fileID: 13993555029620420}
+  - component: {fileID: 2449050879459374565}
   m_Layer: 0
   m_Name: Right Wall
   m_TagString: Untagged
@@ -165,7 +165,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.4213504, y: 0.61975855, z: 2.129061}
   m_Center: {x: 0, y: 0.30654326, z: 0}
---- !u!114 &13993555029620420
+--- !u!114 &2449050879459374565
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -174,7 +174,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4185960894569215226}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91dc0f77a17e63141bb7b9f6bf09d780, type: 3}
+  m_Script: {fileID: 11500000, guid: e0b9e5905167b614c8c07454daacd3bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   level: 0
@@ -191,7 +191,8 @@ MonoBehaviour:
   hitCollider: {fileID: 0}
   isAirUnit: 0
   canAttackAir: 0
-  canAttackGround: 0
+  canAttackGround: 1
+  <buildingStats>k__BackingField: {fileID: 11400000, guid: af5a94010c5bfae4398ae465347af9b5, type: 2}
   <defenseStats>k__BackingField: {fileID: 11400000, guid: 8fc3f67a2124ff541ab0bd18590f0552, type: 2}
 --- !u!1 &5233790949183440793
 GameObject:
@@ -204,7 +205,6 @@ GameObject:
   - component: {fileID: 2872493653622855736}
   - component: {fileID: 1906089523903218058}
   - component: {fileID: 8675500468927874650}
-  - component: {fileID: 4002357804540848221}
   m_Layer: 5
   m_Name: WorldCanvas
   m_TagString: Untagged
@@ -278,23 +278,6 @@ MonoBehaviour:
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
   m_PresetInfoIsWorld: 1
---- !u!114 &4002357804540848221
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5233790949183440793}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 1
-  m_BlockingObjects: 0
-  m_BlockingMask:
-    serializedVersion: 2
-    m_Bits: 14455
 --- !u!1 &5853608840681059959
 GameObject:
   m_ObjectHideFlags: 0
@@ -307,7 +290,7 @@ GameObject:
   - component: {fileID: 3717284825936033809}
   - component: {fileID: 3347684519624809805}
   - component: {fileID: 8380972115907007060}
-  - component: {fileID: 5005231930277669663}
+  - component: {fileID: 3575590164738440458}
   m_Layer: 0
   m_Name: Left Wall
   m_TagString: Untagged
@@ -404,7 +387,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.4213504, y: 0.61975855, z: 2.129061}
   m_Center: {x: 0, y: 0.30654326, z: 0}
---- !u!114 &5005231930277669663
+--- !u!114 &3575590164738440458
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -413,7 +396,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5853608840681059959}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91dc0f77a17e63141bb7b9f6bf09d780, type: 3}
+  m_Script: {fileID: 11500000, guid: e0b9e5905167b614c8c07454daacd3bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   level: 0
@@ -430,7 +413,8 @@ MonoBehaviour:
   hitCollider: {fileID: 0}
   isAirUnit: 0
   canAttackAir: 0
-  canAttackGround: 0
+  canAttackGround: 1
+  <buildingStats>k__BackingField: {fileID: 11400000, guid: af5a94010c5bfae4398ae465347af9b5, type: 2}
   <defenseStats>k__BackingField: {fileID: 11400000, guid: 8fc3f67a2124ff541ab0bd18590f0552, type: 2}
 --- !u!1 &8220029405854707680
 GameObject:
@@ -444,7 +428,7 @@ GameObject:
   - component: {fileID: 4384419691029986606}
   - component: {fileID: 5524676969342750067}
   - component: {fileID: 4100518943819991806}
-  - component: {fileID: 1734853475276999749}
+  - component: {fileID: 3413084340026665939}
   m_Layer: 0
   m_Name: Down Wall
   m_TagString: Untagged
@@ -541,7 +525,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.42135048, y: 0.61975855, z: 2.1290615}
   m_Center: {x: 0, y: 0.30654326, z: 0}
---- !u!114 &1734853475276999749
+--- !u!114 &3413084340026665939
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -550,7 +534,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8220029405854707680}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91dc0f77a17e63141bb7b9f6bf09d780, type: 3}
+  m_Script: {fileID: 11500000, guid: e0b9e5905167b614c8c07454daacd3bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   level: 0
@@ -567,7 +551,8 @@ MonoBehaviour:
   hitCollider: {fileID: 0}
   isAirUnit: 0
   canAttackAir: 0
-  canAttackGround: 0
+  canAttackGround: 1
+  <buildingStats>k__BackingField: {fileID: 11400000, guid: af5a94010c5bfae4398ae465347af9b5, type: 2}
   <defenseStats>k__BackingField: {fileID: 11400000, guid: 8fc3f67a2124ff541ab0bd18590f0552, type: 2}
 --- !u!1 &9170443420823241865
 GameObject:
@@ -581,7 +566,7 @@ GameObject:
   - component: {fileID: 873055300916208301}
   - component: {fileID: 3357707879799170252}
   - component: {fileID: 4301206296966925575}
-  - component: {fileID: 8872104378122525466}
+  - component: {fileID: 4039762486326010857}
   m_Layer: 0
   m_Name: UP wall
   m_TagString: Untagged
@@ -678,7 +663,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.42135048, y: 0.61975855, z: 2.1290615}
   m_Center: {x: 0, y: 0.30654326, z: 0}
---- !u!114 &8872104378122525466
+--- !u!114 &4039762486326010857
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -687,7 +672,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 9170443420823241865}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91dc0f77a17e63141bb7b9f6bf09d780, type: 3}
+  m_Script: {fileID: 11500000, guid: e0b9e5905167b614c8c07454daacd3bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   level: 0
@@ -704,7 +689,8 @@ MonoBehaviour:
   hitCollider: {fileID: 0}
   isAirUnit: 0
   canAttackAir: 0
-  canAttackGround: 0
+  canAttackGround: 1
+  <buildingStats>k__BackingField: {fileID: 11400000, guid: af5a94010c5bfae4398ae465347af9b5, type: 2}
   <defenseStats>k__BackingField: {fileID: 11400000, guid: 8fc3f67a2124ff541ab0bd18590f0552, type: 2}
 --- !u!1001 &7155662563125980824
 PrefabInstance:
