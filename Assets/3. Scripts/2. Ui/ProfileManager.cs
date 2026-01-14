@@ -14,6 +14,8 @@ public class ProfileManager : MonoBehaviour
 
     private PlayerProfile playerProfile;
 
+    [SerializeField] internal Userdata ProfileData;
+
     private void Start()
     {
         playerProfile = PlayerProfile.LoadFromDisk();
