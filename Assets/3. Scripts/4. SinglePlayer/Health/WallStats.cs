@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 public class WallStats : BuildingStats
 {
@@ -14,16 +15,22 @@ public class WallStats : BuildingStats
 
     public override void TakeDamage(float amount)
     {
-        wallParent.DamageWall(amount);
+        if (amount <= currentHealth)
+            wallParent.DamageWall(amount);
+        else
+            wallParent.DamageWall(currentHealth);
+
         base.TakeDamage(amount);
     }
     private void OnEnable()
     {
-        onWallEnableOrDisable?.Invoke(currentHealth, basicStats.maxHealth);
+        if (currentHealth > 0)
+            onWallEnableOrDisable?.Invoke(currentHealth, basicStats.maxHealth);
     }
     private void OnDisable()
     {
-        onWallEnableOrDisable?.Invoke(currentHealth, basicStats.maxHealth);
+        if (currentHealth > 0)
+            onWallEnableOrDisable?.Invoke(currentHealth, basicStats.maxHealth);
     }
     internal override void OnDestroy()
     {

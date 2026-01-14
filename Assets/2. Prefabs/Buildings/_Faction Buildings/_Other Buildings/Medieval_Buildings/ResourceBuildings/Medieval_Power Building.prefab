@@ -199,7 +199,6 @@ MonoBehaviour:
     upgradeMesh: {fileID: 0}
     playerUnitMaterial: {fileID: 0}
     enemyUnitMaterial: {fileID: 0}
-  maxHealth: 0
   currentHealth: 0
   hitCollider: {fileID: 0}
   isAirUnit: 0
@@ -246,11 +245,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 992b46bf958c0124c810ab2674b9d7a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allFactionsData: {fileID: 11400000, guid: b4c4f87a58a4fc841b315c31d4d53920, type: 2}
-  enemyBuildingPrefabs: []
-  minDelay: 5
-  maxDelay: 10
-  yOffset: 2
 --- !u!1 &5389496167308326538
 GameObject:
   m_ObjectHideFlags: 0
@@ -460,6 +454,10 @@ PrefabInstance:
     - target: {fileID: 3828384782369519359, guid: 74ecb513f07c2124c8c5d43bf706458d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7431737180773631234, guid: 74ecb513f07c2124c8c5d43bf706458d, type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

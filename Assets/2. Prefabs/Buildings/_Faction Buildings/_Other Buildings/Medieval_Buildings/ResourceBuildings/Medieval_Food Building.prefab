@@ -213,7 +213,6 @@ MonoBehaviour:
     upgradeMesh: {fileID: 0}
     playerUnitMaterial: {fileID: 0}
     enemyUnitMaterial: {fileID: 0}
-  maxHealth: 0
   currentHealth: 0
   hitCollider: {fileID: 0}
   isAirUnit: 0
@@ -260,11 +259,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 992b46bf958c0124c810ab2674b9d7a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allFactionsData: {fileID: 11400000, guid: b4c4f87a58a4fc841b315c31d4d53920, type: 2}
-  enemyBuildingPrefabs: []
-  minDelay: 5
-  maxDelay: 10
-  yOffset: 2
 --- !u!1001 &2876288689411737375
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -273,6 +267,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1807120803253265653}
     m_Modifications:
+    - target: {fileID: 1394872308152164448, guid: 74ecb513f07c2124c8c5d43bf706458d, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.704
+      objectReference: {fileID: 0}
+    - target: {fileID: 1557737121275405880, guid: 74ecb513f07c2124c8c5d43bf706458d, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.243
+      objectReference: {fileID: 0}
     - target: {fileID: 1567222794316545940, guid: 74ecb513f07c2124c8c5d43bf706458d, type: 3}
       propertyPath: generateResourceImageTransform
       value: 
@@ -347,7 +349,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3828384782369519359, guid: 74ecb513f07c2124c8c5d43bf706458d, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.243
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3828384782369519359, guid: 74ecb513f07c2124c8c5d43bf706458d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

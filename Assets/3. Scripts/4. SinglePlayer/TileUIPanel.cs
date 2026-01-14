@@ -122,19 +122,19 @@ public class TileUIPanel : MonoBehaviour
                 {
                     case 0:
                         currentWall.DisableWall(0);
-                        adjacentTiles[i].GetComponentInChildren<WallParent>().DisableWall(1);
+                        adjacentTiles[i].GetComponentInChildren<WallParent>()?.DisableWall(1);
                         break;
                     case 1:
                         currentWall.DisableWall(1);
-                        adjacentTiles[i].GetComponentInChildren<WallParent>().DisableWall(0);
+                        adjacentTiles[i].GetComponentInChildren<WallParent>()?.DisableWall(0);
                         break;
                     case 2:
                         currentWall.DisableWall(2);
-                        adjacentTiles[i].GetComponentInChildren<WallParent>().DisableWall(3);
+                        adjacentTiles[i].GetComponentInChildren<WallParent>()?.DisableWall(3);
                         break;
                     case 3:
                         currentWall.DisableWall(3);
-                        adjacentTiles[i].GetComponentInChildren<WallParent>().DisableWall(2);
+                        adjacentTiles[i].GetComponentInChildren<WallParent>()?.DisableWall(2);
                         break;
                 }
             }

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class WallParent : MonoBehaviour
@@ -8,13 +7,13 @@ public class WallParent : MonoBehaviour
     public float WallMaxHealth;
     public float wallCurrentHealth;
     private HealthProgress healthBar;
-    //public UpgradeCost[] wallParentUpgradeCosts { get; private set; }
 
     private void OnEnable()
     {
         foreach (var wall in wallStats)
         {
             wall.onWallEnableOrDisable += HandleWallHealth;
+            wall.onWallDestroyed += HandleWallDestroy;
         }
     }
 
@@ -23,6 +22,7 @@ public class WallParent : MonoBehaviour
         foreach (var wall in wallStats)
         {
             wall.onWallEnableOrDisable -= HandleWallHealth;
+            wall.onWallDestroyed -= HandleWallDestroy;
         }
     }
 
@@ -30,15 +30,24 @@ public class WallParent : MonoBehaviour
     {
         healthBar = GetComponentInChildren<HealthProgress>();
     }
+
+    // WallMaxHealth is not setting properly without delay
     private async Awaitable Start()
     {
         await Awaitable.WaitForSecondsAsync(0.1f);
+
         foreach (var wall in wallStats)
         {
             WallMaxHealth += wall.basicStats.maxHealth;
         }
 
         wallCurrentHealth = WallMaxHealth;
+
+        await Awaitable.WaitForSecondsAsync(1f);
+        if (WallMaxHealth <= 0)
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void HandleWallHealth(float health, float maxHealth)
@@ -58,16 +67,14 @@ public class WallParent : MonoBehaviour
             healthBar.UpdateHealthBar();
             healthBar.UpdateFillAmount(wallCurrentHealth / WallMaxHealth);
         }
-
-        if (wallCurrentHealth <= 0)
-        {
-            Destroy(gameObject);
-        }
     }
 
     private void HandleWallDestroy()
     {
-
+        if (wallCurrentHealth <= 0)
+        {
+            Destroy(gameObject);
+        }
     }
 
     public void EnableWall(int index)
@@ -86,10 +93,15 @@ public class WallParent : MonoBehaviour
     {
         if (GetComponentInParent<WallStats>() != null)
         {
-            Tile currentTile = GetComponentInParent<Tile>();
+            //Tile currentTile = GetComponentInParent<Tile>();
 
-            if (currentTile != null)
-                currentTile.hasBuilding = false;
+            //WallStats defenseWall = GetComponentInParent<WallStats>();
+
+            //if (defenseWall != null)
+            Destroy(GetComponentInParent<WallStats>().gameObject);
+
+            //if (currentTile != null)
+            GetComponentInParent<Tile>().hasBuilding = false;
         }
     }
 }

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3828384782369519359}
   - component: {fileID: 2390509434758663445}
   - component: {fileID: 7431737180773631234}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: WorldCanvasBuilding
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -84,7 +84,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!1001 &5920065749134575981
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -93,6 +93,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3828384782369519359}
     m_Modifications:
+    - target: {fileID: 5158777428603991801, guid: 64bb2001053c5b84d814ac10d8aa20be, type: 3}
+      propertyPath: generateResourceImageTransform
+      value: 
+      objectReference: {fileID: 621023662985240458}
     - target: {fileID: 5167455913137729365, guid: 64bb2001053c5b84d814ac10d8aa20be, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -159,7 +163,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5167455913137729365, guid: 64bb2001053c5b84d814ac10d8aa20be, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: 0.243
       objectReference: {fileID: 0}
     - target: {fileID: 5167455913137729365, guid: 64bb2001053c5b84d814ac10d8aa20be, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -213,6 +217,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Progress-Circular
       objectReference: {fileID: 0}
+    - target: {fileID: 7940978559737912548, guid: 64bb2001053c5b84d814ac10d8aa20be, type: 3}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 8768577869100223801, guid: 64bb2001053c5b84d814ac10d8aa20be, type: 3}
       propertyPath: m_RaycastTarget
       value: 0
@@ -222,6 +230,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 64bb2001053c5b84d814ac10d8aa20be, type: 3}
+--- !u!224 &621023662985240458 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 6536444713955186407, guid: 64bb2001053c5b84d814ac10d8aa20be, type: 3}
+  m_PrefabInstance: {fileID: 5920065749134575981}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &1557737121275405880 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5167455913137729365, guid: 64bb2001053c5b84d814ac10d8aa20be, type: 3}
@@ -309,7 +322,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7260242633470165142, guid: c1a7ebfd8ac23174c9792836dd4d8da3, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.461
+      value: 0.704
       objectReference: {fileID: 0}
     - target: {fileID: 7260242633470165142, guid: c1a7ebfd8ac23174c9792836dd4d8da3, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

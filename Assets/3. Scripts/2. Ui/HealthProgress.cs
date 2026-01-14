@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using LitMotion;
 using LitMotion.Extensions;
 using UnityEngine;
@@ -11,8 +9,6 @@ public class HealthProgress : ProgressManager
     [SerializeField] private float fadeTime;
     [SerializeField] private float visibleTime;
     [SerializeField] private bool isVisible;
-    private MotionHandle fadeHandle;
-    OperationCanceledException fadeCancelToken;
 
     private void Awake()
     {
@@ -45,6 +41,5 @@ public class HealthProgress : ProgressManager
             .ToAwaitable(CancelBehavior.Complete, true, destroyCancellationToken);
 
         isVisible = false;
-
     }
 }
