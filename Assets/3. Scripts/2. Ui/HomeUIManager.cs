@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using TMPro;
 using Unity.VisualScripting;
@@ -18,6 +19,7 @@ public class HomeUIManager : MonoBehaviour
     #region UI Panels
 
     [Header("Panels")]
+    [SerializeField] private List<PanelDetails> UIPanels = new List<PanelDetails>();
     [SerializeField] internal GameObject _uiLoginPanel;
     [SerializeField] internal GameObject HomePanel;
     [SerializeField] internal GameObject ProfilePanel;
@@ -26,7 +28,8 @@ public class HomeUIManager : MonoBehaviour
     [SerializeField] private GameObject PlayerJoinedPanel;
     [SerializeField] internal GameObject LoadingPanel;
     [SerializeField] private GameObject PvpDisplayPanel;
-    [SerializeField] CanvasGroup playerFactionPanel; //--------
+    //[SerializeField] CanvasGroup playerFactionPanel; //--------
+    [SerializeField] FactionPanelScript playerFactionPanel;
 
     #endregion
 
@@ -44,6 +47,7 @@ public class HomeUIManager : MonoBehaviour
     [SerializeField] private Button CampaignButton;
     [SerializeField] private Button PrivateLobbyButton;
     [SerializeField] private Button PVPButton;
+    [SerializeField] private Button DecButton;
 
 
     [SerializeField] private Button shopButton;
@@ -61,6 +65,9 @@ public class HomeUIManager : MonoBehaviour
     #endregion
 
     #region UI Elements
+    [Header("Play as Guest")]
+    [SerializeField] private TMP_InputField userNameInput;
+    [SerializeField] private TMP_Text userNameError; 
 
     [Header("Join Panel Elements")]
     [SerializeField] private TMP_InputField LobbyCodeInputField;
@@ -75,6 +82,12 @@ public class HomeUIManager : MonoBehaviour
 
     #endregion
 
+
+    #region Scriptable Objects
+    [Header ("Profile")]
+    [SerializeField] private Userdata Profiledata;
+    #endregion
+
     #region Unity Lifecycle
 
     private void Awake()
@@ -82,10 +95,24 @@ public class HomeUIManager : MonoBehaviour
         InitializeSingleton();
     }
 
+    private void OnEnable() 
+    {
+        if(Profiledata.GuestUser && Profiledata.UserName != "")
+        {
+            Debug.Log("Login");
+            ShowPanel(PanelName.Home);
+        }
+        else
+        {
+            Debug.Log("GO Home with "+Profiledata.GuestUser);
+            ShowPanel(PanelName.Login);
+        }
+    }
+
     private void Start()
     {
         SetupButtonListeners();
-        playerFactionPanel.GetComponent<CanvasGroup>(); //--------
+        //playerFactionPanel = playerFactionPanel.GetComponent<FactionPanelScript>().Layout; //--------
 
     }
 
@@ -137,18 +164,43 @@ public class HomeUIManager : MonoBehaviour
 
     public void OnClickLoginButton()
     {
-        ActivatePanel(HomePanel);
+        // ActivatePanel(HomePanel);
+        ShowPanel(PanelName.Home);
     }
-    public void OnClickSignUpButton() { }
-    public void OnClickGuestLogin() { }
+    public void OnClickSignUpButton()
+    {
+        ShowPanel(PanelName.Signup);
+    }
+    public void OnClickGuestLogin()
+    {
+        if (userNameInput.text == "" || userNameInput.text == null)
+        {
+            userNameError.text = "Please Enter User Name!!!";
+            userNameError.color = Color.red;
+            StartCoroutine(DisableErrortext());
+            return;
+        }
+        string username = userNameInput.text.Trim();
+        Profiledata.UserName = username;
+        Profiledata.GuestUser = true;
+        Debug.Log("Guest Username: " + username);
+        ShowPanel(PanelName.Home);
+    }
+
+    private IEnumerator DisableErrortext()
+    {
+        yield return new WaitForSeconds(5f);
+        userNameError.gameObject.SetActive(false);
+    } 
     
     private void OnClickProfileButton()
     {
-        ProfilePanel.SetActive(true);
+        //ProfilePanel.SetActive(true);
         //HomePanel.SetActive(false);
+        ShowPanel(PanelName.Profile);
     }
     
-    private void OnClickCampaignButton()
+    public void OnClickCampaignButton()
     {
         // SwitchPanel(HomePanel, LoadingPanel);
         // // TODO: Load Campaign Scene
@@ -162,7 +214,7 @@ public class HomeUIManager : MonoBehaviour
         SceneManager.LoadScene("SinglePlayerScene");
     }
 
-    private void OnClickPVPButton()
+    public void OnClickPVPButton()
     {
         CustomGameMode.SetGameMode(GameModeType.PvP);
         GameData.GameModeType = "PVP";
@@ -184,11 +236,10 @@ public class HomeUIManager : MonoBehaviour
         SwitchPanel(LoadingPanel, PvpDisplayPanel);
     }
 
-    private void OnClickPrivateLobbyButton()
+    public void OnClickPrivateLobbyButton()
     {
         GameData.GameModeType = "Lobby";
         //SwitchPanel(HomePanel, PrivateLobbyPanel);
-        
         LoadFactionPanel();
     }
 
@@ -234,27 +285,34 @@ public class HomeUIManager : MonoBehaviour
 
     private void LoadFactionPanel()
     {
-        playerFactionPanel.alpha = 1;
-        playerFactionPanel.interactable = true;
-        playerFactionPanel.blocksRaycasts = true;
+        playerFactionPanel.Layout.alpha = 1;
+        playerFactionPanel.Layout.interactable = true;
+        playerFactionPanel.Layout.blocksRaycasts = true;
     }
     
     internal void OnFactionClicked()
     {
         if (GameData.GameModeType == "PVP")
         {
-            // Start matchmaking and show PvP panel after delay
             Invoke(nameof(StartPvPAndShowPanel), 0.1f);
         }
         else if(GameData.GameModeType == "Lobby")
         {
-            //HomePanel is needed on BG since PrivateLobbyPanel is not a full screen Panel
-            PrivateLobbyPanel.SetActive(true);    
+            //
+            ShowPanel(PanelName.Home);
+            SwitchPanel(playerFactionPanel.gameObject,PrivateLobbyPanel);
+            //PrivateLobbyPanel.SetActive(true);    
         }
     }
     
-    public void OnClickShopButton() { }
-    public void OnClickUpgradeButton() { }
+    public void OnClickShopButton()
+    {
+        ShowPanel(PanelName.Shop);
+    }
+    public void OnClickUpgradeButton()
+    {
+        ShowPanel(PanelName.Upgrade);
+    }
 
     #endregion
 
@@ -327,5 +385,50 @@ public class HomeUIManager : MonoBehaviour
             previousPanel.SetActive(true);
     }
 
+    public void ShowPanel(PanelName TargetPanel)
+    {
+
+        Debug.Log($"Target Panel: {TargetPanel}");
+        foreach(PanelDetails panel in UIPanels)
+        {
+            panel.PanelObject.SetActive(false);
+        }
+        PanelDetails selected = UIPanels.Find(x => x.panelName == TargetPanel);
+
+        if (selected != null)
+        {
+            selected.PanelObject.SetActive(true);
+        }
+        else
+        {
+            Debug.LogWarning($"Panel not found: {TargetPanel}");
+        }
+    }
+
     #endregion
+}
+
+public enum PanelName
+{
+    Login,
+    Signup,
+    Faction,
+    Home,
+    Deck,
+    Lobby,
+    PVP,
+    Profile,
+    Shop,
+    Upgrade,
+    Rewards,
+    Friends,
+    Message, 
+    Ranking
+}
+
+[System.Serializable]
+public class PanelDetails
+{
+    public PanelName panelName;
+    public GameObject PanelObject;
 }

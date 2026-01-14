@@ -98,7 +98,7 @@ public class FactionButton : MonoBehaviour
         button.onClick.AddListener(CheckGameMode);
     }
 
-    void CheckGameMode()
+    public void CheckGameMode()
     {
         GameData.SelectedMPFaction = mpFaction;
         // Store player’s choice globally
