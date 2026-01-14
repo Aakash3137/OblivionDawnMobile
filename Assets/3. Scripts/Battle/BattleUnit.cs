@@ -258,6 +258,11 @@ public class BattleUnit : MonoBehaviour
                 unit = buildingStats;
                 score = buildingWeight;
             }
+            else if (hit.TryGetComponent<WallStats>(out var wallStats))
+            {
+                unit = wallStats;
+                score = buildingWeight;
+            }
             else
             {
                 continue;

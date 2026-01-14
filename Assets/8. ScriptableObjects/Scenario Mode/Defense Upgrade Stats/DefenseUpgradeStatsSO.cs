@@ -22,10 +22,26 @@ public class DefenseUpgradeStatsSO : ScriptableObject
             defenseLevelData[0] = new DefenseUpgradeData();
         }
 
-        if (defenseType == ScenarioDefenseType.Wall)
+        for (int i = 0; i < defenseLevelData.Length; i++)
         {
-            projectilePrefab = null;
+            defenseLevelData[i].defenseLevel = i;
+
+            var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
+
+            if (defenseLevelData[i].defenseUpgradeCosts == null ||
+                defenseLevelData[i].defenseUpgradeCosts.Length != enumValues.Length)
+            {
+                defenseLevelData[i].defenseUpgradeCosts =
+                    new UpgradeCost[enumValues.Length];
+            }
+
+            for (int j = 0; j < enumValues.Length; j++)
+            {
+                defenseLevelData[i].defenseUpgradeCosts[j].resourceType =
+                    (ScenarioResourceType)enumValues.GetValue(j);
+            }
         }
+
 
     }
     private void OnValidate()
@@ -33,7 +49,6 @@ public class DefenseUpgradeStatsSO : ScriptableObject
         ValidateBase();
     }
 }
-
 [Serializable]
 public class DefenseUpgradeData
 {
@@ -42,4 +57,8 @@ public class DefenseUpgradeData
     public RangeStats defenseRangeStats;
     public VisionAngles defenseVisionAngles;
     public AttackTargets defenseAttackTargets;
+
+    [Header("Resource costs required for this upgrade")]
+    [Tooltip("Resource Type are auto set from enum values of ScenarioResourceType")]
+    public UpgradeCost[] defenseUpgradeCosts;
 }

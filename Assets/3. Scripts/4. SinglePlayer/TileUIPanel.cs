@@ -74,9 +74,10 @@ public class TileUIPanel : MonoBehaviour
             int spawnLevel = spawnBuildingStats.buildingStats.buildingSpawnLevel;
             buildingUpgradeCost = spawnBuildingStats.buildingStats.buildingLevelData[spawnLevel].buildingUpgradeCosts;
         }
-        else
+        else if (buildingPrefab.TryGetComponent<WallStats>(out var spawnWallStats))
         {
-            Debug.Log($"<color=red>No BuildingStats found on {buildingPrefab.name}</color>");
+            int spawnLevel = spawnWallStats.wallStats.wallSpawnLevel;
+            buildingUpgradeCost = spawnWallStats.wallStats.wallLevelData[spawnLevel].wallUpgradeCosts;
         }
 
         if (buildingUpgradeCost == null || !prmInstance.HasResources(buildingUpgradeCost, true))
