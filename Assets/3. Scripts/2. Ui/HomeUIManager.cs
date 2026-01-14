@@ -240,7 +240,6 @@ public class HomeUIManager : MonoBehaviour
     {
         GameData.GameModeType = "Lobby";
         //SwitchPanel(HomePanel, PrivateLobbyPanel);
-        
         LoadFactionPanel();
     }
 
@@ -299,7 +298,10 @@ public class HomeUIManager : MonoBehaviour
         }
         else if(GameData.GameModeType == "Lobby")
         {
-            PrivateLobbyPanel.SetActive(true);    
+            //
+            ShowPanel(PanelName.Home);
+            SwitchPanel(playerFactionPanel.gameObject,PrivateLobbyPanel);
+            //PrivateLobbyPanel.SetActive(true);    
         }
     }
     

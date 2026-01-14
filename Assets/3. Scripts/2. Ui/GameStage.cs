@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class GameStage : MonoBehaviour
 {
@@ -11,16 +12,20 @@ public class GameStage : MonoBehaviour
     public TMP_Text ErrorMessage;
 
     public Mode MyType;
+    public Toggle _Toggle;
 
     private void OnEnable() 
     {
-        GameTypes.CurrentType = Mode.None;
+        GameTypes.CurrentType = MyType;
+        Debug.Log($"My Type:{MyType} Chnaged Data: {GameTypes.CurrentType}"); 
     }
 
-    public void OnSelectGame()
-    {
-        GameTypes.CurrentType = MyType;
-    }
+    // public void OnSelectGame()
+    // {
+    //     GameTypes.CurrentType = MyType;
+    //     Debug.Log($"My Type:{MyType}"); 
+    //      Debug.Log($"Toggle Name: {_Toggle.isOn}");
+    // }
 
     public void OnClickLoadGame()
     {
@@ -33,6 +38,7 @@ public class GameStage : MonoBehaviour
             return;
         }
         GameTypes.loadGameScene();
+        gameObject.SetActive(false);
     }
 
     private IEnumerator DisableErrortext()
