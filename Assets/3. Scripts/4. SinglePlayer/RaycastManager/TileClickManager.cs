@@ -21,7 +21,7 @@ public class TileClickManager : MonoBehaviour
             if (Input.touchCount == 1)
             {
                 Touch touch = Input.GetTouch(0);
-                if (touch.phase == TouchPhase.Ended)
+                if (touch.phase == TouchPhase.Ended && touch.phase != TouchPhase.Moved)
                 {
                     HandleBuildPanel();
                 }

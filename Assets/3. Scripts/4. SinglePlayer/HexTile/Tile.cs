@@ -12,6 +12,20 @@ public class Tile : MonoBehaviour
     public bool isOpen = false; // set true when PlusIcon is activated
 
     public bool hasBuilding = false; // NEW flag
+    private GameObject currentOccupant;
+
+    public void SetOccupant(GameObject occupant)
+    {
+        currentOccupant = occupant;
+    }
+    public void ClearOccupant()
+    {
+        currentOccupant = null;
+    }
+    public GameObject GetOccupant()
+    {
+        return currentOccupant;
+    }
 
     void Start()
     {

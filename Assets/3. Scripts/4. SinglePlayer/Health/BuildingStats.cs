@@ -8,11 +8,17 @@ public class BuildingStats : Stats
     public BuildingUpgradeData buildingData { get; private set; }
     public UpgradeCost[] buildingUpgradeCosts { get; private set; }
 
+    private GameObject buildingPool;
+    public Tile currentTile { get; private set; }
+
 
     internal override void Start()
     {
         if (buildingStats == null)
+        {
             Debug.Log($"<color=red>Building {name} missing BuildingStats. Assign the script.</color>");
+            return;
+        }
 
         buildingType = buildingStats.buildingType;
         level = buildingStats.buildingSpawnLevel;
@@ -22,7 +28,9 @@ public class BuildingStats : Stats
         basicStats = buildingData.buildingBasicStats;
         buildingUpgradeCosts = buildingData.buildingUpgradeCosts;
 
-        side = GetComponentInParent<Tile>().ownerSide;
+        currentTile = GetComponentInParent<Tile>();
+        side = currentTile.ownerSide;
+        currentTile.SetOccupant(gameObject);
 
         if (visuals.playerUnitMaterial == null)
         {
@@ -30,7 +38,38 @@ public class BuildingStats : Stats
             return;
         }
 
+        SetParent();
+
         base.Start();
+    }
+
+    private void SetParent()
+    {
+        switch (buildingType)
+        {
+            case ScenarioBuildingType.MainBuilding:
+                buildingPool = GameObject.FindWithTag("MainPool");
+                if (buildingPool == null)
+                    Debug.Log("<color=red>No GameObject with tag 'MainPool' found in scene!</color>");
+                break;
+            case ScenarioBuildingType.DefenseBuilding:
+                buildingPool = GameObject.FindWithTag("DefensePool");
+                if (buildingPool == null)
+                    Debug.Log("<color=red>No GameObject with tag 'DefensePool' found in scene!</color>");
+                break;
+            case ScenarioBuildingType.OffenseBuilding:
+                buildingPool = GameObject.FindWithTag("OffensePool");
+                if (buildingPool == null)
+                    Debug.Log("<color=red>No GameObject with tag 'OffensePool' found in scene!</color>");
+                break;
+            case ScenarioBuildingType.ResourceBuilding:
+                buildingPool = GameObject.FindWithTag("ResourcePool");
+                if (buildingPool == null)
+                    Debug.Log("<color=red>No GameObject with tag 'ResourcePool' found in scene!</color>");
+                break;
+        }
+
+        transform.parent = buildingPool?.transform;
     }
 
     // public void UpgradeBuilding()
@@ -52,9 +91,7 @@ public class BuildingStats : Stats
 
     internal virtual void OnDestroy()
     {
-        Tile currentTile = GetComponentInParent<Tile>();
-
-        if (currentTile != null)
-            currentTile.hasBuilding = false;
+        currentTile.ClearOccupant();
+        currentTile.hasBuilding = false;
     }
 }

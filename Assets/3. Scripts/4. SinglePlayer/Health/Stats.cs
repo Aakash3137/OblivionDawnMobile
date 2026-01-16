@@ -59,6 +59,7 @@ public class Stats : MonoBehaviour
         if (healthBar != null)
         {
             healthBar.UpdateHealthBar();
+            healthBar.isVisible = true;
             healthBar.UpdateFillAmount(currentHealth / basicStats.maxHealth);
         }
         if (healthBarFade != null)

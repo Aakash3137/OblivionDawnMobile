@@ -14,7 +14,7 @@ public class BuildingUpgradeDataSO : ScriptableObject
     [Header("Building starts at Level 0 and goes up")]
     public BuildingUpgradeData[] buildingLevelData;
 
-    private void ValidateBase()
+    internal virtual void ValidateBase()
     {
         if (buildingLevelData == null)
         {

@@ -32,11 +32,11 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
             int spawnLevel = spawnBuildingStats.buildingStats.buildingSpawnLevel;
             cachedCosts = spawnBuildingStats.buildingStats.buildingLevelData[spawnLevel].buildingUpgradeCosts;
         }
-        else if (buildingToSpawn.TryGetComponent<WallStats>(out var spawnWallStats))
-        {
-            int spawnLevel = spawnWallStats.wallStats.wallSpawnLevel;
-            cachedCosts = spawnWallStats.wallStats.wallLevelData[spawnLevel].wallUpgradeCosts;
-        }
+        // else if (buildingToSpawn.TryGetComponent<WallStats>(out var spawnWallStats))
+        // {
+        //     int spawnLevel = spawnWallStats.wallStats.wallSpawnLevel;
+        //     cachedCosts = spawnWallStats.wallStats.wallLevelData[spawnLevel].wallUpgradeCosts;
+        // }
         else
         {
             Debug.Log($"<color=red>No BuildingStats or WallStats found on {buildingToSpawn.name}</color>");

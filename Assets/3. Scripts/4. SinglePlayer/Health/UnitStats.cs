@@ -12,7 +12,7 @@ public class UnitStats : Stats
     public VisionAngles visionAngles;
     public AttackTargets attackTargets;
     public FlyStats flyStats;
-
+    private GameObject unitPool;
 
     internal override void Start()
     {
@@ -43,5 +43,12 @@ public class UnitStats : Stats
         }
 
         base.Start();
+
+        unitPool = GameObject.FindWithTag("UnitPool");
+
+        if (unitPool == null)
+            Debug.Log("<color=red>No GameObject with tag 'UnitPool' found in scene!</color>");
+        else
+            transform.parent = unitPool.transform;
     }
 }
