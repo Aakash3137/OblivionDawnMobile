@@ -16,7 +16,7 @@ public class Stats : MonoBehaviour
     private HealthProgress healthBar;
 
     [Header("Bools")]
-    public bool isAirUnit;
+    public bool canFly;
     public bool canAttackAir = false;
     public bool canAttackGround = true;
 
@@ -43,9 +43,21 @@ public class Stats : MonoBehaviour
             switch (side)
             {
                 case Side.Player:
+
+                    if (canFly)
+                        gameObject.layer = LayerMask.NameToLayer("PlayerAir");
+                    else
+                        gameObject.layer = LayerMask.NameToLayer("PlayerGround");
+
                     renderer.material = visuals.playerUnitMaterial;
                     break;
                 case Side.Enemy:
+
+                    if (canFly)
+                        gameObject.layer = LayerMask.NameToLayer("EnemyAir");
+                    else
+                        gameObject.layer = LayerMask.NameToLayer("EnemyGround");
+
                     renderer.material = visuals.enemyUnitMaterial;
                     break;
             }

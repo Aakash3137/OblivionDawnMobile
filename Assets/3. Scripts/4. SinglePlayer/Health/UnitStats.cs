@@ -1,38 +1,25 @@
+using System;
 using UnityEngine;
 
 public class UnitStats : Stats
 {
-    private UnitSpawnerScenario spawnerBuilding;
+    [field: SerializeField]
+    public UnitSpawnerScenario spawnerBuilding { get; private set; }
     private UnitUpgradeData unitData;
-
-    [Header("Unit Specific Stats (DO NOT EDIT)")]
-    public ScenarioOffenseType offenseUnitType;
-    public MobilityStats unitMobilityStats;
-    public RangeStats rangeStats;
-    public VisionAngles visionAngles;
-    public AttackTargets attackTargets;
-    public FlyStats flyStats;
     private GameObject unitPool;
+    public Action onUnitDied;
 
     internal override void Start()
     {
         spawnerBuilding = GetComponentInParent<UnitSpawnerScenario>();
 
-        offenseUnitType = spawnerBuilding.unitProduceStats.unitType;
-
         level = spawnerBuilding.unitSpawnLevel;
+
         unitData = spawnerBuilding.currentUnitLevelData;
-
-
         visuals = unitData.unitVisuals;
         basicStats = unitData.unitBasicStats;
-        unitMobilityStats = unitData.unitMobilityStats;
 
-        rangeStats = unitData.unitRangeStats;
-        visionAngles = unitData.unitVisionAngles;
-        attackTargets = unitData.unitAttackTargets;
-        flyStats = unitData.unitFlyStats;
-
+        canFly = unitData.unitMobilityStats.canFly;
 
         side = spawnerBuilding.GetComponent<BuildingStats>().side;
 
@@ -50,5 +37,10 @@ public class UnitStats : Stats
             Debug.Log("<color=red>No GameObject with tag 'UnitPool' found in scene!</color>");
         else
             transform.parent = unitPool.transform;
+    }
+
+    private void OnDestroy()
+    {
+        onUnitDied?.Invoke();
     }
 }

@@ -459,7 +459,6 @@ GameObject:
   - component: {fileID: 7216918736637472675}
   - component: {fileID: 2533861858427572245}
   - component: {fileID: 3758506319498807940}
-  - component: {fileID: 161548652620798157}
   - component: {fileID: 5098338205219749656}
   - component: {fileID: -4211263753082433027}
   - component: {fileID: -1095470802614212120}
@@ -630,19 +629,6 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &161548652620798157
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1690844357168965693}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4318e9e7de6742e4687acff599a09f7c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  side: 0
 --- !u!114 &5098338205219749656
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -655,21 +641,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d1587fe307d4464095b285f69ba8e1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  level: 0
+  side: 0
+  faction: 0
+  basicStats:
+    maxHealth: 0
+    armour: 0
+  visuals:
+    upgradeMesh: {fileID: 0}
+    playerUnitMaterial: {fileID: 0}
+    enemyUnitMaterial: {fileID: 0}
   currentHealth: 0
-  Level: 0
-  armour: 0
   hitCollider: {fileID: 0}
-  healthBarFade: {fileID: 1670812886041853120}
-  healthBar: {fileID: 0}
   isAirUnit: 0
   canAttackAir: 0
   canAttackGround: 1
-  unitBuildTime: 0
-  unitAttackDamage: 0
-  unitFireRate: 0
-  unitAttackRange: 0
-  attackDamage: 0
+  offenseUnitType: 0
+  unitMobilityStats:
+    canFly: 0
+    moveSpeed: 0
+    flySpeed: 0
+  rangeStats:
+    DetectionRange: 0
+    AttackRange: 0
+  visionAngles:
+    narrowViewAngle: 0
+    wideViewAngle: 0
+  attackTargets:
+    canAttackAir: 0
+    canAttackGround: 0
+  flyStats:
+    flyHeight: 0
+    climbAngle: 0
+    turnSpeed: 0
+    bankAngle: 0
+    evadeRadius: 0
+    attackAngleTolerance: 0
 --- !u!114 &-4211263753082433027
 MonoBehaviour:
   m_ObjectHideFlags: 0

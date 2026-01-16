@@ -565,7 +565,6 @@ GameObject:
   - component: {fileID: 6037425610648245962}
   - component: {fileID: 6949324974814974132}
   - component: {fileID: 4773561428658858200}
-  - component: {fileID: 1410032910191435456}
   - component: {fileID: 4022108238406871403}
   - component: {fileID: 7416070766645631762}
   - component: {fileID: 5174295395812851996}
@@ -661,19 +660,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &1410032910191435456
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7509741216450697401}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4318e9e7de6742e4687acff599a09f7c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  side: 0
 --- !u!114 &4022108238406871403
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -686,21 +672,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d1587fe307d4464095b285f69ba8e1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 200
+  level: 0
+  side: 0
+  faction: 0
+  basicStats:
+    maxHealth: 0
+    armour: 0
+  visuals:
+    upgradeMesh: {fileID: 0}
+    playerUnitMaterial: {fileID: 0}
+    enemyUnitMaterial: {fileID: 0}
   currentHealth: 0
-  Level: 0
-  armour: 0
   hitCollider: {fileID: 0}
-  healthBarFade: {fileID: 4820686349321759560}
-  healthBar: {fileID: 0}
   isAirUnit: 1
   canAttackAir: 1
   canAttackGround: 1
-  unitBuildTime: 0
-  unitAttackDamage: 10
-  unitFireRate: 0.1
-  unitAttackRange: 5
-  attackDamage: 0
+  offenseUnitType: 0
+  unitMobilityStats:
+    canFly: 0
+    moveSpeed: 0
+    flySpeed: 0
+  rangeStats:
+    DetectionRange: 0
+    AttackRange: 0
+  visionAngles:
+    narrowViewAngle: 0
+    wideViewAngle: 0
+  attackTargets:
+    canAttackAir: 0
+    canAttackGround: 0
+  flyStats:
+    flyHeight: 0
+    climbAngle: 0
+    turnSpeed: 0
+    bankAngle: 0
+    evadeRadius: 0
+    attackAngleTolerance: 0
 --- !u!114 &7416070766645631762
 MonoBehaviour:
   m_ObjectHideFlags: 0

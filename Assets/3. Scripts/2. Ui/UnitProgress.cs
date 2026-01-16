@@ -25,6 +25,14 @@ public class UnitProgress : ProgressManager
         //     return;
         // }
 
+        if (!spawner.autoProduce && spawner.producedUnit != null)
+        {
+            currentTime = 0f;
+            progressAmount = currentTime / spawner.unitBuildTime;
+            UpdateFillAmount(progressAmount);
+            return;
+        }
+
         if (currentTime > spawner.unitBuildTime)
         {
             currentTime = 0f;

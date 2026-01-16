@@ -13,6 +13,7 @@ public class UnitProduceStatsSO : ScriptableObject
     public Side unitSide;
     public int unitPopulationCost;
     public int unitSpawnLevel;
+    public bool isUnique;
 
     [Header("Unit starts at Level 0 and goes up")]
     public UnitUpgradeData[] unitLevelData;
@@ -123,8 +124,8 @@ public struct VisionAngles
 [Serializable]
 public struct RangeStats
 {
-    public float DetectionRange;
-    public float AttackRange;
+    public float detectionRange;
+    public float attackRange;
 }
 
 [Serializable]
