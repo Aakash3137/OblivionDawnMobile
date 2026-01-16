@@ -1,90 +1,114 @@
-using UnityEngine;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class DecManager : MonoBehaviour
 {
-    [SerializeField] private List<DecSelector> Declist = new List<DecSelector>();
-    [SerializeField] private Transform CustomDeckParent;
-    [SerializeField] private Transform AllDeckParent;
+    [Header("Deck Configuration")]
+    [SerializeField] private List<DecSelector> deckList = new();
+
+    [Header("Inventory Reference")]
+    [SerializeField] private InventoryManager inventoryManager;
+
+    [Header("UI")]
+    [SerializeField] private Image selectedFactionIcon;
+    [SerializeField] private Canvas _Canvas;
+
+    // --------------------------------------------------
+    // UNITY EVENTS
+    // --------------------------------------------------
 
     private void OnEnable()
     {
-        if (Declist.Count > 0)
-            OnClickButton(Declist[0].InActiveObj);
+        if (deckList.Count > 0)
+            SelectDeck(deckList[0]);
+
+        BuildAllCardsInventory();
     }
 
-    public void OnClickButton(GameObject CurrentActive)
+    // --------------------------------------------------
+    // DECK SELECTION
+    // --------------------------------------------------
+
+    public void OnClickButton(GameObject clickedButton)
     {
-        foreach (DecSelector dec in Declist)
+        foreach (var deck in deckList)
         {
-            dec.InActiveObj.SetActive(true);
-            dec._Checked.SetActive(false);
+            deck.InActiveObj.SetActive(true);
+            deck._Checked.SetActive(false);
         }
 
-        DecSelector selected = Declist.Find(dec => dec.InActiveObj == CurrentActive);
+        DecSelector selected =
+            deckList.Find(d => d.InActiveObj == clickedButton);
 
-        if (selected != null)
+        if (selected == null)
+            return;
+
+        SelectDeck(selected);
+    }
+
+    private void SelectDeck(DecSelector selected)
+    {
+        selected.InActiveObj.SetActive(false);
+        selected._Checked.SetActive(true);
+
+        if (selected.FactionSprite != null)
+            selectedFactionIcon.sprite = selected.FactionSprite;
+
+        StartCoroutine(BuildEquippedDeck(selected));
+    }
+
+    // --------------------------------------------------
+    // EQUIPPED (CUSTOM DECK)
+    // --------------------------------------------------
+
+    private IEnumerator BuildEquippedDeck(DecSelector selected)
+    {
+        yield return null;
+
+        inventoryManager.ClearEquipped();
+
+        foreach (UnitProduceStatsSO card in selected.Cards)
         {
-            selected.InActiveObj.SetActive(false);
-            selected._Checked.SetActive(true);
+            inventoryManager.AddEquippedItem(card.unitName, card.unitType.ToString(), _Canvas,
+            "UnitLevel: " + (card.unitSpawnLevel+1)
+                + "\nHealth: " + card.unitLevelData[0].unitBasicStats.maxHealth
+                + "\nArmor: " + card.unitLevelData[0].unitBasicStats.armour
+                + "\nAttack Range: "+ card.unitLevelData[0].unitRangeStats.AttackRange, selected._FactionName, true
+                );
+        }
+    }
 
-            if (selected.Cards.Count > 0)
+    // --------------------------------------------------
+    // UNEQUIPPED (ALL CARDS)
+    // --------------------------------------------------
+
+    private void BuildAllCardsInventory()
+    {
+        inventoryManager.ClearUnequipped();
+
+        foreach (DecSelector deck in deckList)
+        {
+            foreach (UnitProduceStatsSO card in deck.Cards)
             {
-                StartCoroutine(RebuildCustomDeck(selected));
-            }
-        }
-    }
-
-    private IEnumerator RebuildCustomDeck(DecSelector selected)
-    {
-        for (int i = CustomDeckParent.childCount - 1; i >= 0; i--)
-        {
-            Destroy(CustomDeckParent.GetChild(i).gameObject);
-        }
-
-        yield return new WaitForEndOfFrame();
-
-        while (CustomDeckParent.childCount > 0)
-            yield return null;
-
-        foreach (GameObject card in selected.Cards)
-        {
-            Instantiate(card, CustomDeckParent);
-        }
-    }
-
-    private void ShowAllCards()
-    {
-        StartCoroutine(RebuildAllCards());
-    }
-
-    private IEnumerator RebuildAllCards()
-    {
-        for (int i = AllDeckParent.childCount - 1; i >= 0; i--)
-        {
-            Destroy(AllDeckParent.GetChild(i).gameObject);
-        }
-
-        yield return new WaitForEndOfFrame();
-
-        while (AllDeckParent.childCount > 0)
-            yield return null;
-
-        foreach (DecSelector dec in Declist)
-        {
-            foreach (GameObject card in dec.Cards)
-            {
-                Instantiate(card, AllDeckParent);
+                inventoryManager.AddUnequippedItem(card.unitName, card.unitType.ToString(), _Canvas,
+                "UnitLevel: " + (card.unitSpawnLevel+1)
+                    + "\nHealth: " + card.unitLevelData[0].unitBasicStats.maxHealth
+                    + "\nArmor: " + card.unitLevelData[0].unitBasicStats.armour
+                    + "\nAttack Range: " + card.unitLevelData[0].unitRangeStats.AttackRange, deck._FactionName, false
+                    );
             }
         }
     }
 }
 
-[System.Serializable] 
+[System.Serializable]
 public class DecSelector
 {
+    public FactionName _FactionName;
     public GameObject _Checked;
     public GameObject InActiveObj;
-    public List<GameObject> Cards = new List<GameObject>();
+    public Sprite FactionSprite;
+    public List<UnitProduceStatsSO> Cards = new();
 }

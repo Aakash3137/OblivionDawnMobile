@@ -18,7 +18,7 @@ public class GameSelectionMode : ScriptableObject
             break;
 
             case Mode.MultiPlayer_Type:
-HomeUIManager.Instance.OnClickPrivateLobbyButton();
+                HomeUIManager.Instance.OnClickPrivateLobbyButton();
             break;
 
             case Mode.PVP_Type:
