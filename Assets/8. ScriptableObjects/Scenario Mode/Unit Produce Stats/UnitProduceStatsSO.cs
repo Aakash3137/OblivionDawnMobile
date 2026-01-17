@@ -47,10 +47,6 @@ public class UnitProduceStatsSO : ScriptableObject
             {
                 unitLevelData[i].unitMobilityStats.canFly = true;
             }
-            else
-            {
-                unitLevelData[i].unitMobilityStats.flySpeed = 0f;
-            }
         }
 
         unitSpawnLevel = Mathf.Clamp(unitSpawnLevel, 0, unitLevelData.Length - 1);
@@ -67,6 +63,7 @@ public class UnitUpgradeData
     public float unitBuildTime;
     public Visuals unitVisuals;
     public BasicStats unitBasicStats;
+    public AttackStats unitAttackStats;
     public MobilityStats unitMobilityStats;
     public RangeStats unitRangeStats;
     public VisionAngles unitVisionAngles;
@@ -93,6 +90,13 @@ public struct Visuals
 }
 
 [Serializable]
+public struct AttackStats
+{
+    public float damage;
+    public float fireRate;
+}
+
+[Serializable]
 public struct UpgradeCost
 {
     public ScenarioResourceType resourceType;
@@ -104,7 +108,6 @@ public struct MobilityStats
 {
     public bool canFly;
     public float moveSpeed;
-    public float flySpeed;
 }
 
 [Serializable]

@@ -66,11 +66,11 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: -5
+  near clip plane: -15
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 11
+  orthographic size: 14
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -220,10 +220,10 @@ MonoBehaviour:
   mouseZoomSpeed: 0.1
   touchZoomSpeed: 0.01
   minZoomIn: 5
-  maxZoomOut: 18
+  maxZoomOut: 20
   cameraMinBounds: {x: -5, y: 10, z: -5}
   cameraMaxBounds: {x: 25, y: 10, z: 25}
-  maxIdleDuration: 6
+  maxIdleDuration: 100
   smoothingSpeed: 5
 --- !u!1 &7101433107695260180
 GameObject:
@@ -282,8 +282,8 @@ MonoBehaviour:
     CustomLookAtTarget: 0
   Lens:
     FieldOfView: 60
-    OrthographicSize: 11
-    NearClipPlane: -5
+    OrthographicSize: 14
+    NearClipPlane: -15
     FarClipPlane: 1000
     Dutch: 0
     ModeOverride: 0

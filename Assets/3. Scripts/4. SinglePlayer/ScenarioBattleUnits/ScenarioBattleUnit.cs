@@ -14,7 +14,6 @@ public class ScenarioBattleUnit : MonoBehaviour
     public float attackCooldown = .5f;
     private float attackTimer;
 
-
     [Header("For Debugging")]
     public GameObject target;
     public GameObject primaryTarget;
@@ -38,11 +37,10 @@ public class ScenarioBattleUnit : MonoBehaviour
     private FlyStats flyStats;
     private Animator animator;
 
-    //private AirUnit airUnit;
+    private AirUnit airUnit;
 
     private Vector3 forward;
     private Side mySide;
-    Vector2Int currentCoord;
     private float targetCheckTimer = 0f;
     private float targetCheckInterval;
     public const float checkRadiusOffset = 0.5f;
@@ -52,10 +50,12 @@ public class ScenarioBattleUnit : MonoBehaviour
         myUnitStats = GetComponent<UnitStats>().spawnerBuilding.unitProduceStats;
         currentUnitData = GetComponent<UnitStats>().spawnerBuilding.currentUnitLevelData;
         navAgent = GetComponent<NavMeshAgent>();
+        airUnit = GetComponent<AirUnit>();
 
         SetUnitStats();
 
         forward = transform.forward;
+
         navAgent.isStopped = true;
 
         targetCheckInterval = Random.Range(0.5f, 1f);
@@ -63,9 +63,18 @@ public class ScenarioBattleUnit : MonoBehaviour
         if (animator != null)
             animator.SetFloat("Move", 0f);
 
-        navAgent.speed = mobilityStats.moveSpeed;
-        navAgent.stoppingDistance = rangeStats.attackRange;
-        navAgent.updateRotation = true;
+        if (mobilityStats.canFly)
+        {
+            airUnit = GetComponent<AirUnit>();
+            if (navAgent != null) navAgent.enabled = false;
+        }
+        else
+        {
+            navAgent.speed = mobilityStats.moveSpeed;
+            navAgent.stoppingDistance = rangeStats.attackRange;
+            navAgent.updateRotation = true;
+        }
+
         ArrangeRotation();
     }
     private void SetUnitStats()
@@ -76,7 +85,8 @@ public class ScenarioBattleUnit : MonoBehaviour
         visionAngles = currentUnitData.unitVisionAngles;
         attackTargets = currentUnitData.unitAttackTargets;
         flyStats = currentUnitData.unitFlyStats;
-        animator = GetComponentInChildren<Animator>();
+        if (!mobilityStats.canFly)
+            animator = GetComponentInChildren<Animator>();
         mySide = GetComponent<UnitStats>().side;
     }
 
@@ -91,9 +101,24 @@ public class ScenarioBattleUnit : MonoBehaviour
             targetCheckTimer = 0f;
         }
 
+        if (mobilityStats.canFly && airUnit != null && !airUnit.IsAirborne())
+        {
+            if (animator != null)
+                animator.SetFloat("Move", mobilityStats.moveSpeed);
+            return;
+        }
+
         if (target == null)
         {
-            if (animator != null) animator.SetFloat("Move", 0f);
+            if (mobilityStats.canFly && airUnit != null)
+            {
+                airUnit.IdleCircle();
+                if (animator != null) animator.SetFloat("Move", mobilityStats.moveSpeed);
+            }
+            else
+            {
+                if (animator != null) animator.SetFloat("Move", 0f);
+            }
             return;
         }
 
@@ -101,24 +126,41 @@ public class ScenarioBattleUnit : MonoBehaviour
 
         if (distance > rangeStats.attackRange)
         {
-            navAgent.isStopped = false;
+            if (mobilityStats.canFly)
+            {
+                airUnit.FlyTowards(target.transform.position);
+                Attack();
+            }
+            else
+            {
+                navAgent.isStopped = false;
+                if (!navAgent.hasPath || navAgent.remainingDistance > rangeStats.attackRange)
+                    navAgent.SetDestination(target.transform.position);
+            }
 
-            if (!navAgent.hasPath || navAgent.remainingDistance > rangeStats.attackRange)
-                navAgent.SetDestination(target.transform.position);
+            if (animator != null)
+                animator.SetFloat("Move", mobilityStats.canFly ? mobilityStats.moveSpeed : navAgent.velocity.magnitude);
         }
         else
         {
-            navAgent.isStopped = true;
-            navAgent.ResetPath();
-            FaceTarget();
-            Attack();
+            if (mobilityStats.canFly && airUnit != null)
+            {
+                airUnit.FlyTowards(target.transform.position);
+                if (animator != null) animator.SetFloat("Move", mobilityStats.moveSpeed);
+                Attack();
+            }
+            else if (!mobilityStats.canFly)
+            {
+                navAgent.isStopped = true;
+                navAgent.ResetPath();
+                if (animator != null)
+                    animator.SetFloat("Move", navAgent.velocity.magnitude);
+                FaceTarget();
+                Attack();
+            }
         }
-
-        if (animator != null)
-            animator.SetFloat("Move", navAgent.velocity.magnitude);
-
-        UpdateTileOwnership();
     }
+
     private void FindTarget()
     {
         Collider[] hits = new Collider[20];
@@ -181,6 +223,8 @@ public class ScenarioBattleUnit : MonoBehaviour
             if (unit == this)
                 continue;
 
+            if (unit.airUnit != null && !unit.airUnit.CanBeTargeted()) continue;
+
             score = CalculateScore(unit, score);
 
             // Is this a better candidate?
@@ -207,7 +251,6 @@ public class ScenarioBattleUnit : MonoBehaviour
             else
                 secondaryTarget = target;
         }
-
     }
 
     private void ArrangeRotation()
@@ -259,6 +302,9 @@ public class ScenarioBattleUnit : MonoBehaviour
             if (candidate == null)
                 return false;
 
+            if (candidate.airUnit != null)
+                return true;
+
             // check if building is low health
             float buildingHealthPercent = current.currentHealth / current.basicStats.maxHealth;
             if (buildingHealthPercent < 0.3f)
@@ -293,28 +339,28 @@ public class ScenarioBattleUnit : MonoBehaviour
 
     void Attack()
     {
-        // if (isAirUnit && airUnit != null)
-        // {
-        //     if (!airUnit.CanAttack()) return;
+        if (mobilityStats.canFly && airUnit != null)
+        {
+            if (!airUnit.CanAttack()) return;
 
-        //     if (airUnit.ShouldFireBurst(target))
-        //     {
-        //         if (target != null)
-        //         {
-        //             Stats enemy = target.GetComponent<Stats>();
-        //             if (enemy != null)
-        //             {
-        //                 projectileShooter.Fire(enemy);
-        //                 if (animator != null)
-        //                 {
-        //                     animator.SetBool("Fire", true);
-        //                     StartCoroutine(ResetFire());
-        //                 }
-        //             }
-        //         }
-        //     }
-        //     return;
-        // }
+            if (airUnit.ShouldFireBurst(target))
+            {
+                if (target != null)
+                {
+                    Stats enemy = target.GetComponent<Stats>();
+                    if (enemy != null)
+                    {
+                        projectileShooter.Fire(enemy);
+                        if (animator != null)
+                        {
+                            animator.SetBool("Fire", true);
+                            StartCoroutine(ResetFire());
+                        }
+                    }
+                }
+            }
+            return;
+        }
 
         attackTimer += Time.deltaTime;
 
@@ -344,52 +390,7 @@ public class ScenarioBattleUnit : MonoBehaviour
             animator.SetBool("Fire", false);
     }
 
-
-
-    #region Tile Ownership
-    // --- Tile ownership ---
-    void UpdateTileOwnership()
-    {
-        if (CubeGridManager.Instance == null) return;
-
-        Vector2Int coord = CubeGridManager.Instance.WorldToGrid(transform.position);
-        if (coord != currentCoord)
-        {
-            LeaveTile(currentCoord);
-            currentCoord = coord;
-            EnterTile(currentCoord);
-        }
-    }
-
-    void EnterTile(Vector2Int coord)
-    {
-        if (TileManager.Instance != null)
-            TileManager.Instance.TryEnterTile(gameObject, coord);
-
-        var tileGO = CubeGridManager.Instance.GetCube(coord);
-        var tile = tileGO != null ? tileGO.GetComponent<Tile>() : null;
-        if (tile != null)
-        {
-            tile.Occupy(mySide);
-        }
-    }
-
-    void LeaveTile(Vector2Int coord)
-    {
-        if (TileManager.Instance != null)
-        {
-            TileManager.Instance.LeaveTile(coord, gameObject);
-            //Debug.Log($"Tile Vacated at {coord}");
-        }
-
-        var tileGO = CubeGridManager.Instance?.GetCube(coord);
-        var tile = tileGO != null ? tileGO.GetComponent<Tile>() : null;
-        if (tile != null)
-            tile.Vacate(mySide);
-    }
-    #endregion
-
-    // #region TargetDetection
+    #region TargetDetection
     // public static bool AnyPlayerHasTarget()
     // {
     //     BattleUnit[] units = FindObjectsOfType<BattleUnit>();
@@ -439,7 +440,7 @@ public class ScenarioBattleUnit : MonoBehaviour
     //     }
     //     return false;
     // }
-    // #endregion
+    #endregion
 
     #region Gizmos
     void OnDrawGizmosSelected()
@@ -454,10 +455,4 @@ public class ScenarioBattleUnit : MonoBehaviour
         }
     }
     #endregion
-
-    private void OnDestroy()
-    {
-
-    }
-
 }

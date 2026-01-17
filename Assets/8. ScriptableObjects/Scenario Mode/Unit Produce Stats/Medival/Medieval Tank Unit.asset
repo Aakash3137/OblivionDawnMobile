@@ -14,18 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitName: Heavy Warrior
   unitType: 3
-  unitPrefab: {fileID: 8582016250964789232, guid: a0b5c784385856e43aac5173907c43ab, type: 3}
+  unitPrefab: {fileID: 8582016250964789232, guid: f413202b1dd230c4293370a886c1c296, type: 3}
   projectilePrefab: {fileID: 0}
   unitFaction: 0
   unitSide: 0
   unitPopulationCost: 0
   unitSpawnLevel: 0
+  isUnique: 0
   unitLevelData:
   - unitLevel: 0
     unitBuildTime: 50
     unitVisuals:
       upgradeMesh: {fileID: 0}
-      animationController: {fileID: 0}
       playerUnitMaterial: {fileID: 2100000, guid: 84b730c71dfbc7248b10f84896bf9714, type: 2}
       enemyUnitMaterial: {fileID: 2100000, guid: e15991f5e11ea4a4cac02a8ca192bd87, type: 2}
     unitBasicStats:
@@ -33,17 +33,17 @@ MonoBehaviour:
       armour: 0
     unitMobilityStats:
       canFly: 0
-      moveSpeed: 0
+      moveSpeed: 1
       flySpeed: 0
     unitRangeStats:
-      DetectionRange: 0
-      AttackRange: 0
+      detectionRange: 40
+      attackRange: 10
     unitVisionAngles:
-      narrowViewAngle: 0
-      wideViewAngle: 0
+      narrowViewAngle: 10
+      wideViewAngle: 45
     unitAttackTargets:
       canAttackAir: 0
-      canAttackGround: 0
+      canAttackGround: 1
     unitFlyStats:
       flyHeight: 0
       climbAngle: 0

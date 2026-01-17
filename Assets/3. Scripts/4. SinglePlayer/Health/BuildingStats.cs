@@ -17,7 +17,6 @@ public class BuildingStats : Stats
         if (buildingStats == null)
         {
             Debug.Log($"<color=red>Building {name} missing BuildingStats. Assign the script.</color>");
-            return;
         }
 
         buildingType = buildingStats.buildingType;
@@ -35,7 +34,6 @@ public class BuildingStats : Stats
         if (visuals.playerUnitMaterial == null)
         {
             Debug.Log($"<color=magenta>Assign materials for {name} on {buildingStats.name} ScriptableObject</color>");
-            return;
         }
 
         SetParent();

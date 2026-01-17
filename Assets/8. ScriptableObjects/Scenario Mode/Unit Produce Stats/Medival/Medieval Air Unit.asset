@@ -14,39 +14,38 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitName: Griffins
   unitType: 0
-  unitPrefab: {fileID: 1520344984127084345, guid: 4832c9f6464a9c74da8265ce834dc633, type: 3}
+  unitPrefab: {fileID: 1520344984127084345, guid: fa9e024184fdcb043a6cb33b35a7913c, type: 3}
   projectilePrefab: {fileID: 0}
   unitFaction: 0
   unitSide: 0
   unitPopulationCost: 0
   unitSpawnLevel: 0
+  isUnique: 1
   unitLevelData:
   - unitLevel: 0
-    unitBuildTime: 40
+    unitBuildTime: 2
     unitVisuals:
       upgradeMesh: {fileID: 0}
-      animationController: {fileID: 0}
       playerUnitMaterial: {fileID: 2100000, guid: 6d66c23aa74d38f48a06ec0032a16ceb, type: 2}
       enemyUnitMaterial: {fileID: 2100000, guid: 20b6cbbe36884e84a83f158db1084696, type: 2}
     unitBasicStats:
-      isUnique: 1
       maxHealth: 500
       armour: 0
     unitMobilityStats:
       canFly: 1
-      moveSpeed: 0
-      flySpeed: 0
+      moveSpeed: 2.5
+      flySpeed: 2.5
     unitRangeStats:
-      detectionRange: 0
-      attackRange: 0
+      detectionRange: 50
+      attackRange: 8
     unitVisionAngles:
-      narrowViewAngle: 0
-      wideViewAngle: 0
+      narrowViewAngle: 15
+      wideViewAngle: 180
     unitAttackTargets:
-      canAttackAir: 0
-      canAttackGround: 0
+      canAttackAir: 1
+      canAttackGround: 1
     unitFlyStats:
-      flyHeight: 0
+      flyHeight: 4
       climbAngle: 0
       turnSpeed: 0
       bankAngle: 0

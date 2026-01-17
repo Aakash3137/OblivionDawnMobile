@@ -15,8 +15,10 @@ public class Stats : MonoBehaviour
     private FadeHealthBar healthBarFade;
     private HealthProgress healthBar;
 
+    public AirUnit airUnit { get; private set; }
+
     [Header("Bools")]
-    public bool canFly;
+    public bool canFly;     //keep can Fly, canAttackAir and canAttackGround can be removed
     public bool canAttackAir = false;
     public bool canAttackGround = true;
 
@@ -25,6 +27,8 @@ public class Stats : MonoBehaviour
         healthBar = GetComponentInChildren<HealthProgress>();
         healthBarFade = GetComponentInChildren<FadeHealthBar>();
         hitCollider = GetComponent<Collider>();
+        TryGetComponent<AirUnit>(out var airUnit);
+        this.airUnit = airUnit;
 
         if (healthBar != null)
             healthBar.UpdateFillAmount(currentHealth / basicStats.maxHealth);
@@ -66,7 +70,11 @@ public class Stats : MonoBehaviour
 
     public virtual void TakeDamage(float amount)
     {
+        // if (canFly && airUnit != null && !airUnit.CanBeTargeted())
+        //     return;
+
         currentHealth -= amount;
+
         currentHealth = Mathf.Clamp(currentHealth, 0, basicStats.maxHealth);
         if (healthBar != null)
         {

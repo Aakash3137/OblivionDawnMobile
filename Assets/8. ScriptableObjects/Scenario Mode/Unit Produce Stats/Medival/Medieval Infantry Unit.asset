@@ -14,18 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitName: Crossbow Archers
   unitType: 1
-  unitPrefab: {fileID: 1690844357168965693, guid: 0edf8653de4ec7942affb4b7eeceae7a, type: 3}
+  unitPrefab: {fileID: 1690844357168965693, guid: e9a2c824251d51441b1f01ae5c506272, type: 3}
   projectilePrefab: {fileID: 0}
   unitFaction: 0
   unitSide: 0
   unitPopulationCost: 0
   unitSpawnLevel: 0
+  isUnique: 0
   unitLevelData:
   - unitLevel: 0
     unitBuildTime: 10
     unitVisuals:
       upgradeMesh: {fileID: 0}
-      animationController: {fileID: 0}
       playerUnitMaterial: {fileID: 2100000, guid: 14b68adf76a968242b04e3b593e58dae, type: 2}
       enemyUnitMaterial: {fileID: 2100000, guid: 5ac6e757728303042bc0afdcdb87faa5, type: 2}
     unitBasicStats:
@@ -33,19 +33,19 @@ MonoBehaviour:
       armour: 0
     unitMobilityStats:
       canFly: 0
-      moveSpeed: 0
+      moveSpeed: 2
       flySpeed: 0
     unitRangeStats:
-      DetectionRange: 0
-      AttackRange: 0
+      detectionRange: 40
+      attackRange: 7
     unitVisionAngles:
-      narrowViewAngle: 0
-      wideViewAngle: 0
+      narrowViewAngle: 10
+      wideViewAngle: 45
     unitAttackTargets:
       canAttackAir: 0
-      canAttackGround: 0
+      canAttackGround: 1
     unitFlyStats:
-      flyHeight: 0
+      flyHeight: 5
       climbAngle: 0
       turnSpeed: 0
       bankAngle: 0
