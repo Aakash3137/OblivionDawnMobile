@@ -7,7 +7,6 @@ public class UnitSpawnerScenario : MonoBehaviour
     [field: SerializeField]
     public UnitProduceStatsSO unitProduceStats { get; private set; }
     private Vector3 spawnPoint;
-
     private PlayerResourceManager prmInstance;
 
     [Header("Building Faction and stats")]
@@ -22,12 +21,15 @@ public class UnitSpawnerScenario : MonoBehaviour
     [Header("Unit Pool")]
     private Transform unitPool;
 
+
     [Header("Unit Production variables")]
     public GameObject unitPrefab { get; private set; }
     public int unitSpawnLevel { get; private set; }
     public UnitUpgradeData currentUnitLevelData { get; private set; }
     public float unitBuildTime { get; private set; }
     public UpgradeCost[] unitUpgradeCosts { get; private set; }
+
+    public GameObject producedUnit;
 
     private void Awake()
     {
@@ -54,13 +56,23 @@ public class UnitSpawnerScenario : MonoBehaviour
         else
             Debug.LogError("No GameObject with tag 'UnitPool' found in scene!");
 
+        if (unitProduceStats.isUnique)
+            autoProduce = false;
+
+        StartProducingUnits();
+    }
+
+    private void StartProducingUnits()
+    {
+        producedUnit = null;
+
         if (unitProduceStats != null)
             StartCoroutine(ProductionLoop());
     }
 
     private IEnumerator ProductionLoop()
     {
-        while (autoProduce && buildingStats.currentHealth > 0)
+        do
         {
             if (HasResources() || true)
             {
@@ -69,6 +81,7 @@ public class UnitSpawnerScenario : MonoBehaviour
                 //prmInstance.SpendResources(unitUpgradeCosts);
             }
         }
+        while (autoProduce && buildingStats.currentHealth > 0);
     }
 
     private void SpawnUnit()
@@ -85,11 +98,21 @@ public class UnitSpawnerScenario : MonoBehaviour
 
         spawnPoint = nearestTile.transform.position + Vector3.up * 2f;
 
-        Instantiate(unitPrefab, spawnPoint, Quaternion.identity, transform);
+        producedUnit = Instantiate(unitPrefab, spawnPoint, Quaternion.identity, transform);
+
+        if (producedUnit != null && !autoProduce)
+        {
+            producedUnit.GetComponent<UnitStats>().onUnitDied += StartProducingUnits;
+        }
     }
 
     public bool HasResources()
     {
         return prmInstance.HasResources(unitUpgradeCosts);
+    }
+    private void OnDisable()
+    {
+        if (producedUnit != null)
+            producedUnit.GetComponent<UnitStats>().onUnitDied -= StartProducingUnits;
     }
 }

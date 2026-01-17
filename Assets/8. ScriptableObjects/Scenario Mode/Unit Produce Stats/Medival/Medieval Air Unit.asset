@@ -18,24 +18,27 @@ MonoBehaviour:
   projectilePrefab: {fileID: 0}
   unitFaction: 0
   unitSide: 0
-  isAirUnit: 1
   unitPopulationCost: 0
   unitSpawnLevel: 0
   unitLevelData:
   - unitLevel: 0
-    unitBuildTime: 20
+    unitBuildTime: 40
     unitVisuals:
       upgradeMesh: {fileID: 0}
+      animationController: {fileID: 0}
       playerUnitMaterial: {fileID: 2100000, guid: 6d66c23aa74d38f48a06ec0032a16ceb, type: 2}
       enemyUnitMaterial: {fileID: 2100000, guid: 20b6cbbe36884e84a83f158db1084696, type: 2}
     unitBasicStats:
-      maxHealth: 400
+      isUnique: 1
+      maxHealth: 500
       armour: 0
     unitMobilityStats:
+      canFly: 1
       moveSpeed: 0
+      flySpeed: 0
     unitRangeStats:
-      DetectionRange: 0
-      AttackRange: 0
+      detectionRange: 0
+      attackRange: 0
     unitVisionAngles:
       narrowViewAngle: 0
       wideViewAngle: 0

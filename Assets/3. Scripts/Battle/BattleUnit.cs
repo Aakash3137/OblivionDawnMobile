@@ -55,7 +55,7 @@ public class BattleUnit : MonoBehaviour
     public float buildingWeight = 0f;
     Vector3 forward;
 
-    Side unitSide;
+    public Side unitSide;
     Vector2Int currentCoord;
     private float targetCheckTimer = 0f;
     private const float targetCheckInterval = 0.5f;
@@ -276,14 +276,14 @@ public class BattleUnit : MonoBehaviour
             //     continue;
 
             // Can't target air units during takeoff
-            if (unit.isAirUnit)
+            if (unit.canFly)
             {
                 AirUnit targetAir = unit.GetComponent<AirUnit>();
                 if (targetAir != null && !targetAir.CanBeTargeted()) continue;
                 if (!unitStats.canAttackAir) continue;
             }
 
-            if (!unit.isAirUnit && !unitStats.canAttackGround)
+            if (!unit.canFly && !unitStats.canAttackGround)
                 continue;
 
             score = CalculateScore(unit, score);
@@ -345,10 +345,10 @@ public class BattleUnit : MonoBehaviour
             return true;
 
         // never switch from unit to building
-        if (current is UnitStats && candidate is BuildingStats)
+        if (current is UnitStats && (candidate is BuildingStats || candidate is WallStats))
             return false;
 
-        if (current is BuildingStats)
+        if (current is BuildingStats || current is WallStats)
         {
             if (candidate == null)
                 return false;

@@ -31,7 +31,6 @@ public class WallParent : MonoBehaviour
         healthBar = GetComponentInChildren<HealthProgress>();
     }
 
-    // WallMaxHealth is not setting properly without delay
     private async Awaitable Start()
     {
         await Awaitable.WaitForSecondsAsync(0.1f);
@@ -65,6 +64,7 @@ public class WallParent : MonoBehaviour
         if (healthBar != null)
         {
             healthBar.UpdateHealthBar();
+            healthBar.isVisible = true;
             healthBar.UpdateFillAmount(wallCurrentHealth / WallMaxHealth);
         }
     }
@@ -91,17 +91,11 @@ public class WallParent : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (GetComponentInParent<WallStats>() != null)
+        DefenseWallStats defenseWall = GetComponentInParent<DefenseWallStats>();
+
+        if (defenseWall != null)
         {
-            //Tile currentTile = GetComponentInParent<Tile>();
-
-            //WallStats defenseWall = GetComponentInParent<WallStats>();
-
-            //if (defenseWall != null)
-            Destroy(GetComponentInParent<WallStats>().gameObject);
-
-            //if (currentTile != null)
-            GetComponentInParent<Tile>().hasBuilding = false;
+            Destroy(defenseWall.gameObject);
         }
     }
 }

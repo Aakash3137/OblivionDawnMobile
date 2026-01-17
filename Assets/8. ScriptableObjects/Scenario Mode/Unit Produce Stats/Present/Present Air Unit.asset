@@ -14,25 +14,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitName: Aircraft
   unitType: 0
-  unitPrefab: {fileID: 0}
+  unitPrefab: {fileID: 7509741216450697401, guid: 1ee1e27a395be5049a8b0ccdca931c83, type: 3}
   projectilePrefab: {fileID: 0}
   unitFaction: 1
   unitSide: 0
-  isAirUnit: 1
   unitPopulationCost: 0
   unitSpawnLevel: 0
   unitLevelData:
   - unitLevel: 0
-    unitBuildTime: 5
+    unitBuildTime: 40
     unitVisuals:
       upgradeMesh: {fileID: 0}
-      playerUnitMaterial: {fileID: 2100000, guid: 20b6cbbe36884e84a83f158db1084696, type: 2}
-      enemyUnitMaterial: {fileID: 2100000, guid: 6d66c23aa74d38f48a06ec0032a16ceb, type: 2}
+      animationController: {fileID: 0}
+      playerUnitMaterial: {fileID: 2100000, guid: 6d66c23aa74d38f48a06ec0032a16ceb, type: 2}
+      enemyUnitMaterial: {fileID: 2100000, guid: 20b6cbbe36884e84a83f158db1084696, type: 2}
     unitBasicStats:
-      maxHealth: 0
+      maxHealth: 500
       armour: 0
     unitMobilityStats:
+      canFly: 1
       moveSpeed: 0
+      flySpeed: 0
     unitRangeStats:
       DetectionRange: 0
       AttackRange: 0

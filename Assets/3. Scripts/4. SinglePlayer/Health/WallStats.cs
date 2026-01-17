@@ -7,7 +7,7 @@ public class WallStats : Stats
     public WallUpgradeDataSO wallStats { get; private set; }
     public ScenarioBuildingType wallType { get; private set; }
     public ScenarioDefenseType defenseType { get; private set; }
-    public WallUpgradeData wallData { get; private set; }
+    public BuildingUpgradeData wallData { get; private set; }
     public UpgradeCost[] wallUpgradeCosts { get; private set; }
 
 
@@ -20,17 +20,20 @@ public class WallStats : Stats
         wallParent = GetComponentInParent<WallParent>();
 
         if (wallStats == null)
+        {
             Debug.Log($"<color=red>Building {name} missing BuildingStats. Assign the script.</color>");
+            return;
+        }
 
-        wallType = wallStats.wallType;
-        level = wallStats.wallSpawnLevel;
-        wallData = wallStats.wallLevelData[level];
+        wallType = wallStats.buildingType;
+        level = wallStats.buildingSpawnLevel;
+        wallData = wallStats.buildingLevelData[level];
 
-        visuals = wallData.wallVisuals;
-        basicStats = wallData.wallBasicStats;
-        wallUpgradeCosts = wallData.wallUpgradeCosts;
+        visuals = wallData.buildingVisuals;
+        basicStats = wallData.buildingBasicStats;
+        wallUpgradeCosts = wallData.buildingUpgradeCosts;
 
-        side = GetComponentInParent<Tile>().ownerSide;
+        side = GetComponentInParent<BuildingStats>().side;
 
         if (visuals.playerUnitMaterial == null)
         {

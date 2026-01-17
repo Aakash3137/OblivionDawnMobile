@@ -74,11 +74,11 @@ public class TileUIPanel : MonoBehaviour
             int spawnLevel = spawnBuildingStats.buildingStats.buildingSpawnLevel;
             buildingUpgradeCost = spawnBuildingStats.buildingStats.buildingLevelData[spawnLevel].buildingUpgradeCosts;
         }
-        else if (buildingPrefab.TryGetComponent<WallStats>(out var spawnWallStats))
-        {
-            int spawnLevel = spawnWallStats.wallStats.wallSpawnLevel;
-            buildingUpgradeCost = spawnWallStats.wallStats.wallLevelData[spawnLevel].wallUpgradeCosts;
-        }
+        // else if (buildingPrefab.TryGetComponent<WallStats>(out var spawnWallStats))
+        // {
+        //     int spawnLevel = spawnWallStats.wallStats.wallSpawnLevel;
+        //     buildingUpgradeCost = spawnWallStats.wallStats.wallLevelData[spawnLevel].wallUpgradeCosts;
+        // }
 
         if (buildingUpgradeCost == null || !prmInstance.HasResources(buildingUpgradeCost, true))
         {
@@ -123,19 +123,19 @@ public class TileUIPanel : MonoBehaviour
                 {
                     case 0:
                         currentWall.DisableWall(0);
-                        adjacentTiles[i].GetComponentInChildren<WallParent>()?.DisableWall(1);
+                        adjacentTiles[i].GetOccupant().GetComponentInChildren<WallParent>()?.DisableWall(1);
                         break;
                     case 1:
                         currentWall.DisableWall(1);
-                        adjacentTiles[i].GetComponentInChildren<WallParent>()?.DisableWall(0);
+                        adjacentTiles[i].GetOccupant().GetComponentInChildren<WallParent>()?.DisableWall(0);
                         break;
                     case 2:
                         currentWall.DisableWall(2);
-                        adjacentTiles[i].GetComponentInChildren<WallParent>()?.DisableWall(3);
+                        adjacentTiles[i].GetOccupant().GetComponentInChildren<WallParent>()?.DisableWall(3);
                         break;
                     case 3:
                         currentWall.DisableWall(3);
-                        adjacentTiles[i].GetComponentInChildren<WallParent>()?.DisableWall(2);
+                        adjacentTiles[i].GetOccupant().GetComponentInChildren<WallParent>()?.DisableWall(2);
                         break;
                 }
             }
@@ -147,10 +147,24 @@ public class TileUIPanel : MonoBehaviour
         if (_mainWallPlaced) return;
 
         Transform mainBuildingTile = MainBuildingSpawner.Instance.playerSpawnPoint;
-        Instantiate(_wallPrefab,
-            new Vector3(mainBuildingTile.position.x, _wallYOffset, mainBuildingTile.position.z),
-            Quaternion.identity,
-            mainBuildingTile);
+        Transform mainBuilding = null;
+        GameObject[] objects = GameObject.FindGameObjectsWithTag("MainBuilding");
+
+        foreach (var obj in objects)
+        {
+            if (obj.GetComponent<BuildingStats>().side == Side.Player)
+            {
+                mainBuilding = obj.transform;
+                break;
+            }
+        }
+
+        if (mainBuilding != null)
+            Instantiate(_wallPrefab,
+                new Vector3(mainBuildingTile.position.x, _wallYOffset, mainBuildingTile.position.z),
+                Quaternion.identity, mainBuilding);
+        else
+            Debug.Log("Main building not found");
 
         _mainWallPlaced = true;
     }

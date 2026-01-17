@@ -8,7 +8,7 @@ public class HealthProgress : ProgressManager
     private CanvasGroup canvasGroup;
     [SerializeField] private float fadeTime;
     [SerializeField] private float visibleTime;
-    [SerializeField] private bool isVisible;
+    public bool isVisible;
 
     private void Awake()
     {
@@ -20,7 +20,6 @@ public class HealthProgress : ProgressManager
     {
         if (isVisible)
             return;
-
         _ = FadeInAndOutAsync();
     }
 
