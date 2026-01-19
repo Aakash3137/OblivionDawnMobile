@@ -264,7 +264,7 @@ public class InventoryManager : MonoBehaviour
 
     private void EnsureUnequippedSlots()
     {
-        while (unequippedSlots.Count < unequippedData.Count + 10)
+        while (unequippedSlots.Count < unequippedData.Count)
             CreateUnequippedSlot(unequippedSlots.Count);
     }
 
@@ -297,8 +297,6 @@ public class InventoryManager : MonoBehaviour
         RefreshUI();
     }
 }
-
-
 
 public enum SlotGroup
 {

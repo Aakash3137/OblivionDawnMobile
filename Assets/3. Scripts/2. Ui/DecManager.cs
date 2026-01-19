@@ -75,7 +75,7 @@ public class DecManager : MonoBehaviour
             "UnitLevel: " + (card.unitSpawnLevel+1)
                 + "\nHealth: " + card.unitLevelData[0].unitBasicStats.maxHealth
                 + "\nArmor: " + card.unitLevelData[0].unitBasicStats.armour
-                + "\nAttack Range: "+ card.unitLevelData[0].unitRangeStats.AttackRange, selected._FactionName, true
+                + "\nAttack Range: "+ card.unitLevelData[0].unitRangeStats.attackRange, selected._FactionName, true
                 );
         }
     }
@@ -96,7 +96,7 @@ public class DecManager : MonoBehaviour
                 "UnitLevel: " + (card.unitSpawnLevel+1)
                     + "\nHealth: " + card.unitLevelData[0].unitBasicStats.maxHealth
                     + "\nArmor: " + card.unitLevelData[0].unitBasicStats.armour
-                    + "\nAttack Range: " + card.unitLevelData[0].unitRangeStats.AttackRange, deck._FactionName, false
+                    + "\nAttack Range: " + card.unitLevelData[0].unitRangeStats.attackRange, deck._FactionName, false
                     );
             }
         }
