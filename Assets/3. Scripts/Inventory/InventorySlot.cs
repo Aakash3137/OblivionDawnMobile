@@ -63,7 +63,7 @@ public class InventorySlot : MonoBehaviour, IDropHandler
     // ----------------------------------------------------
     public void SetItem(DraggableObject item)
     {
-        Debug.Log("Set Item "+ item.name);
+//        Debug.Log("Set Item "+ item.name);
         CurrentItem = item;
 
         if (item == null)
