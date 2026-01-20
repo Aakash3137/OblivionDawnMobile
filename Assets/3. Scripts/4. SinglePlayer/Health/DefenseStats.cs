@@ -15,4 +15,12 @@ public class DefenseStats : BuildingStats
         defenseType = defenseStats.defenseType;
         defenseData = defenseStats.defenseLevelData[level];
     }
+
+    internal override void OnDestroy()
+    {
+        currentTile.ClearOccupant();
+        currentTile.hasBuilding = false;
+
+        KillCounterManager.Instance.AddDefenseBuildingDestroyedData(defenseType, side);
+    }
 }

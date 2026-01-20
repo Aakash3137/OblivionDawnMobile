@@ -27,6 +27,7 @@ public class ScenarioBattleUnit : MonoBehaviour
     public float peripheralAngleBonus = 10f;
     public float unitWeight = 10f;
     public float buildingWeight = 0f;
+    public float wallWeight = -10f;
 
     [Header("Unit Specific Stats (DO NOT EDIT)")]
     private ScenarioOffenseType offenseUnitType;
@@ -35,7 +36,7 @@ public class ScenarioBattleUnit : MonoBehaviour
     private VisionAngles visionAngles;
     private AttackTargets attackTargets;
     private FlyStats flyStats;
-    private Animator animator;
+    [SerializeField] private Animator animator;
 
     private AirUnit airUnit;
 
@@ -44,6 +45,9 @@ public class ScenarioBattleUnit : MonoBehaviour
     private float targetCheckTimer = 0f;
     private float targetCheckInterval;
     public const float checkRadiusOffset = 0.5f;
+
+
+    public Collider[] hits = new Collider[20];
 
     private void Start()
     {
@@ -85,8 +89,6 @@ public class ScenarioBattleUnit : MonoBehaviour
         visionAngles = currentUnitData.unitVisionAngles;
         attackTargets = currentUnitData.unitAttackTargets;
         flyStats = currentUnitData.unitFlyStats;
-        if (!mobilityStats.canFly)
-            animator = GetComponentInChildren<Animator>();
         mySide = GetComponent<UnitStats>().side;
     }
 
@@ -163,8 +165,7 @@ public class ScenarioBattleUnit : MonoBehaviour
 
     private void FindTarget()
     {
-        Collider[] hits = new Collider[20];
-
+        hits = new Collider[20];
         LayerMask enemyLayerMask = LayerMask.GetMask("PlayerAir", "PlayerGround", "EnemyAir", "EnemyGround");
 
         switch (mySide)
@@ -228,7 +229,7 @@ public class ScenarioBattleUnit : MonoBehaviour
             score = CalculateScore(unit, score);
 
             // Is this a better candidate?
-            if (score > bestScore && (target == null || ShouldSwitchTarget(target?.GetComponent<Stats>(), unit)))
+            if (score >= bestScore && (target == null || ShouldSwitchTarget(target?.GetComponent<Stats>(), unit)))
             {
                 bestScore = score;
                 bestTarget = unit;
@@ -453,6 +454,9 @@ public class ScenarioBattleUnit : MonoBehaviour
             Gizmos.color = Color.green;
             Gizmos.DrawLine(transform.position, target.transform.position);
         }
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, rangeStats.detectionRange);
     }
     #endregion
 }

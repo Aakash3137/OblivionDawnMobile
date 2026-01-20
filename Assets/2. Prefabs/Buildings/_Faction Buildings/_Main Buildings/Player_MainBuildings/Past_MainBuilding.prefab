@@ -11,10 +11,8 @@ GameObject:
   - component: {fileID: 1807120803253265653}
   - component: {fileID: 6473091735761712175}
   - component: {fileID: 6093498460584951295}
-  - component: {fileID: 8957070321639914992}
   - component: {fileID: 2289749596056121463}
   - component: {fileID: 5551679913311386414}
-  - component: {fileID: 5711781814223891004}
   m_Layer: 0
   m_Name: Past_MainBuilding
   m_TagString: MainBuilding
@@ -76,19 +74,6 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0.5
---- !u!114 &8957070321639914992
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4320449579214391836}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4318e9e7de6742e4687acff599a09f7c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  side: 0
 --- !u!114 &2289749596056121463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -111,10 +96,9 @@ MonoBehaviour:
     upgradeMesh: {fileID: 0}
     playerUnitMaterial: {fileID: 0}
     enemyUnitMaterial: {fileID: 0}
-  maxHealth: 0
   currentHealth: 0
   hitCollider: {fileID: 0}
-  isAirUnit: 0
+  canFly: 0
   canAttackAir: 0
   canAttackGround: 1
   <buildingStats>k__BackingField: {fileID: 11400000, guid: e0d50d47ec24ab34e932c6cdbfb25769, type: 2}
@@ -131,23 +115,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useDiagonals: 1
---- !u!114 &5711781814223891004
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4320449579214391836}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 992b46bf958c0124c810ab2674b9d7a1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  allFactionsData: {fileID: 11400000, guid: b4c4f87a58a4fc841b315c31d4d53920, type: 2}
-  enemyBuildingPrefabs: []
-  minDelay: 5
-  maxDelay: 10
-  yOffset: 2
 --- !u!1 &6665634676320427724
 GameObject:
   m_ObjectHideFlags: 0
