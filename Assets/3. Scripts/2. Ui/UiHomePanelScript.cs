@@ -19,6 +19,7 @@ public class UiHomePanelScript : MonoBehaviour
     [SerializeField] private TMP_Text LevelNotTxt;
     [SerializeField] private TMP_Text CoinsTxt;
     [SerializeField] private TMP_Text DiamondsTxt;
+    [SerializeField] private Image UserPic;
 
     [Header ("Selection Window")]
     [SerializeField] internal GameObject SelectionWindown;
@@ -34,6 +35,7 @@ public class UiHomePanelScript : MonoBehaviour
     private void OnEnable() 
     {
         UserNameTxt.text = PlayerData.UserName;
+        UserPic.sprite = PlayerData.ProfilePicture;
         LevelNotTxt.text = PlayerData.Level.ToString();
         CoinsTxt.text = PlayerData.Level.ToString("00");
         DiamondsTxt.text = PlayerData.Diamonds.ToString();
@@ -43,7 +45,13 @@ public class UiHomePanelScript : MonoBehaviour
         
     }
 
-    public void OnClickPlayButton(PopupOpener popupOpener)
+    public void OpenProfileManager()
+    {
+        HomeUIManager.Instance.ShowPanel(PanelName.Profile);
+    }
+
+
+    public void OnClickPlayButton()
     {
         SelectionWindown.SetActive(true);
     }
