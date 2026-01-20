@@ -65,6 +65,7 @@ public class WallStats : Stats
     }
     private void OnDestroy()
     {
+        // This event is to destroy wall Parent if the wall Parent current HP goes to zero
         onWallDestroyed?.Invoke();
     }
 }

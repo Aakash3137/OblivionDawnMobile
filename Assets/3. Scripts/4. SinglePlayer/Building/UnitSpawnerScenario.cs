@@ -102,7 +102,7 @@ public class UnitSpawnerScenario : MonoBehaviour
 
         if (producedUnit != null && !autoProduce)
         {
-            producedUnit.GetComponent<UnitStats>().onUnitDied += StartProducingUnits;
+            producedUnit.GetComponent<UnitStats>().onUniqueUnitDied += StartProducingUnits;
         }
     }
 
@@ -113,6 +113,11 @@ public class UnitSpawnerScenario : MonoBehaviour
     private void OnDisable()
     {
         if (producedUnit != null)
-            producedUnit.GetComponent<UnitStats>().onUnitDied -= StartProducingUnits;
+            producedUnit.GetComponent<UnitStats>().onUniqueUnitDied -= StartProducingUnits;
+    }
+
+    private void OnDestroy()
+    {
+        KillCounterManager.Instance.AddOffenseBuildingDestroyedData(unitProduceStats.unitType, buildingStats.side);
     }
 }

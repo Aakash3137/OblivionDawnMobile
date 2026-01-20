@@ -75,5 +75,7 @@ public class ResourceGen : MonoBehaviour
     private void OnDestroy()
     {
         prmInstance.SetResourceGenerationRate(resourceType, -resourceGenerationRate);
+
+        KillCounterManager.Instance.AddResourceBuildingDestroyedData(resourceType, buildingSide);
     }
 }

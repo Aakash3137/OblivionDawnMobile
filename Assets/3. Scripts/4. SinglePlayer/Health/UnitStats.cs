@@ -12,7 +12,7 @@ public class UnitStats : Stats
     public UnitSpawnerScenario spawnerBuilding { get; private set; }
     private UnitUpgradeData unitData;
     private GameObject unitPool;
-    public Action onUnitDied;
+    public Action onUniqueUnitDied;
 
     internal override void Start()
     {
@@ -46,6 +46,9 @@ public class UnitStats : Stats
 
     private void OnDestroy()
     {
-        onUnitDied?.Invoke();
+        if (spawnerBuilding.unitProduceStats.isUnique == true)
+            onUniqueUnitDied?.Invoke();
+
+        KillCounterManager.Instance.AddUnitKillData(spawnerBuilding.unitProduceStats.unitType, side);
     }
 }

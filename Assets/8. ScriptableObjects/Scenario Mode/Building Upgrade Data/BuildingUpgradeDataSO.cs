@@ -16,7 +16,7 @@ public class BuildingUpgradeDataSO : ScriptableObject
 
     internal virtual void ValidateBase()
     {
-        if (buildingLevelData == null)
+        if (buildingLevelData.Length == 0)
         {
             buildingLevelData = new BuildingUpgradeData[1];
             buildingLevelData[0] = new BuildingUpgradeData();

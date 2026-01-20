@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class BuildingStats : Stats
@@ -7,7 +8,6 @@ public class BuildingStats : Stats
     public ScenarioBuildingType buildingType { get; private set; }
     public BuildingUpgradeData buildingData { get; private set; }
     public UpgradeCost[] buildingUpgradeCosts { get; private set; }
-
     private GameObject buildingPool;
     public Tile currentTile { get; private set; }
 
@@ -91,5 +91,20 @@ public class BuildingStats : Stats
     {
         currentTile.ClearOccupant();
         currentTile.hasBuilding = false;
+
+        KillCounterManager.Instance.AddBuildingDestroyedData(buildingType, side);
+
+        if (buildingType == ScenarioBuildingType.MainBuilding)
+        {
+            switch (side)
+            {
+                case Side.Player:
+                    RTSGameStateManager.Instance.ChangeState(RTSGameState.DEFEAT);
+                    break;
+                case Side.Enemy:
+                    RTSGameStateManager.Instance.ChangeState(RTSGameState.VICTORY);
+                    break;
+            }
+        }
     }
 }
