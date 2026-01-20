@@ -62,4 +62,9 @@ public class EnemyTileClickManager : MonoBehaviour
             enemyBuildPanel.CloseBuildPanel();
         }
     }
+    
+    internal void CloseBuildPanel()
+    {
+        enemyBuildPanel.CloseBuildPanel();
+    }
 }

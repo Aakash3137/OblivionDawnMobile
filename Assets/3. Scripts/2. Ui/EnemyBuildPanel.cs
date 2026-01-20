@@ -10,6 +10,12 @@ public class EnemyBuildPanel : MonoBehaviour
     [SerializeField] private Button enemyTankBuilding;
     [SerializeField] private AllFactionsData factionData;
 
+    [SerializeField] private FactionName EnemyfactionName;
+    
+    private void Awake()
+    {
+        MainBuildingSpawner.SetFactionNameThroughEnemyBuildPanel(EnemyfactionName);
+    }
     private void Start()
     {
         enemyAirBuilding.onClick.AddListener(PlaceEnemyAirBuilding);
@@ -19,18 +25,60 @@ public class EnemyBuildPanel : MonoBehaviour
     }
     public void PlaceEnemyAirBuilding()
     {
-        var slot = factionData.medievalAirBuilding;
+        var slot = GetBuildingByType("Air");  
         PlaceBuilding(slot);
     }
     public void PlaceEnemyInfantryBuilding()
     {
-        var slot = factionData.medievalInfantryBuilding;
+        var slot = GetBuildingByType("Infantry");
         PlaceBuilding(slot);
     }
     public void PlaceEnemyTankBuilding()
     {
-        var slot = factionData.medievalTankBuilding;
+        var slot = GetBuildingByType("Tank");
         PlaceBuilding(slot);
+    }
+
+    // updated code with enemy faction selection from inspector.
+    private GameObject GetBuildingByType(string buildingType)
+    {
+        switch (EnemyfactionName)
+        {
+            case FactionName.Medieval:
+                return buildingType switch
+                {
+                    "Air" => factionData.medievalAirBuilding,
+                    "Infantry" => factionData.medievalInfantryBuilding,
+                    "Tank" => factionData.medievalTankBuilding,
+                    _ => null
+                };
+            case FactionName.Present:
+                return buildingType switch
+                {
+                    "Air" => factionData.presentAirBuilding,
+                    "Infantry" => factionData.presentInfantryBuilding,
+                    "Tank" => factionData.presentTankBuilding,
+                    _ => null
+                };
+            case FactionName.Futuristic:
+                return buildingType switch
+                {
+                    "Air" => factionData.futureAirBuilding,
+                    "Infantry" => factionData.futureInfantryBuilding,
+                    "Tank" => factionData.futureTankBuilding,
+                    _ => null
+                };
+            case FactionName.Galvadore:
+                return buildingType switch
+                {
+                    "Air" => factionData.galvadoreAirBuilding,
+                    "Infantry" => factionData.galvadoreInfantryBuilding,
+                    "Tank" => factionData.galvadoreTankBuilding,
+                    _ => null
+                };
+            default:
+                return null;
+        }
     }
 
     private void PlaceBuilding(GameObject buildingPrefab)

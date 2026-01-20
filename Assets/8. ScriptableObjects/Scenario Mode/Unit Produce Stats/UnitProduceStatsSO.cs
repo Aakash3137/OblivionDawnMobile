@@ -20,7 +20,7 @@ public class UnitProduceStatsSO : ScriptableObject
 
     private void ValidateBase()
     {
-        if (unitLevelData == null)
+        if (unitLevelData.Length == 0)
         {
             unitLevelData = new UnitUpgradeData[1];
             unitLevelData[0] = new UnitUpgradeData();

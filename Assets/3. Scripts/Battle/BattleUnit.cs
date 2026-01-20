@@ -276,14 +276,14 @@ public class BattleUnit : MonoBehaviour
             //     continue;
 
             // Can't target air units during takeoff
-            if (unit.canFly)
+            if (unit.CanFly)
             {
                 AirUnit targetAir = unit.GetComponent<AirUnit>();
                 if (targetAir != null && !targetAir.CanBeTargeted()) continue;
                 if (!unitStats.canAttackAir) continue;
             }
 
-            if (!unit.canFly && !unitStats.canAttackGround)
+            if (!unit.CanFly && !unitStats.canAttackGround)
                 continue;
 
             score = CalculateScore(unit, score);

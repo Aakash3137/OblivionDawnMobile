@@ -12,6 +12,8 @@ public class MainBuildingSpawner : MonoBehaviour
     public Transform enemySpawnPoint;
     public float yOffset = 1f;
 
+    private static FactionName EnemyFactionName;
+    
     void Awake() => Instance = this;
 
     void Start()
@@ -25,14 +27,19 @@ public class MainBuildingSpawner : MonoBehaviour
         // Use the faction selected in the menu
         var playerFaction = GameData.SelectedFaction;
         var playerSlots = GetFactionSlots(playerFaction);
-        var enemySlots = GetFactionSlots(GetRandomEnemyFaction(playerFaction));
+        
+        // var enemySlots = GetFactionSlots(GetRandomEnemyFaction(playerFaction));
+        
+        // updated enemy main building faction selection through enemy build panel script 
+        var enemySlots = GetFactionSlots(EnemyFactionName);
 
         if (playerSlots == null || enemySlots == null) return;
 
         SpawnAllBuildings(playerSpawnPoint, playerSlots, Side.Player);
         SpawnAllBuildings(enemySpawnPoint, enemySlots, Side.Enemy);
     }
-
+    
+    // Get faction slots based on faction name
     GameObject[] GetFactionSlots(FactionName name)
     {
         switch (name)
@@ -48,14 +55,13 @@ public class MainBuildingSpawner : MonoBehaviour
             default: return null;
         }
     }
-
-    FactionName GetRandomEnemyFaction(FactionName player)
+    
+    
+    public static void SetFactionNameThroughEnemyBuildPanel(FactionName enemyFactionName)
     {
-        var values = (FactionName[])System.Enum.GetValues(typeof(FactionName));
-        FactionName pick;
-        do { pick = values[Random.Range(0, values.Length)]; } while (pick == player);
-        return pick;
+        EnemyFactionName = enemyFactionName;
     }
+    
 
     void SpawnAllBuildings(Transform rootPoint, GameObject[] buildingPrefabs, Side side)
     {

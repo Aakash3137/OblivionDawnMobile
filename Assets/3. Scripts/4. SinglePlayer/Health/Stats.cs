@@ -18,7 +18,8 @@ public class Stats : MonoBehaviour
     public AirUnit airUnit { get; private set; }
 
     [Header("Bools")]
-    public bool canFly;     //keep can Fly, canAttackAir and canAttackGround can be removed
+    public virtual bool CanFly => false;
+    //keep can Fly, canAttackAir and canAttackGround can be removed
     public bool canAttackAir = false;
     public bool canAttackGround = true;
 
@@ -48,7 +49,7 @@ public class Stats : MonoBehaviour
             {
                 case Side.Player:
 
-                    if (canFly)
+                    if (CanFly)
                         gameObject.layer = LayerMask.NameToLayer("PlayerAir");
                     else
                         gameObject.layer = LayerMask.NameToLayer("PlayerGround");
@@ -57,7 +58,7 @@ public class Stats : MonoBehaviour
                     break;
                 case Side.Enemy:
 
-                    if (canFly)
+                    if (CanFly)
                         gameObject.layer = LayerMask.NameToLayer("EnemyAir");
                     else
                         gameObject.layer = LayerMask.NameToLayer("EnemyGround");

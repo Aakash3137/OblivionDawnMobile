@@ -3,6 +3,11 @@ using UnityEngine;
 
 public class UnitStats : Stats
 {
+    [SerializeField]
+    private bool canFly;
+
+    public override bool CanFly => canFly;
+    
     [field: SerializeField]
     public UnitSpawnerScenario spawnerBuilding { get; private set; }
     private UnitUpgradeData unitData;
