@@ -44,11 +44,15 @@ public class UnitStats : Stats
             transform.parent = unitPool.transform;
     }
 
+    internal override void Die()
+    {
+        base.Die();
+        KillCounterManager.Instance.AddUnitKillData(spawnerBuilding.unitProduceStats.unitType, side);
+    }
+
     private void OnDestroy()
     {
         if (spawnerBuilding.unitProduceStats.isUnique == true)
             onUniqueUnitDied?.Invoke();
-
-        KillCounterManager.Instance.AddUnitKillData(spawnerBuilding.unitProduceStats.unitType, side);
     }
 }

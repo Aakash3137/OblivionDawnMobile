@@ -87,10 +87,9 @@ public class BuildingStats : Stats
     //     return PlayerResourceManager.Instance.HasResources(buildingUpgradeCosts);
     // }
 
-    internal virtual void OnDestroy()
+    internal override void Die()
     {
-        currentTile.ClearOccupant();
-        currentTile.hasBuilding = false;
+        base.Die();
 
         KillCounterManager.Instance.AddBuildingDestroyedData(buildingType, side);
 
@@ -106,5 +105,10 @@ public class BuildingStats : Stats
                     break;
             }
         }
+    }
+    internal virtual void OnDestroy()
+    {
+        currentTile.ClearOccupant();
+        currentTile.hasBuilding = false;
     }
 }
