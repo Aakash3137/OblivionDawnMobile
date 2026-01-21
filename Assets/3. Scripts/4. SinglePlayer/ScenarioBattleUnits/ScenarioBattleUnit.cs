@@ -46,9 +46,6 @@ public class ScenarioBattleUnit : MonoBehaviour
     private float targetCheckInterval;
     public const float checkRadiusOffset = 0.5f;
 
-
-    public Collider[] hits = new Collider[20];
-
     private void Start()
     {
         myUnitStats = GetComponent<UnitStats>().spawnerBuilding.unitProduceStats;
@@ -165,7 +162,8 @@ public class ScenarioBattleUnit : MonoBehaviour
 
     private void FindTarget()
     {
-        hits = new Collider[20];
+        Collider[] hits = new Collider[20];
+
         LayerMask enemyLayerMask = LayerMask.GetMask("PlayerAir", "PlayerGround", "EnemyAir", "EnemyGround");
 
         switch (mySide)

@@ -128,10 +128,10 @@ public class RTSGameStateManager : MonoBehaviour
         else if (Is(RTSGameState.PAUSED)) ChangeState(RTSGameState.PLAYING);
     }
 
-    public void ToMainMenu() => ChangeState(RTSGameState.MAIN_MENU);
-    public void StartGame() => ChangeState(RTSGameState.LOADING_MAP);
-    public void GameWon() => ChangeState(RTSGameState.VICTORY);
-    public void GameLost() => ChangeState(RTSGameState.DEFEAT);
+    public RTSGameState GetCurrentState()
+    {
+        return currentState;
+    }
 }
 
 // Inspector-friendly callback holder
