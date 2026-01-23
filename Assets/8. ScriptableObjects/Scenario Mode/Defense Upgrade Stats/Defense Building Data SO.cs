@@ -4,7 +4,7 @@ using System;
 [CreateAssetMenu(fileName = "Building Data SO", menuName = "Scenario Stats/Defense Building Data")]
 public class DefenseBuildingDataSO : BuildingDataSO
 {
-    [Space(50)]
+    [Space(30)]
     public ScenarioDefenseType defenseType;
     public DefenseBuildingUpgradeData[] defenseBuildingUpgradeData;
 
@@ -36,12 +36,9 @@ public class DefenseBuildingDataSO : BuildingDataSO
 }
 
 [Serializable]
-public struct DefenseBuildingUpgradeData
+public class DefenseBuildingUpgradeData : BuildingUpgradeData
 {
-    public int buildingLevel;
-    public BasicStats buildingBasicStats;
-    public float buildingBuildTime;
-    public AttackStats unitAttackStats;
-    public MobilityStats unitMobilityStats;
-    public RangeStats unitRangeStats;
+    public AttackStats defenseAttackStats;
+    public MobilityStats defenseMobilityStats;
+    public RangeStats defenseRangeStats;
 }

@@ -4,10 +4,8 @@ public class BuildingStats : Stats
 {
     [Header("Building Settings")]
     [field: SerializeField]
-    public BuildingUpgradeDataSO buildingStats { get; private set; }
-    [field: SerializeField]
+    public BuildingDataSO buildingStats { get; private set; }
     public ScenarioBuildingType buildingType { get; private set; }
-    public BuildingUpgradeData buildingData { get; private set; }
     private GameObject buildingPool;
     public Tile currentTile { get; private set; }
 
@@ -20,19 +18,15 @@ public class BuildingStats : Stats
         }
 
         buildingType = buildingStats.buildingType;
-        level = buildingStats.buildingSpawnLevel;
+        level = buildingStats.buildingIdentity.spawnLevel;
         visuals = buildingStats.buildingVisuals;
-
-        buildingData = buildingStats.buildingUpgradeData[level];
-
-        basicStats = buildingData.buildingBasicStats;
 
         currentTile = GetComponentInParent<Tile>();
         side = currentTile.ownerSide;
         currentTile.SetOccupant(gameObject);
 
-        faction = buildingStats.buildingFaction;
-        targetPriority = buildingStats.targetPriority;
+        faction = buildingStats.buildingIdentity.faction;
+        targetPriority = buildingStats.buildingIdentity.priority;
 
         if (visuals.playerUnitMaterial == null)
         {
@@ -72,23 +66,6 @@ public class BuildingStats : Stats
 
         transform.parent = buildingPool?.transform;
     }
-
-    // public void UpgradeBuilding()
-    // {
-    //     //Upgrade building and updating resource generation values
-    //     level++;
-    //     buildingData = buildingStats.buildingLevelData[level];
-    //     maxHealth = buildingData.buildingBasicStats.maxHealth;
-
-    //     visuals = buildingData.buildingVisuals;
-    //     basicStats = buildingData.buildingBasicStats;
-
-    //     buildingUpgradeCosts = buildingData.buildingUpgradeCosts;
-    // }
-    // public bool canUpgrade()
-    // {
-    //     return PlayerResourceManager.Instance.HasResources(buildingUpgradeCosts);
-    // }
 
     internal override void Die()
     {

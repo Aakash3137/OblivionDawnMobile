@@ -4,7 +4,7 @@ using System;
 [CreateAssetMenu(fileName = "Building Data SO", menuName = "Scenario Stats/Resource Building Data")]
 public class ResourceBuildingDataSO : BuildingDataSO
 {
-    [Space(50)]
+    [Space(30)]
     public ScenarioResourceType resourceType;
     public ResourceBuildingUpgradeData[] resourceBuildingUpgradeData;
 
@@ -39,11 +39,8 @@ public class ResourceBuildingDataSO : BuildingDataSO
 }
 
 [Serializable]
-public struct ResourceBuildingUpgradeData
+public class ResourceBuildingUpgradeData : BuildingUpgradeData
 {
-    public int buildingLevel;
-    public BasicStats buildingBasicStats;
-    public float buildingBuildTime;
     public int resourceAmountPerBatch;
     public float resourceTimeToProduce;
     public float resourceGenerationRate;

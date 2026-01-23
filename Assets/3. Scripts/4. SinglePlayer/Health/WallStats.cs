@@ -7,7 +7,7 @@ public class WallStats : Stats
     public WallUpgradeDataSO wallStats { get; private set; }
     public ScenarioBuildingType wallType { get; private set; }
     public ScenarioDefenseType defenseType { get; private set; }
-    public BuildingUpgradeData wallData { get; private set; }
+    public WallBuildingUpgradeData wallData { get; private set; }
 
 
     public Action<float, float> onWallEnableOrDisable;
@@ -25,10 +25,10 @@ public class WallStats : Stats
         }
 
         wallType = wallStats.buildingType;
-        level = wallStats.buildingSpawnLevel;
+        level = wallStats.buildingIdentity.spawnLevel;
         visuals = wallStats.buildingVisuals;
 
-        wallData = wallStats.buildingUpgradeData[level];
+        wallData = wallStats.wallBuildingUpgradeData[level];
 
         basicStats = wallData.buildingBasicStats;
 

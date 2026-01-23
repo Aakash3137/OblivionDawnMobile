@@ -11,7 +11,7 @@ public class Stats : MonoBehaviour
     public Visuals visuals { get; protected set; }
     public float currentHealth { get; protected set; }
     public Collider hitCollider { get; protected set; }
-    public BuildCost buildCost { get; protected set; }
+    public BuildCost[] buildCost { get; protected set; }
 
     [Header("Fade Health Bar is OLD UI in world space. Health Progress is NEW UI on world Canvas")]
     private FadeHealthBar healthBarFade;

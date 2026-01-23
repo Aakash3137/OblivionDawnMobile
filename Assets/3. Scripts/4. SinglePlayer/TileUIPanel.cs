@@ -77,8 +77,8 @@ public class TileUIPanel : MonoBehaviour
         if (buildPanel != null)
             buildPanel.HideBuildPanel(canvasGroup);
 
-        // PlaceWallsOnMainBuilding();
-        // PlaceWalls();
+        PlaceWallsOnMainBuilding();
+        PlaceWalls();
         Close();
     }
     private void HandleError()
@@ -110,12 +110,6 @@ public class TileUIPanel : MonoBehaviour
         //     int spawnLevel = spawnWallStats.wallStats.wallSpawnLevel;
         //     buildingBuildCost = spawnWallStats.wallStats.wallLevelData[spawnLevel].wallBuildCosts;
         // }
-        else if (buildingPrefab.TryGetComponent<BuildingBlueprint>(out var buildingBlueprint))
-        {
-            //int spawnLevel = buildingBlueprint.identityComponent.identity.spawnLevel;
-            buildingBuildCost = buildingBlueprint.dataSO.buildingBuildCost;
-        }
-
         if (buildingBuildCost == null || !prmInstance.HasResources(buildingBuildCost))
         {
             //Debug.Log("<color=red>Insufficient Resources Building cannot be placed</color>");

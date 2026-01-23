@@ -470,13 +470,7 @@ GameObject:
   - component: {fileID: 6473091735761712175}
   - component: {fileID: 6093498460584951295}
   - component: {fileID: 5551679913311386414}
-  - component: {fileID: -3606609806040383377}
-  - component: {fileID: 5687257259921281742}
-  - component: {fileID: -953400531442154886}
-  - component: {fileID: 5964888982781353297}
-  - component: {fileID: 5106924190211941225}
-  - component: {fileID: 3215909700080272853}
-  - component: {fileID: 932336806419696784}
+  - component: {fileID: 3561086944370057131}
   m_Layer: 0
   m_Name: Medieval_Food Building
   m_TagString: Untagged
@@ -551,7 +545,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useDiagonals: 1
---- !u!114 &-3606609806040383377
+--- !u!114 &3561086944370057131
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -560,102 +554,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 4320449579214391836}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c8e34a31bb2a1dd4883d8b0d1b490c66, type: 3}
+  m_Script: {fileID: 11500000, guid: 77bed03e9c225b649b1a3771b740a84d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildingType: 0
-  dataSO: {fileID: 11400000, guid: 360681ebf04b6244db29326464619a09, type: 2}
-  resourceType: 0
---- !u!114 &5687257259921281742
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4320449579214391836}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5072f98d1b453f440b168c24854ecc2e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  identity:
-    name: 
-    spawnLevel: 0
-    faction: 0
-    isUnique: 0
-    priority: 0
   side: 0
---- !u!114 &-953400531442154886
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4320449579214391836}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 42cea96667e191f42a6fc3a0a9fd3826, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  visuals:
-    playerUnitMaterial: {fileID: 0}
-    enemyUnitMaterial: {fileID: 0}
---- !u!114 &5964888982781353297
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4320449579214391836}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e5aa77c3231f2204cb1aae3e872ea478, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  basicStats:
-    maxHealth: 0
-    armor: 0
-  hitCollider: {fileID: 0}
-  <isDead>k__BackingField: 0
---- !u!114 &5106924190211941225
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4320449579214391836}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b33db35be1a57d944890ba1c7951116a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  faction: 0
+  canAttackAir: 0
+  canAttackGround: 1
+  <buildingStats>k__BackingField: {fileID: 11400000, guid: 360681ebf04b6244db29326464619a09, type: 2}
+  resourceType: 0
+  resourceBuildingUpgradeData: []
   autoProduce: 1
   GeneratedResourceAmount: 0
-  resourceTimeToProduce: 0
---- !u!114 &3215909700080272853
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4320449579214391836}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b395952315b997a468bb339e8af25a11, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &932336806419696784
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4320449579214391836}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 416e72eb2ca837a4990d2cc4554d61ea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &8835355833767096146
 GameObject:
   m_ObjectHideFlags: 0

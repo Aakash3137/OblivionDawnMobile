@@ -6,7 +6,6 @@ public class BuildingDataSO : ScriptableObject
 {
     public Identity buildingIdentity;
     public ScenarioBuildingType buildingType;
-    public GameObject buildingPrefab;
     public Visuals buildingVisuals;
     public BuildCost[] buildingBuildCost;
 
@@ -25,4 +24,13 @@ public struct Identity
     public FactionName faction;
     public bool isUnique;
     public int priority;
+}
+
+[Serializable]
+public class BuildingUpgradeData
+{
+    public int buildingLevel;
+    [Space(30)]
+    public BasicStats buildingBasicStats;
+    public float buildingBuildTime;
 }
