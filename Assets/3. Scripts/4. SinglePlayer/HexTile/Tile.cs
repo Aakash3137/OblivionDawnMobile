@@ -106,8 +106,6 @@ public class Tile : MonoBehaviour
     }
 
 
-
-
     // Apply correct material based on ownerSide
     public void ApplyOwnerMaterial()
     {

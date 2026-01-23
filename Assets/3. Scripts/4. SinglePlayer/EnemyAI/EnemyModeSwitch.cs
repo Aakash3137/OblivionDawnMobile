@@ -19,6 +19,10 @@ public class EnemyModeSwitch : MonoBehaviour
     [SerializeField] internal EnemyTileClickManager _enemyTileClickManager;
     void Start()
     {
+        // Set default mode even if slider is not assigned
+        EnemyMode = CurrentEnemyMode.EnemyAIMode;
+        Debug.Log($"[EnemyModeSwitch] Default mode set to: {EnemyMode}");
+        
         if (modeSlider != null)
         {
             modeSlider.minValue = 0;
@@ -27,14 +31,13 @@ public class EnemyModeSwitch : MonoBehaviour
 
             // Set default value (AI mode)
             modeSlider.value = 1;
-            EnemyMode = CurrentEnemyMode.EnemyAIMode;
 
             // Listen to slider changes
             modeSlider.onValueChanged.AddListener(OnSliderValueChanged);
         }
         else
         {
-            Debug.LogWarning("Mode Slider not assigned in Inspector!");
+            Debug.LogWarning("[EnemyModeSwitch] Mode Slider not assigned - using default AI mode");
         }
     }
 
@@ -44,16 +47,20 @@ public class EnemyModeSwitch : MonoBehaviour
             ? CurrentEnemyMode.EnemySelf 
             : CurrentEnemyMode.EnemyAIMode;
 
-        Debug.Log("Enemy Mode changed to: " + EnemyMode);
+        Debug.Log($"[EnemyModeSwitch] Enemy Mode changed to: {EnemyMode}");
         
         if(EnemyMode == CurrentEnemyMode.EnemyAIMode)
         {
-            _enemyTileClickManager.enabled = false;
-            _enemyTileClickManager.CloseBuildPanel();
+            if (_enemyTileClickManager != null)
+            {
+                _enemyTileClickManager.enabled = false;
+                _enemyTileClickManager.CloseBuildPanel();
+            }
         }
-        else                                            // Play Enemy vs player (For Development Testing)
+        else
         {
-            _enemyTileClickManager.enabled = true;
+            if (_enemyTileClickManager != null)
+                _enemyTileClickManager.enabled = true;
         }
     }
 

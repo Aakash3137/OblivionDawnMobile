@@ -268,6 +268,7 @@ public class ScenarioBattleUnit : MonoBehaviour
 
     private float CalculateScore(Stats unit, float score)
     {
+        //score += unit.priority;
         // Distance score
         float distance = Vector3.Distance(transform.position, unit.transform.position);
         score += distanceWeight / Mathf.Max(distance, 0.1f);

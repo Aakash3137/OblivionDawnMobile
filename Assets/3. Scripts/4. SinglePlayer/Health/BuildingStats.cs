@@ -5,6 +5,7 @@ public class BuildingStats : Stats
 {
     [field: SerializeField]
     public BuildingUpgradeDataSO buildingStats { get; private set; }
+    [field: SerializeField]
     public ScenarioBuildingType buildingType { get; private set; }
     public BuildingUpgradeData buildingData { get; private set; }
     public UpgradeCost[] buildingUpgradeCosts { get; private set; }
@@ -89,12 +90,12 @@ public class BuildingStats : Stats
 
     internal override void Die()
     {
-        base.Die();
-
         KillCounterManager.Instance.AddBuildingDestroyedData(buildingType, side);
 
         if (buildingType == ScenarioBuildingType.MainBuilding)
         {
+            
+            Debug.Log($"{side} Main Building destroyed!{name}");
             switch (side)
             {
                 case Side.Player:
@@ -105,6 +106,8 @@ public class BuildingStats : Stats
                     break;
             }
         }
+        
+        base.Die();
     }
     internal virtual void OnDestroy()
     {

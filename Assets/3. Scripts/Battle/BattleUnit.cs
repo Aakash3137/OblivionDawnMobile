@@ -60,7 +60,11 @@ public class BattleUnit : MonoBehaviour
     private float targetCheckTimer = 0f;
     private const float targetCheckInterval = 0.5f;
     public const float checkRadiusOffset = 0.5f;
-
+    
+    //Separation timer variables
+    private float separationTimer;
+    private const float separationInterval = 0.15f;
+    
     private void Start()
     {
         unitStats = GetComponent<UnitStats>();
@@ -86,11 +90,18 @@ public class BattleUnit : MonoBehaviour
         }
 
         ArrangeRotation();
-        ApplySeparation();
+        //ApplySeparation();
     }
 
     private void Update()
     {
+        separationTimer -= Time.deltaTime;
+        if (separationTimer <= 0f)
+        {
+            ApplySeparation();
+            separationTimer = separationInterval;
+        }
+        
         //no navmesh agent need for air units
         if (target != null)
         {
@@ -166,13 +177,19 @@ public class BattleUnit : MonoBehaviour
                 agent.ResetPath();
                 if (animator != null)
                     animator.SetFloat("Move", agent.velocity.magnitude);
-                ApplySeparation();
+                //ApplySeparation();
                 FaceTarget();
                 Attack();
             }
         }
 
-        if (!isAirUnit) UpdateTileOwnership();
+        if (!isAirUnit)
+        {
+            if (agent.velocity.sqrMagnitude > 0.01f)    // for optimization
+            {
+                UpdateTileOwnership();
+            }
+        }
     }
 
 
@@ -238,7 +255,7 @@ public class BattleUnit : MonoBehaviour
         secondaryTarget = null;
 
         Collider[] hits = Physics.OverlapSphere(transform.position, DetectionRange);
-
+        
         Stats bestTarget = null;
         float bestScore = 0f;
         Side mySide = unitSide;
@@ -512,10 +529,10 @@ public class BattleUnit : MonoBehaviour
         Destroy(gameObject);
     }
 
+    //Below code is optimized code 
     private void OnDestroy()
     {
-        BattleUnit[] units = FindObjectsOfType<BattleUnit>();
-        foreach (var unit in units)
+        foreach (var unit in BattleUnitRegistry.Units)
         {
             if (unit.target == gameObject)
             {
@@ -527,8 +544,7 @@ public class BattleUnit : MonoBehaviour
     #region TargetDetection
     public static bool AnyPlayerHasTarget()
     {
-        BattleUnit[] units = FindObjectsOfType<BattleUnit>();
-        foreach (var unit in units)
+        foreach (var unit in BattleUnitRegistry.Units)
         {
             if (unit.unitSide == Side.Player &&
                 unit.target != null)
@@ -541,8 +557,7 @@ public class BattleUnit : MonoBehaviour
 
     public static bool AnyEnemyHasTarget()
     {
-        BattleUnit[] units = FindObjectsOfType<BattleUnit>();
-        foreach (var unit in units)
+        foreach (var unit in BattleUnitRegistry.Units)
         {
             if (unit.unitSide == Side.Enemy &&
                 unit.target != null)
@@ -557,7 +572,7 @@ public class BattleUnit : MonoBehaviour
     #region Helper
     public static bool AnyPlayerAlive()
     {
-        foreach (var unit in FindObjectsOfType<BattleUnit>())
+        foreach (var unit in BattleUnitRegistry.Units)
         {
             if (unit.unitSide == Side.Player)
                 return true;
@@ -567,7 +582,7 @@ public class BattleUnit : MonoBehaviour
 
     public static bool AnyEnemyAlive()
     {
-        foreach (var unit in FindObjectsOfType<BattleUnit>())
+        foreach (var unit in BattleUnitRegistry.Units)
         {
             if (unit.unitSide == Side.Enemy)
                 return true;
