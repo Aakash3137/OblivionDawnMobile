@@ -1084,13 +1084,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startingResources:
   - resourceType: 0
-    resourceCost: 5000
+    resourceCost: 40
   - resourceType: 1
-    resourceCost: 5000
+    resourceCost: 30
   - resourceType: 2
-    resourceCost: 1000
+    resourceCost: 20
   - resourceType: 3
-    resourceCost: 1000
+    resourceCost: 0
   <currentFoodGenerationRate>k__BackingField: 0
   <currentGoldGenerationRate>k__BackingField: 0
   <currentMetalGenerationRate>k__BackingField: 0
@@ -6552,10 +6552,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Build Panel
       objectReference: {fileID: 0}
-    - target: {fileID: 3711739251563581095, guid: 85cea2e9a80e0684cbcd700a6c7a5c7c, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 3884496343628071470, guid: 85cea2e9a80e0684cbcd700a6c7a5c7c, type: 3}
       propertyPath: prmInstance
       value: 
@@ -6627,6 +6623,18 @@ PrefabInstance:
     - target: {fileID: 5522695320727017901, guid: 85cea2e9a80e0684cbcd700a6c7a5c7c, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5575476599866392593, guid: 85cea2e9a80e0684cbcd700a6c7a5c7c, type: 3}
+      propertyPath: m_fontColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5575476599866392593, guid: 85cea2e9a80e0684cbcd700a6c7a5c7c, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.98039216
+      objectReference: {fileID: 0}
+    - target: {fileID: 5575476599866392593, guid: 85cea2e9a80e0684cbcd700a6c7a5c7c, type: 3}
+      propertyPath: m_fontColor.r
+      value: 0.98039216
       objectReference: {fileID: 0}
     - target: {fileID: 5632180132043306192, guid: 85cea2e9a80e0684cbcd700a6c7a5c7c, type: 3}
       propertyPath: prmInstance
@@ -18021,6 +18029,10 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 260842604438569043, guid: 72bdbd0c1b557ce45b52167c8404fb29, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1376532103311727948, guid: 72bdbd0c1b557ce45b52167c8404fb29, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -22476,8 +22488,8 @@ RectTransform:
   m_GameObject: {fileID: 1210770638}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.7692308, y: 0.7692308, z: 0.7692308}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 698615447}
   m_Father: {fileID: 8287601602775836342}
@@ -27710,7 +27722,7 @@ Transform:
   m_GameObject: {fileID: 1584292192}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 19.122665, y: 4.070159, z: 17.070541}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -38606,7 +38618,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_TargetDisplay: 0
 --- !u!1 &1980985684992188648
 GameObject:

@@ -8,7 +8,6 @@ public class WallStats : Stats
     public ScenarioBuildingType wallType { get; private set; }
     public ScenarioDefenseType defenseType { get; private set; }
     public BuildingUpgradeData wallData { get; private set; }
-    public UpgradeCost[] wallUpgradeCosts { get; private set; }
 
 
     public Action<float, float> onWallEnableOrDisable;
@@ -27,18 +26,17 @@ public class WallStats : Stats
 
         wallType = wallStats.buildingType;
         level = wallStats.buildingSpawnLevel;
-        wallData = wallStats.buildingLevelData[level];
+        visuals = wallStats.buildingVisuals;
 
-        visuals = wallData.buildingVisuals;
+        wallData = wallStats.buildingUpgradeData[level];
+
         basicStats = wallData.buildingBasicStats;
-        wallUpgradeCosts = wallData.buildingUpgradeCosts;
 
         side = GetComponentInParent<BuildingStats>().side;
 
         if (visuals.playerUnitMaterial == null)
         {
             Debug.Log($"<color=magenta>Assign materials for {name} on {wallStats.name} ScriptableObject</color>");
-            return;
         }
 
         base.Start();

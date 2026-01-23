@@ -17,17 +17,14 @@ public class UnitSpawnerScenario : MonoBehaviour
     private Tile currentTile;
     private Tile nearestTile;
     private CubeGridManager cgmInstance;
-
-    [Header("Unit Pool")]
-    private Transform unitPool;
-
+    private WaitForSeconds unitBuildTimeDelay;
 
     [Header("Unit Production variables")]
     public GameObject unitPrefab { get; private set; }
     public int unitSpawnLevel { get; private set; }
     public UnitUpgradeData currentUnitLevelData { get; private set; }
     public float unitBuildTime { get; private set; }
-    public UpgradeCost[] unitUpgradeCosts { get; private set; }
+    // public BuildCost[] unitBuildCost { get; private set; }
 
     public GameObject producedUnit;
 
@@ -43,20 +40,15 @@ public class UnitSpawnerScenario : MonoBehaviour
     private void Start()
     {
         unitPrefab = unitProduceStats.unitPrefab;
-        unitSpawnLevel = unitProduceStats.unitSpawnLevel;
-        currentUnitLevelData = unitProduceStats.unitLevelData[unitSpawnLevel];
+        unitSpawnLevel = unitProduceStats.unitIdentity.spawnLevel;
+        // unitBuildCost = unitProduceStats.unitBuildCost;
+
+        currentUnitLevelData = unitProduceStats.unitUpgradeData[unitSpawnLevel];
         unitBuildTime = currentUnitLevelData.unitBuildTime;
 
-        unitUpgradeCosts = currentUnitLevelData.unitUpgradeCosts;
+        unitBuildTimeDelay = new WaitForSeconds(unitBuildTime);
 
-        GameObject poolObj = GameObject.FindGameObjectWithTag("UnitPool");
-
-        if (poolObj != null)
-            unitPool = poolObj.transform;
-        else
-            Debug.LogError("No GameObject with tag 'UnitPool' found in scene!");
-
-        if (unitProduceStats.isUnique)
+        if (unitProduceStats.unitIdentity.isUnique)
             autoProduce = false;
 
         StartProducingUnits();
@@ -74,12 +66,14 @@ public class UnitSpawnerScenario : MonoBehaviour
     {
         do
         {
-            if (HasResources() || true)
-            {
-                yield return new WaitForSeconds(unitBuildTime);
-                SpawnUnit();
-                //prmInstance.SpendResources(unitUpgradeCosts);
-            }
+            // if (HasResources())
+            // {
+            //     yield return unitBuildTimeDelay;
+            //     SpawnUnit();
+            //     //prmInstance.SpendResources(unitUpgradeCosts);
+            // }
+            yield return unitBuildTimeDelay;
+            SpawnUnit();
         }
         while (autoProduce && buildingStats.currentHealth > 0);
     }
@@ -106,10 +100,10 @@ public class UnitSpawnerScenario : MonoBehaviour
         }
     }
 
-    public bool HasResources()
-    {
-        return prmInstance.HasResources(unitUpgradeCosts);
-    }
+    // public bool HasResources()
+    // {
+    //     return prmInstance.HasResources(unitBuildCost);
+    // }
     private void OnDisable()
     {
         if (producedUnit != null)
@@ -118,6 +112,6 @@ public class UnitSpawnerScenario : MonoBehaviour
 
     private void OnDestroy()
     {
-        KillCounterManager.Instance.AddOffenseBuildingDestroyedData(unitProduceStats.unitType, buildingStats.side);
+        //KillCounterManager.Instance.AddOffenseBuildingDestroyedData(unitProduceStats.unitType, buildingStats.side);
     }
 }

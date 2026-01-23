@@ -20,17 +20,14 @@ public class ScenarioBattleUnit : MonoBehaviour
     public GameObject secondaryTarget;
 
     [Header("Target priority settings high score = target priority")]
-    public float distanceWeight = 500f;
+    public float distanceWeight = 30f;
     public float lowHealthBonus = 40f;
     public float narrowAngleBonus = 30f;
     public float wideAngleBonus = 20f;
     public float peripheralAngleBonus = 10f;
-    public float unitWeight = 10f;
-    public float buildingWeight = 0f;
-    public float wallWeight = -10f;
 
     [Header("Unit Specific Stats (DO NOT EDIT)")]
-    private ScenarioOffenseType offenseUnitType;
+    private ScenarioUnitType offenseUnitType;
     private MobilityStats mobilityStats;
     private RangeStats rangeStats;
     private VisionAngles visionAngles;
@@ -64,7 +61,7 @@ public class ScenarioBattleUnit : MonoBehaviour
         if (animator != null)
             animator.SetFloat("Move", 0f);
 
-        if (mobilityStats.canFly)
+        if (myUnitStats.canFly)
         {
             airUnit = GetComponent<AirUnit>();
             if (navAgent != null) navAgent.enabled = false;
@@ -83,9 +80,9 @@ public class ScenarioBattleUnit : MonoBehaviour
         offenseUnitType = myUnitStats.unitType;
         mobilityStats = currentUnitData.unitMobilityStats;
         rangeStats = currentUnitData.unitRangeStats;
-        visionAngles = currentUnitData.unitVisionAngles;
-        attackTargets = currentUnitData.unitAttackTargets;
-        flyStats = currentUnitData.unitFlyStats;
+        visionAngles = myUnitStats.unitVisionAngles;
+        attackTargets = myUnitStats.unitAttackTargets;
+        flyStats = myUnitStats.unitFlyStats;
         mySide = GetComponent<UnitStats>().side;
     }
 
@@ -100,7 +97,7 @@ public class ScenarioBattleUnit : MonoBehaviour
             targetCheckTimer = 0f;
         }
 
-        if (mobilityStats.canFly && airUnit != null && !airUnit.IsAirborne())
+        if (myUnitStats.canFly && airUnit != null && !airUnit.IsAirborne())
         {
             if (animator != null)
                 animator.SetFloat("Move", mobilityStats.moveSpeed);
@@ -109,7 +106,7 @@ public class ScenarioBattleUnit : MonoBehaviour
 
         if (target == null)
         {
-            if (mobilityStats.canFly && airUnit != null)
+            if (myUnitStats.canFly && airUnit != null)
             {
                 airUnit.IdleCircle();
                 if (animator != null) animator.SetFloat("Move", mobilityStats.moveSpeed);
@@ -125,7 +122,7 @@ public class ScenarioBattleUnit : MonoBehaviour
 
         if (distance > rangeStats.attackRange)
         {
-            if (mobilityStats.canFly)
+            if (myUnitStats.canFly)
             {
                 airUnit.FlyTowards(target.transform.position);
                 Attack();
@@ -138,17 +135,17 @@ public class ScenarioBattleUnit : MonoBehaviour
             }
 
             if (animator != null)
-                animator.SetFloat("Move", mobilityStats.canFly ? mobilityStats.moveSpeed : navAgent.velocity.magnitude);
+                animator.SetFloat("Move", myUnitStats.canFly ? mobilityStats.moveSpeed : navAgent.velocity.magnitude);
         }
         else
         {
-            if (mobilityStats.canFly && airUnit != null)
+            if (myUnitStats.canFly && airUnit != null)
             {
                 airUnit.FlyTowards(target.transform.position);
                 if (animator != null) animator.SetFloat("Move", mobilityStats.moveSpeed);
                 Attack();
             }
-            else if (!mobilityStats.canFly)
+            else if (!myUnitStats.canFly)
             {
                 navAgent.isStopped = true;
                 navAgent.ResetPath();
@@ -197,22 +194,19 @@ public class ScenarioBattleUnit : MonoBehaviour
             // Process targets...
             Stats unit;
 
-            float score;
+            float score = 0f;
 
             if (hits[i].TryGetComponent<UnitStats>(out var unitStat))
             {
                 unit = unitStat;
-                score = unitWeight;
             }
             else if (hits[i].TryGetComponent<BuildingStats>(out var buildingStats))
             {
                 unit = buildingStats;
-                score = buildingWeight;
             }
             else if (hits[i].TryGetComponent<WallStats>(out var wallStats))
             {
                 unit = wallStats;
-                score = buildingWeight;
             }
             else
             {
@@ -239,7 +233,7 @@ public class ScenarioBattleUnit : MonoBehaviour
             // only assign if switching
             target = bestTarget.gameObject;
 
-            if (!mobilityStats.canFly)
+            if (!myUnitStats.canFly)
             {
                 navAgent.ResetPath();
                 navAgent.isStopped = false;
@@ -266,6 +260,8 @@ public class ScenarioBattleUnit : MonoBehaviour
 
     private float CalculateScore(Stats unit, float score)
     {
+        score += unit.targetPriority;
+
         // Distance score
         float distance = Vector3.Distance(transform.position, unit.transform.position);
         score += distanceWeight / Mathf.Max(distance, 0.1f);
@@ -338,7 +334,7 @@ public class ScenarioBattleUnit : MonoBehaviour
 
     void Attack()
     {
-        if (mobilityStats.canFly && airUnit != null)
+        if (myUnitStats.canFly && airUnit != null)
         {
             if (!airUnit.CanAttack()) return;
 

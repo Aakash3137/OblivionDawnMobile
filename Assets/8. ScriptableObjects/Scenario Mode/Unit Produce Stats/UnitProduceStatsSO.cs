@@ -4,52 +4,59 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Unit Upgrade Stats", menuName = "Scenario Stats/Unit Upgrade Stats")]
 public class UnitProduceStatsSO : ScriptableObject
 {
-    [Header("Unit health stats and Resource cost for upgrades")]
-    public string unitName;
-    public ScenarioOffenseType unitType;
+    public Identity unitIdentity;
+
+    [Header("Prefabs")]
     public GameObject unitPrefab;
     public GameObject projectilePrefab;
-    public FactionName unitFaction;
-    public Side unitSide;
-    public int unitPopulationCost;
-    public int unitSpawnLevel;
-    public bool isUnique;
 
-    [Header("Unit starts at Level 0 and goes up")]
-    public UnitUpgradeData[] unitLevelData;
+    [Header("Enums")]
+    public ScenarioUnitType unitType;
+
+    [Header("unit stats")]
+    public int unitPopulationCost;
+
+    public Visuals unitVisuals;
+    public VisionAngles unitVisionAngles;
+    public AttackTargets unitAttackTargets;
+    public FlyStats unitFlyStats;
+
+    public bool canFly;
+
+    [Header("Unit Upgrade Data")]
+    public UnitUpgradeData[] unitUpgradeData;
 
     private void ValidateBase()
     {
-        if (unitLevelData.Length == 0)
+        if (unitUpgradeData.Length == 0)
         {
-            unitLevelData = new UnitUpgradeData[1];
-            unitLevelData[0] = new UnitUpgradeData();
+            unitUpgradeData = new UnitUpgradeData[1];
+            unitUpgradeData[0] = new UnitUpgradeData();
         }
 
-        for (int i = 0; i < unitLevelData.Length; i++)
+        for (int i = 0; i < unitUpgradeData.Length; i++)
         {
-            unitLevelData[i].unitLevel = i;
+            unitUpgradeData[i].unitLevel = i;
 
-            var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
+            // var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
 
-            if (unitLevelData[i].unitUpgradeCosts == null ||
-                unitLevelData[i].unitUpgradeCosts.Length != enumValues.Length)
+            // if (unitBuildCost == null || unitBuildCost.Length != enumValues.Length)
+            // {
+            //     unitBuildCost = new BuildCost[enumValues.Length];
+            // }
+
+            // for (int j = 0; j < enumValues.Length; j++)
+            // {
+            //     unitBuildCost[j].resourceType = (ScenarioResourceType)enumValues.GetValue(j);
+            // }
+
+            if (unitType == ScenarioUnitType.Air)
             {
-                unitLevelData[i].unitUpgradeCosts = new UpgradeCost[enumValues.Length];
-            }
-
-            for (int j = 0; j < enumValues.Length; j++)
-            {
-                unitLevelData[i].unitUpgradeCosts[j].resourceType = (ScenarioResourceType)enumValues.GetValue(j);
-            }
-
-            if (unitType == ScenarioOffenseType.Air)
-            {
-                unitLevelData[i].unitMobilityStats.canFly = true;
+                canFly = true;
             }
         }
 
-        unitSpawnLevel = Mathf.Clamp(unitSpawnLevel, 0, unitLevelData.Length - 1);
+        unitIdentity.spawnLevel = Mathf.Clamp(unitIdentity.spawnLevel, 0, unitUpgradeData.Length - 1);
     }
     private void OnValidate()
     {
@@ -61,30 +68,29 @@ public class UnitUpgradeData
 {
     public int unitLevel;
     public float unitBuildTime;
-    public Visuals unitVisuals;
     public BasicStats unitBasicStats;
     public AttackStats unitAttackStats;
     public MobilityStats unitMobilityStats;
     public RangeStats unitRangeStats;
-    public VisionAngles unitVisionAngles;
-    public AttackTargets unitAttackTargets;
-    public FlyStats unitFlyStats;
-
-    [Header("Resource costs required for this upgrade")]
-    [Tooltip("Resource Type are auto set from enum values of ScenarioResourceType")]
-    public UpgradeCost[] unitUpgradeCosts;
 }
 [Serializable]
 public struct BasicStats
 {
     public float maxHealth;
-    public float armour;
+    public float armor;
+}
+
+[Serializable]
+public struct BuildCost
+{
+    public ScenarioResourceType resourceType;
+    public int resourceCost;
 }
 
 [Serializable]
 public struct Visuals
 {
-    public Mesh upgradeMesh;
+    // public Mesh upgradeMesh;
     public Material playerUnitMaterial;
     public Material enemyUnitMaterial;
 }
@@ -97,16 +103,8 @@ public struct AttackStats
 }
 
 [Serializable]
-public struct UpgradeCost
-{
-    public ScenarioResourceType resourceType;
-    public int resourceCost;
-}
-
-[Serializable]
 public struct MobilityStats
 {
-    public bool canFly;
     public float moveSpeed;
 }
 

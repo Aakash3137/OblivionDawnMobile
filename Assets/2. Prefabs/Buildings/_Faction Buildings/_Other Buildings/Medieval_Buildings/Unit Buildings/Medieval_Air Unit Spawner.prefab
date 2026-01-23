@@ -101,7 +101,6 @@ GameObject:
   - component: {fileID: 2289749596056121463}
   - component: {fileID: 5551679913311386414}
   - component: {fileID: 6617784991151446519}
-  - component: {fileID: 5711781814223891004}
   m_Layer: 0
   m_Name: Medieval_Air Unit Spawner
   m_TagString: Untagged
@@ -189,23 +188,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70d1d5b1f2adb50469c34f2d8410670a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  level: 0
   side: 0
   faction: 0
-  basicStats:
-    maxHealth: 0
-    armour: 0
-  visuals:
-    upgradeMesh: {fileID: 0}
-    playerUnitMaterial: {fileID: 0}
-    enemyUnitMaterial: {fileID: 0}
-  maxHealth: 0
-  currentHealth: 0
-  hitCollider: {fileID: 6473091735761712175}
-  isAirUnit: 0
   canAttackAir: 0
   canAttackGround: 1
   <buildingStats>k__BackingField: {fileID: 11400000, guid: f846a2f2425c64f4e9f75450026ede1c, type: 2}
+  <buildingType>k__BackingField: 0
 --- !u!114 &5551679913311386414
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -233,23 +221,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <unitProduceStats>k__BackingField: {fileID: 11400000, guid: 9891769d75e5ba94d95560a6e8f8d1d7, type: 2}
   autoProduce: 1
---- !u!114 &5711781814223891004
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4320449579214391836}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 992b46bf958c0124c810ab2674b9d7a1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  allFactionsData: {fileID: 11400000, guid: b4c4f87a58a4fc841b315c31d4d53920, type: 2}
-  enemyBuildingPrefabs: []
-  minDelay: 5
-  maxDelay: 10
-  yOffset: 2
+  producedUnit: {fileID: 0}
 --- !u!1 &7859719292080809276
 GameObject:
   m_ObjectHideFlags: 0
@@ -452,11 +424,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1227113396630195234, guid: 93b2f7a3dd61e544f8a649b6ef62aaa2, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 120
       objectReference: {fileID: 0}
     - target: {fileID: 1227113396630195234, guid: 93b2f7a3dd61e544f8a649b6ef62aaa2, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 120
       objectReference: {fileID: 0}
     - target: {fileID: 1227113396630195234, guid: 93b2f7a3dd61e544f8a649b6ef62aaa2, type: 3}
       propertyPath: m_LocalPosition.x
@@ -505,6 +477,18 @@ PrefabInstance:
     - target: {fileID: 1227113396630195234, guid: 93b2f7a3dd61e544f8a649b6ef62aaa2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2028664682407084001, guid: 93b2f7a3dd61e544f8a649b6ef62aaa2, type: 3}
+      propertyPath: m_Color.b
+      value: 0.007843138
+      objectReference: {fileID: 0}
+    - target: {fileID: 2028664682407084001, guid: 93b2f7a3dd61e544f8a649b6ef62aaa2, type: 3}
+      propertyPath: m_Color.g
+      value: 0.91764706
+      objectReference: {fileID: 0}
+    - target: {fileID: 2028664682407084001, guid: 93b2f7a3dd61e544f8a649b6ef62aaa2, type: 3}
+      propertyPath: m_Color.r
+      value: 0.9490196
       objectReference: {fileID: 0}
     - target: {fileID: 4416866825930625739, guid: 93b2f7a3dd61e544f8a649b6ef62aaa2, type: 3}
       propertyPath: m_Name

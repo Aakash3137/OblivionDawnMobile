@@ -9,13 +9,13 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     public TileUIPanel tileUIPanel;
     public CostPanelManager costPanelManager;
 
-    [SerializeField] private ScenarioOffenseType offenseType;
+    [SerializeField] private ScenarioUnitType offenseType;
     [SerializeField] private ScenarioDefenseType defenseType;
     [SerializeField] private ScenarioResourceType resourceType;
 
     public GameObject buildingToSpawn;
     private Button button;
-    private UpgradeCost[] cachedCosts;
+    private BuildCost[] cachedCosts;
 
     private void Start()
     {
@@ -25,18 +25,27 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
         buildingToSpawn = GetSlot(GameData.SelectedFaction, buildingType);
 
-        prmInstance.OnResourcesChanged += UpdateButtonInteractivity;
+        //prmInstance.OnResourcesChanged += UpdateButtonInteractivity;
+
+        ///
+        /// To do buttons should get SO data when starting game based on units selected 
+        /// 
 
         if (buildingToSpawn.TryGetComponent<BuildingStats>(out var spawnBuildingStats))
         {
-            int spawnLevel = spawnBuildingStats.buildingStats.buildingSpawnLevel;
-            cachedCosts = spawnBuildingStats.buildingStats.buildingLevelData[spawnLevel].buildingUpgradeCosts;
+            //int spawnLevel = spawnBuildingStats.buildingStats.buildingSpawnLevel;
+            cachedCosts = spawnBuildingStats.buildingStats.buildingBuildCost;
         }
         // else if (buildingToSpawn.TryGetComponent<WallStats>(out var spawnWallStats))
         // {
         //     int spawnLevel = spawnWallStats.wallStats.wallSpawnLevel;
-        //     cachedCosts = spawnWallStats.wallStats.wallLevelData[spawnLevel].wallUpgradeCosts;
+        //     cachedCosts = spawnWallStats.wallStats.wallLevelData[spawnLevel].wallBuildCosts;
         // }
+        else if (buildingToSpawn.TryGetComponent<BuildingBlueprint>(out var buildingBlueprint))
+        {
+            //int spawnLevel = buildingBlueprint.identityComponent.identity.spawnLevel;
+            cachedCosts = buildingBlueprint.dataSO.buildingBuildCost;
+        }
         else
         {
             Debug.Log($"<color=red>No BuildingStats or WallStats found on {buildingToSpawn.name}</color>");
@@ -60,7 +69,11 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         if (buildingToSpawn != null && buildingToSpawn != null)
         {
             tileUIPanel.PlaceBuilding(buildingToSpawn);
-            costPanelManager.Hide();
+
+            // if (cachedCosts != null && prmInstance.HasResources(cachedCosts))
+            // {
+            //     costPanelManager.Hide();
+            // }
         }
     }
 
@@ -111,7 +124,7 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     private void OnDestroy()
     {
         button.onClick.RemoveListener(OnClick);
-        prmInstance.OnResourcesChanged -= UpdateButtonInteractivity;
+        //prmInstance.OnResourcesChanged -= UpdateButtonInteractivity;
     }
 
     public GameObject GetMedievalResourceBuilding(AllFactionsData factionData)
@@ -248,13 +261,13 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     {
         switch (offenseType)
         {
-            case ScenarioOffenseType.Air:
+            case ScenarioUnitType.Air:
                 return factionData.medievalAirBuilding;
-            case ScenarioOffenseType.Infantry:
+            case ScenarioUnitType.Infantry:
                 return factionData.medievalInfantryBuilding;
-            case ScenarioOffenseType.Melee:
+            case ScenarioUnitType.Melee:
                 return factionData.medievalMeleeBuilding;
-            case ScenarioOffenseType.Tank:
+            case ScenarioUnitType.Tank:
                 return factionData.medievalTankBuilding;
             default:
                 return null;
@@ -265,11 +278,11 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     {
         switch (offenseType)
         {
-            case ScenarioOffenseType.Air:
+            case ScenarioUnitType.Air:
                 return factionData.presentAirBuilding;
-            case ScenarioOffenseType.Infantry:
+            case ScenarioUnitType.Infantry:
                 return factionData.presentInfantryBuilding;
-            case ScenarioOffenseType.Tank:
+            case ScenarioUnitType.Tank:
                 return factionData.presentTankBuilding;
             default:
                 return null;
@@ -280,11 +293,11 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     {
         switch (offenseType)
         {
-            case ScenarioOffenseType.Air:
+            case ScenarioUnitType.Air:
                 return factionData.futureAirBuilding;
-            case ScenarioOffenseType.Infantry:
+            case ScenarioUnitType.Infantry:
                 return factionData.futureInfantryBuilding;
-            case ScenarioOffenseType.Tank:
+            case ScenarioUnitType.Tank:
                 return factionData.futureTankBuilding;
             default:
                 return null;
@@ -295,11 +308,11 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     {
         switch (offenseType)
         {
-            case ScenarioOffenseType.Air:
+            case ScenarioUnitType.Air:
                 return factionData.galvadoreAirBuilding;
-            case ScenarioOffenseType.Infantry:
+            case ScenarioUnitType.Infantry:
                 return factionData.galvadoreInfantryBuilding;
-            case ScenarioOffenseType.Tank:
+            case ScenarioUnitType.Tank:
                 return factionData.galvadoreTankBuilding;
             default:
                 return null;

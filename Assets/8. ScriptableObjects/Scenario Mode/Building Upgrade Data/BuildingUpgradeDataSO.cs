@@ -4,45 +4,62 @@ using System;
 [CreateAssetMenu(fileName = "Building Upgrade Data", menuName = "Upgrade Data/Building Upgrade Data")]
 public class BuildingUpgradeDataSO : ScriptableObject
 {
-    [Header("Building health stats and Resource cost for upgrades")]
+    public Identity buildingIdentity;
+    [Header("Name")]
     public string buildingName;
+    [Header("Prefabs")]
+    [Header("Enums")]
     public ScenarioBuildingType buildingType;
     public FactionName buildingFaction;
-    public Side buildingSide;
+    [Header("Building stats")]
+    public int targetPriority;
     public int buildingSpawnLevel;
+    public BuildCost[] buildingBuildCost;
 
-    [Header("Building starts at Level 0 and goes up")]
-    public BuildingUpgradeData[] buildingLevelData;
+    public Visuals buildingVisuals;
+
+    [Header("Building starts")]
+    public BuildingUpgradeData[] buildingUpgradeData;
 
     internal virtual void ValidateBase()
     {
-        if (buildingLevelData.Length == 0)
+        if (buildingUpgradeData.Length == 0)
         {
-            buildingLevelData = new BuildingUpgradeData[1];
-            buildingLevelData[0] = new BuildingUpgradeData();
+            buildingUpgradeData = new BuildingUpgradeData[1];
+            buildingUpgradeData[0] = new BuildingUpgradeData();
         }
 
-        for (int i = 0; i < buildingLevelData.Length; i++)
+        for (int i = 0; i < buildingUpgradeData.Length; i++)
         {
-            buildingLevelData[i].buildingLevel = i;
+            buildingUpgradeData[i].buildingLevel = i;
 
             var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
 
-            if (buildingLevelData[i].buildingUpgradeCosts == null ||
-                buildingLevelData[i].buildingUpgradeCosts.Length != enumValues.Length)
+            // if (buildingLevelData[i].buildingUpgradeCosts == null ||
+            //     buildingLevelData[i].buildingUpgradeCosts.Length != enumValues.Length)
+            // {
+            //     buildingLevelData[i].buildingUpgradeCosts =
+            //         new UpgradeCost[enumValues.Length];
+            // }
+
+            // for (int j = 0; j < enumValues.Length; j++)
+            // {
+            //     buildingLevelData[i].buildingUpgradeCosts[j].resourceType =
+            //         (ScenarioResourceType)enumValues.GetValue(j);
+            // }
+
+            if (buildingBuildCost == null || buildingBuildCost.Length != enumValues.Length)
             {
-                buildingLevelData[i].buildingUpgradeCosts =
-                    new UpgradeCost[enumValues.Length];
+                buildingBuildCost = new BuildCost[enumValues.Length];
             }
 
-            for (int j = 0; j < enumValues.Length; j++)
+            for (int j = 0; j < buildingBuildCost.Length; j++)
             {
-                buildingLevelData[i].buildingUpgradeCosts[j].resourceType =
-                    (ScenarioResourceType)enumValues.GetValue(j);
+                buildingBuildCost[j].resourceType = (ScenarioResourceType)enumValues.GetValue(j);
             }
         }
 
-        buildingSpawnLevel = Mathf.Clamp(buildingSpawnLevel, 0, buildingLevelData.Length - 1);
+        buildingSpawnLevel = Mathf.Clamp(buildingSpawnLevel, 0, buildingUpgradeData.Length - 1);
     }
     private void OnValidate()
     {
@@ -56,10 +73,5 @@ public class BuildingUpgradeData
 {
     public int buildingLevel;
     public float buildingBuildTime;
-    public Visuals buildingVisuals;
     public BasicStats buildingBasicStats;
-
-    [Header("Resource costs required for this upgrade")]
-    [Tooltip("Resource Type are auto set from enum values of ScenarioResourceType")]
-    public UpgradeCost[] buildingUpgradeCosts;
 }

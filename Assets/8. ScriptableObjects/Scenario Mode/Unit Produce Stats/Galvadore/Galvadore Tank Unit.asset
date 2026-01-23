@@ -12,49 +12,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0924edb85932e54fb34769cac0ea5e7, type: 3}
   m_Name: Galvadore Tank Unit
   m_EditorClassIdentifier: 
-  unitName: Pugrash
-  unitType: 3
+  unitIdentity:
+    name: 
+    spawnLevel: 0
+    faction: 0
+    isUnique: 0
+    priority: 0
   unitPrefab: {fileID: 0}
   projectilePrefab: {fileID: 0}
-  unitFaction: 3
-  unitSide: 0
-  isAirUnit: 0
+  unitType: 3
   unitPopulationCost: 0
-  unitSpawnLevel: 0
-  unitLevelData:
+  unitVisuals:
+    playerUnitMaterial: {fileID: 2100000, guid: 84b730c71dfbc7248b10f84896bf9714, type: 2}
+    enemyUnitMaterial: {fileID: 2100000, guid: e15991f5e11ea4a4cac02a8ca192bd87, type: 2}
+  unitVisionAngles:
+    narrowViewAngle: 0
+    wideViewAngle: 0
+  unitAttackTargets:
+    canAttackAir: 0
+    canAttackGround: 0
+  unitFlyStats:
+    flyHeight: 0
+    climbAngle: 0
+    turnSpeed: 0
+    bankAngle: 0
+    evadeRadius: 0
+    attackAngleTolerance: 0
+  canFly: 0
+  unitUpgradeData:
   - unitLevel: 0
-    unitBuildTime: 5
-    unitVisuals:
-      upgradeMesh: {fileID: 0}
-      playerUnitMaterial: {fileID: 0}
-      enemyUnitMaterial: {fileID: 0}
+    unitBuildTime: 0
     unitBasicStats:
       maxHealth: 0
-      armour: 0
+      armor: 0
+    unitAttackStats:
+      damage: 0
+      fireRate: 0
     unitMobilityStats:
       moveSpeed: 0
     unitRangeStats:
-      DetectionRange: 0
-      AttackRange: 0
-    unitVisionAngles:
-      narrowViewAngle: 0
-      wideViewAngle: 0
-    unitAttackTargets:
-      canAttackAir: 0
-      canAttackGround: 0
-    unitFlyStats:
-      flyHeight: 0
-      climbAngle: 0
-      turnSpeed: 0
-      bankAngle: 0
-      evadeRadius: 0
-      attackAngleTolerance: 0
-    unitUpgradeCosts:
-    - resourceType: 0
-      resourceCost: 0
-    - resourceType: 1
-      resourceCost: 0
-    - resourceType: 2
-      resourceCost: 0
-    - resourceType: 3
-      resourceCost: 0
+      detectionRange: 0
+      attackRange: 0

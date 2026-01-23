@@ -12,53 +12,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0924edb85932e54fb34769cac0ea5e7, type: 3}
   m_Name: Medieval Tank Unit
   m_EditorClassIdentifier: 
-  unitName: Heavy Warrior
-  unitType: 3
+  unitIdentity:
+    name: 
+    spawnLevel: 0
+    faction: 0
+    isUnique: 0
+    priority: 0
   unitPrefab: {fileID: 8582016250964789232, guid: f413202b1dd230c4293370a886c1c296, type: 3}
   projectilePrefab: {fileID: 0}
-  unitFaction: 0
-  unitSide: 0
+  unitType: 3
   unitPopulationCost: 0
-  unitSpawnLevel: 0
-  isUnique: 0
-  unitLevelData:
+  unitVisuals:
+    playerUnitMaterial: {fileID: 2100000, guid: 84b730c71dfbc7248b10f84896bf9714, type: 2}
+    enemyUnitMaterial: {fileID: 2100000, guid: e15991f5e11ea4a4cac02a8ca192bd87, type: 2}
+  unitVisionAngles:
+    narrowViewAngle: 0
+    wideViewAngle: 0
+  unitAttackTargets:
+    canAttackAir: 0
+    canAttackGround: 1
+  unitFlyStats:
+    flyHeight: 0
+    climbAngle: 0
+    turnSpeed: 0
+    bankAngle: 0
+    evadeRadius: 0
+    attackAngleTolerance: 0
+  canFly: 0
+  unitUpgradeData:
   - unitLevel: 0
     unitBuildTime: 30
-    unitVisuals:
-      upgradeMesh: {fileID: 0}
-      playerUnitMaterial: {fileID: 2100000, guid: 84b730c71dfbc7248b10f84896bf9714, type: 2}
-      enemyUnitMaterial: {fileID: 2100000, guid: e15991f5e11ea4a4cac02a8ca192bd87, type: 2}
     unitBasicStats:
-      maxHealth: 500
-      armour: 0
+      maxHealth: 600
+      armor: 0
     unitAttackStats:
-      damage: 0
-      fireRate: 0
+      damage: 100
+      fireRate: 2
     unitMobilityStats:
-      canFly: 0
       moveSpeed: 1
     unitRangeStats:
       detectionRange: 40
-      attackRange: 10
-    unitVisionAngles:
-      narrowViewAngle: 10
-      wideViewAngle: 45
-    unitAttackTargets:
-      canAttackAir: 0
-      canAttackGround: 1
-    unitFlyStats:
-      flyHeight: 0
-      climbAngle: 0
-      turnSpeed: 0
-      bankAngle: 0
-      evadeRadius: 0
-      attackAngleTolerance: 0
-    unitUpgradeCosts:
-    - resourceType: 0
-      resourceCost: 0
-    - resourceType: 1
-      resourceCost: 0
-    - resourceType: 2
-      resourceCost: 10
-    - resourceType: 3
-      resourceCost: 10
+      attackRange: 5

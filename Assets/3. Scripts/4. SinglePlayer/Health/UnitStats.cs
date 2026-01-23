@@ -3,13 +3,15 @@ using UnityEngine;
 
 public class UnitStats : Stats
 {
+    [Header("Unit Settings")]
     [SerializeField]
     private bool canFly;
 
     public override bool CanFly => canFly;
-    
+
     [field: SerializeField]
     public UnitSpawnerScenario spawnerBuilding { get; private set; }
+    public UnitProduceStatsSO unitProduceStats;
     private UnitUpgradeData unitData;
     private GameObject unitPool;
     public Action onUniqueUnitDied;
@@ -18,21 +20,26 @@ public class UnitStats : Stats
     {
         spawnerBuilding = GetComponentInParent<UnitSpawnerScenario>();
 
+        unitProduceStats = spawnerBuilding.unitProduceStats;
+
         level = spawnerBuilding.unitSpawnLevel;
 
         unitData = spawnerBuilding.currentUnitLevelData;
-        visuals = unitData.unitVisuals;
         basicStats = unitData.unitBasicStats;
 
-        canFly = unitData.unitMobilityStats.canFly;
+        visuals = unitProduceStats.unitVisuals;
+
+        canFly = unitProduceStats.canFly;
 
         side = spawnerBuilding.GetComponent<BuildingStats>().side;
 
         if (visuals.playerUnitMaterial == null)
         {
-            Debug.Log($"<color=magenta>Assign materials for {name} on {spawnerBuilding.unitProduceStats.name} ScriptableObject</color>");
-            return;
+            Debug.Log($"<color=magenta>Assign materials for {name} on {unitProduceStats.name} ScriptableObject</color>");
         }
+
+        faction = unitProduceStats.unitIdentity.faction;
+        targetPriority = unitProduceStats.unitIdentity.priority;
 
         base.Start();
 
@@ -47,12 +54,12 @@ public class UnitStats : Stats
     internal override void Die()
     {
         base.Die();
-        KillCounterManager.Instance.AddUnitKillData(spawnerBuilding.unitProduceStats.unitType, side);
+        KillCounterManager.Instance.AddUnitKillData(unitProduceStats.unitType, side);
     }
 
     private void OnDestroy()
     {
-        if (spawnerBuilding.unitProduceStats.isUnique == true)
+        if (unitProduceStats.unitIdentity.isUnique == true)
             onUniqueUnitDied?.Invoke();
     }
 }

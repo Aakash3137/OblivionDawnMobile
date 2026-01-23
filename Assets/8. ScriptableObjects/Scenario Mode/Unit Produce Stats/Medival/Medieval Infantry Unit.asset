@@ -12,53 +12,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0924edb85932e54fb34769cac0ea5e7, type: 3}
   m_Name: Medieval Infantry Unit
   m_EditorClassIdentifier: 
-  unitName: Crossbow Archers
-  unitType: 1
+  unitIdentity:
+    name: 
+    spawnLevel: 0
+    faction: 0
+    isUnique: 1
+    priority: 0
   unitPrefab: {fileID: 1690844357168965693, guid: e9a2c824251d51441b1f01ae5c506272, type: 3}
   projectilePrefab: {fileID: 0}
-  unitFaction: 0
-  unitSide: 0
+  unitType: 1
   unitPopulationCost: 0
-  unitSpawnLevel: 0
-  isUnique: 0
-  unitLevelData:
+  unitVisuals:
+    playerUnitMaterial: {fileID: 2100000, guid: 14b68adf76a968242b04e3b593e58dae, type: 2}
+    enemyUnitMaterial: {fileID: 2100000, guid: 5ac6e757728303042bc0afdcdb87faa5, type: 2}
+  unitVisionAngles:
+    narrowViewAngle: 0
+    wideViewAngle: 0
+  unitAttackTargets:
+    canAttackAir: 0
+    canAttackGround: 1
+  unitFlyStats:
+    flyHeight: 0
+    climbAngle: 0
+    turnSpeed: 0
+    bankAngle: 0
+    evadeRadius: 0
+    attackAngleTolerance: 0
+  canFly: 0
+  unitUpgradeData:
   - unitLevel: 0
-    unitBuildTime: 20
-    unitVisuals:
-      upgradeMesh: {fileID: 0}
-      playerUnitMaterial: {fileID: 2100000, guid: 14b68adf76a968242b04e3b593e58dae, type: 2}
-      enemyUnitMaterial: {fileID: 2100000, guid: 5ac6e757728303042bc0afdcdb87faa5, type: 2}
+    unitBuildTime: 2
     unitBasicStats:
       maxHealth: 200
-      armour: 0
+      armor: 0
     unitAttackStats:
-      damage: 0
-      fireRate: 0
+      damage: 20
+      fireRate: 1
     unitMobilityStats:
-      canFly: 0
       moveSpeed: 2
     unitRangeStats:
       detectionRange: 40
       attackRange: 7
-    unitVisionAngles:
-      narrowViewAngle: 10
-      wideViewAngle: 45
-    unitAttackTargets:
-      canAttackAir: 0
-      canAttackGround: 1
-    unitFlyStats:
-      flyHeight: 5
-      climbAngle: 0
-      turnSpeed: 0
-      bankAngle: 0
-      evadeRadius: 0
-      attackAngleTolerance: 0
-    unitUpgradeCosts:
-    - resourceType: 0
-      resourceCost: 0
-    - resourceType: 1
-      resourceCost: 0
-    - resourceType: 2
-      resourceCost: 10
-    - resourceType: 3
-      resourceCost: 10

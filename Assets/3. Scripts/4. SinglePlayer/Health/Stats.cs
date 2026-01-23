@@ -3,13 +3,15 @@ using UnityEngine;
 public class Stats : MonoBehaviour
 {
     [Header(" EDITOR VIEW ONLY ")]
-    public int level;
+    public int level { get; protected set; }
     public Side side;
     public FactionName faction;
-    public BasicStats basicStats;
-    public Visuals visuals;
-    public float currentHealth;
-    public Collider hitCollider;
+    public int targetPriority { get; protected set; }
+    public BasicStats basicStats { get; protected set; }
+    public Visuals visuals { get; protected set; }
+    public float currentHealth { get; protected set; }
+    public Collider hitCollider { get; protected set; }
+    public BuildCost buildCost { get; protected set; }
 
     [Header("Fade Health Bar is OLD UI in world space. Health Progress is NEW UI on world Canvas")]
     private FadeHealthBar healthBarFade;
@@ -54,7 +56,7 @@ public class Stats : MonoBehaviour
                     else
                         gameObject.layer = LayerMask.NameToLayer("PlayerGround");
 
-                    renderer.material = visuals.playerUnitMaterial;
+                    renderer.sharedMaterial = visuals.playerUnitMaterial;
                     break;
                 case Side.Enemy:
 
@@ -63,7 +65,7 @@ public class Stats : MonoBehaviour
                     else
                         gameObject.layer = LayerMask.NameToLayer("EnemyGround");
 
-                    renderer.material = visuals.enemyUnitMaterial;
+                    renderer.sharedMaterial = visuals.enemyUnitMaterial;
                     break;
             }
         }

@@ -1,13 +1,13 @@
-using System;
 using UnityEngine;
 
 public class BuildingStats : Stats
 {
+    [Header("Building Settings")]
     [field: SerializeField]
     public BuildingUpgradeDataSO buildingStats { get; private set; }
+    [field: SerializeField]
     public ScenarioBuildingType buildingType { get; private set; }
     public BuildingUpgradeData buildingData { get; private set; }
-    public UpgradeCost[] buildingUpgradeCosts { get; private set; }
     private GameObject buildingPool;
     public Tile currentTile { get; private set; }
 
@@ -21,15 +21,18 @@ public class BuildingStats : Stats
 
         buildingType = buildingStats.buildingType;
         level = buildingStats.buildingSpawnLevel;
-        buildingData = buildingStats.buildingLevelData[level];
+        visuals = buildingStats.buildingVisuals;
 
-        visuals = buildingData.buildingVisuals;
+        buildingData = buildingStats.buildingUpgradeData[level];
+
         basicStats = buildingData.buildingBasicStats;
-        buildingUpgradeCosts = buildingData.buildingUpgradeCosts;
 
         currentTile = GetComponentInParent<Tile>();
         side = currentTile.ownerSide;
         currentTile.SetOccupant(gameObject);
+
+        faction = buildingStats.buildingFaction;
+        targetPriority = buildingStats.targetPriority;
 
         if (visuals.playerUnitMaterial == null)
         {

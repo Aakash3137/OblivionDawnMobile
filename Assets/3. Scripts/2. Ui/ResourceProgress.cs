@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class ResourceProgress : ProgressManager
 {
-    private ResourceGen resourceGenerationStats;
+    private ResourceGenerationComponent resourceGenerationStats;
     private float currentTime;
     [SerializeField] private RectTransform generateResourceImageTransform;
     public float yOffset = 80f;
@@ -14,7 +14,7 @@ public class ResourceProgress : ProgressManager
 
     private void Start()
     {
-        resourceGenerationStats = GetComponentInParent<ResourceGen>();
+        resourceGenerationStats = GetComponentInParent<ResourceGenerationComponent>();
         currentTime = 0f;
         resourceImage = generateResourceImageTransform.GetComponent<Image>();
         defaultTransform = generateResourceImageTransform.anchoredPosition;

@@ -71,8 +71,6 @@ public class BattleUnit : MonoBehaviour
         if (animator != null)
             animator.SetFloat("Move", 0f);
 
-        unitStats.currentHealth = unitStats.basicStats.maxHealth;
-
         if (isAirUnit)
         {
             airUnit = GetComponent<AirUnit>();
@@ -481,35 +479,6 @@ public class BattleUnit : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
         if (animator != null)
             animator.SetBool("Fire", false);
-    }
-
-    // here units get damage from enemies
-    public void TakeDamage(float damage)
-    {
-        // Air units invulnerable during takeoff
-        if (isAirUnit && airUnit != null && !airUnit.CanBeTargeted())
-            return;
-
-        unitStats.currentHealth -= damage;
-        unitStats.currentHealth =
-            Mathf.Clamp(unitStats.currentHealth, 0, unitStats.basicStats.maxHealth);
-
-        if (healthBarFade != null)
-        {
-            healthBarFade.ShowOnHit();
-            healthBarFade.Isvisible = true;
-        }
-
-        if (unitStats.currentHealth <= 0)
-        {
-            Die();
-        }
-    }
-
-    //Destroy enemy
-    public void Die()
-    {
-        Destroy(gameObject);
     }
 
     private void OnDestroy()
