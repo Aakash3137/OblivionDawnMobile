@@ -71,11 +71,11 @@ public class DecManager : MonoBehaviour
 
         foreach (UnitProduceStatsSO card in selected.Cards)
         {
-            inventoryManager.AddEquippedItem(card.unitName, card.unitType.ToString(), _Canvas,
-            "UnitLevel: " + (card.unitSpawnLevel+1)
-                + "\nHealth: " + card.unitLevelData[0].unitBasicStats.maxHealth
-                + "\nArmor: " + card.unitLevelData[0].unitBasicStats.armour
-                + "\nAttack Range: "+ card.unitLevelData[0].unitRangeStats.attackRange, selected._FactionName, true
+            inventoryManager.AddEquippedItem(card.unitIdentity.name, card.unitType.ToString(), _Canvas,
+            "UnitLevel: " + (card.unitIdentity.spawnLevel + 1)
+                + "\nHealth: " + card.unitUpgradeData[0].unitBasicStats.maxHealth
+                + "\nArmor: " + card.unitUpgradeData[0].unitBasicStats.armor
+                + "\nAttack Range: " + card.unitUpgradeData[0].unitRangeStats.attackRange, selected._FactionName, true
                 );
         }
     }
@@ -92,11 +92,11 @@ public class DecManager : MonoBehaviour
         {
             foreach (UnitProduceStatsSO card in deck.Cards)
             {
-                inventoryManager.AddUnequippedItem(card.unitName, card.unitType.ToString(), _Canvas,
-                "UnitLevel: " + (card.unitSpawnLevel+1)
-                    + "\nHealth: " + card.unitLevelData[0].unitBasicStats.maxHealth
-                    + "\nArmor: " + card.unitLevelData[0].unitBasicStats.armour
-                    + "\nAttack Range: " + card.unitLevelData[0].unitRangeStats.attackRange, deck._FactionName, false
+                inventoryManager.AddUnequippedItem(card.unitIdentity.name, card.unitType.ToString(), _Canvas,
+                "UnitLevel: " + (card.unitIdentity.spawnLevel + 1)
+                    + "\nHealth: " + card.unitUpgradeData[0].unitBasicStats.maxHealth
+                    + "\nArmor: " + card.unitUpgradeData[0].unitBasicStats.armor
+                    + "\nAttack Range: " + card.unitUpgradeData[0].unitRangeStats.attackRange, deck._FactionName, false
                     );
             }
         }

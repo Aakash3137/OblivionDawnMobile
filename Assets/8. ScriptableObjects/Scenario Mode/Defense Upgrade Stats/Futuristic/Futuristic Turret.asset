@@ -9,40 +9,40 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f9cc2bfd759150941bcbd4704ca4df08, type: 3}
+  m_Script: {fileID: 11500000, guid: bf8aeccd860d742458310b46b26661a2, type: 3}
   m_Name: Futuristic Turret
   m_EditorClassIdentifier: 
-  defenseBuildingName: 
+  buildingIdentity:
+    name: 
+    spawnLevel: 0
+    faction: 0
+    isUnique: 0
+    priority: 0
+  buildingType: 1
+  buildingVisuals:
+    playerUnitMaterial: {fileID: 2100000, guid: bb9e30fb8e3e30046b9505bd1ff8f567, type: 2}
+    enemyUnitMaterial: {fileID: 2100000, guid: 5a50fa0fa8be63f48b502fa57e0c55af, type: 2}
+  buildingBuildCost:
+  - resourceType: 0
+    resourceCost: 0
+  - resourceType: 1
+    resourceCost: 0
+  - resourceType: 2
+    resourceCost: 0
+  - resourceType: 3
+    resourceCost: 0
   defenseType: 0
-  projectilePrefab: {fileID: 0}
-  defenseFaction: 2
-  defenseSide: 0
-  defenseSpawnLevel: 0
-  defenseLevelData:
-  - defenseLevel: 0
-    defenseBuildTime: 0
-    defenseVisuals:
-      upgradeMesh: {fileID: 0}
-      playerUnitMaterial: {fileID: 0}
-      enemyUnitMaterial: {fileID: 0}
-    defenseBasicStats:
-      maxHealth: 0
-      armour: 0
+  defenseBuildingUpgradeData:
+  - buildingLevel: 0
+    buildingBasicStats:
+      maxHealth: 2000
+      armor: 0
+    buildingBuildTime: 0
+    defenseAttackStats:
+      damage: 0
+      fireRate: 0
+    defenseMobilityStats:
+      moveSpeed: 0
     defenseRangeStats:
-      DetectionRange: 0
-      AttackRange: 0
-    defenseVisionAngles:
-      narrowViewAngle: 0
-      wideViewAngle: 0
-    defenseAttackTargets:
-      canAttackAir: 0
-      canAttackGround: 0
-    defenseUpgradeCosts:
-    - resourceType: 0
-      resourceCost: 0
-    - resourceType: 1
-      resourceCost: 0
-    - resourceType: 2
-      resourceCost: 0
-    - resourceType: 3
-      resourceCost: 0
+      detectionRange: 0
+      attackRange: 0

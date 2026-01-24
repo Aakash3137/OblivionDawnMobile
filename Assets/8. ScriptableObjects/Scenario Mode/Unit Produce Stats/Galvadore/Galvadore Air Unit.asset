@@ -12,49 +12,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0924edb85932e54fb34769cac0ea5e7, type: 3}
   m_Name: Galvadore Air Unit
   m_EditorClassIdentifier: 
-  unitName: Flying Fire Dragons
-  unitType: 0
+  unitIdentity:
+    name: 
+    spawnLevel: 0
+    faction: 0
+    isUnique: 0
+    priority: 0
   unitPrefab: {fileID: 0}
   projectilePrefab: {fileID: 0}
-  unitFaction: 3
-  unitSide: 0
-  isAirUnit: 1
+  unitType: 0
   unitPopulationCost: 0
-  unitSpawnLevel: 0
-  unitLevelData:
+  unitVisuals:
+    playerUnitMaterial: {fileID: 2100000, guid: aa0331a57182dfa42a2d9df17446a407, type: 2}
+    enemyUnitMaterial: {fileID: 2100000, guid: d16b778c29af6bd44802c67d86eedc89, type: 2}
+  unitVisionAngles:
+    narrowViewAngle: 0
+    wideViewAngle: 0
+  unitAttackTargets:
+    canAttackAir: 0
+    canAttackGround: 0
+  unitFlyStats:
+    flyHeight: 0
+    climbAngle: 0
+    turnSpeed: 0
+    bankAngle: 0
+    evadeRadius: 0
+    attackAngleTolerance: 0
+  canFly: 1
+  unitUpgradeData:
   - unitLevel: 0
-    unitBuildTime: 5
-    unitVisuals:
-      upgradeMesh: {fileID: 0}
-      playerUnitMaterial: {fileID: 0}
-      enemyUnitMaterial: {fileID: 0}
+    unitBuildTime: 0
     unitBasicStats:
       maxHealth: 0
-      armour: 0
+      armor: 0
+    unitAttackStats:
+      damage: 0
+      fireRate: 0
     unitMobilityStats:
       moveSpeed: 0
     unitRangeStats:
-      DetectionRange: 0
-      AttackRange: 0
-    unitVisionAngles:
-      narrowViewAngle: 0
-      wideViewAngle: 0
-    unitAttackTargets:
-      canAttackAir: 0
-      canAttackGround: 0
-    unitFlyStats:
-      flyHeight: 0
-      climbAngle: 0
-      turnSpeed: 0
-      bankAngle: 0
-      evadeRadius: 0
-      attackAngleTolerance: 0
-    unitUpgradeCosts:
-    - resourceType: 0
-      resourceCost: 0
-    - resourceType: 1
-      resourceCost: 0
-    - resourceType: 2
-      resourceCost: 0
-    - resourceType: 3
-      resourceCost: 0
+      detectionRange: 0
+      attackRange: 0

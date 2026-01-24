@@ -3,12 +3,8 @@ using UnityEngine;
 
 public class WallStats : Stats
 {
-    [field: SerializeField]
-    public WallUpgradeDataSO wallStats { get; private set; }
-    public ScenarioBuildingType wallType { get; private set; }
-    public ScenarioDefenseType defenseType { get; private set; }
-    public BuildingUpgradeData wallData { get; private set; }
-    public UpgradeCost[] wallUpgradeCosts { get; private set; }
+    public WallUpgradeDataSO wallStats;
+    public WallBuildingUpgradeData wallData { get; private set; }
 
 
     public Action<float, float> onWallEnableOrDisable;
@@ -22,23 +18,20 @@ public class WallStats : Stats
         if (wallStats == null)
         {
             Debug.Log($"<color=red>Building {name} missing BuildingStats. Assign the script.</color>");
-            return;
         }
 
-        wallType = wallStats.buildingType;
-        level = wallStats.buildingSpawnLevel;
-        wallData = wallStats.buildingLevelData[level];
+        identity = wallStats.buildingIdentity;
+        visuals = wallStats.buildingVisuals;
 
-        visuals = wallData.buildingVisuals;
+        wallData = wallStats.wallBuildingUpgradeData[identity.spawnLevel];
+
         basicStats = wallData.buildingBasicStats;
-        wallUpgradeCosts = wallData.buildingUpgradeCosts;
 
         side = GetComponentInParent<BuildingStats>().side;
 
         if (visuals.playerUnitMaterial == null)
         {
             Debug.Log($"<color=magenta>Assign materials for {name} on {wallStats.name} ScriptableObject</color>");
-            return;
         }
 
         base.Start();

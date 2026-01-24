@@ -198,8 +198,9 @@ public class BattleUnit : MonoBehaviour
                 agent.ResetPath();
                 if (animator != null)
                     animator.SetFloat("Move", agent.velocity.magnitude);
-                //ApplySeparation();
-                FaceTarget();
+                
+                if (unitStats != null)
+                    FaceTarget();
                 Attack();
             }
         }
@@ -324,15 +325,15 @@ public class BattleUnit : MonoBehaviour
             //     continue;
 
             // Can't target air units during takeoff
-            if (unit.CanFly)
-            {
-                AirUnit targetAir = unit.GetComponent<AirUnit>();
-                if (targetAir != null && !targetAir.CanBeTargeted()) continue;
-                if (!unitStats.canAttackAir) continue;
-            }
+            // if (unit.CanFly)
+            // {
+            //     AirUnit targetAir = unit.GetComponent<AirUnit>();
+            //     if (targetAir != null && !targetAir.CanBeTargeted()) continue;
+            //     if (!unitStats.canAttackAir) continue;
+            // }
 
-            if (!unit.CanFly && !unitStats.canAttackGround)
-                continue;
+            // if (!unit.CanFly && !unitStats.canAttackGround)
+            //     continue;
 
             score = CalculateScore(unit, score);
 

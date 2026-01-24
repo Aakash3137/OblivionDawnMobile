@@ -12,27 +12,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae49704d27be0c747be7fb2099bad01d, type: 3}
   m_Name: Galvadore Metal Building
   m_EditorClassIdentifier: 
+  buildingIdentity:
+    name: 
+    spawnLevel: 0
+    faction: 0
+    isUnique: 0
+    priority: 0
   buildingName: Futuristic Resource
   buildingType: 3
   buildingFaction: 0
-  buildingSide: 0
+  targetPriority: 0
   buildingSpawnLevel: 0
-  buildingLevelData:
+  buildingBuildCost:
+  - resourceType: 0
+    resourceCost: 0
+  - resourceType: 1
+    resourceCost: 0
+  - resourceType: 2
+    resourceCost: 0
+  - resourceType: 3
+    resourceCost: 0
+  buildingVisuals:
+    playerUnitMaterial: {fileID: 2100000, guid: bb9e30fb8e3e30046b9505bd1ff8f567, type: 2}
+    enemyUnitMaterial: {fileID: 2100000, guid: 5a50fa0fa8be63f48b502fa57e0c55af, type: 2}
+  buildingUpgradeData:
   - buildingLevel: 0
-    buildingBuildTime: 5
-    buildingVisuals:
-      upgradeMesh: {fileID: 0}
-      playerUnitMaterial: {fileID: 2100000, guid: bb9e30fb8e3e30046b9505bd1ff8f567, type: 2}
-      enemyUnitMaterial: {fileID: 2100000, guid: 5a50fa0fa8be63f48b502fa57e0c55af, type: 2}
+    buildingBuildTime: 0
     buildingBasicStats:
       maxHealth: 0
-      armour: 0
-    buildingUpgradeCosts:
-    - resourceType: 0
-      resourceCost: 0
-    - resourceType: 1
-      resourceCost: 20
-    - resourceType: 2
-      resourceCost: 0
-    - resourceType: 3
-      resourceCost: 0
+      armor: 0

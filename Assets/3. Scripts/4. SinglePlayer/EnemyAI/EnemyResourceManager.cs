@@ -4,7 +4,7 @@ using System;
 public class EnemyResourceManager : MonoBehaviour
 {
     [Header("Set Starting Resources")]
-    [SerializeField] private UpgradeCost[] startingResources;
+    [SerializeField] private BuildCost[] startingResources;
     public static EnemyResourceManager Instance;
     public int currentFood { get; private set; }
     public int currentGold { get; private set; }
@@ -56,7 +56,7 @@ public class EnemyResourceManager : MonoBehaviour
         OnResourcesChanged.Invoke();
     }
 
-    public void SpendResources(UpgradeCost[] resources)
+    public void SpendResources(BuildCost[] resources)
     {
         currentFood -= resources[0].resourceCost;
         currentGold -= resources[1].resourceCost;
@@ -66,7 +66,7 @@ public class EnemyResourceManager : MonoBehaviour
         // Invoke the event to notify listeners
         OnResourcesChanged.Invoke();
     }
-    public void SetResources(UpgradeCost[] resources)
+    public void SetResources(BuildCost[] resources)
     {
         currentFood = resources[0].resourceCost;
         currentGold = resources[1].resourceCost;
@@ -97,7 +97,7 @@ public class EnemyResourceManager : MonoBehaviour
 
         OnResourcesChanged?.Invoke();
     }
-    public bool HasResources(UpgradeCost[] resources, bool debug = false)
+    public bool HasResources(BuildCost[] resources, bool debug = false)
     {
         int food = resources[0].resourceCost;
         int gold = resources[1].resourceCost;
@@ -123,7 +123,7 @@ public class EnemyResourceManager : MonoBehaviour
         var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
         if (startingResources == null || startingResources.Length != enumValues.Length)
         {
-            startingResources = new UpgradeCost[enumValues.Length];
+            startingResources = new BuildCost[enumValues.Length];
         }
 
         for (int i = 0; i < startingResources.Length; i++)
@@ -135,7 +135,7 @@ public class EnemyResourceManager : MonoBehaviour
     [ContextMenu("Hack Resources")]
     void HackResources()
     {
-        UpgradeCost[] resources = new UpgradeCost[4];
+        BuildCost[] resources = new BuildCost[4];
         resources[0].resourceCost = 9999;
         resources[1].resourceCost = 9999;
         resources[2].resourceCost = 9999;

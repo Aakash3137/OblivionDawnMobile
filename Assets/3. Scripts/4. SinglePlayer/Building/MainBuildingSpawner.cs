@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class MainBuildingSpawner : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
-    public static MainBuildingSpawner Instance { get; private set; }
+    public static GameManager Instance { get; private set; }
 
     [Header("Data")]
     public AllFactionsData data;
@@ -13,7 +13,7 @@ public class MainBuildingSpawner : MonoBehaviour
     public float yOffset = 1f;
 
     private static FactionName EnemyFactionName;
-    
+
     void Awake() => Instance = this;
 
     void Start()
@@ -27,9 +27,9 @@ public class MainBuildingSpawner : MonoBehaviour
         // Use the faction selected in the menu
         var playerFaction = GameData.SelectedFaction;
         var playerSlots = GetFactionSlots(playerFaction);
-        
+
         // var enemySlots = GetFactionSlots(GetRandomEnemyFaction(playerFaction));
-        
+
         // updated enemy main building faction selection through enemy build panel script 
         var enemySlots = GetFactionSlots(EnemyFactionName);
 
@@ -38,7 +38,7 @@ public class MainBuildingSpawner : MonoBehaviour
         SpawnAllBuildings(playerSpawnPoint, playerSlots, Side.Player);
         SpawnAllBuildings(enemySpawnPoint, enemySlots, Side.Enemy);
     }
-    
+
     // Get faction slots based on faction name
     GameObject[] GetFactionSlots(FactionName name)
     {
@@ -55,13 +55,13 @@ public class MainBuildingSpawner : MonoBehaviour
             default: return null;
         }
     }
-    
-    
+
+
     public static void SetFactionNameThroughEnemyBuildPanel(FactionName enemyFactionName)
     {
         EnemyFactionName = enemyFactionName;
     }
-    
+
 
     void SpawnAllBuildings(Transform rootPoint, GameObject[] buildingPrefabs, Side side)
     {

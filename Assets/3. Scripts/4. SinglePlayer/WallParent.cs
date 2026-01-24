@@ -1,10 +1,13 @@
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 public class WallParent : MonoBehaviour
 {
     [Header("Assign in Inspector")]
     [SerializeField] private WallStats[] wallStats;
-    public float WallMaxHealth;
+    [ReadOnly]
+    public float wallMaxHealth;
+    [ReadOnly]
     public float wallCurrentHealth;
     private HealthProgress healthBar;
 
@@ -37,13 +40,13 @@ public class WallParent : MonoBehaviour
 
         foreach (var wall in wallStats)
         {
-            WallMaxHealth += wall.basicStats.maxHealth;
+            wallMaxHealth += wall.basicStats.maxHealth;
         }
 
-        wallCurrentHealth = WallMaxHealth;
+        wallCurrentHealth = wallMaxHealth;
 
         await Awaitable.WaitForSecondsAsync(1f);
-        if (WallMaxHealth <= 0)
+        if (wallMaxHealth <= 0)
         {
             Destroy(gameObject);
         }
@@ -52,20 +55,20 @@ public class WallParent : MonoBehaviour
     private void HandleWallHealth(float health, float maxHealth)
     {
         wallCurrentHealth -= health;
-        WallMaxHealth -= maxHealth;
+        wallMaxHealth -= maxHealth;
     }
 
     public void DamageWall(float amount)
     {
         wallCurrentHealth -= amount;
 
-        wallCurrentHealth = Mathf.Clamp(wallCurrentHealth, 0, WallMaxHealth);
+        wallCurrentHealth = Mathf.Clamp(wallCurrentHealth, 0, wallMaxHealth);
 
         if (healthBar != null)
         {
             healthBar.UpdateHealthBar();
             healthBar.isVisible = true;
-            healthBar.UpdateFillAmount(wallCurrentHealth / WallMaxHealth);
+            healthBar.UpdateFillAmount(wallCurrentHealth / wallMaxHealth);
         }
     }
 

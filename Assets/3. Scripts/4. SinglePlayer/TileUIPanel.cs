@@ -1,5 +1,7 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using LitMotion;
+using LitMotion.Extensions;
+using TMPro;
 using UnityEngine;
 
 public class TileUIPanel : MonoBehaviour
@@ -7,20 +9,30 @@ public class TileUIPanel : MonoBehaviour
     [Header("Assign in Inspector")]
     [SerializeField] private BuildPanel buildPanel;
     [SerializeField] private WallParent _wallPrefab;
+
+    [Header("Error UI")]
+    [SerializeField] private TMP_Text errorText;
+    private Vector3 originalAnchoredPosition;
+    private MotionHandle errorMotion;
+
     private PlayerResourceManager prmInstance;
 
     private CanvasGroup canvasGroup;
     private bool _mainWallPlaced = false;
     private float _wallYOffset = 1f;
     private Tile currentTile;
-
     private GameObject spawnedBuilding;
+
 
     private void Start()
     {
         prmInstance = PlayerResourceManager.Instance;
         canvasGroup = GetComponentInParent<CanvasGroup>();
         buildPanel.HideBuildPanel(canvasGroup);
+
+        originalAnchoredPosition = errorText.rectTransform.anchoredPosition3D;
+
+        errorText.color = new Color(errorText.color.r, errorText.color.g, errorText.color.b, 0f);
     }
 
     public void Open(Tile tile)
@@ -45,8 +57,13 @@ public class TileUIPanel : MonoBehaviour
 
         if (!CanPlaceBuilding(buildingPrefab))
         {
-            if (buildPanel != null)
-                buildPanel.HideBuildPanel(canvasGroup);
+            errorText.text = "Not enough resources";
+
+            HandleError();
+
+            // if (buildPanel != null)
+            //     buildPanel.HideBuildPanel(canvasGroup);
+
             return;
         }
 
@@ -64,29 +81,42 @@ public class TileUIPanel : MonoBehaviour
         PlaceWalls();
         Close();
     }
+    private void HandleError()
+    {
+        if (errorMotion.IsActive())
+            errorMotion.Cancel();
+
+        LMotion.Shake.Create(originalAnchoredPosition, new Vector3(10f, 10f, 0f), 0.5f)
+        .WithFrequency(25)
+        .WithDampingRatio(0.5f)
+        .BindToAnchoredPosition3D(errorText.rectTransform);
+
+        errorMotion = LMotion.Create(1f, 0f, 1.5f)
+             .WithEase(Ease.OutQuad)
+             .BindToColorA(errorText);
+    }
 
     private bool CanPlaceBuilding(GameObject buildingPrefab)
     {
-        UpgradeCost[] buildingUpgradeCost = null;
+        BuildCost[] buildingBuildCost = null;
 
         if (buildingPrefab.TryGetComponent<BuildingStats>(out var spawnBuildingStats))
         {
-            int spawnLevel = spawnBuildingStats.buildingStats.buildingSpawnLevel;
-            buildingUpgradeCost = spawnBuildingStats.buildingStats.buildingLevelData[spawnLevel].buildingUpgradeCosts;
+            //int spawnLevel = spawnBuildingStats.buildingStats.buildingSpawnLevel;
+            buildingBuildCost = spawnBuildingStats.buildingStats.buildingBuildCost;
         }
         // else if (buildingPrefab.TryGetComponent<WallStats>(out var spawnWallStats))
         // {
         //     int spawnLevel = spawnWallStats.wallStats.wallSpawnLevel;
-        //     buildingUpgradeCost = spawnWallStats.wallStats.wallLevelData[spawnLevel].wallUpgradeCosts;
+        //     buildingBuildCost = spawnWallStats.wallStats.wallLevelData[spawnLevel].wallBuildCosts;
         // }
-
-        if (buildingUpgradeCost == null || !prmInstance.HasResources(buildingUpgradeCost, true))
+        if (buildingBuildCost == null || !prmInstance.HasResources(buildingBuildCost))
         {
-            Debug.Log("<color=red>Insufficient Resources Building cannot be placed/upgraded</color>");
+            //Debug.Log("<color=red>Insufficient Resources Building cannot be placed</color>");
             return false;
         }
 
-        prmInstance.SpendResources(buildingUpgradeCost);
+        prmInstance.SpendResources(buildingBuildCost);
 
         return true;
     }
@@ -146,7 +176,7 @@ public class TileUIPanel : MonoBehaviour
     {
         if (_mainWallPlaced) return;
 
-        Transform mainBuildingTile = MainBuildingSpawner.Instance.playerSpawnPoint;
+        Transform mainBuildingTile = GameManager.Instance.playerSpawnPoint;
         Transform mainBuilding = null;
         GameObject[] objects = GameObject.FindGameObjectsWithTag("MainBuilding");
 

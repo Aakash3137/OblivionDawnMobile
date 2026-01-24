@@ -12,53 +12,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0924edb85932e54fb34769cac0ea5e7, type: 3}
   m_Name: Medieval Air Unit
   m_EditorClassIdentifier: 
-  unitName: Griffins
-  unitType: 0
-  unitPrefab: {fileID: 1520344984127084345, guid: 4832c9f6464a9c74da8265ce834dc633, type: 3}
+  unitIdentity:
+    name: 
+    spawnLevel: 0
+    faction: 0
+    isUnique: 1
+    priority: 0
   projectilePrefab: {fileID: 0}
-  unitFaction: 0
-  unitSide: 0
+  unitType: 0
+  unitVisuals:
+    playerUnitMaterial: {fileID: 2100000, guid: aa0331a57182dfa42a2d9df17446a407, type: 2}
+    enemyUnitMaterial: {fileID: 2100000, guid: d16b778c29af6bd44802c67d86eedc89, type: 2}
+  unitVisionAngles:
+    narrowViewAngle: 15
+    wideViewAngle: 180
+  unitAttackTargets:
+    canAttackAir: 1
+    canAttackGround: 1
+  canFly: 1
+  unitFlyStats:
+    flyHeight: 0
+    climbAngle: 0
+    turnSpeed: 0
+    bankAngle: 0
+    evadeRadius: 0
+    attackAngleTolerance: 0
   unitPopulationCost: 0
-  unitSpawnLevel: 0
-  isUnique: 1
-  unitLevelData:
+  unitUpgradeData:
   - unitLevel: 0
-    unitBuildTime: 2
-    unitVisuals:
-      upgradeMesh: {fileID: 0}
-      playerUnitMaterial: {fileID: 2100000, guid: 6d66c23aa74d38f48a06ec0032a16ceb, type: 2}
-      enemyUnitMaterial: {fileID: 2100000, guid: 20b6cbbe36884e84a83f158db1084696, type: 2}
+    unitBuildTime: 45
     unitBasicStats:
       maxHealth: 500
-      armour: 0
+      armor: 0
     unitAttackStats:
-      damage: 0
-      fireRate: 0
+      damage: 30
+      fireRate: 0.1
     unitMobilityStats:
-      canFly: 1
       moveSpeed: 2.5
     unitRangeStats:
       detectionRange: 50
       attackRange: 8
-    unitVisionAngles:
-      narrowViewAngle: 15
-      wideViewAngle: 180
-    unitAttackTargets:
-      canAttackAir: 1
-      canAttackGround: 1
-    unitFlyStats:
-      flyHeight: 4
-      climbAngle: 0
-      turnSpeed: 0
-      bankAngle: 0
-      evadeRadius: 0
-      attackAngleTolerance: 0
-    unitUpgradeCosts:
-    - resourceType: 0
-      resourceCost: 0
-    - resourceType: 1
-      resourceCost: 0
-    - resourceType: 2
-      resourceCost: 10
-    - resourceType: 3
-      resourceCost: 10

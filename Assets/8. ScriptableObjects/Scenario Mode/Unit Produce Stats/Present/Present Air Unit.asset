@@ -12,51 +12,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0924edb85932e54fb34769cac0ea5e7, type: 3}
   m_Name: Present Air Unit
   m_EditorClassIdentifier: 
-  unitName: Aircraft
-  unitType: 0
+  unitIdentity:
+    name: 
+    spawnLevel: 0
+    faction: 0
+    isUnique: 0
+    priority: 0
   unitPrefab: {fileID: 7509741216450697401, guid: 1ee1e27a395be5049a8b0ccdca931c83, type: 3}
   projectilePrefab: {fileID: 0}
-  unitFaction: 1
-  unitSide: 0
+  unitType: 0
   unitPopulationCost: 0
-  unitSpawnLevel: 0
-  unitLevelData:
+  unitVisuals:
+    playerUnitMaterial: {fileID: 2100000, guid: aa0331a57182dfa42a2d9df17446a407, type: 2}
+    enemyUnitMaterial: {fileID: 2100000, guid: d16b778c29af6bd44802c67d86eedc89, type: 2}
+  unitVisionAngles:
+    narrowViewAngle: 0
+    wideViewAngle: 0
+  unitAttackTargets:
+    canAttackAir: 0
+    canAttackGround: 0
+  unitFlyStats:
+    flyHeight: 0
+    climbAngle: 0
+    turnSpeed: 0
+    bankAngle: 0
+    evadeRadius: 0
+    attackAngleTolerance: 0
+  canFly: 1
+  unitUpgradeData:
   - unitLevel: 0
-    unitBuildTime: 40
-    unitVisuals:
-      upgradeMesh: {fileID: 0}
-      animationController: {fileID: 0}
-      playerUnitMaterial: {fileID: 2100000, guid: 6d66c23aa74d38f48a06ec0032a16ceb, type: 2}
-      enemyUnitMaterial: {fileID: 2100000, guid: 20b6cbbe36884e84a83f158db1084696, type: 2}
+    unitBuildTime: 0
     unitBasicStats:
-      maxHealth: 500
-      armour: 0
+      maxHealth: 0
+      armor: 0
+    unitAttackStats:
+      damage: 0
+      fireRate: 0
     unitMobilityStats:
-      canFly: 1
       moveSpeed: 0
-      flySpeed: 0
     unitRangeStats:
-      DetectionRange: 0
-      AttackRange: 0
-    unitVisionAngles:
-      narrowViewAngle: 0
-      wideViewAngle: 0
-    unitAttackTargets:
-      canAttackAir: 0
-      canAttackGround: 0
-    unitFlyStats:
-      flyHeight: 0
-      climbAngle: 0
-      turnSpeed: 0
-      bankAngle: 0
-      evadeRadius: 0
-      attackAngleTolerance: 0
-    unitUpgradeCosts:
-    - resourceType: 0
-      resourceCost: 0
-    - resourceType: 1
-      resourceCost: 0
-    - resourceType: 2
-      resourceCost: 0
-    - resourceType: 3
-      resourceCost: 0
+      detectionRange: 0
+      attackRange: 0

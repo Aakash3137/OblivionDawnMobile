@@ -27,23 +27,23 @@ public class KillCounterManager : MonoBehaviour
         enemyKills = new KillData();
     }
 
-    public void AddUnitKillData(ScenarioOffenseType offenseType, Side side)
+    public void AddUnitKillData(ScenarioUnitType offenseType, Side side)
     {
         switch (side)
         {
             case Side.Player:
                 switch (offenseType)
                 {
-                    case ScenarioOffenseType.Air:
+                    case ScenarioUnitType.Air:
                         enemyKills.unitKills.airUnitKills++;
                         break;
-                    case ScenarioOffenseType.Infantry:
+                    case ScenarioUnitType.Infantry:
                         enemyKills.unitKills.infantryUnitKills++;
                         break;
-                    case ScenarioOffenseType.Melee:
+                    case ScenarioUnitType.Melee:
                         enemyKills.unitKills.meleeUnitKills++;
                         break;
-                    case ScenarioOffenseType.Tank:
+                    case ScenarioUnitType.Tank:
                         enemyKills.unitKills.tankUnitKills++;
                         break;
                 }
@@ -52,16 +52,16 @@ public class KillCounterManager : MonoBehaviour
             case Side.Enemy:
                 switch (offenseType)
                 {
-                    case ScenarioOffenseType.Air:
+                    case ScenarioUnitType.Air:
                         playerKills.unitKills.airUnitKills++;
                         break;
-                    case ScenarioOffenseType.Infantry:
+                    case ScenarioUnitType.Infantry:
                         playerKills.unitKills.infantryUnitKills++;
                         break;
-                    case ScenarioOffenseType.Melee:
+                    case ScenarioUnitType.Melee:
                         playerKills.unitKills.meleeUnitKills++;
                         break;
-                    case ScenarioOffenseType.Tank:
+                    case ScenarioUnitType.Tank:
                         playerKills.unitKills.tankUnitKills++;
                         break;
                 }
@@ -202,16 +202,16 @@ public class KillCounterManager : MonoBehaviour
             case Side.Player:
                 switch (offenseType)
                 {
-                    case ScenarioOffenseType.Air:
+                    case ScenarioOffenseType.AirBuilding:
                         enemyKills.offenseBuildingDestroyed.airBuildingDestroyed++;
                         break;
-                    case ScenarioOffenseType.Infantry:
+                    case ScenarioOffenseType.InfantryBuilding:
                         enemyKills.offenseBuildingDestroyed.infantryBuildingDestroyed++;
                         break;
-                    case ScenarioOffenseType.Melee:
+                    case ScenarioOffenseType.MeleeBuilding:
                         enemyKills.offenseBuildingDestroyed.meleeBuildingDestroyed++;
                         break;
-                    case ScenarioOffenseType.Tank:
+                    case ScenarioOffenseType.TankBuilding:
                         enemyKills.offenseBuildingDestroyed.tankBuildingDestroyed++;
                         break;
                 }
@@ -219,16 +219,16 @@ public class KillCounterManager : MonoBehaviour
             case Side.Enemy:
                 switch (offenseType)
                 {
-                    case ScenarioOffenseType.Air:
+                    case ScenarioOffenseType.AirBuilding:
                         playerKills.offenseBuildingDestroyed.airBuildingDestroyed++;
                         break;
-                    case ScenarioOffenseType.Infantry:
+                    case ScenarioOffenseType.InfantryBuilding:
                         playerKills.offenseBuildingDestroyed.infantryBuildingDestroyed++;
                         break;
-                    case ScenarioOffenseType.Melee:
+                    case ScenarioOffenseType.MeleeBuilding:
                         playerKills.offenseBuildingDestroyed.meleeBuildingDestroyed++;
                         break;
-                    case ScenarioOffenseType.Tank:
+                    case ScenarioOffenseType.TankBuilding:
                         playerKills.offenseBuildingDestroyed.tankBuildingDestroyed++;
                         break;
                 }

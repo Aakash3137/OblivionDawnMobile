@@ -1,123 +1,117 @@
-using UnityEngine;
-using System.Collections;
+// using UnityEngine;
+// using System.Collections;
 
-public class UnitSpawnerScenario : MonoBehaviour
-{
-    [Header("Production stats variable")]
-    [field: SerializeField]
-    public UnitProduceStatsSO unitProduceStats { get; private set; }
-    private Vector3 spawnPoint;
-    private PlayerResourceManager prmInstance;
+// public class UnitSpawnerScenario : MonoBehaviour
+// {
+//     [Header("Production stats variable")]
+//     [field: SerializeField]
+//     public UnitProduceStatsSO unitProduceStats { get; private set; }
+//     private Vector3 spawnPoint;
+//     private PlayerResourceManager prmInstance;
 
-    [Header("Building Faction and stats")]
-    private BuildingStats buildingStats;
-    public bool autoProduce;
+//     [Header("Building Faction and stats")]
+//     private BuildingStats buildingStats;
+//     public bool autoProduce;
 
-    [Header("Tile/Cube variables")]
-    private Tile currentTile;
-    private Tile nearestTile;
-    private CubeGridManager cgmInstance;
+//     [Header("Tile/Cube variables")]
+//     private Tile currentTile;
+//     private Tile nearestTile;
+//     private CubeGridManager cgmInstance;
+//     private WaitForSeconds unitBuildTimeDelay;
 
-    [Header("Unit Pool")]
-    private Transform unitPool;
+//     [Header("Unit Production variables")]
+//     public GameObject unitPrefab { get; private set; }
+//     public int unitSpawnLevel { get; private set; }
+//     public UnitUpgradeData currentUnitLevelData { get; private set; }
+//     public float unitBuildTime { get; private set; }
+//     // public BuildCost[] unitBuildCost { get; private set; }
 
+//     public GameObject producedUnit;
 
-    [Header("Unit Production variables")]
-    public GameObject unitPrefab { get; private set; }
-    public int unitSpawnLevel { get; private set; }
-    public UnitUpgradeData currentUnitLevelData { get; private set; }
-    public float unitBuildTime { get; private set; }
-    public UpgradeCost[] unitUpgradeCosts { get; private set; }
+//     private void Awake()
+//     {
+//         prmInstance = PlayerResourceManager.Instance;
+//         cgmInstance = CubeGridManager.Instance;
 
-    public GameObject producedUnit;
+//         currentTile = GetComponentInParent<Tile>();
+//         buildingStats = GetComponent<BuildingStats>();
+//     }
 
-    private void Awake()
-    {
-        prmInstance = PlayerResourceManager.Instance;
-        cgmInstance = CubeGridManager.Instance;
+//     private void Start()
+//     {
+//         unitPrefab = unitProduceStats.unitPrefab;
+//         unitSpawnLevel = unitProduceStats.unitIdentity.spawnLevel;
+//         // unitBuildCost = unitProduceStats.unitBuildCost;
 
-        currentTile = GetComponentInParent<Tile>();
-        buildingStats = GetComponent<BuildingStats>();
-    }
+//         currentUnitLevelData = unitProduceStats.unitUpgradeData[unitSpawnLevel];
+//         unitBuildTime = currentUnitLevelData.unitBuildTime;
 
-    private void Start()
-    {
-        unitPrefab = unitProduceStats.unitPrefab;
-        unitSpawnLevel = unitProduceStats.unitSpawnLevel;
-        currentUnitLevelData = unitProduceStats.unitLevelData[unitSpawnLevel];
-        unitBuildTime = currentUnitLevelData.unitBuildTime;
+//         unitBuildTimeDelay = new WaitForSeconds(unitBuildTime);
 
-        unitUpgradeCosts = currentUnitLevelData.unitUpgradeCosts;
+//         if (unitProduceStats.unitIdentity.isUnique)
+//             autoProduce = false;
 
-        GameObject poolObj = GameObject.FindGameObjectWithTag("UnitPool");
+//         StartProducingUnits();
+//     }
 
-        if (poolObj != null)
-            unitPool = poolObj.transform;
-        else
-            Debug.LogError("No GameObject with tag 'UnitPool' found in scene!");
+//     private void StartProducingUnits()
+//     {
+//         producedUnit = null;
 
-        if (unitProduceStats.isUnique)
-            autoProduce = false;
+//         if (unitProduceStats != null)
+//             StartCoroutine(ProductionLoop());
+//     }
 
-        StartProducingUnits();
-    }
+//     private IEnumerator ProductionLoop()
+//     {
+//         do
+//         {
+//             // if (HasResources())
+//             // {
+//             //     yield return unitBuildTimeDelay;
+//             //     SpawnUnit();
+//             //     //prmInstance.SpendResources(unitUpgradeCosts);
+//             // }
+//             yield return unitBuildTimeDelay;
+//             SpawnUnit();
+//         }
+//         while (autoProduce && buildingStats.currentHealth > 0);
+//     }
 
-    private void StartProducingUnits()
-    {
-        producedUnit = null;
+//     private void SpawnUnit()
+//     {
+//         if (unitProduceStats == null) return;
 
-        if (unitProduceStats != null)
-            StartCoroutine(ProductionLoop());
-    }
+//         nearestTile = cgmInstance.GetNearestOpenTile(currentTile);
 
-    private IEnumerator ProductionLoop()
-    {
-        do
-        {
-            if (HasResources() || true)
-            {
-                yield return new WaitForSeconds(unitBuildTime);
-                SpawnUnit();
-                //prmInstance.SpendResources(unitUpgradeCosts);
-            }
-        }
-        while (autoProduce && buildingStats.currentHealth > 0);
-    }
+//         if (nearestTile == null)
+//         {
+//             Debug.Log($"{name} has no open tile to spawn units on!");
+//             return;
+//         }
 
-    private void SpawnUnit()
-    {
-        if (unitProduceStats == null) return;
+//         spawnPoint = nearestTile.transform.position + Vector3.up * 2f;
 
-        nearestTile = cgmInstance.GetNearestOpenTile(currentTile);
+//         producedUnit = Instantiate(unitPrefab, spawnPoint, Quaternion.identity, transform);
 
-        if (nearestTile == null)
-        {
-            Debug.Log($"{name} has no open tile to spawn units on!");
-            return;
-        }
+//         if (producedUnit != null && !autoProduce)
+//         {
+//             producedUnit.GetComponent<UnitStats>().onUniqueUnitDied += StartProducingUnits;
+//         }
+//     }
 
-        spawnPoint = nearestTile.transform.position + Vector3.up * 2f;
+//     // public bool HasResources()
+//     // {
+//     //     return prmInstance.HasResources(unitBuildCost);
+//     // }
+//     private void OnDisable()
+//     {
+//         if (producedUnit != null)
+//             producedUnit.GetComponent<UnitStats>().onUniqueUnitDied -= StartProducingUnits;
+//     }
 
-        producedUnit = Instantiate(unitPrefab, spawnPoint, Quaternion.identity, transform);
-
-        if (producedUnit != null && !autoProduce)
-        {
-            producedUnit.GetComponent<UnitStats>().onUniqueUnitDied += StartProducingUnits;
-        }
-    }
-
-    public bool HasResources()
-    {
-        return prmInstance.HasResources(unitUpgradeCosts);
-    }
-    private void OnDisable()
-    {
-        if (producedUnit != null)
-            producedUnit.GetComponent<UnitStats>().onUniqueUnitDied -= StartProducingUnits;
-    }
-
-    private void OnDestroy()
-    {
-        KillCounterManager.Instance.AddOffenseBuildingDestroyedData(unitProduceStats.unitType, buildingStats.side);
-    }
-}
+//     private void OnDestroy()
+//     {
+//         //KillCounterManager.Instance.AddOffenseBuildingDestroyedData(unitProduceStats.unitType, buildingStats.side);
+//     }
+// }

@@ -1,37 +1,53 @@
 using System;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 public class UnitStats : Stats
 {
-    [SerializeField]
-    private bool canFly;
+    [Header("Assign Unit Produce Stats")]
+    public UnitProduceStatsSO unitProduceSO;
 
-    public override bool CanFly => canFly;
-    
-    [field: SerializeField]
-    public UnitSpawnerScenario spawnerBuilding { get; private set; }
-    private UnitUpgradeData unitData;
+    public ScenarioUnitType unitType { get; private set; }
+    public int unitPopulationCost { get; private set; }
     private GameObject unitPool;
+
+    public VisionAngles unitVisionAngles { get; private set; }
+    public AttackTargets unitAttackTargets { get; private set; }
+
+    [SerializeField, ReadOnly]
+    private bool canFly;
+    [ShowIf(nameof(canFly)), ReadOnly]
+    public FlyStats unitFlyStats;
+    public override bool CanFly => canFly;
+
+    public OffenseBuildingStats spawnerBuilding { private get; set; }
+    public UnitUpgradeData unitData { get; private set; }
     public Action onUniqueUnitDied;
+
 
     internal override void Start()
     {
-        spawnerBuilding = GetComponentInParent<UnitSpawnerScenario>();
-
-        level = spawnerBuilding.unitSpawnLevel;
-
-        unitData = spawnerBuilding.currentUnitLevelData;
-        visuals = unitData.unitVisuals;
+        identity = unitProduceSO.unitIdentity;
+        unitData = unitProduceSO.unitUpgradeData[identity.spawnLevel];
         basicStats = unitData.unitBasicStats;
 
-        canFly = unitData.unitMobilityStats.canFly;
+        visuals = unitProduceSO.unitVisuals;
+        canFly = unitProduceSO.canFly;
 
-        side = spawnerBuilding.GetComponent<BuildingStats>().side;
+        side = spawnerBuilding.side;
+
+        unitVisionAngles = unitProduceSO.unitVisionAngles;
+        unitAttackTargets = unitProduceSO.unitAttackTargets;
+
+        unitPopulationCost = unitProduceSO.unitPopulationCost;
+        unitType = unitProduceSO.unitType;
+
+        if (canFly)
+            unitFlyStats = unitProduceSO.unitFlyStats;
 
         if (visuals.playerUnitMaterial == null)
         {
-            Debug.Log($"<color=magenta>Assign materials for {name} on {spawnerBuilding.unitProduceStats.name} ScriptableObject</color>");
-            return;
+            Debug.Log($"<color=magenta>Assign materials for {name} on {unitProduceSO.name} ScriptableObject</color>");
         }
 
         base.Start();
@@ -39,20 +55,30 @@ public class UnitStats : Stats
         unitPool = GameObject.FindWithTag("UnitPool");
 
         if (unitPool == null)
-            Debug.Log("<color=red>No GameObject with tag 'UnitPool' found in scene!</color>");
+            Debug.Log("<color=green>No GameObject with tag 'UnitPool' found in scene!</color>");
         else
             transform.parent = unitPool.transform;
+    }
+
+    public void FireWeapon()
+    {
+
+    }
+
+    public void Fly()
+    {
+
     }
 
     internal override void Die()
     {
         base.Die();
-        KillCounterManager.Instance.AddUnitKillData(spawnerBuilding.unitProduceStats.unitType, side);
+        KillCounterManager.Instance.AddUnitKillData(unitType, side);
     }
 
     private void OnDestroy()
     {
-        if (spawnerBuilding.unitProduceStats.isUnique == true)
+        if (unitProduceSO.unitIdentity.isUnique == true)
             onUniqueUnitDied?.Invoke();
     }
 }
