@@ -4,8 +4,7 @@ using UnityEngine.AI;
 
 public class BattleUnit : MonoBehaviour
 {
-    [Header("References")]
-    public BattleUnitEnum battleUnitEnum;
+    [Header("References")] public BattleUnitEnum battleUnitEnum;
     public ProjectileShooter projectileShooter;
     public Collider hitCollider;
 
@@ -14,27 +13,25 @@ public class BattleUnit : MonoBehaviour
     [Header("Stats")]
     //public float currentHealth;
     public float DetectionRange = 10f;
+
     public float AttackRange = 3f;
 
-    [Header("Movement")]
-    public float moveSpeed = 3.5f;
+    [Header("Movement")] public float moveSpeed = 3.5f;
     public float flyHeight = 5f; // Air units only
 
-    [Header("Combat")]
-    public float attackDamage = 10f;
+    [Header("Combat")] public float attackDamage = 10f;
     public float attackCooldown = .5f;
     private float attackTimer;
 
-    [Header("Separation")]
-    public float separationRadius = 1.5f;
+    [Header("Separation")] public float separationRadius = 1.5f;
     public float separationStrength = 2f;
 
-    [Header("Targeting Vision")]
-    public float narrowViewAngle = 10f; // straight ahead
-    public float wideViewAngle = 45f;   // front arc
+    [Header("Targeting Vision")] public float narrowViewAngle = 10f; // straight ahead
+    public float wideViewAngle = 45f; // front arc
 
-    [Header("Unit Type")]
-    public bool isAirUnit;
+    [SerializeField] internal GameObject DefenceRotateObject;
+    
+    [Header("Unit Type")] public bool isAirUnit;
 
     public Stats unitStats;
     private AirUnit airUnit;
@@ -47,6 +44,7 @@ public class BattleUnit : MonoBehaviour
 
     [Header("Target priority settings high score = target priority")]
     public float distanceWeight = 500f;
+
     public float lowHealthBonus = 40f;
     public float narrowAngleBonus = 30f;
     public float wideAngleBonus = 20f;
@@ -54,20 +52,21 @@ public class BattleUnit : MonoBehaviour
     public float unitWeight = 10f;
     public float buildingWeight = 0f;
     Vector3 forward;
+    private AttackTargets attackTargets;
 
     public Side unitSide;
     Vector2Int currentCoord;
     private float targetCheckTimer = 0f;
     private const float targetCheckInterval = 0.5f;
     public const float checkRadiusOffset = 0.5f;
-    
+
     //Separation timer variables
     private float separationTimer;
     private const float separationInterval = 0.15f;
-    
+
     private float targetCheckOffset;
 
-    
+
     private void Start()
     {
         unitStats = GetComponent<UnitStats>();
@@ -75,12 +74,13 @@ public class BattleUnit : MonoBehaviour
         forward = transform.forward;
         agent.isStopped = true;
 
-        if (animator != null) 
+        if (unitStats is UnitStats unitStat)
+            attackTargets = unitStat.unitAttackTargets;
+
+        if (animator != null)
             animator.SetFloat("Move", 0f);
 
         targetCheckOffset = Random.Range(0f, 1f);
-        
-        unitStats.currentHealth = unitStats.basicStats.maxHealth;
 
         if (isAirUnit)
         {
@@ -95,7 +95,6 @@ public class BattleUnit : MonoBehaviour
         }
 
         ArrangeRotation();
-        
     }
 
     private void Update()
@@ -106,7 +105,7 @@ public class BattleUnit : MonoBehaviour
             ApplySeparation();
             separationTimer = separationInterval;
         }
-        
+
         // periodic target validation (works for units + buildings)
         targetCheckTimer += Time.deltaTime;
         if (targetCheckTimer >= 1f + targetCheckOffset)
@@ -120,7 +119,7 @@ public class BattleUnit : MonoBehaviour
             }
         }
 
-        
+
         //no navmesh agent need for air units
         if (target != null)
         {
@@ -156,6 +155,7 @@ public class BattleUnit : MonoBehaviour
             {
                 if (animator != null) animator.SetFloat("Move", 0f);
             }
+
             return;
         }
 
@@ -198,16 +198,16 @@ public class BattleUnit : MonoBehaviour
                 agent.ResetPath();
                 if (animator != null)
                     animator.SetFloat("Move", agent.velocity.magnitude);
-                
-                if (unitStats != null)
+
                     FaceTarget();
+               
                 Attack();
             }
         }
 
         if (!isAirUnit)
         {
-            if (agent.velocity.sqrMagnitude > 0.01f)    // for optimization
+            if (agent.velocity.sqrMagnitude > 0.01f) // for optimization
             {
                 UpdateTileOwnership();
             }
@@ -216,6 +216,7 @@ public class BattleUnit : MonoBehaviour
 
 
     #region Tile Ownership
+
     // --- Tile ownership ---
     void UpdateTileOwnership()
     {
@@ -256,6 +257,7 @@ public class BattleUnit : MonoBehaviour
         if (tile != null)
             tile.Vacate(unitSide);
     }
+
     #endregion
 
     private void ArrangeRotation()
@@ -269,7 +271,7 @@ public class BattleUnit : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, -135, 0);
         }
     }
-    
+
     bool IsTargetValid()
     {
         if (target == null)
@@ -280,34 +282,58 @@ public class BattleUnit : MonoBehaviour
 
         return true;
     }
-    
+
     void FindTarget()
     {
+        Collider[] hits = new Collider[20];
+
+        LayerMask enemyLayerMask = LayerMask.GetMask("PlayerAir", "PlayerGround", "EnemyAir", "EnemyGround");
+
+        switch (unitSide)
+        {
+            case Side.Player:
+                if (attackTargets.canAttackAir && attackTargets.canAttackGround)
+                    enemyLayerMask = LayerMask.GetMask("EnemyAir", "EnemyGround");
+                else if (attackTargets.canAttackAir)
+                    enemyLayerMask = LayerMask.GetMask("EnemyAir");
+                else if (attackTargets.canAttackGround)
+                    enemyLayerMask = LayerMask.GetMask("EnemyGround");
+                break;
+            case Side.Enemy:
+                if (attackTargets.canAttackAir && attackTargets.canAttackGround)
+                    enemyLayerMask = LayerMask.GetMask("PlayerAir", "PlayerGround");
+                else if (attackTargets.canAttackAir)
+                    enemyLayerMask = LayerMask.GetMask("PlayerAir");
+                else if (attackTargets.canAttackGround)
+                    enemyLayerMask = LayerMask.GetMask("PlayerGround");
+                break;
+        }
+        
+        int count = Physics.OverlapSphereNonAlloc(transform.position, DetectionRange, hits, enemyLayerMask);
+        
         primaryTarget = null;
         secondaryTarget = null;
 
-        Collider[] hits = Physics.OverlapSphere(transform.position, DetectionRange);
-        
         Stats bestTarget = null;
         float bestScore = 0f;
         Side mySide = unitSide;
 
-        foreach (Collider hit in hits)
+        for (int i = 0; i < count; i++)
         {
             Stats unit;
             float score = 0f;
 
-            if (hit.TryGetComponent<UnitStats>(out var unitStat))
+            if (hits[i].TryGetComponent<UnitStats>(out var unitStat))
             {
                 unit = unitStat;
                 score = unitWeight;
             }
-            else if (hit.TryGetComponent<BuildingStats>(out var buildingStats))
+            else if (hits[i].TryGetComponent<BuildingStats>(out var buildingStats))
             {
                 unit = buildingStats;
                 score = buildingWeight;
             }
-            else if (hit.TryGetComponent<WallStats>(out var wallStats))
+            else if (hits[i].TryGetComponent<WallStats>(out var wallStats))
             {
                 unit = wallStats;
                 score = buildingWeight;
@@ -420,17 +446,30 @@ public class BattleUnit : MonoBehaviour
 
     void FaceTarget()
     {
+        
         Vector3 dir = (target.transform.position - transform.position).normalized;
         dir.y = 0;
 
         if (dir != Vector3.zero)
         {
-            Quaternion lookRot = Quaternion.LookRotation(dir);
-            transform.rotation = Quaternion.Slerp(
-                transform.rotation,
-                lookRot,
-                10f * Time.deltaTime
-            );
+            if (DefenceRotateObject != null)
+            {
+                Quaternion lookRot = Quaternion.LookRotation(dir);
+                DefenceRotateObject.transform.rotation = Quaternion.Slerp(
+                    DefenceRotateObject.transform.rotation,
+                    lookRot,
+                    10f * Time.deltaTime
+                );
+            }
+            else
+            {
+                Quaternion lookRot = Quaternion.LookRotation(dir);
+                transform.rotation = Quaternion.Slerp(
+                    transform.rotation,
+                    lookRot,
+                    10f * Time.deltaTime
+                );
+            }
         }
     }
 
@@ -500,6 +539,7 @@ public class BattleUnit : MonoBehaviour
                     }
                 }
             }
+
             return;
         }
 
@@ -532,35 +572,6 @@ public class BattleUnit : MonoBehaviour
             animator.SetBool("Fire", false);
     }
 
-    // here units get damage from enemies
-    public void TakeDamage(float damage)
-    {
-        // Air units invulnerable during takeoff
-        if (isAirUnit && airUnit != null && !airUnit.CanBeTargeted())
-            return;
-
-        unitStats.currentHealth -= damage;
-        unitStats.currentHealth =
-            Mathf.Clamp(unitStats.currentHealth, 0, unitStats.basicStats.maxHealth);
-
-        if (healthBarFade != null)
-        {
-            healthBarFade.ShowOnHit();
-            healthBarFade.Isvisible = true;
-        }
-
-        if (unitStats.currentHealth <= 0)
-        {
-            Die();
-        }
-    }
-
-    //Destroy enemy
-    public void Die()
-    {
-        Destroy(gameObject);
-    }
-
     //Below code is optimized code 
     private void OnDestroy()
     {
@@ -574,6 +585,7 @@ public class BattleUnit : MonoBehaviour
     }
 
     #region TargetDetection
+
     public static bool AnyPlayerHasTarget()
     {
         foreach (var unit in BattleUnitRegistry.Units)
@@ -584,6 +596,7 @@ public class BattleUnit : MonoBehaviour
                 return true;
             }
         }
+
         return false;
     }
 
@@ -597,11 +610,14 @@ public class BattleUnit : MonoBehaviour
                 return true;
             }
         }
+
         return false;
     }
+
     #endregion
 
     #region Helper
+
     public static bool AnyPlayerAlive()
     {
         foreach (var unit in BattleUnitRegistry.Units)
@@ -609,6 +625,7 @@ public class BattleUnit : MonoBehaviour
             if (unit.unitSide == Side.Player)
                 return true;
         }
+
         return false;
     }
 
@@ -619,11 +636,14 @@ public class BattleUnit : MonoBehaviour
             if (unit.unitSide == Side.Enemy)
                 return true;
         }
+
         return false;
     }
+
     #endregion
 
     #region Gizmos
+
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
@@ -634,7 +654,9 @@ public class BattleUnit : MonoBehaviour
             Gizmos.color = Color.green;
             Gizmos.DrawLine(transform.position, target.transform.position);
         }
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, DetectionRange);
     }
-    #endregion
 
+    #endregion
 }

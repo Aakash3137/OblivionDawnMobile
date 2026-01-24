@@ -65,13 +65,13 @@ public class EnemyAIHandler : MonoBehaviour
     {
         Debug.Log("[EnemyAI] Start called");
         
-        if (MainBuildingSpawner.Instance == null)
+        if (GameManager.Instance == null)
         {
             Debug.LogError("[EnemyAI] MainBuildingSpawner.Instance is null!");
             return;
         }
         
-        enemyMainBuildingTransform = MainBuildingSpawner.Instance.enemySpawnPoint;
+        enemyMainBuildingTransform = GameManager.Instance.enemySpawnPoint;
         Debug.Log($"[EnemyAI] Enemy main building transform: {enemyMainBuildingTransform}");
         
         Invoke(nameof(InitializeSpawnableTiles), 1f);
