@@ -23,7 +23,7 @@ public class UiHomePanelScript : MonoBehaviour
 
     [Header ("Selection Window")]
     [SerializeField] internal GameObject SelectionWindown;
-    [SerializeField] private Popup popupPrefab;
+
     [SerializeField] private float duration = 0.7f;
 
    // [Header ("Value")]
