@@ -1,27 +1,21 @@
 using System;
 using UnityEngine;
+using Sirenix.OdinInspector;
 
 [CreateAssetMenu(fileName = "Unit Upgrade Stats", menuName = "Scenario Stats/Unit Upgrade Stats")]
 public class UnitProduceStatsSO : ScriptableObject
 {
     public Identity unitIdentity;
-
-    [Header("Prefabs")]
-    public GameObject unitPrefab;
-    public GameObject projectilePrefab;
-
-    [Header("Enums")]
+    public ProjectileShooter projectilePrefab;
     public ScenarioUnitType unitType;
-
-    [Header("unit stats")]
-    public int unitPopulationCost;
-
     public Visuals unitVisuals;
     public VisionAngles unitVisionAngles;
     public AttackTargets unitAttackTargets;
-    public FlyStats unitFlyStats;
 
     public bool canFly;
+    [ShowIf(nameof(canFly))]
+    public FlyStats unitFlyStats;
+    public int unitPopulationCost;
 
     [Header("Unit Upgrade Data")]
     public UnitUpgradeData[] unitUpgradeData;

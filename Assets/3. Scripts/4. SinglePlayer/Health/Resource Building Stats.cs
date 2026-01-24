@@ -1,32 +1,35 @@
 using System.Collections;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 public class ResourceBuildingStats : BuildingStats
 {
-    [Space(30)]
-    public ScenarioResourceType resourceType;
+    public ScenarioResourceType resourceType { get; private set; }
     public ResourceBuildingUpgradeData resourceBuildingData { get; private set; }
 
-    public bool autoProduce = true;
-    private bool isProducing;
+    public bool autoProduce { get; private set; }
     private PlayerResourceManager prmInstance;
-    private WaitForSeconds generateTime;
-    [SerializeField] private int GeneratedResourceAmount;
-
-    private ResourceProgress resourceProgress;
+    private WaitForSeconds waitTime;
+    [ReadOnly]
+    public int GeneratedResourceAmount;
 
     internal override void Start()
     {
+        identity = buildingStats.buildingIdentity;
+
+        autoProduce = true;
+
         prmInstance = PlayerResourceManager.Instance;
-        resourceProgress = GetComponentInChildren<ResourceProgress>();
 
         if (buildingStats is ResourceBuildingDataSO resourceBuildingSO)
         {
             resourceType = resourceBuildingSO.resourceType;
-            resourceBuildingData = resourceBuildingSO.resourceBuildingUpgradeData[level];
-            buildCost = resourceBuildingSO.buildingBuildCost;
-            generateTime = new WaitForSeconds(resourceBuildingData.resourceTimeToProduce);
+            resourceBuildingData = resourceBuildingSO.resourceBuildingUpgradeData[identity.spawnLevel];
+
             basicStats = resourceBuildingData.buildingBasicStats;
+
+            buildCost = resourceBuildingSO.buildingBuildCost;
+            waitTime = new WaitForSeconds(resourceBuildingData.resourceTimeToProduce);
         }
         else
         {
@@ -35,7 +38,7 @@ public class ResourceBuildingStats : BuildingStats
 
         base.Start();
 
-        StartCoroutine(StartResourceGeneration(resourceBuildingData.resourceAmountPerBatch, generateTime));
+        StartCoroutine(StartResourceGeneration(resourceBuildingData.resourceAmountPerBatch, waitTime));
     }
 
     private IEnumerator StartResourceGeneration(int amount, WaitForSeconds delay)
@@ -43,13 +46,10 @@ public class ResourceBuildingStats : BuildingStats
         if (side != Side.Player)
             yield break;
 
-        isProducing = true;
-
         prmInstance.SetResourceGenerationRate(resourceType, resourceBuildingData.resourceGenerationRate);
 
-        while (autoProduce && currentHealth > 0)
+        while (autoProduce)//&& currentHealth > 0)
         {
-            //resourceProgress.UIResourceProgress();
             yield return delay;
             prmInstance.AddResources(resourceType, amount);
             GeneratedResourceAmount += amount;
@@ -57,12 +57,21 @@ public class ResourceBuildingStats : BuildingStats
         }
     }
 
+    internal override void Die()
+    {
+        base.Die();
+
+        KillCounterManager.Instance.AddResourceBuildingDestroyedData(resourceType, side);
+    }
+
     internal override void OnDestroy()
     {
         base.OnDestroy();
-        isProducing = false;
         prmInstance.SetResourceGenerationRate(resourceType, -resourceBuildingData.resourceGenerationRate);
+    }
 
-        KillCounterManager.Instance.AddResourceBuildingDestroyedData(resourceType, side);
+    public float GetGenerationTime()
+    {
+        return resourceBuildingData.resourceTimeToProduce;
     }
 }

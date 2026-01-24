@@ -6,6 +6,7 @@ public class OffenseBuildingDataSO : BuildingDataSO
 {
     [Space(30)]
     public ScenarioOffenseType offenseType;
+    public UnitStats unitPrefab;
     public OffenseBuildingUpgradeData[] offenseBuildingUpgradeData;
 
 
@@ -38,5 +39,5 @@ public class OffenseBuildingDataSO : BuildingDataSO
 [Serializable]
 public class OffenseBuildingUpgradeData : BuildingUpgradeData
 {
-    public float UnitSpawnTime;
+    public float unitSpawnTime;
 }

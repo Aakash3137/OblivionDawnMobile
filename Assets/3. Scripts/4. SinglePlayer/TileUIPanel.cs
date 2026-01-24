@@ -176,7 +176,7 @@ public class TileUIPanel : MonoBehaviour
     {
         if (_mainWallPlaced) return;
 
-        Transform mainBuildingTile = MainBuildingSpawner.Instance.playerSpawnPoint;
+        Transform mainBuildingTile = GameManager.Instance.playerSpawnPoint;
         Transform mainBuilding = null;
         GameObject[] objects = GameObject.FindGameObjectsWithTag("MainBuilding");
 

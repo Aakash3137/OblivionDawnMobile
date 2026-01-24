@@ -2,12 +2,9 @@ using UnityEngine;
 
 public class Stats : MonoBehaviour
 {
-    [Header(" EDITOR VIEW ONLY ")]
-    public int level { get; protected set; }
-    public Side side;
-    public FactionName faction;
-    public int targetPriority { get; protected set; }
+    public Identity identity { get; protected set; }
     public BasicStats basicStats { get; protected set; }
+    public Side side { get; protected set; }
     public Visuals visuals { get; protected set; }
     public float currentHealth { get; protected set; }
     public Collider hitCollider { get; protected set; }
@@ -18,12 +15,8 @@ public class Stats : MonoBehaviour
     private HealthProgress healthBar;
 
     public AirUnit airUnit { get; private set; }
-
-    [Header("Bools")]
     public virtual bool CanFly => false;
-    //keep can Fly, canAttackAir and canAttackGround can be removed
-    public bool canAttackAir = false;
-    public bool canAttackGround = true;
+
 
     private void Awake()
     {

@@ -5,39 +5,44 @@ using UnityEngine.UI;
 
 public class ResourceProgress : ProgressManager
 {
-    private ResourceGeneration resourceGenerationStats;
+    private ResourceBuildingStats resourceBuildingStats;
     private float currentTime;
+
     [SerializeField] private RectTransform generateResourceImageTransform;
     public float yOffset = 80f;
     private Image resourceImage;
     private Vector3 defaultTransform;
 
+    float waitTime;
+
     private void Start()
     {
-        resourceGenerationStats = GetComponentInParent<ResourceGeneration>();
+        resourceBuildingStats = GetComponentInParent<ResourceBuildingStats>();
         currentTime = 0f;
         resourceImage = generateResourceImageTransform.GetComponent<Image>();
         defaultTransform = generateResourceImageTransform.anchoredPosition;
+
+        waitTime = resourceBuildingStats.GetGenerationTime();
 
         AnimateTransform();
     }
 
     private void Update()
     {
-        if (resourceGenerationStats != null)
-            UIResourceProgress();
+        if (resourceBuildingStats != null)
+            UIResourceBuildingProgress();
     }
 
-    public void UIResourceProgress()
+    private void UIResourceBuildingProgress()
     {
-        if (currentTime > resourceGenerationStats.resourceTimeToProduce)
+        if (currentTime > waitTime)
         {
             AnimateTransform();
             currentTime = 0f;
         }
 
         currentTime += Time.deltaTime;
-        progressAmount = currentTime / resourceGenerationStats.resourceTimeToProduce;
+        progressAmount = currentTime / waitTime;
         UpdateFillAmount(progressAmount);
     }
 

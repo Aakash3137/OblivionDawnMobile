@@ -6,6 +6,9 @@ public class DefenseBuildingDataSO : BuildingDataSO
 {
     [Space(30)]
     public ScenarioDefenseType defenseType;
+    public ProjectileShooter projectilePrefab;
+    public VisionAngles defenseVisionAngles;
+    public AttackTargets defenseAttackTargets;
     public DefenseBuildingUpgradeData[] defenseBuildingUpgradeData;
 
 

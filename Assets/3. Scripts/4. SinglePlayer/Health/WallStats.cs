@@ -3,10 +3,7 @@ using UnityEngine;
 
 public class WallStats : Stats
 {
-    [field: SerializeField]
-    public WallUpgradeDataSO wallStats { get; private set; }
-    public ScenarioBuildingType wallType { get; private set; }
-    public ScenarioDefenseType defenseType { get; private set; }
+    public WallUpgradeDataSO wallStats;
     public WallBuildingUpgradeData wallData { get; private set; }
 
 
@@ -21,14 +18,12 @@ public class WallStats : Stats
         if (wallStats == null)
         {
             Debug.Log($"<color=red>Building {name} missing BuildingStats. Assign the script.</color>");
-            return;
         }
 
-        wallType = wallStats.buildingType;
-        level = wallStats.buildingIdentity.spawnLevel;
+        identity = wallStats.buildingIdentity;
         visuals = wallStats.buildingVisuals;
 
-        wallData = wallStats.wallBuildingUpgradeData[level];
+        wallData = wallStats.wallBuildingUpgradeData[identity.spawnLevel];
 
         basicStats = wallData.buildingBasicStats;
 

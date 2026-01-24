@@ -18,19 +18,18 @@ MonoBehaviour:
     faction: 0
     isUnique: 0
     priority: 0
-  unitPrefab: {fileID: 1690844357168965693, guid: e9a2c824251d51441b1f01ae5c506272, type: 3}
   projectilePrefab: {fileID: 0}
   unitType: 2
-  unitPopulationCost: 0
   unitVisuals:
     playerUnitMaterial: {fileID: 2100000, guid: 14b68adf76a968242b04e3b593e58dae, type: 2}
     enemyUnitMaterial: {fileID: 2100000, guid: 5ac6e757728303042bc0afdcdb87faa5, type: 2}
   unitVisionAngles:
-    narrowViewAngle: 0
-    wideViewAngle: 0
+    narrowViewAngle: 10
+    wideViewAngle: 45
   unitAttackTargets:
     canAttackAir: 0
     canAttackGround: 1
+  canFly: 0
   unitFlyStats:
     flyHeight: 0
     climbAngle: 0
@@ -38,7 +37,7 @@ MonoBehaviour:
     bankAngle: 0
     evadeRadius: 0
     attackAngleTolerance: 0
-  canFly: 0
+  unitPopulationCost: 0
   unitUpgradeData:
   - unitLevel: 0
     unitBuildTime: 20

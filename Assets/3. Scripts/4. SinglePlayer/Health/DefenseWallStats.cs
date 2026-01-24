@@ -8,6 +8,8 @@ public class DefenseWallStats : BuildingStats
 
     internal override void Start()
     {
+        identity = buildingStats.buildingIdentity;
+
         if (buildingStats is WallUpgradeDataSO defenseWallStats)
         {
             defenseType = defenseWallStats.defenseType;
@@ -18,5 +20,12 @@ public class DefenseWallStats : BuildingStats
         }
 
         base.Start();
+    }
+
+    internal override void Die()
+    {
+        base.Die();
+
+        KillCounterManager.Instance.AddDefenseBuildingDestroyedData(defenseType, side);
     }
 }

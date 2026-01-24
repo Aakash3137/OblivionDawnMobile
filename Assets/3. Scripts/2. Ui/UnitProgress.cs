@@ -2,13 +2,17 @@ using UnityEngine;
 
 public class UnitProgress : ProgressManager
 {
-    private UnitSpawnerScenario spawner;
+    private OffenseBuildingStats spawner;
     private float currentTime;
+
+    float waitTime;
 
     private void Start()
     {
-        spawner = GetComponentInParent<UnitSpawnerScenario>();
+        spawner = GetComponentInParent<OffenseBuildingStats>();
         currentTime = 0f;
+
+        waitTime = spawner.GetUnitSpawnTime();
     }
 
     private void Update()
@@ -28,18 +32,18 @@ public class UnitProgress : ProgressManager
         if (!spawner.autoProduce && spawner.producedUnit != null)
         {
             currentTime = 0f;
-            progressAmount = currentTime / spawner.unitBuildTime;
+            progressAmount = currentTime / waitTime;
             UpdateFillAmount(progressAmount);
             return;
         }
 
-        if (currentTime > spawner.unitBuildTime)
+        if (currentTime > waitTime)
         {
             currentTime = 0f;
         }
 
         currentTime += Time.deltaTime;
-        progressAmount = currentTime / spawner.unitBuildTime;
+        progressAmount = currentTime / waitTime;
         UpdateFillAmount(progressAmount);
     }
 }

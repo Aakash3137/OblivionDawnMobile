@@ -5,17 +5,17 @@ using System;
 public class MainBuildingDataSO : BuildingDataSO
 {
     [Space(30)]
-    public MainBuildingUpgradeData[] offenseBuildingUpgradeData;
+    public MainBuildingUpgradeData[] mainBuildingUpgradeData;
 
 
     internal override void ValidateBase()
     {
-        if (offenseBuildingUpgradeData.Length == 0)
-            offenseBuildingUpgradeData = new MainBuildingUpgradeData[1];
+        if (mainBuildingUpgradeData.Length == 0)
+            mainBuildingUpgradeData = new MainBuildingUpgradeData[1];
 
-        for (int i = 0; i < offenseBuildingUpgradeData.Length; i++)
+        for (int i = 0; i < mainBuildingUpgradeData.Length; i++)
         {
-            offenseBuildingUpgradeData[i].buildingLevel = i;
+            mainBuildingUpgradeData[i].buildingLevel = i;
 
             var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
 
@@ -30,7 +30,7 @@ public class MainBuildingDataSO : BuildingDataSO
             }
         }
 
-        buildingIdentity.spawnLevel = Mathf.Max(0, offenseBuildingUpgradeData.Length - 1);
+        buildingIdentity.spawnLevel = Mathf.Max(0, mainBuildingUpgradeData.Length - 1);
     }
 }
 

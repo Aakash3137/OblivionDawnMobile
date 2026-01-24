@@ -11,10 +11,10 @@ public class EnemyBuildPanel : MonoBehaviour
     [SerializeField] private AllFactionsData factionData;
 
     [SerializeField] private FactionName EnemyfactionName;
-    
+
     private void Awake()
     {
-        MainBuildingSpawner.SetFactionNameThroughEnemyBuildPanel(EnemyfactionName);
+        GameManager.SetFactionNameThroughEnemyBuildPanel(EnemyfactionName);
     }
     private void Start()
     {
@@ -25,7 +25,7 @@ public class EnemyBuildPanel : MonoBehaviour
     }
     public void PlaceEnemyAirBuilding()
     {
-        var slot = GetBuildingByType("Air");  
+        var slot = GetBuildingByType("Air");
         PlaceBuilding(slot);
     }
     public void PlaceEnemyInfantryBuilding()
