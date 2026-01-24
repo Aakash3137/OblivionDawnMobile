@@ -65,6 +65,9 @@ public class BattleUnit : MonoBehaviour
     private float separationTimer;
     private const float separationInterval = 0.15f;
     
+    private float targetCheckOffset;
+
+    
     private void Start()
     {
         unitStats = GetComponent<UnitStats>();
@@ -72,9 +75,11 @@ public class BattleUnit : MonoBehaviour
         forward = transform.forward;
         agent.isStopped = true;
 
-        if (animator != null)
+        if (animator != null) 
             animator.SetFloat("Move", 0f);
 
+        targetCheckOffset = Random.Range(0f, 1f);
+        
         unitStats.currentHealth = unitStats.basicStats.maxHealth;
 
         if (isAirUnit)
@@ -90,7 +95,7 @@ public class BattleUnit : MonoBehaviour
         }
 
         ArrangeRotation();
-        //ApplySeparation();
+        
     }
 
     private void Update()
@@ -101,6 +106,20 @@ public class BattleUnit : MonoBehaviour
             ApplySeparation();
             separationTimer = separationInterval;
         }
+        
+        // periodic target validation (works for units + buildings)
+        targetCheckTimer += Time.deltaTime;
+        if (targetCheckTimer >= 1f + targetCheckOffset)
+        {
+            targetCheckTimer = 0f;
+
+            if (!IsTargetValid())
+            {
+                target = null;
+                FindTarget();
+            }
+        }
+
         
         //no navmesh agent need for air units
         if (target != null)
@@ -119,12 +138,14 @@ public class BattleUnit : MonoBehaviour
         // find target
         if (target == null)
         {
+            /*
             targetCheckTimer += Time.deltaTime;
             if (targetCheckTimer >= targetCheckInterval)
             {
                 FindTarget();
                 targetCheckTimer = 0f;
             }
+            */
 
             if (isAirUnit && airUnit != null)
             {
@@ -247,8 +268,18 @@ public class BattleUnit : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, -135, 0);
         }
     }
+    
+    bool IsTargetValid()
+    {
+        if (target == null)
+            return false;
 
+        if (!target.activeInHierarchy)
+            return false;
 
+        return true;
+    }
+    
     void FindTarget()
     {
         primaryTarget = null;

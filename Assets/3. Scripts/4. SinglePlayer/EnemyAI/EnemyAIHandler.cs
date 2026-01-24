@@ -51,6 +51,9 @@ public class EnemyAIHandler : MonoBehaviour
 
     [Header("Spawn Settings")]
     [SerializeField] private float spawnInterval = 5f;
+    [SerializeField] private int maxEnemyBuildings = 30;
+    [SerializeField] private bool reduceSpawningAfterMax = false;
+    [SerializeField] private float reducedSpawnInterval = 15f;
 
     private Transform enemyMainBuildingTransform;
     private List<Tile> spawnableTiles = new List<Tile>();
@@ -84,8 +87,12 @@ public class EnemyAIHandler : MonoBehaviour
         
         RemoveInvalidSpawnableTiles();
 
+        float currentInterval = (reduceSpawningAfterMax && totalBuildingsSpawned >= maxEnemyBuildings) 
+            ? reducedSpawnInterval 
+            : spawnInterval;
+
         spawnTimer += Time.deltaTime;
-        if (spawnTimer >= spawnInterval)
+        if (spawnTimer >= currentInterval)
         {
             spawnTimer = 0f;
             TrySpawnBuilding();
@@ -179,6 +186,12 @@ public class EnemyAIHandler : MonoBehaviour
 
     void TrySpawnBuilding()
     {
+        if (!reduceSpawningAfterMax && totalBuildingsSpawned >= maxEnemyBuildings)
+        {
+            Debug.Log($"[EnemyAI] Max buildings reached ({maxEnemyBuildings}). Spawning stopped.");
+            return;
+        }
+
         Debug.Log($"[EnemyAI] TrySpawnBuilding - Spawnable tiles: {spawnableTiles.Count}");
         
         if (spawnableTiles.Count == 0)
@@ -259,7 +272,7 @@ public class EnemyAIHandler : MonoBehaviour
             defenceBuildingsSpawned++;
             return GetRandomDefenceBuilding();
         }
-
+        
         float rand = Random.value;
         if (rand < defence_ResourceRatio)
             return GetRandomResourceBuilding();
