@@ -20,8 +20,8 @@ MonoBehaviour:
     priority: 0
   buildingType: 1
   buildingVisuals:
-    playerUnitMaterial: {fileID: 2100000, guid: bb9e30fb8e3e30046b9505bd1ff8f567, type: 2}
-    enemyUnitMaterial: {fileID: 2100000, guid: 5a50fa0fa8be63f48b502fa57e0c55af, type: 2}
+    playerUnitMaterial: {fileID: 2100000, guid: 98763a407c9a29f48b12a8392352956e, type: 2}
+    enemyUnitMaterial: {fileID: 2100000, guid: 98763a407c9a29f48b12a8392352956e, type: 2}
   buildingBuildCost:
   - resourceType: 0
     resourceCost: 10
@@ -32,10 +32,11 @@ MonoBehaviour:
   - resourceType: 3
     resourceCost: 30
   defenseType: 0
-  projectilePrefab: {fileID: 0}
+  canAttackBuildings: 0
+  canAttackWalls: 0
   defenseVisionAngles:
     narrowViewAngle: 0
-    wideViewAngle: 0
+    wideViewAngle: 270
   defenseAttackTargets:
     canAttackAir: 1
     canAttackGround: 0
@@ -46,10 +47,10 @@ MonoBehaviour:
       armor: 0
     buildingBuildTime: 0
     defenseAttackStats:
-      damage: 0
-      fireRate: 0
+      damage: 120
+      fireRate: 2.2
     defenseMobilityStats:
       moveSpeed: 0
     defenseRangeStats:
-      detectionRange: 0
-      attackRange: 0
+      detectionRange: 16
+      attackRange: 16

@@ -7,17 +7,16 @@ public class ProjectileDataSO : ScriptableObject
     public string projectileName;
     public ProjectileType projectileType;
     public ProjectileMotion projectileMotion;
-    public GameObject projectilePrefab;
     public ProjectileBasicStats projectileBasicStats;
     public ProjectileVisuals projectileVisuals;
     public ProjectileAOE projectileAOE;
 
     private void Validate()
     {
-        projectileBasicStats.projectileSpeed = Mathf.Max(projectileBasicStats.projectileSpeed, 0);
-        projectileBasicStats.projectileRange = Mathf.Max(projectileBasicStats.projectileRange, 0);
-        projectileBasicStats.projectileLifetime = Mathf.Max(projectileBasicStats.projectileLifetime, 0);
-        projectileBasicStats.projectileMaxArcHeight = Mathf.Max(projectileBasicStats.projectileMaxArcHeight, 0);
+        projectileBasicStats.speed = Mathf.Max(projectileBasicStats.speed, 0);
+        projectileBasicStats.maxRange = Mathf.Max(projectileBasicStats.maxRange, 0);
+        projectileBasicStats.lifeTime = Mathf.Max(projectileBasicStats.lifeTime, 0);
+        projectileBasicStats.maxArcHeight = Mathf.Max(projectileBasicStats.maxArcHeight, 0);
         projectileAOE.aoeRadius = Mathf.Max(projectileAOE.aoeRadius, 0);
     }
 
@@ -32,18 +31,17 @@ public class ProjectileDataSO : ScriptableObject
 public struct ProjectileBasicStats
 {
     public bool isRayCast;
-    public float projectileSpeed;
-    public float projectileRange;
-    public float projectileLifetime;
-    public float projectileMaxArcHeight;
+    public float speed;
+    public float maxRange;
+    public float lifeTime;
+    public float maxArcHeight;
 }
 
 [Serializable]
 public struct ProjectileVisuals
 {
-    public bool hasTail;
-    public GameObject projectileVFX;
-    public TrailRenderer projectileTrail;
+    public bool hasTrail;
+    public GameObject hitVFX;
 }
 
 [Serializable]

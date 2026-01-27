@@ -30,4 +30,13 @@ public class DefenseBuildingStats : BuildingStats
 
         KillCounterManager.Instance.AddDefenseBuildingDestroyedData(defenseType, side);
     }
+
+    public DefenseBuildingUpgradeData GetBuildingData()
+    {
+        return defenseBuildingData;
+    }
+    public DefenseBuildingDataSO GetBuildingSO()
+    {
+        return buildingStats as DefenseBuildingDataSO;
+    }
 }

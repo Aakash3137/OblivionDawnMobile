@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using TMPro;
+using Sirenix.OdinInspector;
 
 
 public class PlayerResourceManager : MonoBehaviour
@@ -13,18 +14,43 @@ public class PlayerResourceManager : MonoBehaviour
     public int currentMetal { get; private set; }
     public int CurrentPower { get; private set; }
 
-    [field: Header("EDITOR VIEW ONLY")]
+    [Button]
+    public void ResetResources()
+    {
+        startingResources[0].resourceCost = 40;
+        startingResources[1].resourceCost = 40;
+        startingResources[2].resourceCost = 20;
+        startingResources[3].resourceCost = 0;
+    }
+
+    [Button]
+    public void HackResources()
+    {
+        BuildCost[] resources = new BuildCost[4];
+        resources[0].resourceCost = 9999;
+        resources[1].resourceCost = 9999;
+        resources[2].resourceCost = 9999;
+        resources[3].resourceCost = 9999;
+
+        SetResources(resources);
+    }
+
+    [field: Space(30)]
+    [field: ReadOnly]
     [field: SerializeField]
     public float currentFoodGenerationRate { get; private set; }
+    [field: ReadOnly]
     [field: SerializeField]
     public float currentGoldGenerationRate { get; private set; }
+    [field: ReadOnly]
     [field: SerializeField]
     public float currentMetalGenerationRate { get; private set; }
+    [field: ReadOnly]
     [field: SerializeField]
     public float currentPowerGenerationRate { get; private set; }
 
-    [HideInInspector]
     public Action OnResourcesChanged;
+
 
     private void Awake()
     {
@@ -76,7 +102,7 @@ public class PlayerResourceManager : MonoBehaviour
         CurrentPower = resources[3].resourceCost;
 
         // Invoke the event to notify listeners
-        OnResourcesChanged.Invoke();
+        OnResourcesChanged?.Invoke();
     }
 
     public void SetResourceGenerationRate(ScenarioResourceType resourceType, float amount = 0)
@@ -152,22 +178,5 @@ public class PlayerResourceManager : MonoBehaviour
         {
             startingResources[i].resourceType = (ScenarioResourceType)enumValues.GetValue(i);
         }
-    }
-
-    [ContextMenu("Hack Resources")]
-    void HackResources()
-    {
-        BuildCost[] resources = new BuildCost[4];
-        resources[0].resourceCost = 9999;
-        resources[1].resourceCost = 9999;
-        resources[2].resourceCost = 9999;
-        resources[3].resourceCost = 9999;
-
-        SetResources(resources);
-    }
-
-    internal void SetResourceGenerationRate(object resourceType, float resourceGenerationRate)
-    {
-        throw new NotImplementedException();
     }
 }

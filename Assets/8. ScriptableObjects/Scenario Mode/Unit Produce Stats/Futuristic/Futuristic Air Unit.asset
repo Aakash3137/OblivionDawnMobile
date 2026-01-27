@@ -13,24 +13,22 @@ MonoBehaviour:
   m_Name: Futuristic Air Unit
   m_EditorClassIdentifier: 
   unitIdentity:
-    name: 
+    name: Fast Automatic Drones
     spawnLevel: 0
-    faction: 0
+    faction: 2
     isUnique: 0
     priority: 0
-  unitPrefab: {fileID: 0}
-  projectilePrefab: {fileID: 0}
   unitType: 0
-  unitPopulationCost: 0
   unitVisuals:
     playerUnitMaterial: {fileID: 2100000, guid: aa0331a57182dfa42a2d9df17446a407, type: 2}
     enemyUnitMaterial: {fileID: 2100000, guid: d16b778c29af6bd44802c67d86eedc89, type: 2}
   unitVisionAngles:
-    narrowViewAngle: 0
-    wideViewAngle: 0
+    narrowViewAngle: 15
+    wideViewAngle: 180
   unitAttackTargets:
-    canAttackAir: 0
-    canAttackGround: 0
+    canAttackAir: 1
+    canAttackGround: 1
+  canFly: 1
   unitFlyStats:
     flyHeight: 0
     climbAngle: 0
@@ -38,18 +36,18 @@ MonoBehaviour:
     bankAngle: 0
     evadeRadius: 0
     attackAngleTolerance: 0
-  canFly: 1
+  unitPopulationCost: 0
   unitUpgradeData:
   - unitLevel: 0
-    unitBuildTime: 0
+    unitBuildTime: 45
     unitBasicStats:
-      maxHealth: 0
+      maxHealth: 500
       armor: 0
     unitAttackStats:
-      damage: 0
-      fireRate: 0
+      damage: 30
+      fireRate: 0.1
     unitMobilityStats:
-      moveSpeed: 0
+      moveSpeed: 2.5
     unitRangeStats:
-      detectionRange: 0
-      attackRange: 0
+      detectionRange: 50
+      attackRange: 8

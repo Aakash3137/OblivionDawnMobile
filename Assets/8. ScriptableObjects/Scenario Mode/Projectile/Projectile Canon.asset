@@ -10,22 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 89f0869c825db004880262f4e3656108, type: 3}
-  m_Name: Projectile Data
+  m_Name: Projectile Canon
   m_EditorClassIdentifier: 
   projectileName: 
-  projectileType: 4
-  projectileMotion: 0
-  projectilePrefab: {fileID: 0}
+  projectileType: 2
+  projectileMotion: 1
   projectileBasicStats:
     isRayCast: 0
-    projectileSpeed: 0
-    projectileRange: 4.41
-    projectileLifetime: 49.21
-    projectileMaxArcHeight: 8.17
+    speed: 6
+    maxRange: 10
+    lifeTime: 3
+    maxArcHeight: 3
   projectileVisuals:
-    hasTail: 0
-    projectileVFX: {fileID: 0}
-    projectileTrail: {fileID: 0}
+    hasTrail: 1
+    hitVFX: {fileID: 1447540632109744634, guid: 9d301d5973fbf9349818b1638f122a78, type: 3}
+    trail: {fileID: 0}
   projectileAOE:
-    isAOE: 0
-    aoeRadius: 0
+    isAOE: 1
+    aoeRadius: 2

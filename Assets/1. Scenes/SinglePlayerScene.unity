@@ -150,13 +150,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startingResources:
   - resourceType: 0
-    resourceCost: 40
+    resourceCost: 1000
   - resourceType: 1
-    resourceCost: 40
+    resourceCost: 4000
   - resourceType: 2
-    resourceCost: 20
+    resourceCost: 1000
   - resourceType: 3
-    resourceCost: 0
+    resourceCost: 1000
   <currentFoodGenerationRate>k__BackingField: 0
   <currentGoldGenerationRate>k__BackingField: 0
   <currentMetalGenerationRate>k__BackingField: 0
@@ -1879,6 +1879,55 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 5504681808614986411, guid: 72bdbd0c1b557ce45b52167c8404fb29, type: 3}
   m_PrefabInstance: {fileID: 947668001}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &962310073
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 962310075}
+  - component: {fileID: 962310074}
+  m_Layer: 0
+  m_Name: Post process volume
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &962310074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 962310073}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IsGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: 0032fed4e55066945863a2b43a7f77d0, type: 2}
+--- !u!4 &962310075
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 962310073}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -12.361132, y: -9.888413, z: 22.352522}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1210770638
 GameObject:
   m_ObjectHideFlags: 0
@@ -2174,6 +2223,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: CameraPanner
       objectReference: {fileID: 0}
+    - target: {fileID: 9053301766738374518, guid: 4d6473ae3e0a6a24fb3baaa31f2b2db6, type: 3}
+      propertyPath: m_VolumeTrigger
+      value: 
+      objectReference: {fileID: 962310075}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2657,10 +2710,10 @@ MonoBehaviour:
   onlyDefence_ResourceRatio: 0.2
   onlyDefence_AllowAttackBuildings: 0
   onlyDefence_AttackBuildingsAfterDefenceCount: 10
-  spawnInterval: 5
+  spawnInterval: 24
   maxEnemyBuildings: 30
   reduceSpawningAfterMax: 1
-  reducedSpawnInterval: 15
+  reducedSpawnInterval: 45
 --- !u!4 &1919051798
 Transform:
   m_ObjectHideFlags: 0
@@ -5232,3 +5285,4 @@ SceneRoots:
   - {fileID: 792951180}
   - {fileID: 1761457525}
   - {fileID: 1919051798}
+  - {fileID: 962310075}

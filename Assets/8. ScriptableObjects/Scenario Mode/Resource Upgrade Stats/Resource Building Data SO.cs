@@ -34,7 +34,7 @@ public class ResourceBuildingDataSO : BuildingDataSO
             }
         }
 
-        buildingIdentity.spawnLevel = Mathf.Max(0, resourceBuildingUpgradeData.Length - 1);
+        buildingIdentity.spawnLevel = Mathf.Clamp(buildingIdentity.spawnLevel, 0, resourceBuildingUpgradeData.Length - 1);
     }
 }
 
