@@ -88,10 +88,12 @@ public class InventoryManager : MonoBehaviour
 
     public void AddEquippedItem(string itemId, string UnitType, Canvas _Canvas, string Details, FactionName _FName, bool Status)
     {
+        GameDebug.LogWarning($"Add Equipped Item ==>  Item ID: {itemId} UnitType: {UnitType}   Details: {Details} Faction: {_FName} IsEquipped: {Status}");
         if (equippedData.Count >= equippedSlotCount)
             return;
 
         equippedData.Add(new InventoryItemData(itemId, UnitType, _Canvas, Details, _FName, Status));
+        Debug.Log($"Added Equipped Item: {itemId} to  RefreshinhUI");
         RefreshUI();
     }
 
@@ -214,6 +216,7 @@ public class InventoryManager : MonoBehaviour
 
     private void RefreshUI()
     {
+        Debug.Log("Refreshing Inventory UI...");
         ClearSlotUI(equippedSlots);
         ClearSlotUI(unequippedSlots);
 
@@ -270,8 +273,10 @@ public class InventoryManager : MonoBehaviour
 
     private DraggableObject CreateUIItem(string itemId, string UnitType, Canvas _Canvas, string Details, FactionName _FName, bool Status)
     {
+        GameDebug.LogWarning($"Create UI Item ==>  Item ID: {itemId} UnitType: {UnitType}   Details: {Details} Faction: {_FName} IsEquipped: {Status}");
         Item itemGO =
             ItemDatabase.Instance.CreateItemUI(itemId, UnitType, _Canvas, Details, _FName, itemDetailsWindow, Status);
+
 
         return itemGO.GetComponent<DraggableObject>();
     }

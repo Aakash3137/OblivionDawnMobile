@@ -15,21 +15,15 @@ public class DecManager : MonoBehaviour
     [SerializeField] private Image selectedFactionIcon;
     [SerializeField] private Canvas _Canvas;
 
-    // --------------------------------------------------
-    // UNITY EVENTS
-    // --------------------------------------------------
 
     private void OnEnable()
     {
+        Debug.Log("DecManager OnEnable Called");
         if (deckList.Count > 0)
             SelectDeck(deckList[0]);
 
         BuildAllCardsInventory();
     }
-
-    // --------------------------------------------------
-    // DECK SELECTION
-    // --------------------------------------------------
 
     public void OnClickButton(GameObject clickedButton)
     {
@@ -50,6 +44,7 @@ public class DecManager : MonoBehaviour
 
     private void SelectDeck(DecSelector selected)
     {
+        GameDebug.Log($"Selected Deck: {selected._FactionName}");
         selected.InActiveObj.SetActive(false);
         selected._Checked.SetActive(true);
 
@@ -59,12 +54,9 @@ public class DecManager : MonoBehaviour
         StartCoroutine(BuildEquippedDeck(selected));
     }
 
-    // --------------------------------------------------
-    // EQUIPPED (CUSTOM DECK)
-    // --------------------------------------------------
-
     private IEnumerator BuildEquippedDeck(DecSelector selected)
     {
+        Debug.Log("Building Equipped Deck...");
         yield return null;
 
         inventoryManager.ClearEquipped();
@@ -77,12 +69,10 @@ public class DecManager : MonoBehaviour
                 + "\nArmor: " + card.unitUpgradeData[0].unitBasicStats.armor
                 + "\nAttack Range: " + card.unitUpgradeData[0].unitRangeStats.attackRange, selected._FactionName, true
                 );
+
+            GameDebug.Log($"Added Equipped Item: {card.unitIdentity.name} to Inventory from Deck: {selected._FactionName}");
         }
     }
-
-    // --------------------------------------------------
-    // UNEQUIPPED (ALL CARDS)
-    // --------------------------------------------------
 
     private void BuildAllCardsInventory()
     {
@@ -92,14 +82,19 @@ public class DecManager : MonoBehaviour
         {
             foreach (UnitProduceStatsSO card in deck.Cards)
             {
+                GameDebug.Log($"Added Unequipped Item: {card.unitIdentity.name} to Inventory from Deck: {deck._FactionName}");
+                
                 inventoryManager.AddUnequippedItem(card.unitIdentity.name, card.unitType.ToString(), _Canvas,
                 "UnitLevel: " + (card.unitIdentity.spawnLevel + 1)
                     + "\nHealth: " + card.unitUpgradeData[0].unitBasicStats.maxHealth
                     + "\nArmor: " + card.unitUpgradeData[0].unitBasicStats.armor
                     + "\nAttack Range: " + card.unitUpgradeData[0].unitRangeStats.attackRange, deck._FactionName, false
                     );
+                
+                GameDebug.Log($"Added Unequipped Item: {card.unitIdentity.name} to Inventory from Deck: {deck._FactionName}");
             }
         }
+
     }
 }
 

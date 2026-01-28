@@ -17,6 +17,9 @@ public class Item : MonoBehaviour
     [Header("State")]
     public bool isEquipped;
 
+    [Header ("Game Data")]
+    internal UnitProduceStatsSO unit;
+
     public InventorySlot CurrentSlot { get; set; }
     internal ItemDetailsWindow itemDetailsWindow;
 
@@ -39,14 +42,7 @@ public class Item : MonoBehaviour
         );
     }
 
-    public void SetupItem(
-        string _name,
-        string _type,
-        Sprite _icon,
-        string _details,
-        bool _isEquipped,
-        FactionName _factionType,
-        ItemDetailsWindow detailsWindow,Canvas _Canvas)
+    public void SetupItem(string _name, string _type, Sprite _icon,  string _details, bool _isEquipped, FactionName _factionType, ItemDetailsWindow detailsWindow,Canvas _Canvas)
     {
         itemName = _name;
         itemType = _type;
@@ -56,5 +52,9 @@ public class Item : MonoBehaviour
         factionType = _factionType;
         itemDetailsWindow = detailsWindow;
         _Canvas = itemCanvas;
+        if(unit != null)
+        {
+            itemDetailsWindow.unit = unit;
+        }
     }
 }

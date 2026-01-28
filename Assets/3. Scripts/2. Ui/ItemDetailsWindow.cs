@@ -12,7 +12,6 @@ public class ItemDetailsWindow : MonoBehaviour
     [SerializeField] private Image itemIconImage;
     [SerializeField] private TMP_Text itemName;
     [SerializeField] private TMP_Text FactionType;
-
     [SerializeField] private Button closeButton;
     [SerializeField] private Button UpgradeButton;
 
@@ -31,6 +30,11 @@ public class ItemDetailsWindow : MonoBehaviour
     [SerializeField] private GameObject AbilitiesPrefab;
     [SerializeField] private Transform AbilitiesParent;
     [SerializeField] private List<AbilityData> AbilityList;
+
+    [Header ("Game Data")]
+    internal UnitProduceStatsSO unit;
+
+    
 
     private void OnEnable()
     {
@@ -75,7 +79,10 @@ public class ItemDetailsWindow : MonoBehaviour
                 }
             }
 
-            for(int i = 0; i < AttributeList.Count; i++)
+            
+        }
+
+        for(int i = 0; i < AttributeList.Count; i++)
             {
                 BlockScript attributeObj = Instantiate(AttributesPrefab, AttributesParent);
                 attributeObj.IconImage.sprite = AttributeList[i].Icon;
@@ -91,14 +98,30 @@ public class ItemDetailsWindow : MonoBehaviour
                     attributeObj.Increasable = false;
                     attributeObj.IncreaseByText.text = "";
                 }
+                switch (i) {
+                    case 0:
+                        attributeObj.name = "Max Health";
+                        
+                        break;
+                    default :
+                        
+                        break;
+                }
             }
-        }
 
         LevelNoText.text =  CurrentLevel.ToString();
         LevelSlider.maxValue = MaxLevel;  
         LevelSlider.minValue = CurrentLevel;
         gameObject.SetActive(true);
     }
+
+    internal void OnClickUpgradeButton()
+    {
+        UnitProduceUpgrade _UpgradeData = new UnitProduceUpgrade();
+        _UpgradeData.UpgradeNext(unit);
+    }
+
+
 
     private void HideItemDetails()
     {
