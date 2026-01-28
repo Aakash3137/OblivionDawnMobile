@@ -13,6 +13,8 @@ public class ResourceProgress : ProgressManager
     private Image resourceImage;
     private Vector3 defaultTransform;
 
+    private CanvasGroup _canvasGroup;
+
     float waitTime;
 
     private void Start()
@@ -24,6 +26,12 @@ public class ResourceProgress : ProgressManager
 
         waitTime = resourceBuildingStats.GetGenerationTime();
 
+        if (GetComponent<CanvasGroup>() == null)
+        {
+            gameObject.AddComponent<CanvasGroup>();
+        }
+        _canvasGroup = GetComponent<CanvasGroup>();
+        CheckBuildingSide();
         AnimateTransform();
     }
 
@@ -67,5 +75,14 @@ public class ResourceProgress : ProgressManager
             })
             .BindToAnchoredPositionY(generateResourceImageTransform)
             .AddTo(this);
+    }
+    
+    //Disable UI for enemy
+    private void CheckBuildingSide()
+    {
+        if (resourceBuildingStats.side == Side.Enemy)
+        {
+            _canvasGroup.alpha = 0f;
+        }
     }
 }

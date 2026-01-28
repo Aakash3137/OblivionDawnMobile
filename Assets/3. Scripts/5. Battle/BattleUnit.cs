@@ -94,6 +94,7 @@ public class BattleUnit : MonoBehaviour
             agent.updateRotation = true;
         }
 
+        FindTarget();
         ArrangeRotation();
     }
 

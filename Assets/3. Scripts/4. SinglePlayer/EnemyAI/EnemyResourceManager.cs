@@ -1,28 +1,11 @@
 using UnityEngine;
 using System;
 
-public class EnemyResourceManager : MonoBehaviour
+public class EnemyResourceManager : ResourceManager
 {
     [Header("Set Starting Resources")]
     [SerializeField] private BuildCost[] startingResources;
     public static EnemyResourceManager Instance;
-    public int currentFood { get; private set; }
-    public int currentGold { get; private set; }
-    public int currentMetal { get; private set; }
-    public int CurrentPower { get; private set; }
-
-    [field: Header("EDITOR VIEW ONLY")]
-    [field: SerializeField]
-    public float currentFoodGenerationRate { get; private set; }
-    [field: SerializeField]
-    public float currentGoldGenerationRate { get; private set; }
-    [field: SerializeField]
-    public float currentMetalGenerationRate { get; private set; }
-    [field: SerializeField]
-    public float currentPowerGenerationRate { get; private set; }
-
-    [HideInInspector]
-    public Action OnResourcesChanged;
 
     private void Awake()
     {

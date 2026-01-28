@@ -3,28 +3,11 @@ using System;
 using TMPro;
 
 
-public class PlayerResourceManager : MonoBehaviour
+public class PlayerResourceManager : ResourceManager
 {
     [Header("Set Starting Resources")]
     [SerializeField] private BuildCost[] startingResources;
     public static PlayerResourceManager Instance;
-    public int currentFood { get; private set; }
-    public int currentGold { get; private set; }
-    public int currentMetal { get; private set; }
-    public int CurrentPower { get; private set; }
-
-    [field: Header("EDITOR VIEW ONLY")]
-    [field: SerializeField]
-    public float currentFoodGenerationRate { get; private set; }
-    [field: SerializeField]
-    public float currentGoldGenerationRate { get; private set; }
-    [field: SerializeField]
-    public float currentMetalGenerationRate { get; private set; }
-    [field: SerializeField]
-    public float currentPowerGenerationRate { get; private set; }
-
-    [HideInInspector]
-    public Action OnResourcesChanged;
 
     private void Awake()
     {
@@ -68,6 +51,7 @@ public class PlayerResourceManager : MonoBehaviour
         // Invoke the event to notify listeners
         OnResourcesChanged.Invoke();
     }
+    
     public void SetResources(BuildCost[] resources)
     {
         currentFood = resources[0].resourceCost;
@@ -99,6 +83,7 @@ public class PlayerResourceManager : MonoBehaviour
 
         OnResourcesChanged?.Invoke();
     }
+    
     public bool HasResources(BuildCost[] resources, bool debug = false)
     {
         int food = resources[0].resourceCost;

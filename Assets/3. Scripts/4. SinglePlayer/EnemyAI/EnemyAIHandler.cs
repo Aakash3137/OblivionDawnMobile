@@ -22,17 +22,17 @@ public class EnemyAIHandler : MonoBehaviour
 
     [Header("Full Attack Mode Settings")]
     [Range(0f, 1f)]
-    [SerializeField] private float fullAttack_UnitBuildingRatio = 0.9f;
+    [SerializeField] private float fullAttack_UnitBuildingRatio = 0.8f;
     [Range(0f, 1f)]
-    [SerializeField] private float fullAttack_ResourceBuildingRatio = 0.1f;
+    [SerializeField] private float fullAttack_ResourceBuildingRatio = 0.2f;
 
     [Header("Semi Attacking Mode Settings")]
     [Range(0f, 1f)]
-    [SerializeField] private float semiAttack_UnitBuildingRatio = 0.6f;
+    [SerializeField] private float semiAttack_UnitBuildingRatio = 0.5f;
     [Range(0f, 1f)]
     [SerializeField] private float semiAttack_ResourceBuildingRatio = 0.3f;
     [Range(0f, 1f)]
-    [SerializeField] private float semiAttack_DefenceBuildingRatio = 0.1f;
+    [SerializeField] private float semiAttack_DefenceBuildingRatio = .1f;
 
     [Header("Defence Mode Settings")]
     [SerializeField] private int defence_InitialDefenceCount = 3;
@@ -48,6 +48,9 @@ public class EnemyAIHandler : MonoBehaviour
     [SerializeField] private float onlyDefence_ResourceRatio = 0.2f;
     [SerializeField] private bool onlyDefence_AllowAttackBuildings = false;
     [SerializeField] private int onlyDefence_AttackBuildingsAfterDefenceCount = 6;
+    
+    [Header("Resources")]
+    
 
     [Header("Spawn Settings")]
     [SerializeField] private float spawnInterval = 5f;
@@ -274,6 +277,7 @@ public class EnemyAIHandler : MonoBehaviour
         }
         
         float rand = Random.value;
+        
         if (rand < defence_ResourceRatio)
             return GetRandomResourceBuilding();
         else
@@ -377,8 +381,10 @@ public class EnemyAIHandler : MonoBehaviour
         }
 
         Vector3 spawnPos = tile.transform.position + Vector3.up * 2f;
-        Instantiate(buildingPrefab, spawnPos, Quaternion.identity, tile.transform);
-        tile.SetBuildingPlaced();
+        enemyBuildPanel.PlaceBuildingAI(buildingPrefab, spawnPos, tile);
+        
+       // Instantiate(buildingPrefab, spawnPos, Quaternion.identity, tile.transform);
+       // tile.SetBuildingPlaced();
 
         spawnableTiles.Remove(tile);
         Vector2Int tileGrid = CubeGridManager.Instance.WorldToGrid(tile.transform.position);
@@ -387,4 +393,5 @@ public class EnemyAIHandler : MonoBehaviour
         totalBuildingsSpawned++;
         Debug.Log($"[EnemyAI] Building spawned! Total: {totalBuildingsSpawned}, Spawnable tiles: {spawnableTiles.Count}");
     }
+    
 }

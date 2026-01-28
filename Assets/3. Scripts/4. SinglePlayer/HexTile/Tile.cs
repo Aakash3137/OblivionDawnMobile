@@ -13,6 +13,7 @@ public class Tile : MonoBehaviour
 
     public bool hasBuilding = false; // NEW flag
     private GameObject currentOccupant;
+    private Side OldSide;
 
     public void SetOccupant(GameObject occupant)
     {
@@ -40,41 +41,9 @@ public class Tile : MonoBehaviour
         if (tileRenderer == null)
             tileRenderer = GetComponentInChildren<Renderer>();
 
+        OldSide = ownerSide;
         ApplyOwnerMaterial();
     }
-
-    // public void SetOpen(bool open)
-    // {
-    //     isOpen = open;
-    //     Transform plusIcon = transform.Find("Cube/Plus_Icon");
-    //     if (plusIcon != null)
-    //         plusIcon.gameObject.SetActive(open);
-    // }
-
-
-
-    // public void SetOpen(bool open)
-    // {
-    //     isOpen = open;
-
-    //     Transform plusIcon = transform.Find("Cube/Plus_Icon");
-    //     if (plusIcon != null)
-    //     {
-    //         // Only show PlusIcon for Player side
-    //         if (ownerSide == Side.Player)
-    //         {
-    //             plusIcon.gameObject.SetActive(open);
-    //         }
-    //         else
-    //         {
-    //             // Enemy side never shows PlusIcon
-    //             plusIcon.gameObject.SetActive(false);
-    //         }
-    //     }
-    // }
-
-
-
 
     public void SetOpen(bool open)
     {
@@ -95,13 +64,6 @@ public class Tile : MonoBehaviour
             }
         }
 
-        // notify TileCounterUI if available
-        if (TileCounterUI.Instance != null)
-        {
-            // Just trigger a refresh of counts whenever open state changes
-            TileCounterUI.Instance.InitializeCounts();
-        }
-
         //// Debug.Log($"Tile at {transform.position} open={isOpen}, side={ownerSide}");
     }
 
@@ -116,7 +78,11 @@ public class Tile : MonoBehaviour
     // Flip ownership
     public void SetOwner(Side newOwner)
     {
+        GameDebug.Log($"Occupy called on tile at {ownerSide}");
+        OldSide = ownerSide;
         ownerSide = newOwner;
+        GameDebug.Log($"Occupy called on tile at {OldSide}, new owner: {ownerSide} ");
+        TileCounterUI.Instance.UpdateTileOwnerCount(OldSide, ownerSide);
         ApplyOwnerMaterial();
     }
 
@@ -126,6 +92,7 @@ public class Tile : MonoBehaviour
         // Always flip ownership to the entering unit’s side
         // occupant = unit;   // update occupant reference
         SetOwner(unitSide);
+       
     }
 
     // Called when a unit leaves

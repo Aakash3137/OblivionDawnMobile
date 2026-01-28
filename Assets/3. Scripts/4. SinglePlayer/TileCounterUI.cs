@@ -65,29 +65,11 @@ public class TileCounterUI : MonoBehaviour
         Instance = this;
     }
 
-    public void OnTileOwnerChanged(Side oldOwner, Side newOwner)
+    void Start()
     {
-        // Decrease old owner count
-        if (oldOwner == Side.Player) playerCount--;
-        else if (oldOwner == Side.Enemy) enemyCount--;
-
-        // Increase new owner count
-        if (newOwner == Side.Player) playerCount++;
-        else if (newOwner == Side.Enemy) enemyCount++;
-
-        UpdateUI();
+        InitializeCounts();
     }
-
-    private void UpdateUI()
-    {
-        if (playerText != null)
-            playerText.text = $"Player Tiles: {playerCount}";
-
-        if (enemyText != null)
-            enemyText.text = $"Enemy Tiles: {enemyCount}";
-    }
-
-    // Optional: initialize counts at start
+    
     public void InitializeCounts()
     {
         playerCount = 0;
@@ -104,4 +86,28 @@ public class TileCounterUI : MonoBehaviour
 
         UpdateUI();
     }
+    
+    public void UpdateTileOwnerCount(Side oldOwner, Side newOwner)
+    {
+        GameDebug.Log($"UpdateTileOwnerCount Tile owner changed from {oldOwner} to {newOwner}");
+        if (oldOwner == Side.Player) playerCount--;
+        else if (oldOwner == Side.Enemy) enemyCount--;
+
+        if (newOwner == Side.Player) playerCount++;
+        else if (newOwner == Side.Enemy) enemyCount++;
+
+        UpdateUI();
+    }
+
+    
+    private void UpdateUI()
+    {
+        if (playerText != null)
+            playerText.text = $"{playerCount}";
+
+        if (enemyText != null)
+            enemyText.text = $"{enemyCount}";
+    }
+
+    
 }

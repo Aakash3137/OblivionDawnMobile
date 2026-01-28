@@ -9,6 +9,7 @@ public class ResourceBuildingStats : BuildingStats
 
     public bool autoProduce { get; private set; }
     private PlayerResourceManager prmInstance;
+    private EnemyResourceManager ermInstance;
     private WaitForSeconds waitTime;
     [ReadOnly]
     public int GeneratedResourceAmount;
@@ -20,6 +21,7 @@ public class ResourceBuildingStats : BuildingStats
         autoProduce = true;
 
         prmInstance = PlayerResourceManager.Instance;
+        ermInstance = EnemyResourceManager.Instance;
 
         if (buildingStats is ResourceBuildingDataSO resourceBuildingSO)
         {
@@ -43,15 +45,35 @@ public class ResourceBuildingStats : BuildingStats
 
     private IEnumerator StartResourceGeneration(int amount, WaitForSeconds delay)
     {
-        if (side != Side.Player)
+        if (side == Side.Player)
+        {
+            prmInstance.SetResourceGenerationRate(
+                resourceType,
+                resourceBuildingData.resourceGenerationRate
+            );
+        }
+        else if (side == Side.Enemy)
+        {
+            ermInstance.SetResourceGenerationRate(
+                resourceType,
+                resourceBuildingData.resourceGenerationRate
+            );
+        }
+        else
+        {
             yield break;
-
-        prmInstance.SetResourceGenerationRate(resourceType, resourceBuildingData.resourceGenerationRate);
-
+        }
         while (autoProduce)//&& currentHealth > 0)
         {
             yield return delay;
-            prmInstance.AddResources(resourceType, amount);
+            if (side == Side.Player)
+            {
+                prmInstance.AddResources(resourceType, amount);
+            }
+            else if (side == Side.Enemy)
+            {
+                ermInstance.AddResources(resourceType, amount);
+            }
             GeneratedResourceAmount += amount;
             // Debug.Log($"Generated {ResourceName}. Current amount: {GeneratedResourceAmount}");
         }
@@ -67,7 +89,20 @@ public class ResourceBuildingStats : BuildingStats
     internal override void OnDestroy()
     {
         base.OnDestroy();
-        prmInstance.SetResourceGenerationRate(resourceType, -resourceBuildingData.resourceGenerationRate);
+        if (side == Side.Player)
+        {
+            prmInstance.SetResourceGenerationRate
+            (
+                resourceType, -resourceBuildingData.resourceGenerationRate
+            );
+        }
+        else if (side == Side.Enemy)
+        {
+            ermInstance.SetResourceGenerationRate
+            (
+                resourceType, -resourceBuildingData.resourceGenerationRate
+            );
+        }
     }
 
     public float GetGenerationTime()

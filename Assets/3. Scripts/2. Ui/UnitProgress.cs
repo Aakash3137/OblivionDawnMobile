@@ -6,6 +6,8 @@ public class UnitProgress : ProgressManager
     private float currentTime;
 
     float waitTime;
+    
+    private CanvasGroup _canvasGroup;
 
     private void Start()
     {
@@ -13,6 +15,13 @@ public class UnitProgress : ProgressManager
         currentTime = 0f;
 
         waitTime = spawner.GetUnitSpawnTime();
+        
+        if (GetComponent<CanvasGroup>() == null)
+        {
+            gameObject.AddComponent<CanvasGroup>();
+        }
+        _canvasGroup = GetComponent<CanvasGroup>();
+        CheckBuildingSide();
     }
 
     private void Update()
@@ -46,4 +55,14 @@ public class UnitProgress : ProgressManager
         progressAmount = currentTime / waitTime;
         UpdateFillAmount(progressAmount);
     }
+    
+    //Disable UI for enemy
+    private void CheckBuildingSide()
+    {
+        if (spawner.side == Side.Enemy)
+        {
+            _canvasGroup.alpha = 0f;
+        }
+    }
+    
 }

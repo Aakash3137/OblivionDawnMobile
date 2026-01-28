@@ -186,27 +186,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81f74e378fe7d894992b20996f269839, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <identity>k__BackingField:
-    name: 
-    spawnLevel: 0
-    faction: 0
-    isUnique: 0
-    priority: 0
-  <basicStats>k__BackingField:
-    maxHealth: 0
-    armor: 0
-  side: 0
   <buildingStats>k__BackingField: {fileID: 11400000, guid: dfa66847779bcfe4abbe9967c4aced88, type: 2}
-  offenseType: 0
-  offenseBuildingData:
-    buildingLevel: 0
-    buildingBasicStats:
-      maxHealth: 0
-      armor: 0
-    buildingBuildTime: 0
-    unitSpawnTime: 0
   producedUnit: {fileID: 0}
-  autoProduce: 0
 --- !u!1 &7859719292080809276
 GameObject:
   m_ObjectHideFlags: 0
@@ -478,8 +459,28 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4416866825930625739, guid: 93b2f7a3dd61e544f8a649b6ef62aaa2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2884450148219372967}
   m_SourcePrefab: {fileID: 100100000, guid: 93b2f7a3dd61e544f8a649b6ef62aaa2, type: 3}
+--- !u!1 &1502578564479245494 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4416866825930625739, guid: 93b2f7a3dd61e544f8a649b6ef62aaa2, type: 3}
+  m_PrefabInstance: {fileID: 2995430057472396925}
+  m_PrefabAsset: {fileID: 0}
+--- !u!225 &2884450148219372967
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1502578564479245494}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!224 &4077572843530846815 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1227113396630195234, guid: 93b2f7a3dd61e544f8a649b6ef62aaa2, type: 3}

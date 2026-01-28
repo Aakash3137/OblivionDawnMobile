@@ -1,0 +1,93 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2011174489333044047
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1972106295222040444}
+  - component: {fileID: 4628267504887400421}
+  - component: {fileID: 4889353465733404802}
+  m_Layer: 0
+  m_Name: EnemyAIManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1972106295222040444
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2011174489333044047}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.2030179, y: -7.1149435, z: 10.113499}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4628267504887400421
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2011174489333044047}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab01c977516f68c4b9efd263ce403820, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyModeSwitch: {fileID: 0}
+  enemyBuildPanel: {fileID: 0}
+  factionData: {fileID: 11400000, guid: b4c4f87a58a4fc841b315c31d4d53920, type: 2}
+  enemyFactionName: 0
+  aiMode: 1
+  fullAttack_UnitBuildingRatio: 0.8
+  fullAttack_ResourceBuildingRatio: 0.2
+  semiAttack_UnitBuildingRatio: 0.5
+  semiAttack_ResourceBuildingRatio: 0.3
+  semiAttack_DefenceBuildingRatio: 0.1
+  defence_InitialDefenceCount: 3
+  defence_ResourceRatio: 0.4
+  defence_AttackRatio: 0.6
+  onlyDefence_DefenceRatio: 0.8
+  onlyDefence_ResourceRatio: 0.2
+  onlyDefence_AllowAttackBuildings: 0
+  onlyDefence_AttackBuildingsAfterDefenceCount: 10
+  spawnInterval: 5
+  maxEnemyBuildings: 30
+  reduceSpawningAfterMax: 1
+  reducedSpawnInterval: 45
+--- !u!114 &4889353465733404802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2011174489333044047}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47799ffa5f8628a44b629d22603843e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <currentFoodGenerationRate>k__BackingField: 0
+  <currentGoldGenerationRate>k__BackingField: 0
+  <currentMetalGenerationRate>k__BackingField: 0
+  <currentPowerGenerationRate>k__BackingField: 0
+  startingResources:
+  - resourceType: 0
+    resourceCost: 40
+  - resourceType: 1
+    resourceCost: 40
+  - resourceType: 2
+    resourceCost: 40
+  - resourceType: 3
+    resourceCost: 40

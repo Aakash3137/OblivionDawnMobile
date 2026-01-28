@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +13,12 @@ public class EnemyBuildPanel : MonoBehaviour
 
     [SerializeField] private FactionName EnemyfactionName;
 
+    
+    [SerializeField] private WallParent _wallPrefab;
+    private bool _mainWallPlaced = false;
+    private float _wallYOffset = 1f;
+    private GameObject spawnedBuilding;
+    
     private void Awake()
     {
         GameManager.SetFactionNameThroughEnemyBuildPanel(EnemyfactionName);
@@ -87,14 +94,63 @@ public class EnemyBuildPanel : MonoBehaviour
 
         if (currentTile.hasBuilding) return;
 
+        if (!CanPlaceBuilding(buildingPrefab))
+            return;
+        
         Vector3 spawnPos = currentTile.transform.position + Vector3.up * 2f;
 
-        Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
+        spawnedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
 
-        currentTile.SetBuildingPlaced();
+        //currentTile.SetBuildingPlaced();
 
+        PlaceWallsOnMainBuilding();
+        PlaceWalls();
         CloseBuildPanel();
     }
+    
+    public void PlaceBuildingAI(GameObject buildingPrefab,Vector3 spawnPos,Tile tile) 
+    {
+        if (tile == null || buildingPrefab == null ) return;
+
+        if (tile.hasBuilding) return;
+
+        if (!CanPlaceBuilding(buildingPrefab))
+            return;
+
+        spawnedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, tile.transform);
+
+        //tile.SetBuildingPlaced();
+
+        currentTile = tile;
+        PlaceWallsOnMainBuilding();
+        PlaceWalls();
+    }
+    
+    private bool CanPlaceBuilding(GameObject buildingPrefab)
+    {
+        BuildCost[] buildingBuildCost = null;
+
+        if (buildingPrefab.TryGetComponent<BuildingStats>(out var spawnBuildingStats))
+        {
+            //int spawnLevel = spawnBuildingStats.buildingStats.buildingSpawnLevel;
+            buildingBuildCost = spawnBuildingStats.buildingStats.buildingBuildCost;
+        }
+        // else if (buildingPrefab.TryGetComponent<WallStats>(out var spawnWallStats))
+        // {
+        //     int spawnLevel = spawnWallStats.wallStats.wallSpawnLevel;
+        //     buildingBuildCost = spawnWallStats.wallStats.wallLevelData[spawnLevel].wallBuildCosts;
+        // }
+        if (buildingBuildCost == null || !EnemyResourceManager.Instance.HasResources(buildingBuildCost))
+        {
+            //Debug.Log("<color=red>Insufficient Resources Building cannot be placed</color>");
+            return false;
+        }
+
+        EnemyResourceManager.Instance.SpendResources(buildingBuildCost);
+
+        return true;
+    }
+
     public void CloseBuildPanel()
     {
         currentTile = null;
@@ -104,5 +160,83 @@ public class EnemyBuildPanel : MonoBehaviour
     {
         currentTile = tile;
         gameObject.SetActive(true);
+    }
+    
+     // Wall logic (unchanged)
+    private void PlaceWalls()
+    {
+        Vector3 _currentTileCords = currentTile.transform.position;
+        var cgmInstance = CubeGridManager.Instance;
+        Vector2Int currentGrid = cgmInstance.WorldToGrid(_currentTileCords);
+
+        List<Vector2Int> adjacentTileCords = cgmInstance.GetCardinalNeighbors(currentGrid);
+
+        Tile[] adjacentTiles = new Tile[4]; // 0 : Right, 1 : Left, 2 : Up, 3 : Down;
+
+        // Directions are fixed with index 0 : Right, 1 : Left, 2 : Up, 3 : Down
+        adjacentTiles[0] = cgmInstance.GetCube(adjacentTileCords[0])?.GetComponent<Tile>();
+        adjacentTiles[1] = cgmInstance.GetCube(adjacentTileCords[1])?.GetComponent<Tile>();
+        adjacentTiles[2] = cgmInstance.GetCube(adjacentTileCords[2])?.GetComponent<Tile>();
+        adjacentTiles[3] = cgmInstance.GetCube(adjacentTileCords[3])?.GetComponent<Tile>();
+
+        WallParent currentWall = Instantiate(_wallPrefab,
+            new Vector3(_currentTileCords.x, _wallYOffset, _currentTileCords.z),
+            Quaternion.identity, spawnedBuilding.transform);
+
+        for (int i = 0; i < adjacentTiles.Length; i++)
+        {
+            if (adjacentTiles[i] == null || adjacentTiles[i].ownerSide == Side.Enemy)
+                continue;
+
+            if (adjacentTiles[i].hasBuilding)
+            {
+                switch (i)
+                {
+                    case 0:
+                        currentWall.DisableWall(0);
+                        adjacentTiles[i].GetOccupant().GetComponentInChildren<WallParent>()?.DisableWall(1);
+                        break;
+                    case 1:
+                        currentWall.DisableWall(1);
+                        adjacentTiles[i].GetOccupant().GetComponentInChildren<WallParent>()?.DisableWall(0);
+                        break;
+                    case 2:
+                        currentWall.DisableWall(2);
+                        adjacentTiles[i].GetOccupant().GetComponentInChildren<WallParent>()?.DisableWall(3);
+                        break;
+                    case 3:
+                        currentWall.DisableWall(3);
+                        adjacentTiles[i].GetOccupant().GetComponentInChildren<WallParent>()?.DisableWall(2);
+                        break;
+                }
+            }
+        }
+    }
+
+    private void PlaceWallsOnMainBuilding()
+    {
+        if (_mainWallPlaced) return;
+
+        Transform mainBuildingTile = GameManager.Instance.enemySpawnPoint;
+        Transform mainBuilding = null;
+        GameObject[] objects = GameObject.FindGameObjectsWithTag("MainBuilding");
+
+        foreach (var obj in objects)
+        {
+            if (obj.GetComponent<BuildingStats>().side == Side.Enemy)
+            {
+                mainBuilding = obj.transform;
+                break;
+            }
+        }
+
+        if (mainBuilding != null)
+            Instantiate(_wallPrefab,
+                new Vector3(mainBuildingTile.position.x, _wallYOffset, mainBuildingTile.position.z),
+                Quaternion.identity, mainBuilding);
+        else
+            Debug.Log("Main building not found");
+
+        _mainWallPlaced = true;
     }
 }
