@@ -140,4 +140,32 @@ public class PlayerResourceManager : ResourceManager
         }
     }
 
+    #region  ContextMenu
+
+    [Button]
+    public void ResetResources()
+    {
+        startingResources[0].resourceCost = 40;
+        startingResources[1].resourceCost = 40;
+        startingResources[2].resourceCost = 20;
+        startingResources[3].resourceCost = 0;
+    }
+
+    [Button]
+    public void HackResources()
+    {
+        BuildCost[] resources = new BuildCost[4];
+        resources[0].resourceCost = 9999;
+        resources[1].resourceCost = 9999;
+        resources[2].resourceCost = 9999;
+        resources[3].resourceCost = 9999;
+
+        SetResources(resources);
+    }
+
+    #endregion
+    
+    
+
+
 }

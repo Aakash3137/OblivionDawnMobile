@@ -1,5 +1,6 @@
 
 using System;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 public class ResourceManager : MonoBehaviour
@@ -21,4 +22,6 @@ public class ResourceManager : MonoBehaviour
     [HideInInspector]
     
     public Action OnResourcesChanged;
+    
+   
 }
