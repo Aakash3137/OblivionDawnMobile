@@ -15,4 +15,6 @@ public class ItemData : ScriptableObject
 
     [Header("UI")]
     public Item itemUIPrefab;
+
+    [Header("Game Data")] internal UnitProduceStatsSO ItemSo;
 }

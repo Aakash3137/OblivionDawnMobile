@@ -30,13 +30,15 @@ public class ItemDatabase : MonoBehaviour
 
     public Item CreateItemUI(string itemId, string UnitType, Canvas _Canvas, string Details, FactionName _FName, ItemDetailsWindow detailsWindow, bool IsEquipped)
     {
+        GameDebug.LogWarning($"Creating Item UI for Item ID: {itemId} UnitType: {UnitType}   Details: {Details} Faction: {_FName} IsEquipped: {IsEquipped} ItemDatabase Count: {lookup.Count}");
         if (!lookup.TryGetValue(itemId, out var data))
         {
-            Debug.LogError($"Item ID not found: {itemId}");
+            Debug.LogError($"Item ID not found: {data.name}");
             return null;
         }
 
         Item item = Instantiate(data.itemUIPrefab);
+        item.unit = data.ItemSo;
 
         item.SetupItem(
             itemId,
