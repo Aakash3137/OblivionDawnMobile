@@ -72,6 +72,7 @@ public class Stats : MonoBehaviour
         currentHealth -= amount;
 
         currentHealth = Mathf.Clamp(currentHealth, 0, basicStats.maxHealth);
+
         if (healthBar != null)
         {
             healthBar.UpdateHealthBar();

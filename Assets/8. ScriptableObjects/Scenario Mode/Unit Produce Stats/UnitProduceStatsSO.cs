@@ -6,7 +6,6 @@ using Sirenix.OdinInspector;
 public class UnitProduceStatsSO : ScriptableObject
 {
     public Identity unitIdentity;
-    public ProjectileShooter projectilePrefab;
     public ScenarioUnitType unitType;
     public Visuals unitVisuals;
     public VisionAngles unitVisionAngles;

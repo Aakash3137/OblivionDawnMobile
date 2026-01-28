@@ -22,9 +22,10 @@ public class Projectile : MonoBehaviour
     private bool passedAimPoint;
 
 
-    [Header("Visuals")] [SerializeField] private TrailRenderer[] trails;
+    [Header("Visuals")][SerializeField] private TrailRenderer[] trails;
 
-    [Header("Homing Steering")] [SerializeField]
+    [Header("Homing Steering")]
+    [SerializeField]
     float turnSpeed = 360f;
 
     [SerializeField] float avoidanceDistance = 3f;
@@ -32,6 +33,9 @@ public class Projectile : MonoBehaviour
     [SerializeField] float sideRayAngle = 30f;
     [SerializeField] LayerMask obstacleMask;
     [SerializeField] LayerMask groundMask;
+
+    public Material playerTrailMaterial;
+    public Material enemyTrailMaterial;
 
 
     void Awake()
@@ -45,6 +49,69 @@ public class Projectile : MonoBehaviour
                     t.material = new Material(t.material);
             }
         }
+    }
+
+    public void Initialize(Stats target, float damage, ProjectileDataSO projectileData, Side side)
+    {
+        targetUnit = target;
+
+        targetCollider = target != null ? target.hitCollider : null;
+
+        this.damage = damage;
+        speed = projectileData.projectileBasicStats.speed;
+        lifeTime = projectileData.projectileBasicStats.lifeTime;
+        projectileType = projectileData.projectileType;
+        motion = projectileData.projectileMotion;
+
+        timer = 0f;
+        hasHit = false;
+        startPosition = transform.position;
+
+        aimPoint = targetCollider != null
+            ? targetCollider.bounds.center
+            : transform.position + transform.forward * projectileData.projectileBasicStats.maxRange;
+        passedAimPoint = false;
+
+
+        //  LOCK TARGET POSITION ON FIRE
+        if (targetCollider != null)
+            fixedHitPoint = targetCollider.ClosestPoint(transform.position);
+        else
+            fixedHitPoint = transform.position + transform.forward * projectileData.projectileBasicStats.maxRange;
+
+
+        if (trails == null) return;
+
+        foreach (var t in trails)
+        {
+            t.enabled = projectileData.projectileVisuals.hasTrail;
+
+            if (!projectileData.projectileVisuals.hasTrail) continue;
+
+            t.sharedMaterial = (side == Side.Player) ? playerTrailMaterial : enemyTrailMaterial;
+
+            t.Clear();
+            t.emitting = false;
+
+            t.startColor = Color.white;
+            t.endColor = new Color(1, 1, 1, 0);
+            t.emitting = true;
+        }
+
+        definition = new ProjectileDefinition();
+
+        definition.isAreaDamage = projectileData.projectileAOE.isAOE;
+        definition.damageRadius = projectileData.projectileAOE.aoeRadius;
+        definition.maxRange = projectileData.projectileBasicStats.maxRange;
+        definition.speed = projectileData.projectileBasicStats.speed;
+        definition.lifeTime = projectileData.projectileBasicStats.lifeTime;
+        definition.projectileType = projectileData.projectileType;
+        definition.motion = projectileData.projectileMotion;
+        definition.hasTrail = projectileData.projectileVisuals.hasTrail;
+        definition.arcHeight = projectileData.projectileBasicStats.maxArcHeight;
+        definition.hitVFX = projectileData.projectileVisuals.hitVFX;
+
+        lastPosition = transform.position;
     }
 
     public void Init(Stats target, float damage, ProjectileDefinition def, Material trailMaterial)
@@ -308,7 +375,7 @@ public class Projectile : MonoBehaviour
     }
 
     // ---------------- HIT ----------------
-    
+
     void CheckHit(Vector3 hitPoint)
     {
         Vector3 move = transform.position - lastPosition;

@@ -13,22 +13,21 @@ MonoBehaviour:
   m_Name: Present Melee Unit
   m_EditorClassIdentifier: 
   unitIdentity:
-    name: Pre Melee
+    name: Artillery Guns
     spawnLevel: 0
     faction: 1
     isUnique: 0
     priority: 0
-  projectilePrefab: {fileID: 0}
   unitType: 2
   unitVisuals:
     playerUnitMaterial: {fileID: 2100000, guid: 14b68adf76a968242b04e3b593e58dae, type: 2}
     enemyUnitMaterial: {fileID: 2100000, guid: 5ac6e757728303042bc0afdcdb87faa5, type: 2}
   unitVisionAngles:
-    narrowViewAngle: 0
-    wideViewAngle: 0
+    narrowViewAngle: 10
+    wideViewAngle: 45
   unitAttackTargets:
     canAttackAir: 0
-    canAttackGround: 0
+    canAttackGround: 1
   canFly: 0
   unitFlyStats:
     flyHeight: 0
@@ -40,15 +39,15 @@ MonoBehaviour:
   unitPopulationCost: 0
   unitUpgradeData:
   - unitLevel: 0
-    unitBuildTime: 0
+    unitBuildTime: 20
     unitBasicStats:
-      maxHealth: 0
+      maxHealth: 200
       armor: 0
     unitAttackStats:
-      damage: 0
-      fireRate: 0
+      damage: 20
+      fireRate: 1
     unitMobilityStats:
-      moveSpeed: 0
+      moveSpeed: 2
     unitRangeStats:
-      detectionRange: 0
-      attackRange: 0
+      detectionRange: 40
+      attackRange: 7

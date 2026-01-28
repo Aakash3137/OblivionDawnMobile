@@ -32,7 +32,9 @@ public class OffenseBuildingDataSO : BuildingDataSO
             }
         }
 
-        buildingIdentity.spawnLevel = Mathf.Max(0, offenseBuildingUpgradeData.Length - 1);
+        buildingIdentity.spawnLevel = Mathf.Clamp(buildingIdentity.spawnLevel, 0, offenseBuildingUpgradeData.Length - 1);
+
+        // buildingIdentity.name = buildingIdentity.faction.ToString() + " " + offenseType.ToString();
     }
 }
 

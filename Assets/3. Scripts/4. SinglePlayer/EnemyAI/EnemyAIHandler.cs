@@ -67,31 +67,31 @@ public class EnemyAIHandler : MonoBehaviour
     void Start()
     {
         Debug.Log("[EnemyAI] Start called");
-        
+
         if (GameManager.Instance == null)
         {
             Debug.LogError("[EnemyAI] MainBuildingSpawner.Instance is null!");
             return;
         }
-        
+
         enemyMainBuildingTransform = GameManager.Instance.enemySpawnPoint;
-        Debug.Log($"[EnemyAI] Enemy main building transform: {enemyMainBuildingTransform}");
-        
+        // GameDebug.Log($"[EnemyAI] Enemy main building transform: {enemyMainBuildingTransform}");
+
         Invoke(nameof(InitializeSpawnableTiles), 1f);
     }
 
     void Update()
     {
-        if (enemyModeSwitch == null) 
+        if (enemyModeSwitch == null)
             return;
 
         if (enemyModeSwitch.EnemyMode != CurrentEnemyMode.EnemyAIMode)
             return;
-        
+
         RemoveInvalidSpawnableTiles();
 
-        float currentInterval = (reduceSpawningAfterMax && totalBuildingsSpawned >= maxEnemyBuildings) 
-            ? reducedSpawnInterval 
+        float currentInterval = (reduceSpawningAfterMax && totalBuildingsSpawned >= maxEnemyBuildings)
+            ? reducedSpawnInterval
             : spawnInterval;
 
         spawnTimer += Time.deltaTime;
@@ -105,31 +105,31 @@ public class EnemyAIHandler : MonoBehaviour
     // Initialize spawnable tiles around the enemy main building. 
     void InitializeSpawnableTiles()
     {
-        Debug.Log("[EnemyAI] InitializeSpawnableTiles called");
-        
+        // GameDebug.Log("[EnemyAI] InitializeSpawnableTiles called");
+
         if (enemyMainBuildingTransform == null)
         {
             Debug.LogError("[EnemyAI] enemyMainBuildingTransform is null!");
             return;
         }
-        
+
         if (CubeGridManager.Instance == null)
         {
             Debug.LogError("[EnemyAI] CubeGridManager.Instance is null!");
-            return; 
-        } 
+            return;
+        }
 
         Vector2Int mainBuildingGrid = CubeGridManager.Instance.WorldToGrid(enemyMainBuildingTransform.position);
-        Debug.Log($"[EnemyAI] Main building grid: {mainBuildingGrid}");
-        
+        // GameDebug.Log($"[EnemyAI] Main building grid: {mainBuildingGrid}");
+
         UpdateSpawnableTiles(mainBuildingGrid);
-        Debug.Log($"[EnemyAI] Spawnable tiles count: {spawnableTiles.Count}");
+        // GameDebug.Log($"[EnemyAI] Spawnable tiles count: {spawnableTiles.Count}");
     }
 
     void UpdateSpawnableTiles(Vector2Int buildingGrid)
     {
         List<Vector2Int> neighbors = CubeGridManager.Instance.GetAllNeighbors(buildingGrid);
-        Debug.Log($"[EnemyAI] Checking {neighbors.Count} neighbors for grid {buildingGrid}");
+        // GameDebug.Log($"[EnemyAI] Checking {neighbors.Count} neighbors for grid {buildingGrid}");
 
         foreach (var neighborGrid in neighbors)
         {
@@ -147,11 +147,11 @@ public class EnemyAIHandler : MonoBehaviour
             if (!spawnableTiles.Contains(tile))
             {
                 spawnableTiles.Add(tile);
-                Debug.Log($"[EnemyAI] Added spawnable tile at {neighborGrid}");
+                // GameDebug.Log($"[EnemyAI] Added spawnable tile at {neighborGrid}");
             }
         }
     }
-    
+
     bool AreAllNeighborsEnemy(Vector2Int gridPos)
     {
         List<Vector2Int> neighbors = CubeGridManager.Instance.GetAllNeighbors(gridPos);
@@ -191,15 +191,15 @@ public class EnemyAIHandler : MonoBehaviour
     {
         if (!reduceSpawningAfterMax && totalBuildingsSpawned >= maxEnemyBuildings)
         {
-            Debug.Log($"[EnemyAI] Max buildings reached ({maxEnemyBuildings}). Spawning stopped.");
+            // GameDebug.Log($"[EnemyAI] Max buildings reached ({maxEnemyBuildings}). Spawning stopped.");
             return;
         }
 
-        Debug.Log($"[EnemyAI] TrySpawnBuilding - Spawnable tiles: {spawnableTiles.Count}");
-        
+        // GameDebug.Log($"[EnemyAI] TrySpawnBuilding - Spawnable tiles: {spawnableTiles.Count}");
+
         if (spawnableTiles.Count == 0)
         {
-            Debug.LogWarning("[EnemyAI] No spawnable tiles available!");
+            // GameDebug.LogWarning("[EnemyAI] No spawnable tiles available!");
             return;
         }
 
@@ -217,7 +217,7 @@ public class EnemyAIHandler : MonoBehaviour
             return;
         }
 
-        Debug.Log($"[EnemyAI] Spawning {buildingPrefab.name} at tile {selectedTile.transform.position}");
+        // GameDebug.Log($"[EnemyAI] Spawning {buildingPrefab.name} at tile {selectedTile.transform.position}");
         SpawnBuilding(selectedTile, buildingPrefab);
     }
 
@@ -275,7 +275,7 @@ public class EnemyAIHandler : MonoBehaviour
             defenceBuildingsSpawned++;
             return GetRandomDefenceBuilding();
         }
-        
+
         float rand = Random.value;
         
         if (rand < defence_ResourceRatio)
@@ -391,7 +391,7 @@ public class EnemyAIHandler : MonoBehaviour
         UpdateSpawnableTiles(tileGrid);
 
         totalBuildingsSpawned++;
-        Debug.Log($"[EnemyAI] Building spawned! Total: {totalBuildingsSpawned}, Spawnable tiles: {spawnableTiles.Count}");
+        // GameDebug.Log($"[EnemyAI] Building spawned! Total: {totalBuildingsSpawned}, Spawnable tiles: {spawnableTiles.Count}");
     }
     
 }

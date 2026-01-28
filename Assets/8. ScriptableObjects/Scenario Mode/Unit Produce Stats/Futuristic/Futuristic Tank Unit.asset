@@ -13,22 +13,21 @@ MonoBehaviour:
   m_Name: Futuristic Tank Unit
   m_EditorClassIdentifier: 
   unitIdentity:
-    name: Fu Tank
+    name: Plasma Turrets
     spawnLevel: 0
     faction: 2
     isUnique: 0
     priority: 0
-  projectilePrefab: {fileID: 0}
   unitType: 3
   unitVisuals:
     playerUnitMaterial: {fileID: 2100000, guid: 84b730c71dfbc7248b10f84896bf9714, type: 2}
     enemyUnitMaterial: {fileID: 2100000, guid: e15991f5e11ea4a4cac02a8ca192bd87, type: 2}
   unitVisionAngles:
-    narrowViewAngle: 0
-    wideViewAngle: 0
+    narrowViewAngle: 10
+    wideViewAngle: 45
   unitAttackTargets:
     canAttackAir: 0
-    canAttackGround: 0
+    canAttackGround: 1
   canFly: 0
   unitFlyStats:
     flyHeight: 0
@@ -40,15 +39,15 @@ MonoBehaviour:
   unitPopulationCost: 0
   unitUpgradeData:
   - unitLevel: 0
-    unitBuildTime: 0
+    unitBuildTime: 30
     unitBasicStats:
-      maxHealth: 0
+      maxHealth: 600
       armor: 0
     unitAttackStats:
-      damage: 0
-      fireRate: 0
+      damage: 100
+      fireRate: 2
     unitMobilityStats:
-      moveSpeed: 0
+      moveSpeed: 1
     unitRangeStats:
-      detectionRange: 0
-      attackRange: 0
+      detectionRange: 40
+      attackRange: 5

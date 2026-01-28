@@ -8188,36 +8188,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d1587fe307d4464095b285f69ba8e1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  level: 0
-  side: 0
-  faction: 0
-  basicStats:
-    maxHealth: 0
-    armour: 0
-  visuals:
-    upgradeMesh: {fileID: 0}
-    playerUnitMaterial: {fileID: 0}
-    enemyUnitMaterial: {fileID: 0}
-  currentHealth: 0
-  hitCollider: {fileID: 0}
-  isAirUnit: 1
-  canAttackAir: 1
-  canAttackGround: 1
-  offenseUnitType: 0
-  unitMobilityStats:
-    canFly: 0
-    moveSpeed: 0
-    flySpeed: 0
-  rangeStats:
-    DetectionRange: 0
-    AttackRange: 0
-  visionAngles:
-    narrowViewAngle: 0
-    wideViewAngle: 0
-  attackTargets:
-    canAttackAir: 0
-    canAttackGround: 0
-  flyStats:
+  unitProduceSO: {fileID: 11400000, guid: 9891769d75e5ba94d95560a6e8f8d1d7, type: 2}
+  canFly: 0
+  unitFlyStats:
     flyHeight: 0
     climbAngle: 0
     turnSpeed: 0
@@ -8280,6 +8253,7 @@ MonoBehaviour:
   separationStrength: 1
   narrowViewAngle: 15
   wideViewAngle: 180
+  DefenceRotateObject: {fileID: 0}
   isAirUnit: 1
   unitStats: {fileID: 7223045065685987591}
   agent: {fileID: 2959904208157639787}
@@ -8294,6 +8268,7 @@ MonoBehaviour:
   peripheralAngleBonus: 10
   unitWeight: 10
   buildingWeight: 0
+  unitSide: 0
 --- !u!114 &-8497301248078583947
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19118,7 +19093,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a987de8c9a2c712409919aed78185ba3, type: 2}
+  - {fileID: 2100000, guid: f957748281c9e4c42b5cac1877bf2407, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -35305,7 +35280,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 7554809139070205243, guid: bfc126c8bf76fd7439c6b3c183a1578b, type: 3}
+  - {fileID: 2100000, guid: f957748281c9e4c42b5cac1877bf2407, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -50222,7 +50197,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 7554809139070205243, guid: bfc126c8bf76fd7439c6b3c183a1578b, type: 3}
+  - {fileID: 2100000, guid: f957748281c9e4c42b5cac1877bf2407, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -52574,7 +52549,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 7554809139070205243, guid: bfc126c8bf76fd7439c6b3c183a1578b, type: 3}
+  - {fileID: 2100000, guid: f957748281c9e4c42b5cac1877bf2407, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

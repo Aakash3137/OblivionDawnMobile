@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using TMPro;
+using Sirenix.OdinInspector;
 
 
 public class PlayerResourceManager : ResourceManager
@@ -8,6 +9,7 @@ public class PlayerResourceManager : ResourceManager
     [Header("Set Starting Resources")]
     [SerializeField] private BuildCost[] startingResources;
     public static PlayerResourceManager Instance;
+
 
     private void Awake()
     {
@@ -60,7 +62,7 @@ public class PlayerResourceManager : ResourceManager
         CurrentPower = resources[3].resourceCost;
 
         // Invoke the event to notify listeners
-        OnResourcesChanged.Invoke();
+        OnResourcesChanged?.Invoke();
     }
 
     public void SetResourceGenerationRate(ScenarioResourceType resourceType, float amount = 0)
@@ -83,7 +85,6 @@ public class PlayerResourceManager : ResourceManager
 
         OnResourcesChanged?.Invoke();
     }
-    
     public bool HasResources(BuildCost[] resources, bool debug = false)
     {
         int food = resources[0].resourceCost;
@@ -139,20 +140,4 @@ public class PlayerResourceManager : ResourceManager
         }
     }
 
-    [ContextMenu("Hack Resources")]
-    void HackResources()
-    {
-        BuildCost[] resources = new BuildCost[4];
-        resources[0].resourceCost = 9999;
-        resources[1].resourceCost = 9999;
-        resources[2].resourceCost = 9999;
-        resources[3].resourceCost = 9999;
-
-        SetResources(resources);
-    }
-
-    internal void SetResourceGenerationRate(object resourceType, float resourceGenerationRate)
-    {
-        throw new NotImplementedException();
-    }
 }

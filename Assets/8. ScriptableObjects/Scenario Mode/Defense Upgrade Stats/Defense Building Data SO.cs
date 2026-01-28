@@ -6,7 +6,8 @@ public class DefenseBuildingDataSO : BuildingDataSO
 {
     [Space(30)]
     public ScenarioDefenseType defenseType;
-    public ProjectileShooter projectilePrefab;
+    public bool canAttackBuildings;
+    public bool canAttackWalls;
     public VisionAngles defenseVisionAngles;
     public AttackTargets defenseAttackTargets;
     public DefenseBuildingUpgradeData[] defenseBuildingUpgradeData;
@@ -34,7 +35,9 @@ public class DefenseBuildingDataSO : BuildingDataSO
             }
         }
 
-        buildingIdentity.spawnLevel = Mathf.Max(0, defenseBuildingUpgradeData.Length - 1);
+        buildingIdentity.spawnLevel = Mathf.Clamp(buildingIdentity.spawnLevel, 0, defenseBuildingUpgradeData.Length - 1);
+
+        // buildingIdentity.name = buildingIdentity.faction.ToString() + " " + defenseType.ToString();
     }
 }
 
