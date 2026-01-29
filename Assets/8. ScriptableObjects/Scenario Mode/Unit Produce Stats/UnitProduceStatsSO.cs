@@ -15,6 +15,7 @@ public class UnitProduceStatsSO : ScriptableObject
     [ShowIf(nameof(canFly))]
     public FlyStats unitFlyStats;
     public int unitPopulationCost;
+    public Sprite UnitIcon;
 
     [Header("Unit Upgrade Data")]
     public UnitUpgradeData[] unitUpgradeData;

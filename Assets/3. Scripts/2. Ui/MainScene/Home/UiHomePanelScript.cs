@@ -26,8 +26,6 @@ public class UiHomePanelScript : MonoBehaviour
 
     [SerializeField] private float duration = 0.7f;
 
-   // [Header ("Value")]
-
     #endregion
 
     #region  LifeCycle

@@ -41,14 +41,15 @@ public class ItemDatabase : MonoBehaviour
         item.unit = data.ItemSo;
 
         item.SetupItem(
-            itemId,
-            UnitType,
+            data.itemName,
+            data.itemType,
             data.icon,
             Details,
             IsEquipped,
             _FName,
             detailsWindow,
-            _Canvas
+            _Canvas,
+            data.ItemSo
         );
 
         return item;

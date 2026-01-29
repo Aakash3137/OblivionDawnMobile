@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,10 +15,12 @@ public class DecManager : MonoBehaviour
     [Header("UI")]
     [SerializeField] private Image selectedFactionIcon;
     [SerializeField] private Canvas _Canvas;
-
+    [SerializeField] internal TMP_Text diamondtext;
+    [SerializeField] internal Userdata _Profile;
 
     private void OnEnable()
     {
+        diamondtext.text = _Profile.Diamonds.ToString();
         Debug.Log("DecManager OnEnable Called");
         if (deckList.Count > 0)
             SelectDeck(deckList[0]);
@@ -33,8 +36,7 @@ public class DecManager : MonoBehaviour
             deck._Checked.SetActive(false);
         }
 
-        DecSelector selected =
-            deckList.Find(d => d.InActiveObj == clickedButton);
+        DecSelector selected = deckList.Find(d => d.InActiveObj == clickedButton);
 
         if (selected == null)
             return;
@@ -94,7 +96,6 @@ public class DecManager : MonoBehaviour
                 GameDebug.Log($"Added Unequipped Item: {card.unitIdentity.name} to Inventory from Deck: {deck._FactionName}");
             }
         }
-
     }
 }
 

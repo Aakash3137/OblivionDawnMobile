@@ -20,6 +20,15 @@ public static class StatUpgrade
             : baseValue * (1f - PERCENT_CHANGE * t);
     }
 
+    // ===============================
+    // COST FORMULA (QUADRATIC)
+    // ===============================
+    // Cost(n) = 10n² + 10n + 20
+    public static int UpgradeCost(int level)
+    {
+        return 10 * level * level + 10 * level + 20;
+    }
+
     public static float GetDiff(float BaseValue, float NextValue)
     {
         return NextValue - BaseValue;
@@ -63,7 +72,7 @@ public static class StatUpgrade
 public class UnitProduceUpgrade
 {
     public int maxLevel = 20;
-    public void UpgradeNext(UnitProduceStatsSO unit)
+    public void UpgradeNext(UnitProduceStatsSO unit, DecManager _Dec)
     {
         int next = unit.unitUpgradeData.Length;
 
@@ -79,6 +88,8 @@ public class UnitProduceUpgrade
         Array.Resize(ref unit.unitUpgradeData, next + 1);
         unit.unitUpgradeData[next] = cur;
         unit.unitIdentity.spawnLevel = next;
+       _Dec.diamondtext.text =(_Dec._Profile.Diamonds -= StatUpgrade.UpgradeCost(next)).ToString();
+         
     }
 
     void ApplyFormula(UnitUpgradeData prev, ref UnitUpgradeData cur)
