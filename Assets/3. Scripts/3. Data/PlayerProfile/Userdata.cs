@@ -8,6 +8,7 @@ public class Userdata : ScriptableObject
     public string UserName = "";
     public string Birthday = "";
     public Sprite ProfilePicture;
+    public Sprite defaultProfilePicture;
     public bool GuestUser = false;
 
     [Header ("Game Data")]

@@ -42,7 +42,7 @@ public class Item : MonoBehaviour
         );
     }
 
-    public void SetupItem(string _name, string _type, Sprite _icon,  string _details, bool _isEquipped, FactionName _factionType, ItemDetailsWindow detailsWindow,Canvas _Canvas)
+    public void SetupItem(string _name, string _type, Sprite _icon,  string _details, bool _isEquipped, FactionName _factionType, ItemDetailsWindow detailsWindow,Canvas _Canvas, UnitProduceStatsSO ItemSO)
     {
         itemName = _name;
         itemType = _type;
@@ -54,7 +54,7 @@ public class Item : MonoBehaviour
         _Canvas = itemCanvas;
         if(unit != null)
         {
-            itemDetailsWindow.unit = unit;
+            itemDetailsWindow.unit = ItemSO;
         }
     }
 }
