@@ -32,6 +32,12 @@ public class CameraPanning : MonoBehaviour
     private bool isZooming;
 
     private CinemachineCamera cam;
+    
+    // Adding this functionality
+    // If user drags → NEVER open build panel
+    // If user taps and releases without dragging → open build panel 
+
+    public static bool IsDragging;
 
     void Start()
     {
@@ -45,6 +51,12 @@ public class CameraPanning : MonoBehaviour
         PanCamera();
         ZoomCamera();
         ResetCamera();
+        
+        if (Input.touchCount == 0 && !Input.GetMouseButton(0))
+        {
+            IsDragging = false;
+        }
+
     }
 
     // -------------------------
@@ -58,6 +70,7 @@ public class CameraPanning : MonoBehaviour
         // Mobile: one-finger pan
         if (Input.touchCount == 1 && !isZooming)
         {
+            
             Touch touch = Input.GetTouch(0);
 
             if (touch.phase == TouchPhase.Began)
@@ -155,6 +168,9 @@ public class CameraPanning : MonoBehaviour
     // -------------------------
     void MoveCamera(Vector3 delta)
     {
+        if (delta.sqrMagnitude > 0.0001f)
+            IsDragging = true;
+        
         transform.position += delta;
         // Apply fixed bounds
         transform.position = new Vector3(

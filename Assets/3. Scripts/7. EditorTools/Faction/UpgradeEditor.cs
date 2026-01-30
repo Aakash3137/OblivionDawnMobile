@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 using UnityEditor;
 using UnityEngine;
 using System;
@@ -338,3 +340,4 @@ static class UpgradeEditorConfig
     public static float Round1(float v)
         => Mathf.Round(v * 10f) / 10f;
 }
+#endif

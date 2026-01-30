@@ -51,7 +51,6 @@ public class EnemyAIHandler : MonoBehaviour
     
     [Header("Resources")]
     
-
     [Header("Spawn Settings")]
     [SerializeField] private float spawnInterval = 5f;
     [SerializeField] private int maxEnemyBuildings = 30;
@@ -63,6 +62,8 @@ public class EnemyAIHandler : MonoBehaviour
     private int defenceBuildingsSpawned = 0;
     private int totalBuildingsSpawned = 0;
     private float spawnTimer = 0f;
+    private int resourceBuildingIndex = 0;
+    private bool allResourcesCovered = false;
 
     void Start()
     {
@@ -312,6 +313,16 @@ public class EnemyAIHandler : MonoBehaviour
     GameObject GetRandomResourceBuilding()
     {
         GameObject[] buildings = GetResourceBuildings();
+        
+        if (!allResourcesCovered)
+        {
+            GameObject building = buildings[resourceBuildingIndex];
+            resourceBuildingIndex++;
+            if (resourceBuildingIndex >= buildings.Length)
+                allResourcesCovered = true;
+            
+            return building;
+        }
         return buildings[Random.Range(0, buildings.Length)];
     }
 
@@ -343,13 +354,13 @@ public class EnemyAIHandler : MonoBehaviour
         switch (enemyFactionName)
         {
             case FactionName.Medieval:
-                return new[] { factionData.medievalFoodBuilding, factionData.medievalGoldBuilding, factionData.medievalMetalBuilding };
+                return new[] { factionData.medievalFoodBuilding, factionData.medievalGoldBuilding, factionData.medievalMetalBuilding, factionData.medievalPowerBuilding };
             case FactionName.Present:
-                return new[] { factionData.presentFoodBuilding, factionData.presentGoldBuilding, factionData.presentMetalBuilding };
+                return new[] { factionData.presentFoodBuilding, factionData.presentGoldBuilding, factionData.presentMetalBuilding, factionData.presentPowerBuilding};
             case FactionName.Futuristic:
-                return new[] { factionData.futureFoodBuilding, factionData.futureGoldBuilding, factionData.futureMetalBuilding };
+                return new[] { factionData.futureFoodBuilding, factionData.futureGoldBuilding, factionData.futureMetalBuilding, factionData.futurePowerBuilding };
             case FactionName.Galvadore:
-                return new[] { factionData.galvadoreFoodBuilding, factionData.galvadoreGoldBuilding, factionData.galvadoreMetalBuilding };
+                return new[] { factionData.galvadoreFoodBuilding, factionData.galvadoreGoldBuilding, factionData.galvadoreMetalBuilding, factionData.galvadorePowerBuilding };
             default:
                 return new GameObject[0];
         }
@@ -384,7 +395,7 @@ public class EnemyAIHandler : MonoBehaviour
         enemyBuildPanel.PlaceBuildingAI(buildingPrefab, spawnPos, tile);
         
        // Instantiate(buildingPrefab, spawnPos, Quaternion.identity, tile.transform);
-       // tile.SetBuildingPlaced();
+       tile.SetBuildingPlaced();
 
         spawnableTiles.Remove(tile);
         Vector2Int tileGrid = CubeGridManager.Instance.WorldToGrid(tile.transform.position);

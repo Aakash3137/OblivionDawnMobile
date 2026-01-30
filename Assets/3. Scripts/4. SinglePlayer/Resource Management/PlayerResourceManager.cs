@@ -145,10 +145,10 @@ public class PlayerResourceManager : ResourceManager
     [Button]
     public void ResetResources()
     {
-        startingResources[0].resourceCost = 40;
-        startingResources[1].resourceCost = 40;
-        startingResources[2].resourceCost = 20;
-        startingResources[3].resourceCost = 0;
+        startingResources[0].resourceCost = 100;
+        startingResources[1].resourceCost = 100;
+        startingResources[2].resourceCost = 100;
+        startingResources[3].resourceCost = 100;
     }
 
     [Button]

@@ -112,7 +112,7 @@ public class Tile : MonoBehaviour
 
         // Hide PlusIcon if present
         Transform cubeChild = transform.Find("Cube");
-        if (cubeChild != null)
+        if (cubeChild != null && ownerSide != Side.Enemy)
         {
             Transform plusIcon = cubeChild.Find("Plus_Icon");
             if (plusIcon != null) plusIcon.gameObject.SetActive(false);
