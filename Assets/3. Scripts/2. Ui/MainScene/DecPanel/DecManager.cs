@@ -17,14 +17,16 @@ public class DecManager : MonoBehaviour
     [SerializeField] private Canvas _Canvas;
     [SerializeField] internal TMP_Text diamondtext;
     [SerializeField] internal Userdata _Profile;
-
+    [SerializeField] private TMP_Text Coins;
+    
     private void OnEnable()
     {
         diamondtext.text = _Profile.Diamonds.ToString();
+        Coins.text = _Profile.Coins.ToString();
         Debug.Log("DecManager OnEnable Called");
         if (deckList.Count > 0)
             SelectDeck(deckList[0]);
-
+        
         BuildAllCardsInventory();
     }
 

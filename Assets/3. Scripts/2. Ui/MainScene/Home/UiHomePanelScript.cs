@@ -33,7 +33,15 @@ public class UiHomePanelScript : MonoBehaviour
     private void OnEnable() 
     {
         UserNameTxt.text = PlayerData.UserName;
-        UserPic.sprite = PlayerData.ProfilePicture;
+        if (PlayerData.ProfilePicture != null)
+        {
+            UserPic.sprite = PlayerData.ProfilePicture;    
+        }
+        else
+        {
+            UserPic.sprite = PlayerData.defaultProfilePicture;
+        }
+        
         LevelNotTxt.text = PlayerData.Level.ToString();
         CoinsTxt.text = PlayerData.Level.ToString("00");
         DiamondsTxt.text = PlayerData.Diamonds.ToString();

@@ -11,6 +11,8 @@ public class ProfileManager : MonoBehaviour
     [SerializeField] internal GameObject profilePanel;
 
     [SerializeField] internal TMP_Text NameText;
+    [SerializeField] private TMP_Text Coins;
+    [SerializeField] private TMP_Text Gems;
     [SerializeField] internal Button crossButton;
     [SerializeField] internal Button EditButton;
     [SerializeField] internal Image UserPic, HomePic;
@@ -25,13 +27,22 @@ public class ProfileManager : MonoBehaviour
 
     private void SetProfile()
     {
-        NameText.text = ProfileData.UserName;
-        if(ProfileData.ProfilePicture != null)
+        if (ProfileData.ProfilePicture != null)
         {
-            UserPic.sprite = ProfileData.ProfilePicture;
+            UserPic.sprite = ProfileData.ProfilePicture; 
             HomePic.sprite = ProfileData.ProfilePicture;
             profileEditData.EditorPic.sprite = ProfileData.ProfilePicture;
         }
+        else
+        {
+            UserPic.sprite = ProfileData.defaultProfilePicture;
+            HomePic.sprite = ProfileData.defaultProfilePicture;
+            profileEditData.EditorPic.sprite = ProfileData.defaultProfilePicture;
+        }
+        
+        NameText.text = ProfileData.UserName;
+        Coins.text = ProfileData.Coins.ToString();
+        Gems.text = ProfileData.Diamonds.ToString();
         profileEditData.NameInputField.text = ProfileData.UserName;
         EditButton.onClick.AddListener(OpenEditProfilePanel);
         crossButton.onClick.AddListener(CloseProfileManager);
