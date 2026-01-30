@@ -423,7 +423,8 @@ public enum PanelName
     Rewards,
     Friends,
     Message, 
-    Ranking
+    Ranking,
+    HeroJourney
 }
 
 [System.Serializable]
