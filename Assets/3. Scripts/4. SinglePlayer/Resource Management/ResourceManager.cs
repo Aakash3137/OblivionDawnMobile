@@ -11,17 +11,16 @@ public class ResourceManager : MonoBehaviour
     public int CurrentPower { get; protected set; }
 
     [field: Header("EDITOR VIEW ONLY")]
-    [field: SerializeField]
+    [field: SerializeField, ReadOnly]
     public float currentFoodGenerationRate { get; protected set; }
-    [field: SerializeField]
+    [field: SerializeField, ReadOnly]
     public float currentGoldGenerationRate { get; protected set; }
-    [field: SerializeField]
+    [field: SerializeField, ReadOnly]
     public float currentMetalGenerationRate { get; protected set; }
-    [field: SerializeField]
+    [field: SerializeField, ReadOnly]
     public float currentPowerGenerationRate { get; protected set; }
-    [HideInInspector]
-    
+
     public Action OnResourcesChanged;
-    
-   
+
+
 }

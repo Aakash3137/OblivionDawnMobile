@@ -1,12 +1,23 @@
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 public class Stats : MonoBehaviour
 {
+
+    [field: SerializeField, ReadOnly]
     public Identity identity { get; protected set; }
+
+    [field: SerializeField, ReadOnly]
     public BasicStats basicStats { get; protected set; }
-    public Side side { get; protected set; }
-    public Visuals visuals { get; protected set; }
+
+    [field: SerializeField, ReadOnly]
     public float currentHealth { get; protected set; }
+
+    [field: SerializeField, ReadOnly]
+    public Side side { get; protected set; }
+
+    public Visuals visuals { get; protected set; }
+
     public Collider hitCollider { get; protected set; }
     public BuildCost[] buildCost { get; protected set; }
 

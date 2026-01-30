@@ -13,12 +13,12 @@ public class EnemyBuildPanel : MonoBehaviour
 
     [SerializeField] private FactionName EnemyfactionName;
 
-    
+
     [SerializeField] private WallParent _wallPrefab;
     private bool _mainWallPlaced = false;
     private float _wallYOffset = 1f;
     private GameObject spawnedBuilding;
-    
+
     private void Awake()
     {
         GameManager.SetFactionNameThroughEnemyBuildPanel(EnemyfactionName);
@@ -96,21 +96,21 @@ public class EnemyBuildPanel : MonoBehaviour
 
         if (!CanPlaceBuilding(buildingPrefab))
             return;
-        
+
         Vector3 spawnPos = currentTile.transform.position + Vector3.up * 2f;
 
         spawnedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
 
-        //currentTile.SetBuildingPlaced();
+        currentTile.SetBuildingPlaced();
 
         PlaceWallsOnMainBuilding();
         PlaceWalls();
         CloseBuildPanel();
     }
-    
-    public void PlaceBuildingAI(GameObject buildingPrefab,Vector3 spawnPos,Tile tile) 
+
+    public void PlaceBuildingAI(GameObject buildingPrefab, Vector3 spawnPos, Tile tile)
     {
-        if (tile == null || buildingPrefab == null ) return;
+        if (tile == null || buildingPrefab == null) return;
 
         if (tile.hasBuilding) return;
 
@@ -119,13 +119,13 @@ public class EnemyBuildPanel : MonoBehaviour
 
         spawnedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, tile.transform);
 
-        //tile.SetBuildingPlaced();
+        tile.SetBuildingPlaced();
 
         currentTile = tile;
         PlaceWallsOnMainBuilding();
         PlaceWalls();
     }
-    
+
     private bool CanPlaceBuilding(GameObject buildingPrefab)
     {
         BuildCost[] buildingBuildCost = null;
@@ -161,8 +161,8 @@ public class EnemyBuildPanel : MonoBehaviour
         currentTile = tile;
         gameObject.SetActive(true);
     }
-    
-     // Wall logic (unchanged)
+
+    // Wall logic (unchanged)
     private void PlaceWalls()
     {
         Vector3 _currentTileCords = currentTile.transform.position;
@@ -185,7 +185,7 @@ public class EnemyBuildPanel : MonoBehaviour
 
         for (int i = 0; i < adjacentTiles.Length; i++)
         {
-            if (adjacentTiles[i] == null || adjacentTiles[i].ownerSide == Side.Enemy)
+            if (adjacentTiles[i] == null || adjacentTiles[i].ownerSide == Side.Player)
                 continue;
 
             if (adjacentTiles[i].hasBuilding)
