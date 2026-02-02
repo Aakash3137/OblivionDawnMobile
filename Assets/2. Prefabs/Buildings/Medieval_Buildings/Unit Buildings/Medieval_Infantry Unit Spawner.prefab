@@ -201,6 +201,7 @@ GameObject:
   - component: {fileID: 6093498460584951295}
   - component: {fileID: 5551679913311386414}
   - component: {fileID: -8976530165009927266}
+  - component: {fileID: -5704572815166906137}
   m_Layer: 0
   m_Name: Medieval_Infantry Unit Spawner
   m_TagString: Untagged
@@ -288,8 +289,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81f74e378fe7d894992b20996f269839, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <identity>k__BackingField:
+    name: 
+    spawnLevel: 0
+    faction: 0
+    isUnique: 0
+    priority: 0
+  <basicStats>k__BackingField:
+    maxHealth: 0
+    armor: 0
+  <currentHealth>k__BackingField: 0
+  <side>k__BackingField: 0
   <buildingStats>k__BackingField: {fileID: 11400000, guid: dc71e56407c8f65448f85fbb7ecb8a94, type: 2}
   producedUnit: {fileID: 0}
+--- !u!114 &-5704572815166906137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4320449579214391836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd86b6216a32ed04a869483ef87f6485, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gem: {fileID: 4905414917278168185, guid: dc03cc3b50d14154ca3cee99725916ab, type: 3}
+  gemYOffset: -0.5
+  rewardCanvas: {fileID: 0}
 --- !u!1001 &1512948493298473283
 PrefabInstance:
   m_ObjectHideFlags: 0

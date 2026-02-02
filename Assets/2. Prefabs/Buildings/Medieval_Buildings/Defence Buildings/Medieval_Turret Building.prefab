@@ -336,6 +336,7 @@ GameObject:
   - component: {fileID: -8002592950466000954}
   - component: {fileID: 2135310751543429150}
   - component: {fileID: -7352752709229663020}
+  - component: {fileID: -341246646440282037}
   m_Layer: 0
   m_Name: Medieval_Turret Building
   m_TagString: Untagged
@@ -422,6 +423,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64f0aae40d86c3449bb3da5b4d0ecc09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <identity>k__BackingField:
+    name: 
+    spawnLevel: 0
+    faction: 0
+    isUnique: 0
+    priority: 0
+  <basicStats>k__BackingField:
+    maxHealth: 0
+    armor: 0
+  <currentHealth>k__BackingField: 0
+  <side>k__BackingField: 0
   <buildingStats>k__BackingField: {fileID: 11400000, guid: e29526836ec22ff449477b94d0f2bd49, type: 2}
 --- !u!114 &2135310751543429150
 MonoBehaviour:
@@ -459,6 +471,21 @@ MonoBehaviour:
   <target>k__BackingField: {fileID: 0}
   <primaryTarget>k__BackingField: {fileID: 0}
   <secondaryTarget>k__BackingField: {fileID: 0}
+--- !u!114 &-341246646440282037
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4320449579214391836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd86b6216a32ed04a869483ef87f6485, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gem: {fileID: 4905414917278168185, guid: dc03cc3b50d14154ca3cee99725916ab, type: 3}
+  gemYOffset: -0.5
+  rewardCanvas: {fileID: 0}
 --- !u!1 &4339042271947055191
 GameObject:
   m_ObjectHideFlags: 0

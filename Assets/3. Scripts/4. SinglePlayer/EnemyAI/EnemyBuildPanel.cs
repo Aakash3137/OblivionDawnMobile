@@ -210,6 +210,7 @@ public class EnemyBuildPanel : MonoBehaviour
                 {
                     case 0:
                         currentWall.DisableWall(0);
+                        // Most common error here is null reference exception when tile.hasBuilding is not set to false after the building is destroyed
                         adjacentTiles[i].GetOccupant().GetComponentInChildren<WallParent>()?.DisableWall(1);
                         break;
                     case 1:
