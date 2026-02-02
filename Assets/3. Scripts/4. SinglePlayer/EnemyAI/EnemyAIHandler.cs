@@ -48,9 +48,9 @@ public class EnemyAIHandler : MonoBehaviour
     [SerializeField] private float onlyDefence_ResourceRatio = 0.2f;
     [SerializeField] private bool onlyDefence_AllowAttackBuildings = false;
     [SerializeField] private int onlyDefence_AttackBuildingsAfterDefenceCount = 6;
-    
+
     [Header("Resources")]
-    
+
     [Header("Spawn Settings")]
     [SerializeField] private float spawnInterval = 5f;
     [SerializeField] private int maxEnemyBuildings = 30;
@@ -58,7 +58,7 @@ public class EnemyAIHandler : MonoBehaviour
     [SerializeField] private float reducedSpawnInterval = 15f;
 
     private Transform enemyMainBuildingTransform;
-    private List<Tile> spawnableTiles = new List<Tile>();
+    [SerializeField] private List<Tile> spawnableTiles = new List<Tile>();
     private int defenceBuildingsSpawned = 0;
     private int totalBuildingsSpawned = 0;
     private float spawnTimer = 0f;
@@ -279,7 +279,7 @@ public class EnemyAIHandler : MonoBehaviour
         }
 
         float rand = Random.value;
-        
+
         if (rand < defence_ResourceRatio)
             return GetRandomResourceBuilding();
         else
@@ -304,7 +304,7 @@ public class EnemyAIHandler : MonoBehaviour
         else
             return GetRandomResourceBuilding();
     }
-    
+
     GameObject GetRandomUnitBuilding()
     {
         GameObject[] buildings = GetUnitBuildings();
@@ -314,14 +314,14 @@ public class EnemyAIHandler : MonoBehaviour
     GameObject GetRandomResourceBuilding()
     {
         GameObject[] buildings = GetResourceBuildings();
-        
+
         if (!allResourcesCovered)
         {
             GameObject building = buildings[resourceBuildingIndex];
             resourceBuildingIndex++;
             if (resourceBuildingIndex >= buildings.Length)
                 allResourcesCovered = true;
-            
+
             return building;
         }
         return buildings[Random.Range(0, buildings.Length)];
@@ -357,7 +357,7 @@ public class EnemyAIHandler : MonoBehaviour
             case FactionName.Medieval:
                 return new[] { factionData.medievalFoodBuilding, factionData.medievalGoldBuilding, factionData.medievalMetalBuilding, factionData.medievalPowerBuilding };
             case FactionName.Present:
-                return new[] { factionData.presentFoodBuilding, factionData.presentGoldBuilding, factionData.presentMetalBuilding, factionData.presentPowerBuilding};
+                return new[] { factionData.presentFoodBuilding, factionData.presentGoldBuilding, factionData.presentMetalBuilding, factionData.presentPowerBuilding };
             case FactionName.Futuristic:
                 return new[] { factionData.futureFoodBuilding, factionData.futureGoldBuilding, factionData.futureMetalBuilding, factionData.futurePowerBuilding };
             case FactionName.Galvadore:
@@ -393,17 +393,15 @@ public class EnemyAIHandler : MonoBehaviour
         }
 
         Vector3 spawnPos = tile.transform.position + Vector3.up * 2f;
-        enemyBuildPanel.PlaceBuildingAI(buildingPrefab, spawnPos, tile);
-        
-       // Instantiate(buildingPrefab, spawnPos, Quaternion.identity, tile.transform);
-       tile.SetBuildingPlaced();
 
-        spawnableTiles.Remove(tile);
-        Vector2Int tileGrid = CubeGridManager.Instance.WorldToGrid(tile.transform.position);
-        UpdateSpawnableTiles(tileGrid);
+        if (enemyBuildPanel.PlaceBuildingAI(buildingPrefab, spawnPos, tile))
+        {
+            spawnableTiles.Remove(tile);
+            Vector2Int tileGrid = CubeGridManager.Instance.WorldToGrid(tile.transform.position);
+            UpdateSpawnableTiles(tileGrid);
+            totalBuildingsSpawned++;
 
-        totalBuildingsSpawned++;
-        // GameDebug.Log($"[EnemyAI] Building spawned! Total: {totalBuildingsSpawned}, Spawnable tiles: {spawnableTiles.Count}");
+            // GameDebug.Log($"[EnemyAI] Building spawned! Total: {totalBuildingsSpawned}, Spawnable tiles: {spawnableTiles.Count}");
+        }
     }
-    
 }

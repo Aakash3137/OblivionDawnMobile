@@ -69,7 +69,7 @@ public class TileCounterUI : MonoBehaviour
     {
         InitializeCounts();
     }
-    
+
     public void InitializeCounts()
     {
         playerCount = 0;
@@ -86,10 +86,10 @@ public class TileCounterUI : MonoBehaviour
 
         UpdateUI();
     }
-    
+
     public void UpdateTileOwnerCount(Side oldOwner, Side newOwner)
     {
-        GameDebug.Log($"UpdateTileOwnerCount Tile owner changed from {oldOwner} to {newOwner}");
+        // GameDebug.Log($"UpdateTileOwnerCount Tile owner changed from {oldOwner} to {newOwner}");
         if (oldOwner == Side.Player) playerCount--;
         else if (oldOwner == Side.Enemy) enemyCount--;
 
@@ -99,7 +99,7 @@ public class TileCounterUI : MonoBehaviour
         UpdateUI();
     }
 
-    
+
     private void UpdateUI()
     {
         if (playerText != null)
@@ -109,5 +109,5 @@ public class TileCounterUI : MonoBehaviour
             enemyText.text = $"{enemyCount}";
     }
 
-    
+
 }

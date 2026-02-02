@@ -90,7 +90,7 @@ public class EnemyBuildPanel : MonoBehaviour
 
     private void PlaceBuilding(GameObject buildingPrefab)
     {
-        if (currentTile == null || buildingPrefab == null ) return;
+        if (currentTile == null || buildingPrefab == null) return;
 
         if (currentTile.hasBuilding) return;
 
@@ -108,36 +108,30 @@ public class EnemyBuildPanel : MonoBehaviour
         CloseBuildPanel();
     }
 
-    public void PlaceBuildingAI(GameObject buildingPrefab, Vector3 spawnPos, Tile tile)
+    public bool PlaceBuildingAI(GameObject buildingPrefab, Vector3 spawnPos, Tile tile)
     {
-        
-        if (tile == null || buildingPrefab == null) return;
+
+        if (tile == null || buildingPrefab == null) return false;
         currentTile = tile;
 
-        if (currentTile.hasBuilding) return;
+        if (currentTile.hasBuilding) return false;
 
         if (!CanPlaceBuilding(buildingPrefab))
-            return;
+        {
+            // GameDebug.Log("[Enemy AI] Can't place building" + currentTile.transform.position);
+            // GameDebug.Log("HAsBuilding0 " + currentTile.hasBuilding);
+            return false;
+        }
 
         spawnedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
 
         currentTile.SetBuildingPlaced();
 
         PlaceWallsOnMainBuilding();
-        if (spawnedBuilding != null)
-            PlaceWalls();
-        
-        // if (tile.hasBuilding) return;
-        //
-        // if (!CanPlaceBuilding(buildingPrefab))
-        //     return;
-        //
-        // spawnedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, tile.transform);
-        // tile.SetBuildingPlaced();
-        //
-        // PlaceWallsOnMainBuilding();
-        // if (spawnedBuilding != null)
-        //     PlaceWalls();
+
+        PlaceWalls();
+
+        return true;
     }
 
     private bool CanPlaceBuilding(GameObject buildingPrefab)
@@ -180,7 +174,7 @@ public class EnemyBuildPanel : MonoBehaviour
     private void PlaceWalls()
     {
         if (currentTile == null || CubeGridManager.Instance == null) return;
-        
+
         Vector3 _currentTileCords = currentTile.transform.position;
         var cgmInstance = CubeGridManager.Instance;
         Vector2Int currentGrid = cgmInstance.WorldToGrid(_currentTileCords);

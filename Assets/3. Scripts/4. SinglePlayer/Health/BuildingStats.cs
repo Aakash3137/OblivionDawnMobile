@@ -1,4 +1,5 @@
 using System;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 public class BuildingStats : Stats
@@ -8,6 +9,7 @@ public class BuildingStats : Stats
     public BuildingDataSO buildingStats { get; private set; }
     public ScenarioBuildingType buildingType { get; private set; }
     private GameObject buildingPool;
+    [field: SerializeField, ReadOnly]
     public Tile currentTile { get; private set; }
 
 
