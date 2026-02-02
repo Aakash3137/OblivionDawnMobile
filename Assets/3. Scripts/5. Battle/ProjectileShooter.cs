@@ -36,7 +36,7 @@ public class ProjectileShooter : MonoBehaviour
         proj.transform.rotation = gameObject.transform.rotation;
         proj.gameObject.SetActive(true);
 
-        proj.Init(target, damage, projectile, GetTrailMaterial());
+        proj.Init(target, damage, projectile, GetTrailMaterial(), projectileSide);
     }
 
     Material GetTrailMaterial()

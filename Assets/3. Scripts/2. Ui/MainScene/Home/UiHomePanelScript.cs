@@ -43,7 +43,7 @@ public class UiHomePanelScript : MonoBehaviour
         }
         
         LevelNotTxt.text = PlayerData.Level.ToString();
-        CoinsTxt.text = PlayerData.Level.ToString("00");
+        CoinsTxt.text = PlayerData.Coins.ToString();
         DiamondsTxt.text = PlayerData.Diamonds.ToString();
     }
     void Start()

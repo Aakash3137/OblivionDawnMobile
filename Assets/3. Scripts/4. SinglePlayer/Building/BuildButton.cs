@@ -1,6 +1,8 @@
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Debug = UnityEngine.Debug;
 
 public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
@@ -15,11 +17,13 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     public GameObject buildingToSpawn;
     private Button button;
+    [SerializeField] internal Image ButtonIcon;
     private BuildCost[] cachedCosts;
 
     private void Start()
     {
         button = GetComponent<Button>();
+        UpdateButtonUI();
 
         button.onClick.AddListener(OnClick);
 
@@ -312,6 +316,17 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
             default:
                 return null;
         }
+    }
+
+    private void UpdateButtonUI()
+    {
+        /*switch(buildingType)
+        {
+            case ScenarioBuildingType.ResourceBuilding:
+                
+                break;
+                
+        }*/
     }
 
 }

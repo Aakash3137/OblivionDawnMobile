@@ -90,7 +90,7 @@ public class EnemyBuildPanel : MonoBehaviour
 
     private void PlaceBuilding(GameObject buildingPrefab)
     {
-        if (currentTile == null || buildingPrefab == null || buildingPrefab == null) return;
+        if (currentTile == null || buildingPrefab == null ) return;
 
         if (currentTile.hasBuilding) return;
 
@@ -110,20 +110,34 @@ public class EnemyBuildPanel : MonoBehaviour
 
     public void PlaceBuildingAI(GameObject buildingPrefab, Vector3 spawnPos, Tile tile)
     {
+        
         if (tile == null || buildingPrefab == null) return;
+        currentTile = tile;
 
-        if (tile.hasBuilding) return;
+        if (currentTile.hasBuilding) return;
 
         if (!CanPlaceBuilding(buildingPrefab))
             return;
 
-        spawnedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, tile.transform);
+        spawnedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
 
-        tile.SetBuildingPlaced();
+        currentTile.SetBuildingPlaced();
 
-        currentTile = tile;
         PlaceWallsOnMainBuilding();
-        PlaceWalls();
+        if (spawnedBuilding != null)
+            PlaceWalls();
+        
+        // if (tile.hasBuilding) return;
+        //
+        // if (!CanPlaceBuilding(buildingPrefab))
+        //     return;
+        //
+        // spawnedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, tile.transform);
+        // tile.SetBuildingPlaced();
+        //
+        // PlaceWallsOnMainBuilding();
+        // if (spawnedBuilding != null)
+        //     PlaceWalls();
     }
 
     private bool CanPlaceBuilding(GameObject buildingPrefab)
@@ -165,6 +179,8 @@ public class EnemyBuildPanel : MonoBehaviour
     // Wall logic (unchanged)
     private void PlaceWalls()
     {
+        if (currentTile == null || CubeGridManager.Instance == null) return;
+        
         Vector3 _currentTileCords = currentTile.transform.position;
         var cgmInstance = CubeGridManager.Instance;
         Vector2Int currentGrid = cgmInstance.WorldToGrid(_currentTileCords);

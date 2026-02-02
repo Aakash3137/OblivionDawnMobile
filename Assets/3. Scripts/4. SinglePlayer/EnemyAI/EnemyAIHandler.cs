@@ -219,6 +219,7 @@ public class EnemyAIHandler : MonoBehaviour
         }
 
         // GameDebug.Log($"[EnemyAI] Spawning {buildingPrefab.name} at tile {selectedTile.transform.position}");
+
         SpawnBuilding(selectedTile, buildingPrefab);
     }
 
@@ -303,7 +304,7 @@ public class EnemyAIHandler : MonoBehaviour
         else
             return GetRandomResourceBuilding();
     }
-
+    
     GameObject GetRandomUnitBuilding()
     {
         GameObject[] buildings = GetUnitBuildings();
