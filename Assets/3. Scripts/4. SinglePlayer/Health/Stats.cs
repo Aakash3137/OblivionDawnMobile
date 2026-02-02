@@ -104,6 +104,28 @@ public class Stats : MonoBehaviour
 
     internal virtual void Die()
     {
+        if (TryGetComponent<GemSpawner>(out var gemSpawner) && side == Side.Player)
+            gemSpawner.SpawnGem();
         Destroy(gameObject);
+    }
+
+    [Button]
+    public virtual void ResetHealth()
+    {
+        currentHealth = basicStats.maxHealth;
+        if (healthBar != null)
+            healthBar.UpdateFillAmount(currentHealth / basicStats.maxHealth);
+    }
+
+    [Button]
+    public void DealDamage(float amount = 50f)
+    {
+        TakeDamage(amount);
+    }
+
+    [Button]
+    public virtual void Kill()
+    {
+        Die();
     }
 }

@@ -99,6 +99,7 @@ GameObject:
   - component: {fileID: 6093498460584951295}
   - component: {fileID: 5551679913311386414}
   - component: {fileID: -1173357006952606888}
+  - component: {fileID: 3572568324727550575}
   m_Layer: 0
   m_Name: Medieval_Air Unit Spawner
   m_TagString: Untagged
@@ -186,8 +187,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81f74e378fe7d894992b20996f269839, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <identity>k__BackingField:
+    name: 
+    spawnLevel: 0
+    faction: 0
+    isUnique: 0
+    priority: 0
+  <basicStats>k__BackingField:
+    maxHealth: 0
+    armor: 0
+  <currentHealth>k__BackingField: 0
+  <side>k__BackingField: 0
   <buildingStats>k__BackingField: {fileID: 11400000, guid: dfa66847779bcfe4abbe9967c4aced88, type: 2}
   producedUnit: {fileID: 0}
+--- !u!114 &3572568324727550575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4320449579214391836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd86b6216a32ed04a869483ef87f6485, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gem: {fileID: 4905414917278168185, guid: dc03cc3b50d14154ca3cee99725916ab, type: 3}
+  gemYOffset: -0.5
+  rewardCanvas: {fileID: 0}
 --- !u!1 &7859719292080809276
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,17 +11,17 @@ using Ricimi;
 public class UiHomePanelScript : MonoBehaviour
 {
     #region Variable and References
-    [Header ("User Data")]
+    [Header("User Data")]
     [SerializeField] private Userdata PlayerData;
 
-    [Header ("UI")]
+    [Header("UI")]
     [SerializeField] private TMP_Text UserNameTxt;
     [SerializeField] private TMP_Text LevelNotTxt;
     [SerializeField] private TMP_Text CoinsTxt;
     [SerializeField] private TMP_Text DiamondsTxt;
     [SerializeField] private Image UserPic;
 
-    [Header ("Selection Window")]
+    [Header("Selection Window")]
     [SerializeField] internal GameObject SelectionWindown;
 
     [SerializeField] private float duration = 0.7f;
@@ -29,26 +29,26 @@ public class UiHomePanelScript : MonoBehaviour
     #endregion
 
     #region  LifeCycle
-    
-    private void OnEnable() 
+
+    private void OnEnable()
     {
         UserNameTxt.text = PlayerData.UserName;
         if (PlayerData.ProfilePicture != null)
         {
-            UserPic.sprite = PlayerData.ProfilePicture;    
+            UserPic.sprite = PlayerData.ProfilePicture;
         }
         else
         {
             UserPic.sprite = PlayerData.defaultProfilePicture;
         }
-        
+
         LevelNotTxt.text = PlayerData.Level.ToString();
-        CoinsTxt.text = PlayerData.Level.ToString("00");
+        CoinsTxt.text = PlayerData.Coins.ToString("00");
         DiamondsTxt.text = PlayerData.Diamonds.ToString();
     }
     void Start()
     {
-        
+
     }
 
     public void OpenProfileManager()
