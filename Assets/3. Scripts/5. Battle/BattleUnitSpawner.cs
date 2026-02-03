@@ -150,12 +150,12 @@ public class BattleUnitSpawner : MonoBehaviour
 
     private Transform GetPlayerSpawnPoint()
     {
-        if (!BattleUnit.AnyPlayerAlive())
+        if (!GroundUnit.AnyPlayerAlive())
         {
             usedPlayerSpawnPoints.Clear();
         }
 
-        bool anyTarget = BattleUnit.AnyPlayerHasTarget();
+        bool anyTarget = GroundUnit.AnyPlayerHasTarget();
 
         if (!anyTarget)
         {
@@ -179,12 +179,12 @@ public class BattleUnitSpawner : MonoBehaviour
 
     private Transform GetEnemySpawnPoint()
     {
-        if (!BattleUnit.AnyEnemyAlive())
+        if (!GroundUnit.AnyEnemyAlive())
         {
             usedEnemySpawnPoints.Clear();
         }
 
-        bool anyTarget = BattleUnit.AnyEnemyHasTarget();
+        bool anyTarget = GroundUnit.AnyEnemyHasTarget();
 
         if (!anyTarget)
         {
@@ -226,9 +226,9 @@ public class BattleUnitSpawner : MonoBehaviour
 
         foreach (GameObject unit in units)
         {
-            BattleUnit battleUnit = unit.GetComponent<BattleUnit>();
-            if (battleUnit != null &&
-                battleUnit.battleUnitEnum.ToString() == unitButton.buttonname)
+            GroundUnit groundUnit = unit.GetComponent<GroundUnit>();
+            if (groundUnit != null &&
+                groundUnit.battleUnitEnum.ToString() == unitButton.buttonname)
             {
                 return unit;
             }
@@ -243,8 +243,8 @@ public class BattleUnitSpawner : MonoBehaviour
     {
         foreach (GameObject unit in units)
         {
-            BattleUnit battleUnit = unit.GetComponent<BattleUnit>();
-            if (battleUnit != null && battleUnit.battleUnitEnum == unitEnum)
+            GroundUnit groundUnit = unit.GetComponent<GroundUnit>();
+            if (groundUnit != null && groundUnit.battleUnitEnum == unitEnum)
             {
                 return unit;
             }

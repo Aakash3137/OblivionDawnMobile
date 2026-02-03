@@ -78,10 +78,10 @@ public class Tile : MonoBehaviour
     // Flip ownership
     public void SetOwner(Side newOwner)
     {
-        GameDebug.Log($"Occupy called on tile at {ownerSide}");
+        // GameDebug.Log($"Occupy called on tile at {ownerSide}");
         OldSide = ownerSide;
         ownerSide = newOwner;
-        GameDebug.Log($"Occupy called on tile at {OldSide}, new owner: {ownerSide} ");
+        // GameDebug.Log($"Occupy called on tile at {OldSide}, new owner: {ownerSide} ");
         TileCounterUI.Instance.UpdateTileOwnerCount(OldSide, ownerSide);
         ApplyOwnerMaterial();
     }

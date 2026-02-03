@@ -11,8 +11,9 @@ public class DefenseBuildingDataSO : BuildingDataSO
     public VisionAngles defenseVisionAngles;
     public AttackTargets defenseAttackTargets;
     public DefenseBuildingUpgradeData[] defenseBuildingUpgradeData;
-
-
+    
+    public Sprite DefenceIcon;
+    
     internal override void ValidateBase()
     {
         if (defenseBuildingUpgradeData.Length == 0)

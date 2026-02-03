@@ -1,3 +1,4 @@
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 public class Projectile : MonoBehaviour
@@ -21,6 +22,7 @@ public class Projectile : MonoBehaviour
     private Vector3 aimPoint;
     private bool passedAimPoint;
 
+    [ShowInInspector]private Side ShooterSide;
 
     [Header("Visuals")][SerializeField] private TrailRenderer[] trails;
 
@@ -54,6 +56,7 @@ public class Projectile : MonoBehaviour
     public void Initialize(Stats target, float damage, ProjectileDataSO projectileData, Side side)
     {
         targetUnit = target;
+        ShooterSide = side;
 
         targetCollider = target != null ? target.hitCollider : null;
 
@@ -114,9 +117,10 @@ public class Projectile : MonoBehaviour
         lastPosition = transform.position;
     }
 
-    public void Init(Stats target, float damage, ProjectileDefinition def, Material trailMaterial)
+    public void Init(Stats target, float damage, ProjectileDefinition def, Material trailMaterial, Side shooterside)
     {
         targetUnit = target;
+        ShooterSide = shooterside;
 
         targetCollider = target != null ? target.hitCollider : null;
 
@@ -400,7 +404,7 @@ public class Projectile : MonoBehaviour
 
             // 2️⃣ UNIT HIT (ANY unit)
             Stats unit = hit.collider.GetComponent<Stats>();
-            if (unit != null)
+            if (unit != null && unit.side != ShooterSide)
             {
                 targetUnit = unit;
                 targetCollider = hit.collider;

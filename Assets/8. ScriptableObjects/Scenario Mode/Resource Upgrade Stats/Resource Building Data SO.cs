@@ -8,6 +8,7 @@ public class ResourceBuildingDataSO : BuildingDataSO
     public ScenarioResourceType resourceType;
     public ResourceBuildingUpgradeData[] resourceBuildingUpgradeData;
 
+    public Sprite ResourceIcon;
     internal override void ValidateBase()
     {
         if (resourceBuildingUpgradeData.Length == 0)

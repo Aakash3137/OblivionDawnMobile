@@ -64,7 +64,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -5577102848761746721, guid: 89c7f58127fdc7b41bc7b823ec899b23, type: 3}
+  - {fileID: 2100000, guid: b50e84429b85aaf46ac787f441c01fcf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -150,7 +150,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -5577102848761746721, guid: 89c7f58127fdc7b41bc7b823ec899b23, type: 3}
+  - {fileID: 2100000, guid: b50e84429b85aaf46ac787f441c01fcf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -236,7 +236,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -5577102848761746721, guid: 89c7f58127fdc7b41bc7b823ec899b23, type: 3}
+  - {fileID: 2100000, guid: b50e84429b85aaf46ac787f441c01fcf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -471,6 +471,7 @@ GameObject:
   - component: {fileID: 6093498460584951295}
   - component: {fileID: 5551679913311386414}
   - component: {fileID: 3561086944370057131}
+  - component: {fileID: -3424825953017704882}
   m_Layer: 0
   m_Name: Medieval_Food Building
   m_TagString: Untagged
@@ -557,8 +558,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77bed03e9c225b649b1a3771b740a84d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <identity>k__BackingField:
+    name: 
+    spawnLevel: 0
+    faction: 0
+    isUnique: 0
+    priority: 0
+  <basicStats>k__BackingField:
+    maxHealth: 0
+    armor: 0
+  <currentHealth>k__BackingField: 0
+  <side>k__BackingField: 0
   <buildingStats>k__BackingField: {fileID: 11400000, guid: 360681ebf04b6244db29326464619a09, type: 2}
   GeneratedResourceAmount: 0
+--- !u!114 &-3424825953017704882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4320449579214391836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd86b6216a32ed04a869483ef87f6485, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gem: {fileID: 4905414917278168185, guid: dc03cc3b50d14154ca3cee99725916ab, type: 3}
+  gemYOffset: -0.5
+  rewardCanvas: {fileID: 0}
 --- !u!1 &8835355833767096146
 GameObject:
   m_ObjectHideFlags: 0
@@ -623,7 +650,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -5577102848761746721, guid: 89c7f58127fdc7b41bc7b823ec899b23, type: 3}
+  - {fileID: 2100000, guid: b50e84429b85aaf46ac787f441c01fcf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

@@ -90,7 +90,7 @@ public class EnemyBuildPanel : MonoBehaviour
 
     private void PlaceBuilding(GameObject buildingPrefab)
     {
-        if (currentTile == null || buildingPrefab == null || buildingPrefab == null) return;
+        if (currentTile == null || buildingPrefab == null) return;
 
         if (currentTile.hasBuilding) return;
 
@@ -108,22 +108,30 @@ public class EnemyBuildPanel : MonoBehaviour
         CloseBuildPanel();
     }
 
-    public void PlaceBuildingAI(GameObject buildingPrefab, Vector3 spawnPos, Tile tile)
+    public bool PlaceBuildingAI(GameObject buildingPrefab, Vector3 spawnPos, Tile tile)
     {
-        if (tile == null || buildingPrefab == null) return;
 
-        if (tile.hasBuilding) return;
+        if (tile == null || buildingPrefab == null) return false;
+        currentTile = tile;
+
+        if (currentTile.hasBuilding) return false;
 
         if (!CanPlaceBuilding(buildingPrefab))
-            return;
+        {
+            // GameDebug.Log("[Enemy AI] Can't place building" + currentTile.transform.position);
+            // GameDebug.Log("HAsBuilding0 " + currentTile.hasBuilding);
+            return false;
+        }
 
-        spawnedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, tile.transform);
+        spawnedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
 
-        tile.SetBuildingPlaced();
+        currentTile.SetBuildingPlaced();
 
-        currentTile = tile;
         PlaceWallsOnMainBuilding();
+
         PlaceWalls();
+
+        return true;
     }
 
     private bool CanPlaceBuilding(GameObject buildingPrefab)
@@ -165,6 +173,8 @@ public class EnemyBuildPanel : MonoBehaviour
     // Wall logic (unchanged)
     private void PlaceWalls()
     {
+        if (currentTile == null || CubeGridManager.Instance == null) return;
+
         Vector3 _currentTileCords = currentTile.transform.position;
         var cgmInstance = CubeGridManager.Instance;
         Vector2Int currentGrid = cgmInstance.WorldToGrid(_currentTileCords);
@@ -194,6 +204,7 @@ public class EnemyBuildPanel : MonoBehaviour
                 {
                     case 0:
                         currentWall.DisableWall(0);
+                        // Most common error here is null reference exception when tile.hasBuilding is not set to false after the building is destroyed
                         adjacentTiles[i].GetOccupant().GetComponentInChildren<WallParent>()?.DisableWall(1);
                         break;
                     case 1:

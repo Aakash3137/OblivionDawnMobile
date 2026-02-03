@@ -3,5 +3,5 @@ using System.Collections.Generic;
 public static class BattleUnitRegistry
 {
     // code Optimization
-    public static readonly List<BattleUnit> Units = new();
+    public static readonly List<GroundUnit> Units = new();
 }

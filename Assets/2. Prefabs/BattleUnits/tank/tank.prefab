@@ -284,6 +284,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2e0a719b6ed4843488e82591f2800946, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7234458516524931379}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2e0a719b6ed4843488e82591f2800946, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -3195223185349397768}
   m_SourcePrefab: {fileID: 100100000, guid: 2e0a719b6ed4843488e82591f2800946, type: 3}
 --- !u!1 &8582016250964789232 stripped
 GameObject:
@@ -367,6 +370,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d1587fe307d4464095b285f69ba8e1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <identity>k__BackingField:
+    name: 
+    spawnLevel: 0
+    faction: 0
+    isUnique: 0
+    priority: 0
+  <basicStats>k__BackingField:
+    maxHealth: 0
+    armor: 0
+  <currentHealth>k__BackingField: 0
+  <side>k__BackingField: 0
   unitProduceSO: {fileID: 11400000, guid: df3c036bb98a8454db51a159b896e0fc, type: 2}
   canFly: 0
   unitFlyStats:
@@ -422,20 +436,13 @@ MonoBehaviour:
   projectileShooter: {fileID: 7235389321724902457}
   hitCollider: {fileID: 3876055320010897752}
   healthBarFade: {fileID: 5809330042084290733}
-  DetectionRange: 40
-  AttackRange: 10
-  moveSpeed: 1
-  flyHeight: 5
-  attackDamage: 100
-  attackCooldown: 2
+  unitStats: {fileID: 2337374514683609302}
   separationRadius: 0.8
   separationStrength: 0.1
   narrowViewAngle: 10
   wideViewAngle: 45
-  isAirUnit: 0
-  unitStats: {fileID: 2337374514683609302}
   agent: {fileID: 4637335217204809781}
-  animator: {fileID: 0}
+  animator: {fileID: 1500747594756561863}
   target: {fileID: 0}
   primaryTarget: {fileID: 0}
   secondaryTarget: {fileID: 0}
@@ -444,9 +451,18 @@ MonoBehaviour:
   narrowAngleBonus: 30
   wideAngleBonus: 20
   peripheralAngleBonus: 10
-  unitWeight: 10
-  buildingWeight: 0
-  unitSide: 0
+--- !u!114 &-3195223185349397768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8582016250964789232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8a219dd3e26f77458ac831b7a1b5d95, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &8958401705000738122 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 2e0a719b6ed4843488e82591f2800946, type: 3}

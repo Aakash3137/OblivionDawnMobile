@@ -16,10 +16,6 @@ public class ProjectileDefinition
     public bool isAreaDamage;
     public float damageRadius = 3f;
 
-    [Header("Targeting")]
-    public bool canHitAir;
-    public bool canHitGround;
-
     [Header("Visuals")]
     public bool hasTrail = true;
     public GameObject launchVFX;

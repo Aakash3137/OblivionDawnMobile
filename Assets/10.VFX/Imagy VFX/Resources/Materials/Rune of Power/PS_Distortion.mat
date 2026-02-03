@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: PS_Distortion
+  m_Shader: {fileID: 4800000, guid: 9f65e3833e2f479478e8147808e53b64, type: 3}
+  m_Parent: {fileID: 2100000, guid: b7b4e12b3ca97e241a6b312d57b8d777, type: 2}
+  m_ModifiedSerializedProperties: 6
+  m_ValidKeywords: []
+  m_InvalidKeywords:
+  - _USEFRESNELALPHA_ON
+  m_LightmapFlags: 0
+  m_EnableInstancingVariants: 1
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _DistortionTexture:
+        m_Texture: {fileID: 2800000, guid: d784595d7b8bfef41ac0a5bd8fa0a662, type: 3}
+        m_Scale: {x: 1.5, y: 1.5}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _Distortion: 0.03
+    - _FresnelPower: 0.5
+    m_Colors:
+    - _DistortionSpeed: {r: 0.5, g: 0.4, b: 0, a: 0}
+    - _TintColor: {r: 0, g: 0, b: 0, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

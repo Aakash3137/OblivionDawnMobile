@@ -8161,7 +8161,7 @@ NavMeshAgent:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1520344984127084345}
-  m_Enabled: 1
+  m_Enabled: 0
   m_AgentTypeID: 0
   m_Radius: 0.5
   m_Speed: 3.5
@@ -8188,6 +8188,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d1587fe307d4464095b285f69ba8e1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <identity>k__BackingField:
+    name: 
+    spawnLevel: 0
+    faction: 0
+    isUnique: 0
+    priority: 0
+  <basicStats>k__BackingField:
+    maxHealth: 0
+    armor: 0
+  <currentHealth>k__BackingField: 0
+  <side>k__BackingField: 0
   unitProduceSO: {fileID: 11400000, guid: 9891769d75e5ba94d95560a6e8f8d1d7, type: 2}
   canFly: 0
   unitFlyStats:
@@ -8234,7 +8245,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1520344984127084345}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b6b669df515259e41b2d6337161e8ddf, type: 3}
   m_Name: 
@@ -8243,19 +8254,11 @@ MonoBehaviour:
   projectileShooter: {fileID: 2716973348061449838}
   hitCollider: {fileID: 2131414000740522473}
   healthBarFade: {fileID: 4704763945467186824}
-  DetectionRange: 50
-  AttackRange: 8
-  moveSpeed: 2.5
-  flyHeight: 4
-  attackDamage: 30
-  attackCooldown: 0.5
+  unitStats: {fileID: 7223045065685987591}
   separationRadius: 1
   separationStrength: 1
   narrowViewAngle: 15
   wideViewAngle: 180
-  DefenceRotateObject: {fileID: 0}
-  isAirUnit: 1
-  unitStats: {fileID: 7223045065685987591}
   agent: {fileID: 2959904208157639787}
   animator: {fileID: 0}
   target: {fileID: 0}
@@ -8266,9 +8269,6 @@ MonoBehaviour:
   narrowAngleBonus: 30
   wideAngleBonus: 20
   peripheralAngleBonus: 10
-  unitWeight: 10
-  buildingWeight: 0
-  unitSide: 0
 --- !u!114 &-8497301248078583947
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8281,16 +8281,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50861694b51a270468c37aafb6022cfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flyHeight: 4
-  climbAngle: 80
-  moveSpeed: 2.5
-  turnSpeed: 1
-  bankAngle: 25
+  projectileShooter: {fileID: 2716973348061449838}
+  animator: {fileID: 0}
+  unitStats: {fileID: 7223045065685987591}
+  distanceWeight: 50
+  lowHealthBonus: 40
+  narrowAngleBonus: 30
+  wideAngleBonus: 20
+  peripheralAngleBonus: 10
+  checkRadiusOffset: 0.5
   burstCount: 6
   burstCooldown: 0.1
-  evadeRadius: 50
-  attackAngleTolerance: 90
   invulnerableDuringTakeoff: 1
+  separationRadius: 1.5
+  separationStrength: 2
 --- !u!1 &1536657000286296307
 GameObject:
   m_ObjectHideFlags: 0

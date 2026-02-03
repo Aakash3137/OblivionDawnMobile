@@ -27,7 +27,7 @@ public class ProjectilePoolManager : MonoBehaviour
 
             for (int i = 0; i < pool.size; i++)
             {
-                Projectile p = Instantiate(pool.prefab, transform.position, Quaternion.identity);
+                Projectile p = Instantiate(pool.prefab, transform.position, Quaternion.identity, transform);
                 p.gameObject.SetActive(false);
                 list.Add(p);
             }
