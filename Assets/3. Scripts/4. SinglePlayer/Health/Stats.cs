@@ -34,11 +34,10 @@ public class Stats : MonoBehaviour
         healthBar = GetComponentInChildren<HealthProgress>();
         healthBarFade = GetComponentInChildren<FadeHealthBar>();
         hitCollider = GetComponent<Collider>();
+
         TryGetComponent<AirUnit>(out var airUnit);
         this.airUnit = airUnit;
 
-        if (healthBar != null)
-            healthBar.UpdateFillAmount(currentHealth / basicStats.maxHealth);
         // else
         //Debug.Log($"<color=#FFC0CB>{name} missing HealthBar. Assign the script.</color>");
 
@@ -46,6 +45,9 @@ public class Stats : MonoBehaviour
     internal virtual void Start()
     {
         currentHealth = basicStats.maxHealth;
+
+        if (healthBar != null)
+            healthBar.UpdateFillAmount(currentHealth / basicStats.maxHealth);
 
         Renderer renderer = GetComponentInChildren<Renderer>();
 

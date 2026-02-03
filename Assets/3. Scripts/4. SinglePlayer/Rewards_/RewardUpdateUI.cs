@@ -1,3 +1,4 @@
+using System.Collections;
 using LitMotion;
 using LitMotion.Extensions;
 using TMPro;
@@ -45,33 +46,23 @@ public class RewardUpdateUI : MonoBehaviour
 
         var obj = Instantiate(gemClaimed, spawnPosition, Quaternion.identity, transform);
 
-        Vector3 offsetPosition = Random.insideUnitCircle.normalized * Random.Range(animOffsetMin, animOffsetMax);
+        Vector3 offsetDirection = Random.insideUnitCircle.normalized * Random.Range(animOffsetMin, animOffsetMax);
         Vector3 startPosition = spawnPosition;
-        Vector3 endPosition = spawnPosition + offsetPosition;
+        Vector3 offsetPosition = spawnPosition + offsetDirection;
+        Vector3 endPosition = gemIcon.position;
 
-        // Displace the gem a bit in random direction
-        LMotion.Create(startPosition, endPosition, 0.3f)
-            .WithEase(Ease.Linear).WithOnComplete(() =>
-            {
-                startPosition = endPosition;
-                endPosition = gemIcon.position;
-                // Animate the gem towards the gem icon
-                Generic.Delay(() => GemAnimation(obj, startPosition, endPosition), animDurationDelay);
-            })
-            .BindToPosition(obj.GetComponent<RectTransform>())
-            .AddTo(obj);
+        // using Lit Motion sequence for animation
+        LSequence.Create()
+                .Append(LMotion.Create(startPosition, offsetPosition, 0.3f).WithEase(Ease.Linear).BindToPosition(obj.GetComponent<RectTransform>()))
+                .AppendInterval(animDurationDelay)
+                .Append(LMotion.Create(offsetPosition, endPosition, 1f).WithEase(Ease.InOutSine).WithOnComplete(() => OnGemCollected(obj)).BindToPosition(obj.GetComponent<RectTransform>()))
+                .Run();
     }
 
-    private void GemAnimation(GameObject obj, Vector3 startPosition, Vector3 endPosition)
+    private void OnGemCollected(GameObject obj)
     {
-        LMotion.Create(startPosition, endPosition, 1f)
-            .WithEase(Ease.InOutSine).WithOnComplete(() =>
-            {
-                Destroy(obj);
-                userdata.Diamonds++;
-                UpdateGemCount(userdata.Diamonds);
-            })
-            .BindToPosition(obj.GetComponent<RectTransform>())
-            .AddTo(obj);
+        Destroy(obj);
+        userdata.Diamonds++;
+        UpdateGemCount(userdata.Diamonds);
     }
 }
