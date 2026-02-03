@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -33,10 +34,9 @@ public class InventorySlot : MonoBehaviour, IDropHandler
         if (eventData.pointerDrag == null)
             return;
 
-        DraggableObject dragged =
-            eventData.pointerDrag.GetComponent<DraggableObject>();
+        DraggableObject dragged = eventData.pointerDrag.GetComponent<DraggableObject>();
 
-        Debug.Log($"Dragged Object: {dragged} && Dragged Item: {dragged._Item.name} Status: {dragged._Item.isEquipped}");
+        // Debug.Log($"Dragged Object: {dragged} && Dragged Item: {dragged._Item.name} Status: {dragged._Item.isEquipped}");
 
         if (dragged == null)
             return;
@@ -50,12 +50,20 @@ public class InventorySlot : MonoBehaviour, IDropHandler
         dragged._Item.isEquipped = true;
         CurrentItem._Item.isEquipped = false;
 
+        StartCoroutine(SetData(dragged._Item));
+
         InventoryManager.Instance.RequestMove(
             dragged.CurrentSlot.Group,
             dragged.CurrentSlot.SlotIndex,
             Group,
             SlotIndex
         );
+    }
+
+    private IEnumerator SetData(Item item)
+    {
+        yield return new WaitForSeconds(0.15f);
+        InventoryManager.Instance.ItemSave(item._Category);
     }
 
     // ----------------------------------------------------

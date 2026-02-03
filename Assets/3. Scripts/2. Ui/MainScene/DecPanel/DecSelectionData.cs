@@ -6,7 +6,6 @@ using UnityEngine;
 public class DecSelectionData : ScriptableObject
 {
     public List<DeckData> AllFactionDecData = new List<DeckData>();
-    public List<DeckData> AllFactionDecDatatem = new List<DeckData>();
 
     public FactionName CurrentFaction;
 
@@ -23,15 +22,6 @@ public class DecSelectionData : ScriptableObject
 
 [System.Serializable]
 public class DeckData
-{
-    public FactionName FactionType;
-    public List<UnitProduceStatsSO> SelectedUnitDeck = new List<UnitProduceStatsSO>();
-    public List<DefenseBuildingDataSO> SelectedDefenseDec= new List<DefenseBuildingDataSO>();
-    public List<ResourceBuildingDataSO> SelectedResourceDeck = new List<ResourceBuildingDataSO>();
-}
-
-[System.Serializable]
-public class TempDeckData
 {
     public FactionName FactionType;
     public List<UnitProduceStatsSO> SelectedUnitDeck = new List<UnitProduceStatsSO>();

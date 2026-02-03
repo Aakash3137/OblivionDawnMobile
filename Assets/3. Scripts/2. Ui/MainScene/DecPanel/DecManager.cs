@@ -13,8 +13,8 @@ public class DecManager : MonoBehaviour
 
     [Header("Selection Data")]
     [SerializeField] private DecSelectionData selectionData;
-    private DecSelector CurrentDec;
-    private DecCategory CurrentCategory;
+    [SerializeField] private DecSelector CurrentDec;
+    [SerializeField] private DecCategory CurrentCategory;
 
     [Header("Inventory Reference")]
     [SerializeField] private InventoryManager inventoryManager;
@@ -27,7 +27,7 @@ public class DecManager : MonoBehaviour
     [SerializeField] private TMP_Text Coins;
     [SerializeField] private Button OffenseBtn, DefenseBtn;
 
-    private DecCategory currentCategory;
+    //private DecCategory currentCategory;
 
     private void OnEnable()
     {
@@ -97,11 +97,13 @@ public class DecManager : MonoBehaviour
     public void OnOffenseSelected()
     {
         SelectCategory(DecCategory.Offense);
+        CurrentCategory= DecCategory.Offense;
     }
 
     public void OnDefenseSelected()
     {
         SelectCategory(DecCategory.Defense);
+        CurrentCategory= DecCategory.Defense;
     }
 
     private void SelectCategory(DecCategory decCategory)
@@ -154,7 +156,10 @@ public class DecManager : MonoBehaviour
                 _Canvas,
                 GetUnitStats(card),
                 selectionData.CurrentFaction,
-                true
+                true, 
+                CurrentCategory,
+                cards[i],
+                null
             );
         }
     }
@@ -167,14 +172,17 @@ public class DecManager : MonoBehaviour
         {
             var card = cards[i];
 
-            // inventoryManager.AddEquippedItem(
-            //     card.unitIdentity.name,
-            //     card.unitType.ToString(),
-            //     _Canvas,
-            //     GetUnitStats(card),
-            //     selectionData.CurrentFaction,
-            //     true
-            // );
+            inventoryManager.AddEquippedItem(
+                card.buildingIdentity.name,
+                card.buildingType.ToString(),
+                _Canvas,
+                "GetUnitStats(card)",
+                selectionData.CurrentFaction,
+                true,
+                CurrentCategory,
+                null,
+                cards[i]
+            );
         }
     }
 
@@ -184,8 +192,8 @@ public class DecManager : MonoBehaviour
     private void RefreshAllCards(DecSelector _dec)
     {
         inventoryManager.ClearUnequipped();
-
-        if (currentCategory == DecCategory.Offense)
+        Debug.Log("Current Dec"+ CurrentCategory);
+        if (CurrentCategory == DecCategory.Offense)
             BuildAllUnitCardsInventory(_dec.UnitCards);
         else
             BuildAllDefenseInventory(_dec.DefenseCards);
@@ -193,6 +201,7 @@ public class DecManager : MonoBehaviour
 
     private void BuildAllUnitCardsInventory(List<UnitProduceStatsSO> cards)
     {
+        Debug.Log("Current Dec Category: "+ CurrentCategory);
         foreach (var card in cards)
         {
             inventoryManager.AddUnequippedItem(
@@ -201,13 +210,17 @@ public class DecManager : MonoBehaviour
                 _Canvas,
                 GetUnitStats(card),
                 selectionData.CurrentFaction,
-                false
+                false,
+                CurrentCategory,
+                card,
+                null
             );
         }
     }
 
     private void BuildAllDefenseInventory(List<DefenseBuildingDataSO> buildings)
     {
+        Debug.Log("Current Dec Category: "+ CurrentCategory);
         foreach (var building in buildings)
         {
             inventoryManager.AddUnequippedItem(
@@ -216,7 +229,10 @@ public class DecManager : MonoBehaviour
                 _Canvas,
                 GetBuildingStats(building),
                 selectionData.CurrentFaction,
-                false
+                false,
+                CurrentCategory,
+                null,
+                building
             );
         }
     }
@@ -224,6 +240,7 @@ public class DecManager : MonoBehaviour
     // =========================
     // HELPERS
     // =========================
+
     private string GetUnitStats(UnitProduceStatsSO card)
     {
         return
@@ -263,6 +280,7 @@ public class DecManager : MonoBehaviour
 // =========================
 // SUPPORT
 // =========================
+
 public enum DecCategory
 {
     Offense,

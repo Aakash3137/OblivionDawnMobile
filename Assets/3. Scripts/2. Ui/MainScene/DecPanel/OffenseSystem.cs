@@ -27,4 +27,16 @@ public static class OffenseSystem
 
         return new List<UnitProduceStatsSO>();
     }
+
+    public static List<UnitProduceStatsSO> UpdateData()
+    {
+        List<UnitProduceStatsSO> units = new();
+        
+        foreach(var SO in InventoryManager.Instance.equippedData)
+        {
+            units.Add(SO.Units);
+        }
+        
+        return units;
+    }
 }
