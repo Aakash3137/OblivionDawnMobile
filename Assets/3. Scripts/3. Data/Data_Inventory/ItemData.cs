@@ -18,4 +18,5 @@ public class ItemData : ScriptableObject
 
     [Header("Game Data")] 
     [SerializeField]internal UnitProduceStatsSO ItemSo;
+    [SerializeField] internal DefenseBuildingDataSO DefenseSo;
 }

@@ -28,9 +28,9 @@ public class ItemDatabase : MonoBehaviour
         }
     }
 
-    public Item CreateItemUI(string itemId, string UnitType, Canvas _Canvas, string Details, FactionName _FName, ItemDetailsWindow detailsWindow, bool IsEquipped)
+    public Item CreateItemUI(string itemId, string UnitType, Canvas _Canvas, string Details, FactionName _FName, ItemDetailsWindow detailsWindow, bool IsEquipped, DecCategory category)
     {
-        GameDebug.LogWarning($"Creating Item UI for Item ID: {itemId} UnitType: {UnitType}   Details: {Details} Faction: {_FName} IsEquipped: {IsEquipped} ItemDatabase Count: {lookup.Count}");
+        GameDebug.Log($"Creating Item UI for Item ID: {itemId} UnitType: {UnitType}   Details: {Details} Faction: {_FName} IsEquipped: {IsEquipped} ItemDatabase Count: {lookup.Count} Category {category}");
         if (!lookup.TryGetValue(itemId, out var data))
         {
             Debug.LogError($"Item ID not found: {data.name}");
@@ -38,7 +38,17 @@ public class ItemDatabase : MonoBehaviour
         }
 
         Item item = Instantiate(data.itemUIPrefab);
-        item.unit = data.ItemSo;
+        Debug.Log("Dec Category: " + category);
+            item._Category = category;
+
+        if(category == DecCategory.Offense)
+        {
+            item.unit = data.ItemSo;
+        }
+        else if(category == DecCategory.Defense)
+        {
+            item.Defense = data.DefenseSo;
+        }
 
         item.SetupItem(
             data.itemName,
@@ -48,8 +58,7 @@ public class ItemDatabase : MonoBehaviour
             IsEquipped,
             _FName,
             detailsWindow,
-            _Canvas,
-            data.ItemSo
+            _Canvas
         );
 
         return item;

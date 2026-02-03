@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Unity.Android.Gradle;
 using UnityEngine;
 
 public class InventoryManager : MonoBehaviour
@@ -22,9 +23,12 @@ public class InventoryManager : MonoBehaviour
     // DATA (SAVE TO PLAYFAB)
     // ==================================================
 
+    [Header ("Game Data")]
+    [SerializeField] private DecSelectionData _SelectionData;
+
     [Header("Inventory Data")]
-    [SerializeField] private List<InventoryItemData> equippedData = new();
-    [SerializeField] private List<InventoryItemData> unequippedData = new();
+    [SerializeField] internal List<InventoryItemData> equippedData = new();
+    [SerializeField] internal List<InventoryItemData> unequippedData = new();
 
     // ==================================================
     // RUNTIME
@@ -33,7 +37,10 @@ public class InventoryManager : MonoBehaviour
     private readonly List<InventorySlot> equippedSlots = new();
     private readonly List<InventorySlot> unequippedSlots = new();
 
+
     [SerializeField] private ItemDetailsWindow itemDetailsWindow;
+
+
 
 
     private void Awake()
@@ -51,7 +58,7 @@ public class InventoryManager : MonoBehaviour
 
     private void Start()
     {
-        RefreshUI();
+       //RefreshUI();
     }
 
     // ==================================================
@@ -64,8 +71,7 @@ public class InventoryManager : MonoBehaviour
 
         for (int i = 0; i < equippedSlotCount; i++)
         {
-            InventorySlot slot =
-                Instantiate(equippedSlotPrefab, equippedSlotsParent);
+            InventorySlot slot = Instantiate(equippedSlotPrefab, equippedSlotsParent);
 
             slot.Initialize(i, SlotGroup.Equipped);
             equippedSlots.Add(slot);
@@ -86,20 +92,20 @@ public class InventoryManager : MonoBehaviour
     // PUBLIC API (USED BY DecManager / Slots)
     // ==================================================
 
-    public void AddEquippedItem(string itemId, string UnitType, Canvas _Canvas, string Details, FactionName _FName, bool Status)
+    public void AddEquippedItem(string itemId, string UnitType, Canvas _Canvas, string Details, FactionName _FName, bool Status, DecCategory category, UnitProduceStatsSO unit, DefenseBuildingDataSO Defense)
     {
         GameDebug.LogWarning($"Add Equipped Item ==>  Item ID: {itemId} UnitType: {UnitType}   Details: {Details} Faction: {_FName} IsEquipped: {Status}");
         if (equippedData.Count >= equippedSlotCount)
             return;
 
-        equippedData.Add(new InventoryItemData(itemId, UnitType, _Canvas, Details, _FName, Status));
+        equippedData.Add(new InventoryItemData(itemId, UnitType, _Canvas, Details, _FName, Status, category, unit, Defense));
         Debug.Log($"Added Equipped Item: {itemId} to  RefreshinhUI");
         RefreshUI();
     }
 
-    public void AddUnequippedItem(string itemId, string UnitType, Canvas _Canvas, string Details, FactionName _FName, bool Status)
+    public void AddUnequippedItem(string itemId, string UnitType, Canvas _Canvas, string Details, FactionName _FName, bool Status, DecCategory decCategory,  UnitProduceStatsSO unit, DefenseBuildingDataSO Defense)
     {
-        unequippedData.Add(new InventoryItemData(itemId, UnitType, _Canvas, Details, _FName, Status));
+        unequippedData.Add(new InventoryItemData(itemId, UnitType, _Canvas, Details, _FName, Status, decCategory, unit, Defense));
         RefreshUI();
     }
 
@@ -129,8 +135,6 @@ public class InventoryManager : MonoBehaviour
             Debug.Log("Moving to different group");
             MoveBetweenGroups(fromGroup, fromIndex, toGroup, toIndex);
         }
-
-       
     }
 
     // ==================================================
@@ -148,8 +152,6 @@ public class InventoryManager : MonoBehaviour
             return;
 
         (list[a], list[b]) = (list[b], list[a]);
-
-        
     }
 
     private void MoveBetweenGroups(
@@ -229,7 +231,8 @@ public class InventoryManager : MonoBehaviour
                     equippedData[i].itemCanvas,
                     equippedData[i].description,
                     equippedData[i].factionType,
-                    equippedData[i].IsEquipped
+                    equippedData[i].IsEquipped,
+                    equippedData[i]._Dec
                     );
 
             item._Item.isEquipped = true;
@@ -247,7 +250,8 @@ public class InventoryManager : MonoBehaviour
                     unequippedData[i].itemCanvas,
                     unequippedData[i].description,
                     unequippedData[i].factionType,
-                    unequippedData[i].IsEquipped
+                    unequippedData[i].IsEquipped,
+                    unequippedData[i]._Dec
                     );
             item._Item.isEquipped = false;
             unequippedSlots[i].SetItem(item);
@@ -271,11 +275,11 @@ public class InventoryManager : MonoBehaviour
             CreateUnequippedSlot(unequippedSlots.Count);
     }
 
-    private DraggableObject CreateUIItem(string itemId, string UnitType, Canvas _Canvas, string Details, FactionName _FName, bool Status)
+    private DraggableObject CreateUIItem(string itemId, string UnitType, Canvas _Canvas, string Details, FactionName _FName, bool Status, DecCategory category)
     {
         GameDebug.LogWarning($"Create UI Item ==>  Item ID: {itemId} UnitType: {UnitType}   Details: {Details} Faction: {_FName} IsEquipped: {Status}");
         Item itemGO =
-            ItemDatabase.Instance.CreateItemUI(itemId, UnitType, _Canvas, Details, _FName, itemDetailsWindow, Status);
+            ItemDatabase.Instance.CreateItemUI(itemId, UnitType, _Canvas, Details, _FName, itemDetailsWindow, Status, category);
 
 
         return itemGO.GetComponent<DraggableObject>();
@@ -300,6 +304,29 @@ public class InventoryManager : MonoBehaviour
         equippedData = equipped;
         unequippedData = unequipped;
         RefreshUI();
+    }
+
+    public void ItemSave(DecCategory category)
+    {
+        if(category == DecCategory.Offense)
+        {
+            _SelectionData.AllFactionDecData[0].SelectedUnitDeck.Clear();
+            foreach(var item in equippedData)
+            {
+                _SelectionData.AllFactionDecData[0].FactionType = item.factionType;
+                _SelectionData.AllFactionDecData[0].SelectedUnitDeck.Add(item.Units);
+                Debug.Log("Offense data: " + item.Units.name);
+            }    
+        }
+        else if(category == DecCategory.Defense)
+        {
+            _SelectionData.AllFactionDecData[0].SelectedDefenseDec.Clear();
+            foreach(var item in equippedData)
+            {
+                _SelectionData.AllFactionDecData[0].FactionType = item.factionType;
+                _SelectionData.AllFactionDecData[0].SelectedDefenseDec.Add(item.Defenses);    
+            }
+        }
     }
 }
 

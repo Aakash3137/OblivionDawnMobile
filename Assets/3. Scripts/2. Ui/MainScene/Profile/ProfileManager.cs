@@ -15,7 +15,7 @@ public class ProfileManager : MonoBehaviour
     [SerializeField] private TMP_Text Gems;
     [SerializeField] internal Button crossButton;
     [SerializeField] internal Button EditButton;
-    [SerializeField] internal Image UserPic, HomePic;
+    [SerializeField] internal Image UserPic, HomePic, CircleFill;
 
     [SerializeField] internal Userdata ProfileData;
     [SerializeField] internal ProfileEditData profileEditData;
