@@ -708,16 +708,14 @@ MonoBehaviour:
   projectile:
     projectileType: 0
     motion: 0
-    speed: 15
-    maxRange: 20
+    speed: 25
+    maxRange: 5
     arcHeight: 4
-    lifeTime: 4
+    lifeTime: 2
     isAreaDamage: 0
     damageRadius: 2
-    canHitAir: 1
-    canHitGround: 1
-    hasTrail: 1
-    launchVFX: {fileID: 0}
+    hasTrail: 0
+    launchVFX: {fileID: 7028878908249187031, guid: 70fc78afd67fc8a4ca9377c9d84f8bba, type: 3}
     hitVFX: {fileID: 1447540632109744634, guid: c8153071efd10e04eb894c3973bae1f9, type: 3}
   damage: 30
   playerTrailMaterial: {fileID: 2100000, guid: 82c3733d49fb2334b8ef2f0d90268a35, type: 2}
@@ -748,11 +746,6 @@ MonoBehaviour:
   target: {fileID: 0}
   primaryTarget: {fileID: 0}
   secondaryTarget: {fileID: 0}
-  distanceWeight: 500
-  lowHealthBonus: 40
-  narrowAngleBonus: 30
-  wideAngleBonus: 20
-  peripheralAngleBonus: 10
 --- !u!114 &3178270743560080631
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -774,7 +767,7 @@ MonoBehaviour:
   wideAngleBonus: 20
   peripheralAngleBonus: 10
   checkRadiusOffset: 0.5
-  burstCount: 6
+  burstCount: 1
   burstCooldown: 0.1
   invulnerableDuringTakeoff: 1
   separationRadius: 1.5

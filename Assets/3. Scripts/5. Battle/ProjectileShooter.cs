@@ -23,10 +23,14 @@ public class ProjectileShooter : MonoBehaviour
         if (target == null || projectile == null)
             return;
 
-        // 🔥 LAUNCH VFX
+        //  LAUNCH VFX
         if (projectile.launchVFX != null && muzzlePoint != null)
         {
-            Instantiate(projectile.launchVFX, muzzlePoint.position, gameObject.transform.rotation);
+            GameObject vfx = Instantiate(projectile.launchVFX, muzzlePoint.position, gameObject.transform.rotation, gameObject.transform);
+            ParticleSystem ps = vfx.GetComponent<ParticleSystem>();
+            var main = ps.main;
+            main.loop = false;
+            Destroy(vfx, ps.main.duration);
         }
 
         Projectile proj =

@@ -92,7 +92,8 @@ public struct Visuals
 [Serializable]
 public struct AttackStats
 {
-    public float damage;
+    public float damage;   // apply to take damage for units only
+    public float buildingDamage;   // apply to take damage for buildings - include resource, defence, offense buildings
     public float fireRate;
 }
 
