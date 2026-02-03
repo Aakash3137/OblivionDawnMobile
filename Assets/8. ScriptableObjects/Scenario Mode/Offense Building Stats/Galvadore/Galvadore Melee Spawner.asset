@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 109fcb5c7bddc85438ecbc29d244cf82, type: 3}
+  m_Name: Galvadore Melee Spawner
+  m_EditorClassIdentifier: 
+  buildingIdentity:
+    name: Galvadore MeleeBuilding
+    spawnLevel: 0
+    faction: 3
+    isUnique: 0
+    priority: 0
+  buildingType: 2
+  buildingVisuals:
+    playerUnitMaterial: {fileID: 2100000, guid: bb9e30fb8e3e30046b9505bd1ff8f567, type: 2}
+    enemyUnitMaterial: {fileID: 2100000, guid: 5a50fa0fa8be63f48b502fa57e0c55af, type: 2}
+  buildingBuildCost:
+  - resourceType: 0
+    resourceCost: 20
+  - resourceType: 1
+    resourceCost: 20
+  - resourceType: 2
+    resourceCost: 10
+  - resourceType: 3
+    resourceCost: 0
+  offenseType: 2
+  unitPrefab: {fileID: 0}
+  offenseBuildingUpgradeData:
+  - buildingLevel: 0
+    buildingBasicStats:
+      maxHealth: 1500
+      armor: 0
+    buildingBuildTime: 0
+    unitSpawnTime: 20

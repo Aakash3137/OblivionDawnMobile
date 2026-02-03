@@ -65,14 +65,19 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     private void OnClick()
     {
+        if (prmInstance == null)
+            prmInstance = PlayerResourceManager.Instance;
+
+        costPanelManager.Hide();
+
         if (buildingToSpawn != null && buildingToSpawn != null)
         {
             tileUIPanel.PlaceBuilding(buildingToSpawn);
 
-            // if (cachedCosts != null && prmInstance.HasResources(cachedCosts))
-            // {
-            //     costPanelManager.Hide();
-            // }
+            if (cachedCosts != null && !prmInstance.HasResources(cachedCosts))
+            {
+                costPanelManager.Show(cachedCosts);
+            }
         }
     }
 
@@ -117,7 +122,9 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     public void OnPointerExit(PointerEventData eventData)
     {
+#if UNITY_EDITOR
         costPanelManager.Hide();
+#endif
     }
 
     private void OnDestroy()

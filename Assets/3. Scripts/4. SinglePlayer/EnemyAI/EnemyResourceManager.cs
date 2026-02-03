@@ -23,6 +23,10 @@ public class EnemyResourceManager : ResourceManager
     public void HackResources()
     {
         BuildCost[] resources = new BuildCost[4];
+        startingResources[0].resourceCost = 9999;
+        startingResources[1].resourceCost = 9999;
+        startingResources[2].resourceCost = 9999;
+        startingResources[3].resourceCost = 9999;
         resources[0].resourceCost = 9999;
         resources[1].resourceCost = 9999;
         resources[2].resourceCost = 9999;
