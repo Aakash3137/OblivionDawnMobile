@@ -338,13 +338,13 @@ public class EnemyAIHandler : MonoBehaviour
         switch (enemyFactionName)
         {
             case FactionName.Medieval:
-                return new[] { factionData.medievalAirBuilding, factionData.medievalInfantryBuilding, factionData.medievalTankBuilding };
+                return new[] { factionData.medievalAirBuilding, factionData.medievalMeleeBuilding, factionData.medievalRangedBuilding };
             case FactionName.Present:
-                return new[] { factionData.presentAirBuilding, factionData.presentInfantryBuilding, factionData.presentTankBuilding };
+                return new[] { factionData.presentAirBuilding, factionData.presentMeleeBuilding, factionData.presentRangedBuilding };
             case FactionName.Futuristic:
-                return new[] { factionData.futureAirBuilding, factionData.futureInfantryBuilding, factionData.futureTankBuilding };
+                return new[] { factionData.futureAirBuilding, factionData.futureMeleeBuilding, factionData.futureRangedBuilding };
             case FactionName.Galvadore:
-                return new[] { factionData.galvadoreAirBuilding, factionData.galvadoreInfantryBuilding, factionData.galvadoreTankBuilding };
+                return new[] { factionData.galvadoreAirBuilding, factionData.galvadoreMeleeBuilding, factionData.galvadoreRangedBuilding };
             default:
                 return new GameObject[0];
         }

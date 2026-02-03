@@ -95,19 +95,19 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
             case FactionName.Present:
                 if (type == ScenarioBuildingType.MainBuilding) return data.presentMainBuilding;
                 if (type == ScenarioBuildingType.DefenseBuilding) return data.presentTurretBuilding;
-                if (type == ScenarioBuildingType.OffenseBuilding) return data.presentInfantryBuilding;
+                if (type == ScenarioBuildingType.OffenseBuilding) return data.presentMeleeBuilding;
                 if (type == ScenarioBuildingType.ResourceBuilding) return GetPresentResourceBuilding(data);
                 break;
             case FactionName.Futuristic:
                 if (type == ScenarioBuildingType.MainBuilding) return data.futureMainBuilding;
                 if (type == ScenarioBuildingType.DefenseBuilding) return data.futureTurretBuilding;
-                if (type == ScenarioBuildingType.OffenseBuilding) return data.futureInfantryBuilding;
+                if (type == ScenarioBuildingType.OffenseBuilding) return data.futureMeleeBuilding;
                 if (type == ScenarioBuildingType.ResourceBuilding) return GetFuturisticResourceBuilding(data);
                 break;
             case FactionName.Galvadore:
                 if (type == ScenarioBuildingType.MainBuilding) return data.galvadoreMainBuilding;
                 if (type == ScenarioBuildingType.DefenseBuilding) return data.galvadoreTurretBuilding;
-                if (type == ScenarioBuildingType.OffenseBuilding) return data.galvadoreInfantryBuilding;
+                if (type == ScenarioBuildingType.OffenseBuilding) return data.galvadoreMeleeBuilding;
                 if (type == ScenarioBuildingType.ResourceBuilding) return GetGalvadoreResourceBuilding(data);
                 break;
         }
@@ -269,12 +269,12 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         {
             case ScenarioUnitType.Air:
                 return factionData.medievalAirBuilding;
-            case ScenarioUnitType.Infantry:
-                return factionData.medievalInfantryBuilding;
             case ScenarioUnitType.Melee:
                 return factionData.medievalMeleeBuilding;
-            case ScenarioUnitType.Tank:
-                return factionData.medievalTankBuilding;
+            case ScenarioUnitType.AOERanged:
+                return factionData.medievalAOERangedBuilding;
+            case ScenarioUnitType.Ranged:
+                return factionData.medievalRangedBuilding;
             default:
                 return null;
         }
@@ -286,10 +286,10 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         {
             case ScenarioUnitType.Air:
                 return factionData.presentAirBuilding;
-            case ScenarioUnitType.Infantry:
-                return factionData.presentInfantryBuilding;
-            case ScenarioUnitType.Tank:
-                return factionData.presentTankBuilding;
+            case ScenarioUnitType.Melee:
+                return factionData.presentMeleeBuilding;
+            case ScenarioUnitType.Ranged:
+                return factionData.presentRangedBuilding;
             default:
                 return null;
         }
@@ -301,10 +301,10 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         {
             case ScenarioUnitType.Air:
                 return factionData.futureAirBuilding;
-            case ScenarioUnitType.Infantry:
-                return factionData.futureInfantryBuilding;
-            case ScenarioUnitType.Tank:
-                return factionData.futureTankBuilding;
+            case ScenarioUnitType.Melee:
+                return factionData.futureMeleeBuilding;
+            case ScenarioUnitType.Ranged:
+                return factionData.futureRangedBuilding;
             default:
                 return null;
         }
@@ -316,10 +316,10 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         {
             case ScenarioUnitType.Air:
                 return factionData.galvadoreAirBuilding;
-            case ScenarioUnitType.Infantry:
-                return factionData.galvadoreInfantryBuilding;
-            case ScenarioUnitType.Tank:
-                return factionData.galvadoreTankBuilding;
+            case ScenarioUnitType.Melee:
+                return factionData.galvadoreMeleeBuilding;
+            case ScenarioUnitType.Ranged:
+                return factionData.galvadoreRangedBuilding;
             default:
                 return null;
         }

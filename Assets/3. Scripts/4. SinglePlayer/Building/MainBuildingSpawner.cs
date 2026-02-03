@@ -45,13 +45,13 @@ public class GameManager : MonoBehaviour
         switch (name)
         {
             case FactionName.Medieval:
-                return new[] { data.medievalMainBuilding, data.pastTurretBuilding, data.medievalInfantryBuilding, data.medievalGoldBuilding };
+                return new[] { data.medievalMainBuilding, data.pastTurretBuilding, data.medievalMeleeBuilding, data.medievalGoldBuilding };
             case FactionName.Present:
-                return new[] { data.presentMainBuilding, data.presentTurretBuilding, data.presentInfantryBuilding, data.presentGoldBuilding };
+                return new[] { data.presentMainBuilding, data.presentTurretBuilding, data.presentMeleeBuilding, data.presentGoldBuilding };
             case FactionName.Futuristic:
-                return new[] { data.futureMainBuilding, data.futureTurretBuilding, data.futureInfantryBuilding, data.futureGoldBuilding };
+                return new[] { data.futureMainBuilding, data.futureTurretBuilding, data.futureMeleeBuilding, data.futureGoldBuilding };
             case FactionName.Galvadore:
-                return new[] { data.galvadoreMainBuilding, data.galvadoreTurretBuilding, data.galvadoreInfantryBuilding, data.galvadoreGoldBuilding };
+                return new[] { data.galvadoreMainBuilding, data.galvadoreTurretBuilding, data.galvadoreMeleeBuilding, data.galvadoreGoldBuilding };
             default: return null;
         }
     }

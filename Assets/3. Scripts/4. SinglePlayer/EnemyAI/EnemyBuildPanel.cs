@@ -55,32 +55,32 @@ public class EnemyBuildPanel : MonoBehaviour
                 return buildingType switch
                 {
                     "Air" => factionData.medievalAirBuilding,
-                    "Infantry" => factionData.medievalInfantryBuilding,
-                    "Tank" => factionData.medievalTankBuilding,
+                    "Infantry" => factionData.medievalMeleeBuilding,
+                    "Tank" => factionData.medievalRangedBuilding,
                     _ => null
                 };
             case FactionName.Present:
                 return buildingType switch
                 {
                     "Air" => factionData.presentAirBuilding,
-                    "Infantry" => factionData.presentInfantryBuilding,
-                    "Tank" => factionData.presentTankBuilding,
+                    "Infantry" => factionData.presentMeleeBuilding,
+                    "Tank" => factionData.presentRangedBuilding,
                     _ => null
                 };
             case FactionName.Futuristic:
                 return buildingType switch
                 {
                     "Air" => factionData.futureAirBuilding,
-                    "Infantry" => factionData.futureInfantryBuilding,
-                    "Tank" => factionData.futureTankBuilding,
+                    "Infantry" => factionData.futureMeleeBuilding,
+                    "Tank" => factionData.futureRangedBuilding,
                     _ => null
                 };
             case FactionName.Galvadore:
                 return buildingType switch
                 {
                     "Air" => factionData.galvadoreAirBuilding,
-                    "Infantry" => factionData.galvadoreInfantryBuilding,
-                    "Tank" => factionData.galvadoreTankBuilding,
+                    "Infantry" => factionData.galvadoreMeleeBuilding,
+                    "Tank" => factionData.galvadoreRangedBuilding,
                     _ => null
                 };
             default:
