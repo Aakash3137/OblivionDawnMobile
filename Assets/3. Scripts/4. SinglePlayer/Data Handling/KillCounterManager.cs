@@ -37,13 +37,13 @@ public class KillCounterManager : MonoBehaviour
                     case ScenarioUnitType.Air:
                         enemyKills.unitKills.airUnitKills++;
                         break;
-                    case ScenarioUnitType.Infantry:
+                    case ScenarioUnitType.Melee:
                         enemyKills.unitKills.infantryUnitKills++;
                         break;
-                    case ScenarioUnitType.Melee:
+                    case ScenarioUnitType.AOERanged:
                         enemyKills.unitKills.meleeUnitKills++;
                         break;
-                    case ScenarioUnitType.Tank:
+                    case ScenarioUnitType.Ranged:
                         enemyKills.unitKills.tankUnitKills++;
                         break;
                 }
@@ -55,13 +55,13 @@ public class KillCounterManager : MonoBehaviour
                     case ScenarioUnitType.Air:
                         playerKills.unitKills.airUnitKills++;
                         break;
-                    case ScenarioUnitType.Infantry:
+                    case ScenarioUnitType.Melee:
                         playerKills.unitKills.infantryUnitKills++;
                         break;
-                    case ScenarioUnitType.Melee:
+                    case ScenarioUnitType.AOERanged:
                         playerKills.unitKills.meleeUnitKills++;
                         break;
-                    case ScenarioUnitType.Tank:
+                    case ScenarioUnitType.Ranged:
                         playerKills.unitKills.tankUnitKills++;
                         break;
                 }
@@ -205,13 +205,13 @@ public class KillCounterManager : MonoBehaviour
                     case ScenarioOffenseType.AirBuilding:
                         enemyKills.offenseBuildingDestroyed.airBuildingDestroyed++;
                         break;
-                    case ScenarioOffenseType.InfantryBuilding:
+                    case ScenarioOffenseType.MeleeBuilding:
                         enemyKills.offenseBuildingDestroyed.infantryBuildingDestroyed++;
                         break;
-                    case ScenarioOffenseType.MeleeBuilding:
+                    case ScenarioOffenseType.AOERangedBuilding:
                         enemyKills.offenseBuildingDestroyed.meleeBuildingDestroyed++;
                         break;
-                    case ScenarioOffenseType.TankBuilding:
+                    case ScenarioOffenseType.RangedBuilding:
                         enemyKills.offenseBuildingDestroyed.tankBuildingDestroyed++;
                         break;
                 }
@@ -222,13 +222,13 @@ public class KillCounterManager : MonoBehaviour
                     case ScenarioOffenseType.AirBuilding:
                         playerKills.offenseBuildingDestroyed.airBuildingDestroyed++;
                         break;
-                    case ScenarioOffenseType.InfantryBuilding:
+                    case ScenarioOffenseType.MeleeBuilding:
                         playerKills.offenseBuildingDestroyed.infantryBuildingDestroyed++;
                         break;
-                    case ScenarioOffenseType.MeleeBuilding:
+                    case ScenarioOffenseType.AOERangedBuilding:
                         playerKills.offenseBuildingDestroyed.meleeBuildingDestroyed++;
                         break;
-                    case ScenarioOffenseType.TankBuilding:
+                    case ScenarioOffenseType.RangedBuilding:
                         playerKills.offenseBuildingDestroyed.tankBuildingDestroyed++;
                         break;
                 }

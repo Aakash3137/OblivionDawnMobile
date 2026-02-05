@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0924edb85932e54fb34769cac0ea5e7, type: 3}
+  m_Name: Futuristic Ranged Unit
+  m_EditorClassIdentifier: 
+  unitIdentity:
+    name: Plasma Turrets
+    spawnLevel: 0
+    faction: 2
+    isUnique: 0
+    priority: 2
+  unitType: 3
+  unitVisuals:
+    playerUnitMaterial: {fileID: 2100000, guid: 84b730c71dfbc7248b10f84896bf9714, type: 2}
+    enemyUnitMaterial: {fileID: 2100000, guid: e15991f5e11ea4a4cac02a8ca192bd87, type: 2}
+  unitVisionAngles:
+    narrowViewAngle: 10
+    wideViewAngle: 45
+  unitAttackTargets:
+    canAttackAir: 0
+    canAttackGround: 1
+  canFly: 0
+  unitFlyStats:
+    flyHeight: 0
+    climbAngle: 0
+    turnSpeed: 0
+    bankAngle: 0
+    evadeRadius: 0
+    attackAngleTolerance: 0
+  unitPopulationCost: 0
+  UnitIcon: {fileID: 21300000, guid: 3164da4cb436c0a46ade5695ccd78142, type: 3}
+  unitUpgradeData:
+  - unitLevel: 0
+    unitBuildTime: 30
+    unitBasicStats:
+      maxHealth: 600
+      armor: 0
+    unitAttackStats:
+      damage: 100
+      fireRate: 2
+    unitMobilityStats:
+      moveSpeed: 1
+    unitRangeStats:
+      detectionRange: 25
+      attackRange: 8

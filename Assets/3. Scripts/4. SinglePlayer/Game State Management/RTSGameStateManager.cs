@@ -55,18 +55,6 @@ public class RTSGameStateManager : MonoBehaviour
         }
     }
 
-    // void OnValidate()
-    // {
-    //     var enumValues = Enum.GetValues(typeof(RTSGameState));
-    //     stateCallbacks = new RTSStateCallbacks[enumValues.Length];
-
-    //     for (int i = 0; i < enumValues.Length; i++)
-    //     {
-    //         stateCallbacks[i] = new RTSStateCallbacks();
-    //         stateCallbacks[i].state = (RTSGameState)enumValues.GetValue(i);
-    //     }
-    // }
-
     void InitializeCallbacks()
     {
         foreach (var cb in stateCallbacks)
@@ -132,6 +120,18 @@ public class RTSGameStateManager : MonoBehaviour
     {
         return currentState;
     }
+
+    // void OnValidate()
+    // {
+    //     var enumValues = Enum.GetValues(typeof(RTSGameState));
+    //     stateCallbacks = new RTSStateCallbacks[enumValues.Length];
+
+    //     for (int i = 0; i < enumValues.Length; i++)
+    //     {
+    //         stateCallbacks[i] = new RTSStateCallbacks();
+    //         stateCallbacks[i].state = (RTSGameState)enumValues.GetValue(i);
+    //     }
+    // }
 }
 
 // Inspector-friendly callback holder

@@ -1,18 +1,22 @@
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    [Header("Ownership")]
+    [Header("Ownership"), ReadOnly]
     public Side ownerSide;            // Current owner of the tile
 
-    [Header("Visuals")]
+    [Header("Visuals"), ReadOnly]
     public Renderer tileRenderer;     // Renderer for the tile mesh
+    [field: SerializeField, ReadOnly]
+    public GameObject myPlusIcon { get; private set; }
 
     private SideManager sideManager;
+    [ReadOnly]
     public bool isOpen = false; // set true when PlusIcon is activated
-
+    [ReadOnly]
     public bool hasBuilding = false; // NEW flag
-    private GameObject currentOccupant;
+    [SerializeField, ReadOnly] private GameObject currentOccupant;
     private Side OldSide;
 
     public void SetOccupant(GameObject occupant)
@@ -27,6 +31,11 @@ public class Tile : MonoBehaviour
     {
         return currentOccupant;
     }
+    private void OnValidate()
+    {
+        if (myPlusIcon == null)
+            myPlusIcon = transform.Find("Cube/Plus_Icon")?.gameObject;
+    }
 
     void Start()
     {
@@ -35,11 +44,17 @@ public class Tile : MonoBehaviour
         if (CubeGridManager.Instance != null)
         {
             var coord = CubeGridManager.Instance.WorldToGrid(transform.position);
-            CubeGridManager.Instance.RegisterCube(coord, gameObject);
+            CubeGridManager.Instance.RegisterCube(coord, this);
         }
 
         if (tileRenderer == null)
             tileRenderer = GetComponentInChildren<Renderer>();
+
+        if (myPlusIcon == null)
+        {
+            Debug.Log("<color=red>Plus_Icon not found</color>");
+            myPlusIcon = transform.Find("Cube/Plus_Icon")?.gameObject;
+        }
 
         OldSide = ownerSide;
         ApplyOwnerMaterial();
@@ -49,24 +64,12 @@ public class Tile : MonoBehaviour
     {
         isOpen = open;
 
-        Transform plusIcon = transform.Find("Cube/Plus_Icon");
-        if (plusIcon != null)
-        {
-            // Only show PlusIcon for Player side
-            if (ownerSide == Side.Player)
-            {
-                plusIcon.gameObject.SetActive(open);
-            }
-            else
-            {
-                // Enemy side never shows PlusIcon
-                plusIcon.gameObject.SetActive(false);
-            }
-        }
+        if (myPlusIcon != null)
+            myPlusIcon.SetActive(open);
 
-        //// Debug.Log($"Tile at {transform.position} open={isOpen}, side={ownerSide}");
+        // if (ownerSide == Side.Enemy)
+        //     myPlusIcon.SetActive(false);
     }
-
 
     // Apply correct material based on ownerSide
     public void ApplyOwnerMaterial()
@@ -107,15 +110,6 @@ public class Tile : MonoBehaviour
     // Called when a building is placed
     public void SetBuildingPlaced()
     {
-        isOpen = false;
         hasBuilding = true;
-
-        // Hide PlusIcon if present
-        Transform cubeChild = transform.Find("Cube");
-        if (cubeChild != null && ownerSide != Side.Enemy)
-        {
-            Transform plusIcon = cubeChild.Find("Plus_Icon");
-            if (plusIcon != null) plusIcon.gameObject.SetActive(false);
-        }
     }
 }

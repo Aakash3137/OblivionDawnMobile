@@ -1,3 +1,4 @@
+using System;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -27,6 +28,8 @@ public class Stats : MonoBehaviour
 
     public AirUnit airUnit { get; private set; }
     public virtual bool CanFly => false;
+
+    public Action onDieEvent;
 
 
     private void Awake()
@@ -108,7 +111,9 @@ public class Stats : MonoBehaviour
     {
         if (TryGetComponent<GemSpawner>(out var gemSpawner) && side == Side.Enemy)
             gemSpawner.SpawnGem();
+
         Destroy(gameObject);
+        onDieEvent?.Invoke();
     }
 
     [Button]

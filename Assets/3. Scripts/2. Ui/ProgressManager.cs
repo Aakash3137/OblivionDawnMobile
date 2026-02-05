@@ -6,9 +6,11 @@ public class ProgressManager : MonoBehaviour
     [SerializeField] private Image fillImage;
     protected float progressAmount = 0f;
     private Camera mainCamera;
+    internal CanvasGroup _canvasGroup { get; private set; }
 
     private void Awake()
     {
+        _canvasGroup = GetComponent<CanvasGroup>();
         mainCamera = Camera.main;
         transform.forward = mainCamera.transform.forward;
     }

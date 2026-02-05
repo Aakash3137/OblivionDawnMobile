@@ -55,32 +55,32 @@ public class EnemyBuildPanel : MonoBehaviour
                 return buildingType switch
                 {
                     "Air" => factionData.medievalAirBuilding,
-                    "Infantry" => factionData.medievalInfantryBuilding,
-                    "Tank" => factionData.medievalTankBuilding,
+                    "Infantry" => factionData.medievalMeleeBuilding,
+                    "Tank" => factionData.medievalRangedBuilding,
                     _ => null
                 };
             case FactionName.Present:
                 return buildingType switch
                 {
                     "Air" => factionData.presentAirBuilding,
-                    "Infantry" => factionData.presentInfantryBuilding,
-                    "Tank" => factionData.presentTankBuilding,
+                    "Infantry" => factionData.presentMeleeBuilding,
+                    "Tank" => factionData.presentRangedBuilding,
                     _ => null
                 };
             case FactionName.Futuristic:
                 return buildingType switch
                 {
                     "Air" => factionData.futureAirBuilding,
-                    "Infantry" => factionData.futureInfantryBuilding,
-                    "Tank" => factionData.futureTankBuilding,
+                    "Infantry" => factionData.futureMeleeBuilding,
+                    "Tank" => factionData.futureRangedBuilding,
                     _ => null
                 };
             case FactionName.Galvadore:
                 return buildingType switch
                 {
                     "Air" => factionData.galvadoreAirBuilding,
-                    "Infantry" => factionData.galvadoreInfantryBuilding,
-                    "Tank" => factionData.galvadoreTankBuilding,
+                    "Infantry" => factionData.galvadoreMeleeBuilding,
+                    "Tank" => factionData.galvadoreRangedBuilding,
                     _ => null
                 };
             default:
@@ -184,10 +184,10 @@ public class EnemyBuildPanel : MonoBehaviour
         Tile[] adjacentTiles = new Tile[4]; // 0 : Right, 1 : Left, 2 : Up, 3 : Down;
 
         // Directions are fixed with index 0 : Right, 1 : Left, 2 : Up, 3 : Down
-        adjacentTiles[0] = cgmInstance.GetCube(adjacentTileCords[0])?.GetComponent<Tile>();
-        adjacentTiles[1] = cgmInstance.GetCube(adjacentTileCords[1])?.GetComponent<Tile>();
-        adjacentTiles[2] = cgmInstance.GetCube(adjacentTileCords[2])?.GetComponent<Tile>();
-        adjacentTiles[3] = cgmInstance.GetCube(adjacentTileCords[3])?.GetComponent<Tile>();
+        adjacentTiles[0] = cgmInstance.GetCube(adjacentTileCords[0]);
+        adjacentTiles[1] = cgmInstance.GetCube(adjacentTileCords[1]);
+        adjacentTiles[2] = cgmInstance.GetCube(adjacentTileCords[2]);
+        adjacentTiles[3] = cgmInstance.GetCube(adjacentTileCords[3]);
 
         WallParent currentWall = Instantiate(_wallPrefab,
             new Vector3(_currentTileCords.x, _wallYOffset, _currentTileCords.z),

@@ -133,10 +133,10 @@ public class TileUIPanel : MonoBehaviour
         Tile[] adjacentTiles = new Tile[4]; // 0 : Right, 1 : Left, 2 : Up, 3 : Down;
 
         // Directions are fixed with index 0 : Right, 1 : Left, 2 : Up, 3 : Down
-        adjacentTiles[0] = cgmInstance.GetCube(adjacentTileCords[0])?.GetComponent<Tile>();
-        adjacentTiles[1] = cgmInstance.GetCube(adjacentTileCords[1])?.GetComponent<Tile>();
-        adjacentTiles[2] = cgmInstance.GetCube(adjacentTileCords[2])?.GetComponent<Tile>();
-        adjacentTiles[3] = cgmInstance.GetCube(adjacentTileCords[3])?.GetComponent<Tile>();
+        adjacentTiles[0] = cgmInstance.GetCube(adjacentTileCords[0]);
+        adjacentTiles[1] = cgmInstance.GetCube(adjacentTileCords[1]);
+        adjacentTiles[2] = cgmInstance.GetCube(adjacentTileCords[2]);
+        adjacentTiles[3] = cgmInstance.GetCube(adjacentTileCords[3]);
 
         WallParent currentWall = Instantiate(_wallPrefab,
             new Vector3(_currentTileCords.x, _wallYOffset, _currentTileCords.z),

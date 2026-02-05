@@ -29,8 +29,7 @@ public class ScenarioTlesClaim : MonoBehaviour
         if (TileManager.Instance != null)
             TileManager.Instance.TryEnterTile(gameObject, coord);
 
-        var tileGO = CubeGridManager.Instance.GetCube(coord);
-        var tile = tileGO != null ? tileGO.GetComponent<Tile>() : null;
+        var tile = CubeGridManager.Instance?.GetCube(coord);
         if (tile != null)
         {
             tile.Occupy(GetComponent<Stats>().side);
@@ -45,8 +44,7 @@ public class ScenarioTlesClaim : MonoBehaviour
             //Debug.Log($"Tile Vacated at {coord}");
         }
 
-        var tileGO = CubeGridManager.Instance?.GetCube(coord);
-        var tile = tileGO != null ? tileGO.GetComponent<Tile>() : null;
+        var tile = CubeGridManager.Instance?.GetCube(coord);
         if (tile != null)
             tile.Vacate(GetComponent<Stats>().side);
     }

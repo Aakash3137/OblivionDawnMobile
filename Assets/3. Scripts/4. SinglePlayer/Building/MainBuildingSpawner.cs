@@ -45,13 +45,13 @@ public class GameManager : MonoBehaviour
         switch (name)
         {
             case FactionName.Medieval:
-                return new[] { data.medievalMainBuilding, data.pastTurretBuilding, data.medievalInfantryBuilding, data.medievalGoldBuilding };
+                return new[] { data.medievalMainBuilding, data.pastTurretBuilding, data.medievalMeleeBuilding, data.medievalGoldBuilding };
             case FactionName.Present:
-                return new[] { data.presentMainBuilding, data.presentTurretBuilding, data.presentInfantryBuilding, data.presentGoldBuilding };
+                return new[] { data.presentMainBuilding, data.presentTurretBuilding, data.presentMeleeBuilding, data.presentGoldBuilding };
             case FactionName.Futuristic:
-                return new[] { data.futureMainBuilding, data.futureTurretBuilding, data.futureInfantryBuilding, data.futureGoldBuilding };
+                return new[] { data.futureMainBuilding, data.futureTurretBuilding, data.futureMeleeBuilding, data.futureGoldBuilding };
             case FactionName.Galvadore:
-                return new[] { data.galvadoreMainBuilding, data.galvadoreTurretBuilding, data.galvadoreInfantryBuilding, data.galvadoreGoldBuilding };
+                return new[] { data.galvadoreMainBuilding, data.galvadoreTurretBuilding, data.galvadoreMeleeBuilding, data.galvadoreGoldBuilding };
             default: return null;
         }
     }
@@ -87,15 +87,11 @@ public class GameManager : MonoBehaviour
             if (CubeGridManager.Instance != null)
             {
                 Vector2Int coord = CubeGridManager.Instance.WorldToGrid(point.position);
-                var tileGO = CubeGridManager.Instance.GetCube(coord);
-                if (tileGO != null)
+                var tile = CubeGridManager.Instance.GetCube(coord);
+                if (tile != null)
                 {
-                    var tile = tileGO.GetComponent<Tile>();
-                    if (tile != null)
-                    {
-                        tile.SetBuildingPlaced();
-                        Debug.Log($"[Spawner] Tile at {coord} marked as building placed for {side}");
-                    }
+                    tile.SetBuildingPlaced();
+                    // Debug.Log($"[Spawner] Tile at {coord} marked as building placed for {side}");
                 }
             }
         }

@@ -134,10 +134,7 @@ public class EnemyAIHandler : MonoBehaviour
 
         foreach (var neighborGrid in neighbors)
         {
-            GameObject tileObj = CubeGridManager.Instance.GetCube(neighborGrid);
-            if (tileObj == null) continue;
-
-            Tile tile = tileObj.GetComponent<Tile>();
+            Tile tile = CubeGridManager.Instance.GetCube(neighborGrid);
             if (tile == null || tile.hasBuilding || tile.ownerSide != Side.Enemy)
                 continue;
 
@@ -159,11 +156,7 @@ public class EnemyAIHandler : MonoBehaviour
 
         foreach (var neighbor in neighbors)
         {
-            GameObject neighborObj = CubeGridManager.Instance.GetCube(neighbor);
-            if (neighborObj == null)
-                continue;
-
-            Tile neighborTile = neighborObj.GetComponent<Tile>();
+            Tile neighborTile = CubeGridManager.Instance.GetCube(neighbor);
             if (neighborTile == null)
                 continue;
 
@@ -338,13 +331,13 @@ public class EnemyAIHandler : MonoBehaviour
         switch (enemyFactionName)
         {
             case FactionName.Medieval:
-                return new[] { factionData.medievalAirBuilding, factionData.medievalInfantryBuilding, factionData.medievalTankBuilding };
+                return new[] { factionData.medievalAirBuilding, factionData.medievalMeleeBuilding, factionData.medievalRangedBuilding };
             case FactionName.Present:
-                return new[] { factionData.presentAirBuilding, factionData.presentInfantryBuilding, factionData.presentTankBuilding };
+                return new[] { factionData.presentAirBuilding, factionData.presentMeleeBuilding, factionData.presentRangedBuilding };
             case FactionName.Futuristic:
-                return new[] { factionData.futureAirBuilding, factionData.futureInfantryBuilding, factionData.futureTankBuilding };
+                return new[] { factionData.futureAirBuilding, factionData.futureMeleeBuilding, factionData.futureRangedBuilding };
             case FactionName.Galvadore:
-                return new[] { factionData.galvadoreAirBuilding, factionData.galvadoreInfantryBuilding, factionData.galvadoreTankBuilding };
+                return new[] { factionData.galvadoreAirBuilding, factionData.galvadoreMeleeBuilding, factionData.galvadoreRangedBuilding };
             default:
                 return new GameObject[0];
         }
