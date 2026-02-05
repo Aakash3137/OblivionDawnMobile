@@ -144,6 +144,12 @@ public class AirUnit : MonoBehaviour
             }
         }
         
+        // Find target if none
+        if (target == null)
+        {
+            FindTarget();
+        }
+        
         // No target - idle circle
         if (target == null)
         {
@@ -152,9 +158,15 @@ public class AirUnit : MonoBehaviour
             return;
         }
         
-        // Has target - fly towards and attack
+        // Has target - fly towards
         FlyTowards(target.transform.position);
-        Attack();
+        
+        // Attack only if in range and facing target
+        float distToTarget = Vector3.Distance(transform.position, target.transform.position);
+        if (distToTarget <= AttackRange && IsFacingTarget(target.gameObject))
+        {
+            Attack();
+        }
         
         if (animator != null) animator.SetFloat("Move", moveSpeed);
     }
@@ -298,9 +310,6 @@ public class AirUnit : MonoBehaviour
         
         if (target == null) return;
         
-        if (!IsFacingTarget(target.gameObject))
-            return;
-        
         if (shotsFired >= burstCount)
             return;
         
@@ -311,7 +320,6 @@ public class AirUnit : MonoBehaviour
             burstTimer = 0f;
             shotsFired++;
             
-            // Fire projectile
             projectileShooter.Fire(target);
             
             if (animator != null)
@@ -320,16 +328,14 @@ public class AirUnit : MonoBehaviour
                 StartCoroutine(ResetFire());
             }
             
+            airState = AirState.Attacking;
+            
             // Enter evade after burst complete
             if (shotsFired >= burstCount)
             {
                 airState = AirState.Evading;
                 evadeCenter = transform.position;
                 evadeAngle = 0f;
-            }
-            else
-            {
-                airState = AirState.Attacking;
             }
         }
     }
@@ -374,6 +380,7 @@ public class AirUnit : MonoBehaviour
             pos.y = flyHeight;
             transform.position = pos;
             airState = AirState.Airborne;
+            FindTarget();
         }
     }
     
@@ -410,7 +417,18 @@ public class AirUnit : MonoBehaviour
         Vector3 dir = (targetPosition - transform.position).normalized;
         if (dir == Vector3.zero) return;
         
-        RotateAndMove(dir);
+        // Always face target while flying
+        Vector3 flatDir = Vector3.ProjectOnPlane(dir, Vector3.up).normalized;
+        if (flatDir != Vector3.zero)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(flatDir);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, turnSpeed * Time.deltaTime);
+        }
+        
+        // Move forward
+        Vector3 pos = transform.position + transform.forward * moveSpeed * Time.deltaTime;
+        pos.y = flyHeight;
+        transform.position = pos;
     }
     
     private void PerformEvade()
