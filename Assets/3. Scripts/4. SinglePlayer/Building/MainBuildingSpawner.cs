@@ -87,15 +87,11 @@ public class GameManager : MonoBehaviour
             if (CubeGridManager.Instance != null)
             {
                 Vector2Int coord = CubeGridManager.Instance.WorldToGrid(point.position);
-                var tileGO = CubeGridManager.Instance.GetCube(coord);
-                if (tileGO != null)
+                var tile = CubeGridManager.Instance.GetCube(coord);
+                if (tile != null)
                 {
-                    var tile = tileGO.GetComponent<Tile>();
-                    if (tile != null)
-                    {
-                        tile.SetBuildingPlaced();
-                        Debug.Log($"[Spawner] Tile at {coord} marked as building placed for {side}");
-                    }
+                    tile.SetBuildingPlaced();
+                    // Debug.Log($"[Spawner] Tile at {coord} marked as building placed for {side}");
                 }
             }
         }

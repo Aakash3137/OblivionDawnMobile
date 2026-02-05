@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1807120803253265653}
   - component: {fileID: 5551679913311386414}
   - component: {fileID: 7001725901447811467}
+  - component: {fileID: -439609579711736092}
   m_Layer: 0
   m_Name: Galvadore_Wall Building
   m_TagString: Untagged
@@ -58,20 +59,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41c9bcd5007e83340b348716cec9b7c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  level: 0
-  side: 0
-  faction: 0
-  basicStats:
+  <identity>k__BackingField:
+    name: 
+    spawnLevel: 0
+    faction: 0
+    isUnique: 0
+    priority: 0
+  <basicStats>k__BackingField:
     maxHealth: 0
-    armour: 0
-  visuals:
-    upgradeMesh: {fileID: 0}
-    playerUnitMaterial: {fileID: 0}
-    enemyUnitMaterial: {fileID: 0}
-  currentHealth: 0
-  hitCollider: {fileID: 0}
-  isAirUnit: 0
-  canAttackAir: 0
-  canAttackGround: 1
+    armor: 0
+  <currentHealth>k__BackingField: 0
+  <side>k__BackingField: 0
   <buildingStats>k__BackingField: {fileID: 11400000, guid: 42476f168d8b9374697619bd7d011f7b, type: 2}
-  <defenseStats>k__BackingField: {fileID: 11400000, guid: 42476f168d8b9374697619bd7d011f7b, type: 2}
+  <currentTile>k__BackingField: {fileID: 0}
+  <defenseType>k__BackingField: 0
+--- !u!208 &-439609579711736092
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4320449579214391836}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.4, y: 0.25, z: 0.4}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5

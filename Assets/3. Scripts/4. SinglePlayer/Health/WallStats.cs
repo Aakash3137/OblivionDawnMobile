@@ -3,27 +3,26 @@ using UnityEngine;
 
 public class WallStats : Stats
 {
-    public WallUpgradeDataSO wallStats;
+    public WallUpgradeDataSO wallStatsSO;
     public WallBuildingUpgradeData wallData { get; private set; }
 
 
-    public Action<float, float> onWallEnableOrDisable;
-    public Action onWallDestroyed;
+    public Action<float, float> wallHealthEvent;
     private WallParent wallParent;
 
     internal override void Start()
     {
         wallParent = GetComponentInParent<WallParent>();
 
-        if (wallStats == null)
+        if (wallStatsSO == null)
         {
             Debug.Log($"<color=red>Building {name} missing BuildingStats. Assign the script.</color>");
         }
 
-        identity = wallStats.buildingIdentity;
-        visuals = wallStats.buildingVisuals;
+        identity = wallStatsSO.buildingIdentity;
+        visuals = wallStatsSO.buildingVisuals;
 
-        wallData = wallStats.wallBuildingUpgradeData[identity.spawnLevel];
+        wallData = wallStatsSO.wallBuildingUpgradeData[identity.spawnLevel];
 
         basicStats = wallData.buildingBasicStats;
 
@@ -31,10 +30,13 @@ public class WallStats : Stats
 
         if (visuals.playerUnitMaterial == null)
         {
-            Debug.Log($"<color=magenta>Assign materials for {name} on {wallStats.name} ScriptableObject</color>");
+            Debug.Log($"<color=magenta>Assign materials for {name} on {wallStatsSO.name} ScriptableObject</color>");
         }
 
         base.Start();
+
+        if (currentHealth > 0)
+            wallHealthEvent?.Invoke(currentHealth, basicStats.maxHealth);
     }
 
     public override void TakeDamage(float amount)
@@ -46,19 +48,10 @@ public class WallStats : Stats
 
         base.TakeDamage(amount);
     }
-    private void OnEnable()
-    {
-        if (currentHealth > 0)
-            onWallEnableOrDisable?.Invoke(currentHealth, basicStats.maxHealth);
-    }
+
     private void OnDisable()
     {
-        if (currentHealth > 0)
-            onWallEnableOrDisable?.Invoke(currentHealth, basicStats.maxHealth);
-    }
-    private void OnDestroy()
-    {
-        // This event is to destroy wall Parent if the wall Parent current HP goes to zero
-        onWallDestroyed?.Invoke();
+        if (currentHealth >= 0)
+            wallHealthEvent?.Invoke(-currentHealth, -basicStats.maxHealth);
     }
 }

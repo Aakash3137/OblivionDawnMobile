@@ -11,6 +11,7 @@ public class OffenseBuildingStats : BuildingStats
     [ReadOnly]
     public UnitStats producedUnit;
     private UnitStats unit;
+    private Vector2Int currentGrid;
 
     private Tile nearestTile;
     private WaitForSeconds waitTime;
@@ -46,6 +47,8 @@ public class OffenseBuildingStats : BuildingStats
 
         base.Start();
 
+        currentGrid = CubeGridManager.Instance.WorldToGrid(currentTile.transform.position);
+
         StartProducingUnits();
     }
 
@@ -75,7 +78,9 @@ public class OffenseBuildingStats : BuildingStats
 
     private void SpawnUnit()
     {
-        nearestTile = cgmInstance.GetNearestOpenTile(currentTile);
+        // nearestTile = cgmInstance.GetNearestOpenTile(currentTile, currentGrid);
+
+        nearestTile = cgmInstance.GetNearestOpenTile(currentGrid, side, transform.position);
 
         if (nearestTile == null)
         {

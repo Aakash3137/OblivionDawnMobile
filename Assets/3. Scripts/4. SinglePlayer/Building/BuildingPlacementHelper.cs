@@ -3,117 +3,101 @@ using System.Collections.Generic;
 
 public class BuildingPlacementHelper : MonoBehaviour
 {
-    private List<Transform> activatedIcons = new List<Transform>();
-    private List<Tile> openedTiles = new List<Tile>();
+    private Vector2Int currentCoord;
+    private CubeGridManager cgmInstance;
+    [SerializeField] private bool allNeighbors = true;
+    [SerializeField] private List<Tile> neighborTiles = new List<Tile>();
+    private Tile currentTile;
 
-    [Header("Neighbor Settings")]
-    public bool useDiagonals = false;   // toggle in inspector: 4-way vs 8-way neighbors
 
-    private Vector2Int currentCoord;    // track where building is snapped
-    private bool activated = false;     // ensure we only run once
-
-    void Start()
+    private void Awake()
     {
-        if (!activated)
+        cgmInstance = CubeGridManager.Instance;
+    }
+
+    private void GetNeighbors(Side side = Side.Player)
+    {
+        neighborTiles.Clear();
+
+        currentTile = cgmInstance.GetCube(currentCoord);
+
+        List<Vector2Int> neighborCoords;
+
+        if (currentTile.ownerSide == Side.Enemy)
+            return;
+
+        if (allNeighbors)
+            neighborCoords = cgmInstance.GetAllNeighbors(currentCoord);
+        else
+            neighborCoords = cgmInstance.GetCardinalNeighbors(currentCoord);
+
+        foreach (var coord in neighborCoords)
         {
-            SnapAndActivate();
-            activated = true;
+            Tile tile = cgmInstance.GetCube(coord);
+
+            if (tile == null || tile.ownerSide != side)
+                continue;
+
+            if (tile.hasBuilding || tile.isOpen)
+                continue;
+
+            neighborTiles.Add(tile);
         }
+
     }
 
-    void OnDestroy()
+    public void ActivateNeighbors()
     {
-        DeactivateNeighbors();
-    }
+        GetNeighbors();
 
-    private void SnapAndActivate()
-    {
-        var gm = CubeGridManager.Instance;
-        if (gm == null) return;
+        if (neighborTiles.Count == 0)
+            return;
 
-        currentCoord = GetClosestCoord(transform.position);
-
-        Vector3 center = gm.GridToWorld(currentCoord);
-        transform.position = new Vector3(center.x, transform.position.y, center.z);
-
-        List<Vector2Int> neighbors = useDiagonals
-            ? gm.GetAllNeighbors(currentCoord)
-            : gm.GetCardinalNeighbors(currentCoord);
-
-        //// Debug.Log(useDiagonals
-        ////     ? $"Checking 8 neighbors around {currentCoord}"
-        ////     : $"Checking 4 neighbors around {currentCoord}");
-
-        foreach (var coord in neighbors)
+        foreach (var tile in neighborTiles)
         {
-            GameObject tileObj = gm.GetCube(coord);
-            if (tileObj == null) continue;
-
-            Tile tileScript = tileObj.GetComponent<Tile>();
-            if (tileScript == null) continue;
-
-            // Skip enemy tiles
-            if (tileScript.ownerSide == Side.Enemy)
-                continue;
-
-            // Skip occupied tiles
-            if (tileScript.hasBuilding)
-                continue;
-
-            //// Debug.Log($"Player-side neighbor: {tileObj.name} at {coord}");
-
-            // Show PlusIcon
-            Transform cubeChild = tileObj.transform.Find("Cube");
-            if (cubeChild != null)
-            {
-                Transform plusIcon = cubeChild.Find("Plus_Icon");
-                if (plusIcon != null)
-                {
-                    plusIcon.gameObject.SetActive(true);
-                    activatedIcons.Add(plusIcon);
-                }
-            }
-
-            tileScript.isOpen = true;
-            openedTiles.Add(tileScript);
+            tile.SetOpen(true);
         }
     }
 
     private void DeactivateNeighbors()
     {
-        foreach (var icon in activatedIcons)
-        {
-            if (icon != null) icon.gameObject.SetActive(false);
-        }
-        activatedIcons.Clear();
+        if (neighborTiles.Count == 0)
+            return;
 
-        foreach (var tile in openedTiles)
+        List<Tile> builtTiles = new List<Tile>();
+        foreach (var tile in neighborTiles)
         {
-            if (tile != null && !tile.hasBuilding) // keep closed unless building exists
-                tile.isOpen = false;
+            if (tile == null)
+                // Debug.Log("<color=green>Cached neighborTile is null</color>");
+
+                tile.SetOpen(false);
+
+            if (tile.hasBuilding)
+                builtTiles.Add(tile);
         }
-        openedTiles.Clear();
+
+        // Debug.Log($"<color=green>Found {builtTiles.Count} built tiles</color>");
+
+        foreach (var item in builtTiles)
+        {
+            // Debug.Log($"<color=green>Activating neighbors for {item.name}</color>");
+            item.GetOccupant()?.GetComponent<BuildingPlacementHelper>()?.ActivateNeighbors();
+        }
+    }
+    private void DeactivateSelf()
+    {
+        currentTile.SetOpen(false);
     }
 
-    private Vector2Int GetClosestCoord(Vector3 worldPos)
+    private void OnEnable()
     {
-        var gm = CubeGridManager.Instance;
-        Vector2Int best = Vector2Int.zero;
-        float bestDist = float.MaxValue;
+        currentCoord = cgmInstance.WorldToGrid(transform.position);
+        ActivateNeighbors();
+        DeactivateSelf();
+    }
 
-        foreach (var kv in gm.cubeTiles)
-        {
-            Vector3 tileCenter = gm.GridToWorld(kv.Key);
-            float d = Vector3.SqrMagnitude(
-                new Vector3(worldPos.x, 0, worldPos.z) -
-                new Vector3(tileCenter.x, 0, tileCenter.z)
-            );
-            if (d < bestDist)
-            {
-                bestDist = d;
-                best = kv.Key;
-            }
-        }
-        return best;
+    private void OnDisable()
+    {
+        DeactivateNeighbors();
     }
 }

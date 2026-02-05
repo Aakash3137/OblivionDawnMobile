@@ -134,10 +134,7 @@ public class EnemyAIHandler : MonoBehaviour
 
         foreach (var neighborGrid in neighbors)
         {
-            GameObject tileObj = CubeGridManager.Instance.GetCube(neighborGrid);
-            if (tileObj == null) continue;
-
-            Tile tile = tileObj.GetComponent<Tile>();
+            Tile tile = CubeGridManager.Instance.GetCube(neighborGrid);
             if (tile == null || tile.hasBuilding || tile.ownerSide != Side.Enemy)
                 continue;
 
@@ -159,11 +156,7 @@ public class EnemyAIHandler : MonoBehaviour
 
         foreach (var neighbor in neighbors)
         {
-            GameObject neighborObj = CubeGridManager.Instance.GetCube(neighbor);
-            if (neighborObj == null)
-                continue;
-
-            Tile neighborTile = neighborObj.GetComponent<Tile>();
+            Tile neighborTile = CubeGridManager.Instance.GetCube(neighbor);
             if (neighborTile == null)
                 continue;
 

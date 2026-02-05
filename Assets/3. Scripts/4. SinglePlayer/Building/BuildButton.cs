@@ -1,8 +1,6 @@
-using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using Debug = UnityEngine.Debug;
 
 public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
@@ -11,7 +9,7 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     public TileUIPanel tileUIPanel;
     public CostPanelManager costPanelManager;
 
-    [SerializeField] private ScenarioUnitType offenseType;
+    [SerializeField] private ScenarioOffenseType offenseType;
     [SerializeField] private ScenarioDefenseType defenseType;
     [SerializeField] private ScenarioResourceType resourceType;
 
@@ -32,7 +30,7 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         //prmInstance.OnResourcesChanged += UpdateButtonInteractivity;
 
         ///
-        /// To do buttons should get SO data when starting game based on units selected 
+        /// To do buttons should get SO data when starting game based on Offenses selected 
         /// 
 
         if (buildingToSpawn.TryGetComponent<BuildingStats>(out var spawnBuildingStats))
@@ -89,25 +87,25 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
             case FactionName.Medieval:
                 if (type == ScenarioBuildingType.MainBuilding) return data.medievalMainBuilding;
                 if (type == ScenarioBuildingType.DefenseBuilding) return GetMedievalDefenseBuilding(data);
-                if (type == ScenarioBuildingType.OffenseBuilding) return GetMedievalUnitBuilding(data);
+                if (type == ScenarioBuildingType.OffenseBuilding) return GetMedievalOffenseBuilding(data);
                 if (type == ScenarioBuildingType.ResourceBuilding) return GetMedievalResourceBuilding(data);
                 break;
             case FactionName.Present:
                 if (type == ScenarioBuildingType.MainBuilding) return data.presentMainBuilding;
-                if (type == ScenarioBuildingType.DefenseBuilding) return data.presentTurretBuilding;
-                if (type == ScenarioBuildingType.OffenseBuilding) return data.presentMeleeBuilding;
+                if (type == ScenarioBuildingType.DefenseBuilding) return GetPresentDefenseBuilding(data);
+                if (type == ScenarioBuildingType.OffenseBuilding) return GetPresentOffenseBuilding(data);
                 if (type == ScenarioBuildingType.ResourceBuilding) return GetPresentResourceBuilding(data);
                 break;
             case FactionName.Futuristic:
                 if (type == ScenarioBuildingType.MainBuilding) return data.futureMainBuilding;
-                if (type == ScenarioBuildingType.DefenseBuilding) return data.futureTurretBuilding;
-                if (type == ScenarioBuildingType.OffenseBuilding) return data.futureMeleeBuilding;
+                if (type == ScenarioBuildingType.DefenseBuilding) return GetFuturisticDefenseBuilding(data);
+                if (type == ScenarioBuildingType.OffenseBuilding) return GetFuturisticOffenseBuilding(data);
                 if (type == ScenarioBuildingType.ResourceBuilding) return GetFuturisticResourceBuilding(data);
                 break;
             case FactionName.Galvadore:
                 if (type == ScenarioBuildingType.MainBuilding) return data.galvadoreMainBuilding;
-                if (type == ScenarioBuildingType.DefenseBuilding) return data.galvadoreTurretBuilding;
-                if (type == ScenarioBuildingType.OffenseBuilding) return data.galvadoreMeleeBuilding;
+                if (type == ScenarioBuildingType.DefenseBuilding) return GetGalvadoreDefenseBuilding(data);
+                if (type == ScenarioBuildingType.OffenseBuilding) return GetGalvadoreOffenseBuilding(data);
                 if (type == ScenarioBuildingType.ResourceBuilding) return GetGalvadoreResourceBuilding(data);
                 break;
         }
@@ -228,6 +226,8 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
                 return factionData.presentAntiTankBuilding;
             case ScenarioDefenseType.Turret:
                 return factionData.presentTurretBuilding;
+            case ScenarioDefenseType.Wall:
+                return factionData.presentWallBuilding;
             default:
                 return null;
         }
@@ -243,6 +243,8 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
                 return factionData.futureAntiTankBuilding;
             case ScenarioDefenseType.Turret:
                 return factionData.futureTurretBuilding;
+            case ScenarioDefenseType.Wall:
+                return factionData.futureWallBuilding;
             default:
                 return null;
         }
@@ -258,68 +260,76 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
                 return factionData.galvadoreAntiTankBuilding;
             case ScenarioDefenseType.Turret:
                 return factionData.galvadoreTurretBuilding;
+            case ScenarioDefenseType.Wall:
+                return factionData.galvadoreWallBuilding;
             default:
                 return null;
         }
     }
 
-    private GameObject GetMedievalUnitBuilding(AllFactionsData factionData)
+    private GameObject GetMedievalOffenseBuilding(AllFactionsData factionData)
     {
         switch (offenseType)
         {
-            case ScenarioUnitType.Air:
+            case ScenarioOffenseType.AirBuilding:
                 return factionData.medievalAirBuilding;
-            case ScenarioUnitType.Melee:
+            case ScenarioOffenseType.MeleeBuilding:
                 return factionData.medievalMeleeBuilding;
-            case ScenarioUnitType.AOERanged:
+            case ScenarioOffenseType.AOERangedBuilding:
                 return factionData.medievalAOERangedBuilding;
-            case ScenarioUnitType.Ranged:
+            case ScenarioOffenseType.RangedBuilding:
                 return factionData.medievalRangedBuilding;
             default:
                 return null;
         }
     }
 
-    private GameObject GetPresentUnitBuilding(AllFactionsData factionData)
+    private GameObject GetPresentOffenseBuilding(AllFactionsData factionData)
     {
         switch (offenseType)
         {
-            case ScenarioUnitType.Air:
+            case ScenarioOffenseType.AirBuilding:
                 return factionData.presentAirBuilding;
-            case ScenarioUnitType.Melee:
+            case ScenarioOffenseType.MeleeBuilding:
                 return factionData.presentMeleeBuilding;
-            case ScenarioUnitType.Ranged:
+            case ScenarioOffenseType.RangedBuilding:
                 return factionData.presentRangedBuilding;
+            case ScenarioOffenseType.AOERangedBuilding:
+                return factionData.presentAOERangedBuilding;
             default:
                 return null;
         }
     }
 
-    private GameObject GetFuturisticUnitBuilding(AllFactionsData factionData)
+    private GameObject GetFuturisticOffenseBuilding(AllFactionsData factionData)
     {
         switch (offenseType)
         {
-            case ScenarioUnitType.Air:
+            case ScenarioOffenseType.AirBuilding:
                 return factionData.futureAirBuilding;
-            case ScenarioUnitType.Melee:
+            case ScenarioOffenseType.MeleeBuilding:
                 return factionData.futureMeleeBuilding;
-            case ScenarioUnitType.Ranged:
+            case ScenarioOffenseType.RangedBuilding:
                 return factionData.futureRangedBuilding;
+            case ScenarioOffenseType.AOERangedBuilding:
+                return factionData.futureAOERangedBuilding;
             default:
                 return null;
         }
     }
 
-    private GameObject GetGalvadoreUnitBuilding(AllFactionsData factionData)
+    private GameObject GetGalvadoreOffenseBuilding(AllFactionsData factionData)
     {
         switch (offenseType)
         {
-            case ScenarioUnitType.Air:
+            case ScenarioOffenseType.AirBuilding:
                 return factionData.galvadoreAirBuilding;
-            case ScenarioUnitType.Melee:
+            case ScenarioOffenseType.MeleeBuilding:
                 return factionData.galvadoreMeleeBuilding;
-            case ScenarioUnitType.Ranged:
+            case ScenarioOffenseType.RangedBuilding:
                 return factionData.galvadoreRangedBuilding;
+            case ScenarioOffenseType.AOERangedBuilding:
+                return factionData.galvadoreAOERangedBuilding;
             default:
                 return null;
         }

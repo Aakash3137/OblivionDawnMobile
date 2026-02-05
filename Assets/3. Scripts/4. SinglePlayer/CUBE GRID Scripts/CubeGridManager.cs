@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.TextCore;
 
 public class CubeGridManager : MonoBehaviour
 {
@@ -13,23 +14,26 @@ public class CubeGridManager : MonoBehaviour
     public bool useOffset = false;
 
     // Dictionary of all tiles keyed by (x,y)
-    public Dictionary<Vector2Int, GameObject> cubeTiles = new Dictionary<Vector2Int, GameObject>();
+    public Dictionary<Vector2Int, Tile> cubeTiles = new Dictionary<Vector2Int, Tile>();
 
     public int MinX { get; private set; } = int.MaxValue;
     public int MinY { get; private set; } = int.MaxValue;
     public int MaxX { get; private set; } = int.MinValue;
     public int MaxY { get; private set; } = int.MinValue;
 
+    private GameManager gmInstance;
+
     void Awake()
     {
         Instance = this;
-        Debug.Log("CubeGridManager initialized");
+        // Debug.Log("CubeGridManager initialized");
+        gmInstance = GameManager.Instance;
     }
 
     // -----------------------------
     // TILE REGISTRATION
     // -----------------------------
-    public void RegisterCube(Vector2Int grid, GameObject tile)
+    public void RegisterCube(Vector2Int grid, Tile tile)
     {
         if (!cubeTiles.ContainsKey(grid))
             cubeTiles.Add(grid, tile);
@@ -46,7 +50,7 @@ public class CubeGridManager : MonoBehaviour
             cubeTiles.Remove(grid);
     }
 
-    public GameObject GetCube(Vector2Int grid)
+    public Tile GetCube(Vector2Int grid)
     {
         cubeTiles.TryGetValue(grid, out var tile);
         return tile;
@@ -132,59 +136,110 @@ public class CubeGridManager : MonoBehaviour
         return CubeDistance(a, b) == 1;
     }
 
-    public Tile GetNearestOpenTile(Tile currentTile, int range = 10)
+    public Tile GetNearestOpenTile(Vector2Int currentGrid, Side side, Vector3 currentPosition, int range = 10)
     {
-        Vector2Int currentGrid = WorldToGrid(currentTile.transform.position);
-        Tile nearestOpenTile;
-        Vector2Int checkGrid;
-        int neighborLayer = 0;
+        Tile nearestOpenTile = null;
 
-        //Debug.Log("Current Tile Grid coordinates: " + currentGrid.x + ", " + currentGrid.y);
+        currentPosition.y = 0f;
 
-        while (neighborLayer < range)
+        Vector3 enemyMainBuildingDirection;
+        float temp = -1f;
+
+        if (side == Side.Player)
+            enemyMainBuildingDirection = (gmInstance.enemySpawnPoint.position - currentPosition).normalized;
+        else
+            enemyMainBuildingDirection = (gmInstance.playerSpawnPoint.position - currentPosition).normalized;
+
+        for (int layer = 1; layer < range; layer++)
         {
-            neighborLayer++;
-
-            // Directional looping setup
-            int jStart = currentTile.ownerSide == Side.Player ? neighborLayer : -neighborLayer;
-            int jEnd = currentTile.ownerSide == Side.Player ? -neighborLayer : neighborLayer;
-            int jStep = currentTile.ownerSide == Side.Player ? -1 : 1;
-
-            int iStart = currentTile.ownerSide == Side.Player ? neighborLayer : -neighborLayer;
-            int iEnd = currentTile.ownerSide == Side.Player ? -neighborLayer : neighborLayer;
-            int iStep = currentTile.ownerSide == Side.Player ? -1 : 1;
-
-            for (int j = jStart; j != jEnd + jStep; j += jStep)
+            for (int i = -layer; i <= layer; i++)
             {
-                for (int i = iStart; i != iEnd + iStep; i += iStep)
+                for (int j = -layer; j <= layer; j++)
                 {
                     // Skip inner tiles (only perimeter of this layer)
-                    if (Mathf.Abs(i) != neighborLayer && Mathf.Abs(j) != neighborLayer)
+                    if (Mathf.Abs(i) != layer && Mathf.Abs(j) != layer)
                         continue;
 
-                    // Skip current tile
-                    if (i == 0 && j == 0)
-                        continue;
+                    Vector2Int currentLayerGrid = new Vector2Int(currentGrid.x + i, currentGrid.y + j);
 
-                    checkGrid = new Vector2Int(currentGrid.x + i, currentGrid.y + j);
-
-                    var cube = GetCube(checkGrid);
+                    var cube = GetCube(currentLayerGrid);
                     if (cube == null)
                         continue;
 
-                    nearestOpenTile = cube.GetComponent<Tile>();
-                    if (nearestOpenTile == null)
+                    if (cube.hasBuilding || cube.ownerSide != side)
                         continue;
 
-                    if (!nearestOpenTile.hasBuilding && nearestOpenTile.ownerSide == currentTile.ownerSide)
+                    Vector3 distance = cube.transform.position - currentPosition;
+
+                    float dotProduct = Vector3.Dot(distance, enemyMainBuildingDirection);
+
+                    if (dotProduct > temp)
                     {
-                        return nearestOpenTile;
+                        nearestOpenTile = cube;
+                        temp = dotProduct;
                     }
+
+                    // Debug.Log($"adj tile {tile.name} distance: {distance.magnitude} dot: {dotProduct}");
                 }
             }
+            if (nearestOpenTile != null)
+                return nearestOpenTile;
         }
 
-        return null;
+        return nearestOpenTile;
     }
 
+    // public Tile GetNearestOpenTile(Tile currentTile, Vector2Int currentGrid, int range = 10)
+    // {
+    //     Tile nearestOpenTile = null;
+    //     Vector2Int checkGrid;
+    //     int neighborLayer = 0;
+
+    //     //Debug.Log("Current Tile Grid coordinates: " + currentGrid.x + ", " + currentGrid.y);
+
+    //     while (neighborLayer < range)
+    //     {
+    //         neighborLayer++;
+
+    //         // Directional looping setup
+    //         int jStart = currentTile.ownerSide == Side.Player ? neighborLayer : -neighborLayer;
+    //         int jEnd = currentTile.ownerSide == Side.Player ? -neighborLayer : neighborLayer;
+    //         int jStep = currentTile.ownerSide == Side.Player ? -1 : 1;
+
+    //         int iStart = currentTile.ownerSide == Side.Player ? neighborLayer : -neighborLayer;
+    //         int iEnd = currentTile.ownerSide == Side.Player ? -neighborLayer : neighborLayer;
+    //         int iStep = currentTile.ownerSide == Side.Player ? -1 : 1;
+
+    //         for (int j = jStart; j != jEnd + jStep; j += jStep)
+    //         {
+    //             for (int i = iStart; i != iEnd + iStep; i += iStep)
+    //             {
+    //                 // Skip inner tiles (only perimeter of this layer)
+    //                 if (Mathf.Abs(i) != neighborLayer && Mathf.Abs(j) != neighborLayer)
+    //                     continue;
+
+    //                 // Skip current tile
+    //                 if (i == 0 && j == 0)
+    //                     continue;
+
+    //                 checkGrid = new Vector2Int(currentGrid.x + i, currentGrid.y + j);
+
+    //                 var cube = GetCube(checkGrid);
+    //                 if (cube == null)
+    //                     continue;
+
+    //                 nearestOpenTile = cube.GetComponent<Tile>();
+    //                 if (nearestOpenTile == null)
+    //                     continue;
+
+    //                 if (!nearestOpenTile.hasBuilding && nearestOpenTile.ownerSide == currentTile.ownerSide)
+    //                 {
+    //                     return nearestOpenTile;
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     return nearestOpenTile;
+    // }
 }
