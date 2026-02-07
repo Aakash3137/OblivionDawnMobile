@@ -76,6 +76,10 @@ public class GameManager : MonoBehaviour
 
         var pos = point.position + Vector3.up * yOffset;
 
+        // Any Null references ?
+        // Check if something is being called on enable
+        // Some references are not yet initialized
+
         Instantiate(buildingPrefab, pos, Quaternion.identity, point);
 
         Debug.Log($"[Spawner] Spawned {label} for {side}: {buildingPrefab.name}");

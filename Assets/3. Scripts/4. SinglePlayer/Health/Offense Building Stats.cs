@@ -15,13 +15,13 @@ public class OffenseBuildingStats : BuildingStats
 
     private Tile nearestTile;
     private WaitForSeconds waitTime;
-    public bool autoProduce { get; private set; }
+    public bool isProducing { get; private set; }
 
     internal override void Start()
     {
         identity = buildingStats.buildingIdentity;
 
-        autoProduce = true;
+        isProducing = true;
 
         cgmInstance = CubeGridManager.Instance;
 
@@ -38,7 +38,7 @@ public class OffenseBuildingStats : BuildingStats
             unit = offenseBuildingSO.unitPrefab;
 
             if (unit != null && unit.unitProduceSO.unitIdentity.isUnique)
-                autoProduce = false;
+                isProducing = false;
         }
         else
         {
@@ -73,7 +73,12 @@ public class OffenseBuildingStats : BuildingStats
             yield return waitTime;
             SpawnUnit();
         }
-        while (autoProduce && currentHealth > 0);
+        while (isProducing && currentHealth > 0);
+
+        Debug.Log("<color=magenta>Produced Unique unit from " + name + ".</color>");
+
+        if (currentHealth <= 0)
+            Debug.Log("<color=red>Health is 0 for " + name + ".</color>");
     }
 
     private void SpawnUnit()
@@ -94,7 +99,7 @@ public class OffenseBuildingStats : BuildingStats
 
         producedUnit.spawnerBuilding = this;
 
-        if (producedUnit != null && !autoProduce)
+        if (producedUnit != null && !isProducing)
         {
             producedUnit.GetComponent<UnitStats>().onUniqueUnitDied += StartProducingUnits;
         }

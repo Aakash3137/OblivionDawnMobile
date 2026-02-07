@@ -1,14 +1,15 @@
 using UnityEngine;
 using System;
+using Sirenix.OdinInspector;
 
 [CreateAssetMenu(fileName = "Building Data SO", menuName = "Scenario Stats/Resource Building Data")]
 public class ResourceBuildingDataSO : BuildingDataSO
 {
     [Space(30)]
     public ScenarioResourceType resourceType;
+    public Sprite ResourceIcon;
     public ResourceBuildingUpgradeData[] resourceBuildingUpgradeData;
 
-    public Sprite ResourceIcon;
     internal override void ValidateBase()
     {
         if (resourceBuildingUpgradeData.Length == 0)
@@ -20,7 +21,6 @@ public class ResourceBuildingDataSO : BuildingDataSO
 
             //resourceBuildingUpgradeData[i].resourceGenerationRate = resourceBuildingUpgradeData[i].resourceAmountPerBatch / resourceBuildingUpgradeData[i].resourceTimeToProduce;
             resourceBuildingUpgradeData[i].resourceGenerationRate = resourceBuildingUpgradeData[i].resourceAmountPerBatch;
-
 
             var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
 
@@ -44,5 +44,7 @@ public class ResourceBuildingUpgradeData : BuildingUpgradeData
 {
     public int resourceAmountPerBatch;
     public float resourceTimeToProduce;
+    public int resourceAmountCapacity;
+    [ReadOnly]
     public float resourceGenerationRate;
 }

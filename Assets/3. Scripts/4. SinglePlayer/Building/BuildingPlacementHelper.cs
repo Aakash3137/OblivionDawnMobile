@@ -20,6 +20,7 @@ public class BuildingPlacementHelper : MonoBehaviour
         neighborTiles.Clear();
 
         currentTile = cgmInstance.GetCube(currentCoord);
+        currentTile.isRegistered = true;
 
         List<Vector2Int> neighborCoords;
 
@@ -38,12 +39,12 @@ public class BuildingPlacementHelper : MonoBehaviour
             if (tile == null || tile.ownerSide != side)
                 continue;
 
-            if (tile.hasBuilding || tile.isOpen)
+            if (tile.isRegistered) //|| tile.currentOccupant.buildingType == ScenarioBuildingType.MainBuilding)
                 continue;
 
             neighborTiles.Add(tile);
+            tile.isRegistered = true;
         }
-
     }
 
     public void ActivateNeighbors()
@@ -55,6 +56,9 @@ public class BuildingPlacementHelper : MonoBehaviour
 
         foreach (var tile in neighborTiles)
         {
+            if (tile.hasBuilding)
+                continue;
+
             tile.SetOpen(true);
         }
     }
@@ -63,30 +67,41 @@ public class BuildingPlacementHelper : MonoBehaviour
     {
         if (neighborTiles.Count == 0)
             return;
+        // List<Tile> builtTiles = new List<Tile>();
 
-        List<Tile> builtTiles = new List<Tile>();
+        // Debug.Log($"<color=green>Cached neighborTile had {neighborTiles.Count} tiles</color>");
+
         foreach (var tile in neighborTiles)
         {
-            if (tile == null)
-                // Debug.Log("<color=green>Cached neighborTile is null</color>");
+            // if (tile == null)
+            //     Debug.Log("<color=green>Cached neighborTile is null</color>");
+            // else
+            //     Debug.Log($"<color=green>{tile.name}</color>");
 
-                tile.SetOpen(false);
+            tile.SetOpen(false);
 
             if (tile.hasBuilding)
-                builtTiles.Add(tile);
+                ActivateSelf();
+
+            // if (tile.hasBuilding)
+            //     builtTiles.Add(tile);
         }
 
         // Debug.Log($"<color=green>Found {builtTiles.Count} built tiles</color>");
 
-        foreach (var item in builtTiles)
-        {
-            // Debug.Log($"<color=green>Activating neighbors for {item.name}</color>");
-            item.GetOccupant()?.GetComponent<BuildingPlacementHelper>()?.ActivateNeighbors();
-        }
+        // foreach (var item in builtTiles)
+        // {
+        //     Debug.Log($"<color=green>Activating neighbors for {item.name}</color>");
+        //     item.GetOccupant()?.GetComponent<BuildingPlacementHelper>()?.ActivateNeighbors();
+        // }
     }
     private void DeactivateSelf()
     {
         currentTile.SetOpen(false);
+    }
+    private void ActivateSelf()
+    {
+        currentTile.SetOpen(true);
     }
 
     private void OnEnable()

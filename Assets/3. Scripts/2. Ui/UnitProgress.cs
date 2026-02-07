@@ -36,7 +36,7 @@ public class UnitProgress : ProgressManager
         //     return;
         // }
 
-        if (!spawner.autoProduce && spawner.producedUnit != null)
+        if (!spawner.isProducing && spawner.producedUnit != null)
         {
             currentTime = 0f;
             progressAmount = currentTime / waitTime;

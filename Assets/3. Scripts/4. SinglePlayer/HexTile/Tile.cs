@@ -12,14 +12,16 @@ public class Tile : MonoBehaviour
     public GameObject myPlusIcon { get; private set; }
 
     private SideManager sideManager;
-    [ReadOnly]
-    public bool isOpen = false; // set true when PlusIcon is activated
-    [ReadOnly]
-    public bool hasBuilding = false; // NEW flag
-    [SerializeField, ReadOnly] private GameObject currentOccupant;
+    [ReadOnly] public bool isOpen = false; // set true when PlusIcon is activated
+    [ReadOnly] public bool hasBuilding = false; // NEW flag
+    [ReadOnly] public bool isRegistered = false;
+
+
+    [field: SerializeField, ReadOnly]
+    public BuildingStats currentOccupant { get; private set; }
     private Side OldSide;
 
-    public void SetOccupant(GameObject occupant)
+    public void SetOccupant(BuildingStats occupant)
     {
         currentOccupant = occupant;
     }
@@ -27,7 +29,7 @@ public class Tile : MonoBehaviour
     {
         currentOccupant = null;
     }
-    public GameObject GetOccupant()
+    public BuildingStats GetOccupant()
     {
         return currentOccupant;
     }
