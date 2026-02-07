@@ -47,36 +47,36 @@ public class AirUnit : MonoBehaviour
     public float separationStrength = 2f;
     
     // Targeting
-    private Stats target;
-    private GameObject primaryTarget;
-    private GameObject secondaryTarget;
-    private float targetCheckTimer = 0f;
-    private const float targetCheckInterval = 1f;
-    private float targetCheckOffset;
+    protected Stats target;
+    protected GameObject primaryTarget;
+    protected GameObject secondaryTarget;
+    protected float targetCheckTimer = 0f;
+    protected const float targetCheckInterval = 1f;
+    protected float targetCheckOffset;
     
     // Combat
-    private int shotsFired = 0;
-    private float burstTimer = 0f;
+    protected int shotsFired = 0;
+    protected float burstTimer = 0f;
     
     // Flight
-    private AirState airState = AirState.Ascending;
-    private Vector3 evadeCenter;
-    private float evadeAngle = 0f;
-    private int evadeDirection = 1;
-    private float idleAngle = 0f;
+    protected AirState airState = AirState.Ascending;
+    protected Vector3 evadeCenter;
+    protected float evadeAngle = 0f;
+    protected int evadeDirection = 1;
+    protected float idleAngle = 0f;
     
     // Cached
-    private Side unitSide;
-    private Vector3 forward;
-    private AttackTargets attackTargets;
-    private float DetectionRange;
-    private float AttackRange;
+    protected Side unitSide;
+    protected Vector3 forward;
+    protected AttackTargets attackTargets;
+    protected float DetectionRange;
+    protected float AttackRange;
     
     // Separation timer
-    private float separationTimer;
-    private const float separationInterval = 0.15f;
+    protected float separationTimer;
+    protected const float separationInterval = 0.15f;
 
-    private void Start()
+    protected virtual void Start()
     {
         unitStats = GetComponent<UnitStats>();
         unitProduceSO = unitStats.unitProduceSO;
@@ -105,7 +105,7 @@ public class AirUnit : MonoBehaviour
         evadeDirection = Random.value > 0.5f ? 1 : -1;
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         // Separation
         separationTimer -= Time.deltaTime;
@@ -173,7 +173,7 @@ public class AirUnit : MonoBehaviour
 
     #region Targeting (from DefenseUnit)
     
-    private void FindTarget()
+    protected void FindTarget()
     {
         Collider[] hits = new Collider[20];
         LayerMask enemyLayerMask = GetEnemyLayerMask();
@@ -218,7 +218,7 @@ public class AirUnit : MonoBehaviour
         }
     }
     
-    private float CalculateScore(Stats unit, float score)
+    protected float CalculateScore(Stats unit, float score)
     {
         // Distance score
         float distance = Vector3.Distance(transform.position, unit.transform.position);
@@ -241,7 +241,7 @@ public class AirUnit : MonoBehaviour
         return score;
     }
     
-    private bool ShouldSwitchTarget(Stats current, Stats candidate)
+    protected bool ShouldSwitchTarget(Stats current, Stats candidate)
     {
         if (current == null) return true;
         
@@ -268,7 +268,7 @@ public class AirUnit : MonoBehaviour
         return false;
     }
     
-    private LayerMask GetEnemyLayerMask()
+    protected LayerMask GetEnemyLayerMask()
     {
         switch (unitSide)
         {
@@ -294,7 +294,7 @@ public class AirUnit : MonoBehaviour
         return LayerMask.GetMask("PlayerAir", "PlayerGround", "EnemyAir", "EnemyGround");
     }
     
-    private bool IsTargetValid()
+    protected bool IsTargetValid()
     {
         return target != null && target.gameObject.activeInHierarchy;
     }
@@ -303,7 +303,7 @@ public class AirUnit : MonoBehaviour
 
     #region Combat
     
-    private void Attack()
+    protected virtual void Attack()
     {
         if (airState != AirState.Airborne && airState != AirState.Attacking)
             return;
@@ -340,7 +340,7 @@ public class AirUnit : MonoBehaviour
         }
     }
     
-    private bool IsFacingTarget(GameObject targetObj)
+    protected bool IsFacingTarget(GameObject targetObj)
     {
         if (!targetObj) return false;
         
@@ -351,7 +351,7 @@ public class AirUnit : MonoBehaviour
         return Vector3.Angle(transform.forward, dirToTarget) <= attackAngleTolerance;
     }
     
-    private IEnumerator ResetFire()
+    protected IEnumerator ResetFire()
     {
         yield return new WaitForSeconds(0.1f);
         if (animator != null)
@@ -362,7 +362,7 @@ public class AirUnit : MonoBehaviour
 
     #region Flight Mechanics (from AirUnit)
     
-    private void PerformTakeoff()
+    protected void PerformTakeoff()
     {
         float currentHeight = transform.position.y;
         float progress = Mathf.Clamp01(currentHeight / flyHeight);
@@ -384,7 +384,7 @@ public class AirUnit : MonoBehaviour
         }
     }
     
-    private void IdleCircle()
+    protected virtual void IdleCircle()
     {
         if (airState == AirState.Ascending || airState == AirState.Evading)
             return;
@@ -407,7 +407,7 @@ public class AirUnit : MonoBehaviour
         RotateAndMove(dir);
     }
     
-    private void FlyTowards(Vector3 targetPosition)
+    protected void FlyTowards(Vector3 targetPosition)
     {
         if (airState == AirState.Ascending || airState == AirState.Evading)
             return;
@@ -426,12 +426,12 @@ public class AirUnit : MonoBehaviour
         }
         
         // Move forward
-        Vector3 pos = transform.position + transform.forward * moveSpeed * Time.deltaTime;
+        Vector3 pos = transform.position + transform.forward * (moveSpeed * Time.deltaTime);
         pos.y = flyHeight;
         transform.position = pos;
     }
     
-    private void PerformEvade()
+    protected virtual void PerformEvade()
     {
         evadeAngle += 60f * evadeDirection * Time.deltaTime;
         
@@ -457,7 +457,7 @@ public class AirUnit : MonoBehaviour
         }
     }
     
-    private void RotateAndMove(Vector3 direction, float bankMultiplier = 0.5f)
+    protected void RotateAndMove(Vector3 direction, float bankMultiplier = 0.5f)
     {
         Vector3 flatForward = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
         Vector3 flatDir = Vector3.ProjectOnPlane(direction, Vector3.up).normalized;
@@ -473,7 +473,7 @@ public class AirUnit : MonoBehaviour
         
         transform.rotation = Quaternion.Slerp(transform.rotation, finalRotation, turnSpeed * Time.deltaTime);
         
-        Vector3 pos = transform.position + transform.forward * moveSpeed * Time.deltaTime;
+        Vector3 pos = transform.position + transform.forward * (moveSpeed * Time.deltaTime);
         pos.y = flyHeight;
         transform.position = pos;
     }
@@ -482,7 +482,7 @@ public class AirUnit : MonoBehaviour
 
     #region Separation
     
-    private void ApplySeparation()
+    protected void ApplySeparation()
     {
         if (airState != AirState.Airborne && airState != AirState.Attacking)
             return;

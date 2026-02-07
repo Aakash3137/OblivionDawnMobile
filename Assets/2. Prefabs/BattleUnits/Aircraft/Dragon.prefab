@@ -8082,10 +8082,11 @@ GameObject:
   - component: {fileID: 2959904208157639787}
   - component: {fileID: 7223045065685987591}
   - component: {fileID: 2716973348061449838}
-  - component: {fileID: 7247319731668329145}
   - component: {fileID: -8497301248078583947}
+  - component: {fileID: 9213242400949643966}
+  - component: {fileID: 867161035127034676}
   m_Layer: 0
-  m_Name: AircraftEnemy
+  m_Name: Dragon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8215,7 +8216,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1520344984127084345}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 05a0242ed80d27840b56c0dcd66e0e3a, type: 3}
   m_Name: 
@@ -8233,35 +8234,9 @@ MonoBehaviour:
     hasTrail: 0
     launchVFX: {fileID: 7028878908249187031, guid: 70fc78afd67fc8a4ca9377c9d84f8bba, type: 3}
     hitVFX: {fileID: 1447540632109744634, guid: c8153071efd10e04eb894c3973bae1f9, type: 3}
-  damage: 30
+  damage: 50
   playerTrailMaterial: {fileID: 2100000, guid: 82c3733d49fb2334b8ef2f0d90268a35, type: 2}
   enemyTrailMaterial: {fileID: 2100000, guid: 50dfd5dfaa2bc9f49835088eefefbf7a, type: 2}
---- !u!114 &7247319731668329145
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1520344984127084345}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b6b669df515259e41b2d6337161e8ddf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  battleUnitEnum: 2
-  projectileShooter: {fileID: 2716973348061449838}
-  hitCollider: {fileID: 2131414000740522473}
-  healthBarFade: {fileID: 4704763945467186824}
-  unitStats: {fileID: 7223045065685987591}
-  separationRadius: 1
-  separationStrength: 1
-  narrowViewAngle: 15
-  wideViewAngle: 180
-  agent: {fileID: 2959904208157639787}
-  animator: {fileID: 0}
-  target: {fileID: 0}
-  primaryTarget: {fileID: 0}
-  secondaryTarget: {fileID: 0}
 --- !u!114 &-8497301248078583947
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8269,7 +8244,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1520344984127084345}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 50861694b51a270468c37aafb6022cfa, type: 3}
   m_Name: 
@@ -8288,6 +8263,49 @@ MonoBehaviour:
   invulnerableDuringTakeoff: 1
   separationRadius: 1.5
   separationStrength: 2
+--- !u!114 &9213242400949643966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1520344984127084345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cff8908e0fef93947b5706438f6ab788, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  projectileShooter: {fileID: 2716973348061449838}
+  animator: {fileID: 0}
+  unitStats: {fileID: 7223045065685987591}
+  distanceWeight: 50
+  lowHealthBonus: 40
+  narrowAngleBonus: 30
+  wideAngleBonus: 20
+  peripheralAngleBonus: 10
+  checkRadiusOffset: 0.5
+  burstCount: 1
+  burstCooldown: 0.1
+  invulnerableDuringTakeoff: 1
+  separationRadius: 1.5
+  separationStrength: 2
+  particleDamageEmitter: {fileID: 867161035127034676}
+--- !u!114 &867161035127034676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1520344984127084345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fa997a5f314cfa45a50348ab6a81bb5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  particlePrefab: {fileID: 1782028950985407289, guid: 70fc78afd67fc8a4ca9377c9d84f8bba, type: 3}
+  muzzlePoint: {fileID: 5756020464642845269}
+  damagePerSecond: 100
+  damageMultiplier: 1
 --- !u!1 &1536657000286296307
 GameObject:
   m_ObjectHideFlags: 0
@@ -33170,7 +33188,7 @@ Transform:
   m_GameObject: {fileID: 5766382753221998977}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.03, y: -0.9, z: 0.905}
+  m_LocalPosition: {x: -0.03, y: -0.9, z: 1.107}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

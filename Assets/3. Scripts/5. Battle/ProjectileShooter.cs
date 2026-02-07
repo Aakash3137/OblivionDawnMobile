@@ -23,21 +23,23 @@ public class ProjectileShooter : MonoBehaviour
         if (target == null || projectile == null)
             return;
 
+        Projectile proj =
+            ProjectilePoolManager.Instance.Get(projectile.projectileType);
+
+        proj.transform.position = muzzlePoint.position;
+        
+        Vector3 direction = (target.transform.position - muzzlePoint.position).normalized;
+        proj.transform.rotation = Quaternion.LookRotation(direction);
+
         //  LAUNCH VFX
         if (projectile.launchVFX != null && muzzlePoint != null)
         {
-            GameObject vfx = Instantiate(projectile.launchVFX, muzzlePoint.position, gameObject.transform.rotation, gameObject.transform);
+            GameObject vfx = Instantiate(projectile.launchVFX, muzzlePoint.position, proj.transform.rotation, gameObject.transform);
             ParticleSystem ps = vfx.GetComponent<ParticleSystem>();
             var main = ps.main;
             main.loop = false;
             Destroy(vfx, ps.main.duration);
         }
-
-        Projectile proj =
-            ProjectilePoolManager.Instance.Get(projectile.projectileType);
-
-        proj.transform.position = muzzlePoint.position;
-        proj.transform.rotation = gameObject.transform.rotation;
         proj.gameObject.SetActive(true);
 
         proj.Init(target, damage, projectile, GetTrailMaterial(), projectileSide);

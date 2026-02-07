@@ -38,8 +38,7 @@ public class Projectile : MonoBehaviour
 
     public Material playerTrailMaterial;
     public Material enemyTrailMaterial;
-
-
+    
     void Awake()
     {
         // Break shared material references once
@@ -231,7 +230,7 @@ public class Projectile : MonoBehaviour
 
         CheckHit(hitPoint);
     }
-
+    
     void MoveHomingAvoidance()
     {
         if (targetUnit == null) return;
