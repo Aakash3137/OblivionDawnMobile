@@ -104,7 +104,7 @@ public class BuildingPlacementHelper : MonoBehaviour
         currentTile.SetOpen(true);
     }
 
-    private void OnEnable()
+    private void Start()
     {
         currentCoord = cgmInstance.WorldToGrid(transform.position);
         ActivateNeighbors();

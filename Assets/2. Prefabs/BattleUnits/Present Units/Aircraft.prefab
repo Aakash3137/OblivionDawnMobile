@@ -567,7 +567,6 @@ GameObject:
   - component: {fileID: 4773561428658858200}
   - component: {fileID: 4022108238406871403}
   - component: {fileID: 7416070766645631762}
-  - component: {fileID: 5174295395812851996}
   - component: {fileID: 3178270743560080631}
   m_Layer: 0
   m_Name: Aircraft
@@ -714,38 +713,12 @@ MonoBehaviour:
     lifeTime: 2
     isAreaDamage: 0
     damageRadius: 2
-    hasTrail: 0
-    launchVFX: {fileID: 7028878908249187031, guid: 70fc78afd67fc8a4ca9377c9d84f8bba, type: 3}
+    hasTrail: 1
+    launchVFX: {fileID: 0}
     hitVFX: {fileID: 1447540632109744634, guid: c8153071efd10e04eb894c3973bae1f9, type: 3}
   damage: 30
   playerTrailMaterial: {fileID: 2100000, guid: 82c3733d49fb2334b8ef2f0d90268a35, type: 2}
   enemyTrailMaterial: {fileID: 2100000, guid: 50dfd5dfaa2bc9f49835088eefefbf7a, type: 2}
---- !u!114 &5174295395812851996
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7509741216450697401}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b6b669df515259e41b2d6337161e8ddf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  battleUnitEnum: 2
-  projectileShooter: {fileID: 7416070766645631762}
-  hitCollider: {fileID: 6037425610648245962}
-  healthBarFade: {fileID: 4820686349321759560}
-  unitStats: {fileID: 4022108238406871403}
-  separationRadius: 1
-  separationStrength: 1
-  narrowViewAngle: 15
-  wideViewAngle: 180
-  agent: {fileID: 4773561428658858200}
-  animator: {fileID: 0}
-  target: {fileID: 0}
-  primaryTarget: {fileID: 0}
-  secondaryTarget: {fileID: 0}
 --- !u!114 &3178270743560080631
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -767,7 +740,7 @@ MonoBehaviour:
   wideAngleBonus: 20
   peripheralAngleBonus: 10
   checkRadiusOffset: 0.5
-  burstCount: 1
+  burstCount: 6
   burstCooldown: 0.1
   invulnerableDuringTakeoff: 1
   separationRadius: 1.5

@@ -61,7 +61,7 @@ Transform:
   m_GameObject: {fileID: 555606645141232030}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.623, z: 0.12}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -234,7 +234,7 @@ GameObject:
   - component: {fileID: 2532978995828590354}
   - component: {fileID: 372826638053674398}
   m_Layer: 0
-  m_Name: Heavy Atrillery
+  m_Name: Artillery Gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -347,7 +347,7 @@ MonoBehaviour:
     armor: 0
   <currentHealth>k__BackingField: 0
   <side>k__BackingField: 0
-  unitProduceSO: {fileID: 11400000, guid: c3fcccb4a7f9cb34fa36d26ba6a9eeb5, type: 2}
+  unitProduceSO: {fileID: 11400000, guid: f905ae58faf337b4ab75ce8b4beb30f6, type: 2}
   canFly: 0
   unitFlyStats:
     flyHeight: 0
@@ -370,9 +370,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   muzzlePoint: {fileID: 636489192338982737}
   projectile:
-    projectileType: 2
+    projectileType: 3
     motion: 1
-    speed: 5
+    speed: 7
     maxRange: 10
     arcHeight: 3
     lifeTime: 3
@@ -381,7 +381,7 @@ MonoBehaviour:
     hasTrail: 1
     launchVFX: {fileID: 0}
     hitVFX: {fileID: 1447540632109744634, guid: 9d301d5973fbf9349818b1638f122a78, type: 3}
-  damage: 100
+  damage: 500
   playerTrailMaterial: {fileID: 2100000, guid: 82c3733d49fb2334b8ef2f0d90268a35, type: 2}
   enemyTrailMaterial: {fileID: 2100000, guid: 50dfd5dfaa2bc9f49835088eefefbf7a, type: 2}
 --- !u!114 &2532978995828590354
@@ -1004,8 +1004,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4534603261557815886}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.467, y: 0, z: 0.099}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.373, y: 0.273, z: 0.124}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

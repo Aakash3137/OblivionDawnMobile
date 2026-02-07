@@ -161,7 +161,8 @@ public class ResourceBuildingStats : BuildingStats
 
     internal override void Die()
     {
-        DecreaseGlobalCapacity();
+        DecreaseGlobalCapacity(); 
+        DecreaseGenerationRate();
 
         base.Die();
 
