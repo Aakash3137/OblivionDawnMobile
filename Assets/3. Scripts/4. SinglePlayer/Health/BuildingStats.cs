@@ -1,5 +1,6 @@
 using System;
 using Sirenix.OdinInspector;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BuildingStats : Stats
@@ -24,7 +25,7 @@ public class BuildingStats : Stats
         visuals = buildingStats.buildingVisuals;
 
         currentTile = GetComponentInParent<Tile>();
-        currentTile.SetOccupant(gameObject);
+        currentTile.SetOccupant(this);
 
         side = currentTile.ownerSide;
 

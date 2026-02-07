@@ -87,7 +87,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e2b48899215c0e438c75307d31cd01d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  useDiagonals: 1
+  allNeighbors: 1
+  neighborTiles: []
 --- !u!114 &7958517044968100822
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -113,7 +114,7 @@ MonoBehaviour:
   <side>k__BackingField: 0
   <buildingStats>k__BackingField: {fileID: 11400000, guid: a0e6349b4972493488179c8239a58ef9, type: 2}
   <currentTile>k__BackingField: {fileID: 0}
-  GeneratedResourceAmount: 0
+  <isProducing>k__BackingField: 0
 --- !u!114 &8927000402532676705
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -337,6 +338,7 @@ GameObject:
   - component: {fileID: 6805697732724018426}
   - component: {fileID: 3974868830156318060}
   - component: {fileID: 2518701222709565724}
+  - component: {fileID: 8137067469467117196}
   m_Layer: 0
   m_Name: lava
   m_TagString: Untagged
@@ -412,6 +414,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &8137067469467117196
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8685524537159335765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3d28cb150ad86f4a8100312a4aea7a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uvAnimationRate: {x: 0, y: 0.2}
+  textureName: _MainTex
 --- !u!1001 &2079376953129940830
 PrefabInstance:
   m_ObjectHideFlags: 0

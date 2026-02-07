@@ -24,13 +24,13 @@ public static class Generic
 
     public static void Delay(Action action, float time)
     {
-        #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        #endif
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+#endif
         Runner.StartCoroutine(DelayCoroutine(action, time));
     }
 
     private static IEnumerator DelayCoroutine(Action action, float time)
-    { 
+    {
         yield return new WaitForSeconds(time);
         action?.Invoke();
     }

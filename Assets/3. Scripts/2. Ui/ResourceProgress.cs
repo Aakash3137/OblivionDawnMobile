@@ -2,10 +2,11 @@ using UnityEngine;
 using LitMotion;
 using LitMotion.Extensions;
 using UnityEngine.UI;
+using Sirenix.OdinInspector.Editor.Drawers;
 
 public class ResourceProgress : ProgressManager
 {
-    private ResourceBuildingStats resourceBuildingStats;
+    private ResourceBuildingStats resourceBuilding;
     private float currentTime;
 
     [SerializeField] private RectTransform generateResourceImageTransform;
@@ -15,26 +16,37 @@ public class ResourceProgress : ProgressManager
 
     float waitTime;
 
+
     private void Start()
     {
-        resourceBuildingStats = GetComponentInParent<ResourceBuildingStats>();
+        resourceBuilding = GetComponentInParent<ResourceBuildingStats>();
         currentTime = 0f;
         resourceImage = generateResourceImageTransform.GetComponent<Image>();
         defaultTransform = generateResourceImageTransform.anchoredPosition;
 
-        waitTime = resourceBuildingStats.GetGenerationTime();
+        waitTime = resourceBuilding.GetGenerationTime();
         CheckBuildingSide();
-        AnimateTransform();
+
+        // AnimateTransform();
+        resourceImage.color = new Color(resourceImage.color.r, resourceImage.color.g, resourceImage.color.b, 0f);
     }
 
     private void Update()
     {
-        if (resourceBuildingStats != null)
+        if (resourceBuilding != null)
             UIResourceBuildingProgress();
     }
 
     private void UIResourceBuildingProgress()
     {
+        if (!resourceBuilding.isProducing)
+        {
+            currentTime = 0f;
+            progressAmount = currentTime / waitTime;
+            UpdateFillAmount(progressAmount);
+            return;
+        }
+
         if (currentTime > waitTime)
         {
             AnimateTransform();
@@ -72,7 +84,7 @@ public class ResourceProgress : ProgressManager
     //Disable UI for enemy
     private void CheckBuildingSide()
     {
-        if (resourceBuildingStats.side == Side.Enemy)
+        if (resourceBuilding.side == Side.Enemy)
         {
             _canvasGroup.alpha = 0f;
         }
