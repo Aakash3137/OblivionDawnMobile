@@ -5,54 +5,49 @@ public class ResourceUpdateUI : MonoBehaviour
 {
     [Header("Assign PlayerResourceManager Reference")]
     [SerializeField] private ResourceManager rmReference;
-    [Header("UI References assigned with Prefab")]
+
+    [Header("Resource Amount Texts")]
     [SerializeField] private TMP_Text foodText;
     [SerializeField] private TMP_Text goldText;
     [SerializeField] private TMP_Text metalText;
     [SerializeField] private TMP_Text powerText;
 
+    [Header("Generation Rate Texts")]
     [SerializeField] private TMP_Text foodGenerationRateText;
     [SerializeField] private TMP_Text goldGenerationRateText;
     [SerializeField] private TMP_Text metalGenerationRateText;
     [SerializeField] private TMP_Text powerGenerationRateText;
 
-    // private float startFood;
-    // private float startGold;
-    // private float startMetal;
-    // private float startPower;
 
+    [Header("Resource Icon Images")]
+    [SerializeField] private UnityEngine.UI.Image foodIconImage;
+    [SerializeField] private UnityEngine.UI.Image goldIconImage;
+    [SerializeField] private UnityEngine.UI.Image metalIconImage;
+    [SerializeField] private UnityEngine.UI.Image powerIconImage;
 
-    private void OnEnable()
+    void OnEnable()
     {
         //Subscribe to the event
         if (rmReference != null)
             rmReference.OnResourcesChanged += UpdateUI;
     }
 
-    private void OnDisable()
+    void OnDisable()
     {
         //Unsubscribe from the event
         if (rmReference != null)
             rmReference.OnResourcesChanged -= UpdateUI;
     }
 
-    // private void Start()
-    // {
-    //     // startFood = rmReference.startingResources[0].resourceCost;
-    //     // startGold = rmReference.startingResources[1].resourceCost;
-    //     // startMetal = rmReference.startingResources[2].resourceCost;
-    //     // startPower = rmReference.startingResources[3].resourceCost;
-    // }
-
     public void UpdateUI()
     {
         if (rmReference == null)
             return;
 
-        foodText.SetText("{0:0} / {1:0}", rmReference.currentFood, rmReference.maxFood);
-        goldText.SetText("{0:0} / {1:0}", rmReference.currentGold, rmReference.maxGold);
-        metalText.SetText("{0:0} / {1:0}", rmReference.currentMetal, rmReference.maxMetal);
-        powerText.SetText("{0:0} / {1:0}", rmReference.CurrentPower, rmReference.maxPower);
+        foodText.SetText("{0}", rmReference.currentFood);
+        goldText.SetText("{0}", rmReference.currentGold);
+        metalText.SetText("{0}", rmReference.currentMetal);
+        powerText.SetText("{0}", rmReference.CurrentPower);
 
         ToggleText(foodGenerationRateText, rmReference.currentFoodGenerationRate > 0);
         ToggleText(goldGenerationRateText, rmReference.currentGoldGenerationRate > 0);
@@ -63,6 +58,12 @@ public class ResourceUpdateUI : MonoBehaviour
         goldGenerationRateText.SetText("{0}", RoundValue(rmReference.currentGoldGenerationRate));
         metalGenerationRateText.SetText("{0}", RoundValue(rmReference.currentMetalGenerationRate));
         powerGenerationRateText.SetText("{0}", RoundValue(rmReference.currentPowerGenerationRate));
+
+        // foodIconImage.sprite = rmReference.foodIcon;
+        // goldIconImage.sprite = rmReference.goldIcon;
+        // metalIconImage.sprite = rmReference.metalIcon;
+        // powerIconImage.sprite = rmReference.powerIcon;
+
     }
 
     private void ToggleText(TMP_Text text, bool show)
