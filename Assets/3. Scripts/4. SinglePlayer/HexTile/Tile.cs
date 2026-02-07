@@ -13,7 +13,7 @@ public class Tile : MonoBehaviour
 
     private SideManager sideManager;
     [ReadOnly] public bool isOpen = false; // set true when PlusIcon is activated
-    [ReadOnly] public bool hasBuilding = false; // NEW flag
+    [field: SerializeField, ReadOnly] public bool hasBuilding { get; private set; }
     [ReadOnly] public bool isRegistered = false;
 
 
@@ -24,10 +24,12 @@ public class Tile : MonoBehaviour
     public void SetOccupant(BuildingStats occupant)
     {
         currentOccupant = occupant;
+        hasBuilding = true;
     }
     public void ClearOccupant()
     {
         currentOccupant = null;
+        hasBuilding = false;
     }
     public BuildingStats GetOccupant()
     {
@@ -106,12 +108,5 @@ public class Tile : MonoBehaviour
         // Clear occupant only if this unit was tracked
         // if (occupant == unit)
         //     occupant = null;
-    }
-
-
-    // Called when a building is placed
-    public void SetBuildingPlaced()
-    {
-        hasBuilding = true;
     }
 }

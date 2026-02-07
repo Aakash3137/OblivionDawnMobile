@@ -71,7 +71,7 @@ public class TileUIPanel : MonoBehaviour
 
         spawnedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
 
-        currentTile.SetBuildingPlaced();
+        // currentTile.SetBuildingPlaced();
 
         // Fade out build panel
         if (buildPanel != null)

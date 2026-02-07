@@ -84,20 +84,20 @@ public class GameManager : MonoBehaviour
 
         Debug.Log($"[Spawner] Spawned {label} for {side}: {buildingPrefab.name}");
 
-        // If this is the main building, mark the tile as occupied
-        if (label == "MainBuilding")
-        {
-            // Find the tile at the spawn point
-            if (CubeGridManager.Instance != null)
-            {
-                Vector2Int coord = CubeGridManager.Instance.WorldToGrid(point.position);
-                var tile = CubeGridManager.Instance.GetCube(coord);
-                if (tile != null)
-                {
-                    tile.SetBuildingPlaced();
-                    // Debug.Log($"[Spawner] Tile at {coord} marked as building placed for {side}");
-                }
-            }
-        }
+        // // If this is the main building, mark the tile as occupied
+        // if (label == "MainBuilding")
+        // {
+        //     // Find the tile at the spawn point
+        //     if (CubeGridManager.Instance != null)
+        //     {
+        //         Vector2Int coord = CubeGridManager.Instance.WorldToGrid(point.position);
+        //         var tile = CubeGridManager.Instance.GetCube(coord);
+        //         if (tile != null)
+        //         {
+        //             // tile.SetBuildingPlaced();
+        //             // Debug.Log($"[Spawner] Tile at {coord} marked as building placed for {side}");
+        //         }
+        //     }
+        // }
     }
 }

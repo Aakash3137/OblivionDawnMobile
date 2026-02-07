@@ -101,7 +101,7 @@ public class EnemyBuildPanel : MonoBehaviour
 
         spawnedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
 
-        currentTile.SetBuildingPlaced();
+        // currentTile.SetBuildingPlaced();
 
         PlaceWallsOnMainBuilding();
         PlaceWalls();
@@ -125,7 +125,7 @@ public class EnemyBuildPanel : MonoBehaviour
 
         spawnedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
 
-        currentTile.SetBuildingPlaced();
+        // currentTile.SetBuildingPlaced();
 
         PlaceWallsOnMainBuilding();
 

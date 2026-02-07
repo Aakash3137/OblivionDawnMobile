@@ -78,6 +78,5 @@ public class BuildingStats : Stats
     internal virtual void OnDestroy()
     {
         currentTile.ClearOccupant();
-        currentTile.hasBuilding = false;
     }
 }
