@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Unity.Android.Gradle;
 using UnityEngine;
 
 public class InventoryManager : MonoBehaviour
@@ -23,7 +22,7 @@ public class InventoryManager : MonoBehaviour
     // DATA (SAVE TO PLAYFAB)
     // ==================================================
 
-    [Header ("Game Data")]
+    [Header("Game Data")]
     [SerializeField] private DecSelectionData _SelectionData;
 
     [Header("Inventory Data")]
@@ -58,7 +57,7 @@ public class InventoryManager : MonoBehaviour
 
     private void Start()
     {
-       //RefreshUI();
+        //RefreshUI();
     }
 
     // ==================================================
@@ -103,7 +102,7 @@ public class InventoryManager : MonoBehaviour
         RefreshUI();
     }
 
-    public void AddUnequippedItem(string itemId, string UnitType, Canvas _Canvas, string Details, FactionName _FName, bool Status, DecCategory decCategory,  UnitProduceStatsSO unit, DefenseBuildingDataSO Defense)
+    public void AddUnequippedItem(string itemId, string UnitType, Canvas _Canvas, string Details, FactionName _FName, bool Status, DecCategory decCategory, UnitProduceStatsSO unit, DefenseBuildingDataSO Defense)
     {
         unequippedData.Add(new InventoryItemData(itemId, UnitType, _Canvas, Details, _FName, Status, decCategory, unit, Defense));
         RefreshUI();
@@ -308,23 +307,23 @@ public class InventoryManager : MonoBehaviour
 
     public void ItemSave(DecCategory category)
     {
-        if(category == DecCategory.Offense)
+        if (category == DecCategory.Offense)
         {
             _SelectionData.AllFactionDecData[0].SelectedUnitDeck.Clear();
-            foreach(var item in equippedData)
+            foreach (var item in equippedData)
             {
                 _SelectionData.AllFactionDecData[0].FactionType = item.factionType;
                 _SelectionData.AllFactionDecData[0].SelectedUnitDeck.Add(item.Units);
                 Debug.Log("Offense data: " + item.Units.name);
-            }    
+            }
         }
-        else if(category == DecCategory.Defense)
+        else if (category == DecCategory.Defense)
         {
             _SelectionData.AllFactionDecData[0].SelectedDefenseDec.Clear();
-            foreach(var item in equippedData)
+            foreach (var item in equippedData)
             {
                 _SelectionData.AllFactionDecData[0].FactionType = item.factionType;
-                _SelectionData.AllFactionDecData[0].SelectedDefenseDec.Add(item.Defenses);    
+                _SelectionData.AllFactionDecData[0].SelectedDefenseDec.Add(item.Defenses);
             }
         }
     }

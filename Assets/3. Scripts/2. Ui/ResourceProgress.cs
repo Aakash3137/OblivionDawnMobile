@@ -2,7 +2,6 @@ using UnityEngine;
 using LitMotion;
 using LitMotion.Extensions;
 using UnityEngine.UI;
-using Sirenix.OdinInspector.Editor.Drawers;
 
 public class ResourceProgress : ProgressManager
 {
