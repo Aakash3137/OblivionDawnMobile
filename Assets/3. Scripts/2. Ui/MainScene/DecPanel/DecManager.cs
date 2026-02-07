@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.Android.Gradle.Manifest;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -64,7 +63,7 @@ public class DecManager : MonoBehaviour
 
     private void SelectDeck(DecSelector selected)
     {
-        Debug.Log("Select Deck: "+selected);
+        Debug.Log("Select Deck: " + selected);
         selected.InActiveObj.SetActive(false);
         selected._Checked.SetActive(true);
 
@@ -81,7 +80,7 @@ public class DecManager : MonoBehaviour
         deckData.SelectedDefenseDec = selected.DefenseCards;
         selectionData.AddDeckData(deckData);
 
-        if(CurrentCategory != DecCategory.Defense)
+        if (CurrentCategory != DecCategory.Defense)
         {
             SelectCategory(DecCategory.Offense);
         }
@@ -97,32 +96,32 @@ public class DecManager : MonoBehaviour
     public void OnOffenseSelected()
     {
         SelectCategory(DecCategory.Offense);
-        CurrentCategory= DecCategory.Offense;
+        CurrentCategory = DecCategory.Offense;
     }
 
     public void OnDefenseSelected()
     {
         SelectCategory(DecCategory.Defense);
-        CurrentCategory= DecCategory.Defense;
+        CurrentCategory = DecCategory.Defense;
     }
 
     private void SelectCategory(DecCategory decCategory)
     {
-        foreach(CategorySelector category in categoryList)
+        foreach (CategorySelector category in categoryList)
         {
             category.InActiveObj.SetActive(true);
-            category._Checked.gameObject.SetActive(false);  
+            category._Checked.gameObject.SetActive(false);
         }
 
         CategorySelector _Category = categoryList.Find(x => x._Name == decCategory);
 
-        if(_Category != null)
-        {   
+        if (_Category != null)
+        {
             _Category.InActiveObj.SetActive(false);
             _Category._Checked.gameObject.SetActive(true);
         }
 
-        if(decCategory == DecCategory.Defense)
+        if (decCategory == DecCategory.Defense)
         {
             StartCoroutine(BuildDefenseEquippedDec(CurrentDec.DefenseCards));
         }
@@ -130,7 +129,7 @@ public class DecManager : MonoBehaviour
         {
             StartCoroutine(BuildUnitEquippedDeck(CurrentDec.UnitCards));
         }
-        
+
         RefreshAllCards(CurrentDec);
 
         //RefreshAllCards();
@@ -142,7 +141,7 @@ public class DecManager : MonoBehaviour
     private IEnumerator BuildUnitEquippedDeck(List<UnitProduceStatsSO> cards)
     {
         yield return null;
-        Debug.Log("Build Equipped Deck: "+ cards.Count);
+        Debug.Log("Build Equipped Deck: " + cards.Count);
         inventoryManager.ClearEquipped();
 
         int count = Mathf.Min(4, cards.Count);
@@ -156,7 +155,7 @@ public class DecManager : MonoBehaviour
                 _Canvas,
                 GetUnitStats(card),
                 selectionData.CurrentFaction,
-                true, 
+                true,
                 CurrentCategory,
                 cards[i],
                 null
@@ -192,7 +191,7 @@ public class DecManager : MonoBehaviour
     private void RefreshAllCards(DecSelector _dec)
     {
         inventoryManager.ClearUnequipped();
-        Debug.Log("Current Dec"+ CurrentCategory);
+        Debug.Log("Current Dec" + CurrentCategory);
         if (CurrentCategory == DecCategory.Offense)
             BuildAllUnitCardsInventory(_dec.UnitCards);
         else
@@ -201,7 +200,7 @@ public class DecManager : MonoBehaviour
 
     private void BuildAllUnitCardsInventory(List<UnitProduceStatsSO> cards)
     {
-        Debug.Log("Current Dec Category: "+ CurrentCategory);
+        Debug.Log("Current Dec Category: " + CurrentCategory);
         foreach (var card in cards)
         {
             inventoryManager.AddUnequippedItem(
@@ -220,7 +219,7 @@ public class DecManager : MonoBehaviour
 
     private void BuildAllDefenseInventory(List<DefenseBuildingDataSO> buildings)
     {
-        Debug.Log("Current Dec Category: "+ CurrentCategory);
+        Debug.Log("Current Dec Category: " + CurrentCategory);
         foreach (var building in buildings)
         {
             inventoryManager.AddUnequippedItem(
