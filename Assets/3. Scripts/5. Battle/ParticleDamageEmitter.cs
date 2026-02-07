@@ -11,6 +11,7 @@ public class ParticleDamageEmitter : MonoBehaviour
     [SerializeField] private float damagePerSecond = 100f;
     [SerializeField] private float damageMultiplier = 1f;
 
+    [Header("Read Only")]
     private ParticleSystem particleInstance;
     [SerializeField]private float damagePerParticle;
     private Stats Stats;
