@@ -27,22 +27,10 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
         buildingToSpawn = GetSlot(GameData.SelectedFaction, buildingType);
 
-        //prmInstance.OnResourcesChanged += UpdateButtonInteractivity;
-
-        ///
-        /// To do buttons should get SO data when starting game based on Offenses selected 
-        /// 
-
         if (buildingToSpawn.TryGetComponent<BuildingStats>(out var spawnBuildingStats))
         {
-            //int spawnLevel = spawnBuildingStats.buildingStats.buildingSpawnLevel;
             cachedCosts = spawnBuildingStats.buildingStats.buildingBuildCost;
         }
-        // else if (buildingToSpawn.TryGetComponent<WallStats>(out var spawnWallStats))
-        // {
-        //     int spawnLevel = spawnWallStats.wallStats.wallSpawnLevel;
-        //     cachedCosts = spawnWallStats.wallStats.wallLevelData[spawnLevel].wallBuildCosts;
-        // }
         else
         {
             Debug.Log($"<color=red>No BuildingStats or WallStats found on {buildingToSpawn.name}</color>");

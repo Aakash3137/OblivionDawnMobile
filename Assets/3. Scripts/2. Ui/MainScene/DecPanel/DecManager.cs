@@ -13,7 +13,7 @@ public class DecManager : MonoBehaviour
     [Header("Selection Data")]
     [SerializeField] private DecSelectionData selectionData;
     [SerializeField] private DecSelector CurrentDec;
-    [SerializeField] private DecCategory CurrentCategory;
+    [SerializeField] private DecCategory CurrentCategory = DecCategory.Offense;
 
     [Header("Inventory Reference")]
     [SerializeField] private InventoryManager inventoryManager;
@@ -24,31 +24,61 @@ public class DecManager : MonoBehaviour
     [SerializeField] internal TMP_Text diamondtext;
     [SerializeField] internal Userdata _Profile;
     [SerializeField] private TMP_Text Coins;
-    [SerializeField] private Button OffenseBtn, DefenseBtn;
+    [SerializeField] private Button OffenseBtn, DefenseBtn, ResourceBtn;
 
-    //private DecCategory currentCategory;
-
+    // =========================
+    // LIFECYCLE
+    // =========================
     private void OnEnable()
     {
         diamondtext.text = _Profile.Diamonds.ToString();
         Coins.text = _Profile.Coins.ToString();
 
         OffenseBtn.onClick.RemoveAllListeners();
-        OffenseBtn.onClick.AddListener(OnOffenseSelected);
-
         DefenseBtn.onClick.RemoveAllListeners();
-        DefenseBtn.onClick.AddListener(OnDefenseSelected);
+        ResourceBtn.onClick.RemoveAllListeners();
+
+        OffenseBtn.onClick.AddListener(() => OnCategorySelected(DecCategory.Offense));
+        DefenseBtn.onClick.AddListener(() => OnCategorySelected(DecCategory.Defense));
+        ResourceBtn.onClick.AddListener(() => OnCategorySelected(DecCategory.Resource));
+
+        InitializeAllFactionDecks();
 
         if (deckList.Count > 0)
             SelectDeck(deckList[0]);
     }
 
     // =========================
-    // FACTION BUTTON
+    // INITIALIZE DATA
+    // =========================
+    private void InitializeAllFactionDecks()
+    {
+        selectionData.AllFactionDecData.Clear();
+
+        foreach (var dec in deckList)
+        {
+            DeckData deckData = new DeckData
+            {
+                FactionType = dec._FactionName,
+                SelectedUnitDeck = GetFirst4(dec.UnitCards),
+                SelectedDefenseDec = GetFirst4(dec.DefenseCards),
+                SelectedResourceDeck = GetFirst4(dec.ResourceCards)
+            };
+
+            selectionData.AddDeckData(deckData);
+        }
+    }
+
+    private List<T> GetFirst4<T>(List<T> list)
+    {
+        return list.GetRange(0, Mathf.Min(4, list.Count));
+    }
+
+    // =========================
+    // FACTION SELECTION
     // =========================
     public void OnClickButton(GameObject clickedButton)
     {
-        Debug.Log("OnCLick");
         foreach (var deck in deckList)
         {
             deck.InActiveObj.SetActive(true);
@@ -63,7 +93,6 @@ public class DecManager : MonoBehaviour
 
     private void SelectDeck(DecSelector selected)
     {
-        Debug.Log("Select Deck: " + selected);
         selected.InActiveObj.SetActive(false);
         selected._Checked.SetActive(true);
 
@@ -71,83 +100,67 @@ public class DecManager : MonoBehaviour
             selectedFactionIcon.sprite = selected.FactionSprite;
 
         selectionData.CurrentFaction = selected._FactionName;
-
         CurrentDec = selected;
 
-        DeckData deckData = GetOrCreateDeckData(selected._FactionName);
-
-        deckData.SelectedUnitDeck = selected.UnitCards;
-        deckData.SelectedDefenseDec = selected.DefenseCards;
-        selectionData.AddDeckData(deckData);
-
-        if (CurrentCategory != DecCategory.Defense)
-        {
-            SelectCategory(DecCategory.Offense);
-        }
-        else
-        {
-            SelectCategory(DecCategory.Defense);
-        }
+        SelectCategory(CurrentCategory);
     }
 
     // =========================
-    // CATEGORY BUTTONS
+    // CATEGORY HANDLING
     // =========================
-    public void OnOffenseSelected()
+    private void OnCategorySelected(DecCategory category)
     {
-        SelectCategory(DecCategory.Offense);
-        CurrentCategory = DecCategory.Offense;
+        CurrentCategory = category;
+        SelectCategory(category);
     }
 
-    public void OnDefenseSelected()
+    private void SelectCategory(DecCategory category)
     {
-        SelectCategory(DecCategory.Defense);
-        CurrentCategory = DecCategory.Defense;
-    }
-
-    private void SelectCategory(DecCategory decCategory)
-    {
-        foreach (CategorySelector category in categoryList)
+        foreach (CategorySelector cat in categoryList)
         {
-            category.InActiveObj.SetActive(true);
-            category._Checked.gameObject.SetActive(false);
+            cat.InActiveObj.SetActive(true);
+            cat._Checked.SetActive(false);
         }
 
-        CategorySelector _Category = categoryList.Find(x => x._Name == decCategory);
+        CategorySelector selected =
+            categoryList.Find(x => x._Name == category);
 
-        if (_Category != null)
+        if (selected != null)
         {
-            _Category.InActiveObj.SetActive(false);
-            _Category._Checked.gameObject.SetActive(true);
+            selected.InActiveObj.SetActive(false);
+            selected._Checked.SetActive(true);
         }
 
-        if (decCategory == DecCategory.Defense)
+        inventoryManager.ClearEquipped();
+
+        switch (category)
         {
-            StartCoroutine(BuildDefenseEquippedDec(CurrentDec.DefenseCards));
-        }
-        else
-        {
-            StartCoroutine(BuildUnitEquippedDeck(CurrentDec.UnitCards));
+            case DecCategory.Offense:
+                StartCoroutine(BuildUnitEquippedDeck(CurrentDec));
+                break;
+
+            case DecCategory.Defense:
+                StartCoroutine(BuildDefenseEquippedDeck(CurrentDec));
+                break;
+
+            case DecCategory.Resource:
+                StartCoroutine(BuildResourceEquippedDeck(CurrentDec));
+                break;
         }
 
         RefreshAllCards(CurrentDec);
-
-        //RefreshAllCards();
     }
 
     // =========================
-    // EQUIPPED
+    // EQUIPPED CARDS
     // =========================
-    private IEnumerator BuildUnitEquippedDeck(List<UnitProduceStatsSO> cards)
+    private IEnumerator BuildUnitEquippedDeck(DecSelector deck)
     {
         yield return null;
-        Debug.Log("Build Equipped Deck: " + cards.Count);
-        inventoryManager.ClearEquipped();
 
-        int count = Mathf.Min(4, cards.Count);
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < Mathf.Min(4, deck.UnitCards.Count); i++)
         {
-            var card = cards[i];
+            var card = deck.UnitCards[i];
 
             inventoryManager.AddEquippedItem(
                 card.unitIdentity.name,
@@ -157,30 +170,49 @@ public class DecManager : MonoBehaviour
                 selectionData.CurrentFaction,
                 true,
                 CurrentCategory,
-                cards[i],
-                null
+                deck
             );
         }
     }
 
-    private IEnumerator BuildDefenseEquippedDec(List<DefenseBuildingDataSO> cards)
+    private IEnumerator BuildDefenseEquippedDeck(DecSelector deck)
     {
         yield return null;
-        int count = Mathf.Min(4, cards.Count);
-        for (int i = 0; i < count; i++)
+
+        for (int i = 0; i < Mathf.Min(4, deck.DefenseCards.Count); i++)
         {
-            var card = cards[i];
+            var card = deck.DefenseCards[i];
 
             inventoryManager.AddEquippedItem(
                 card.buildingIdentity.name,
-                card.buildingType.ToString(),
+                "Defense",
                 _Canvas,
-                "GetUnitStats(card)",
+                GetBuildingStats(card),
                 selectionData.CurrentFaction,
                 true,
                 CurrentCategory,
-                null,
-                cards[i]
+                deck
+            );
+        }
+    }
+
+    private IEnumerator BuildResourceEquippedDeck(DecSelector deck)
+    {
+        yield return null;
+
+        for (int i = 0; i < Mathf.Min(4, deck.ResourceCards.Count); i++)
+        {
+            var card = deck.ResourceCards[i];
+
+            inventoryManager.AddEquippedItem(
+                card.buildingIdentity.name,
+                "Resource",
+                _Canvas,
+                GetResourceStats(card),
+                selectionData.CurrentFaction,
+                true,
+                CurrentCategory,
+                deck
             );
         }
     }
@@ -188,20 +220,29 @@ public class DecManager : MonoBehaviour
     // =========================
     // ALL CARDS
     // =========================
-    private void RefreshAllCards(DecSelector _dec)
+    private void RefreshAllCards(DecSelector dec)
     {
         inventoryManager.ClearUnequipped();
-        Debug.Log("Current Dec" + CurrentCategory);
-        if (CurrentCategory == DecCategory.Offense)
-            BuildAllUnitCardsInventory(_dec.UnitCards);
-        else
-            BuildAllDefenseInventory(_dec.DefenseCards);
+
+        switch (CurrentCategory)
+        {
+            case DecCategory.Offense:
+                BuildAllUnitCardsInventory(dec);
+                break;
+
+            case DecCategory.Defense:
+                BuildAllDefenseInventory(dec);
+                break;
+
+            case DecCategory.Resource:
+                BuildAllResourceInventory(dec);
+                break;
+        }
     }
 
-    private void BuildAllUnitCardsInventory(List<UnitProduceStatsSO> cards)
+    private void BuildAllUnitCardsInventory(DecSelector _Dec)
     {
-        Debug.Log("Current Dec Category: " + CurrentCategory);
-        foreach (var card in cards)
+        foreach (var card in _Dec.UnitCards)
         {
             inventoryManager.AddUnequippedItem(
                 card.unitIdentity.name,
@@ -210,82 +251,86 @@ public class DecManager : MonoBehaviour
                 GetUnitStats(card),
                 selectionData.CurrentFaction,
                 false,
-                CurrentCategory,
-                card,
-                null
+                CurrentCategory, 
+                _Dec
             );
         }
     }
 
-    private void BuildAllDefenseInventory(List<DefenseBuildingDataSO> buildings)
+    private void BuildAllDefenseInventory(DecSelector dec)
     {
-        Debug.Log("Current Dec Category: " + CurrentCategory);
-        foreach (var building in buildings)
+        foreach (var card in dec.DefenseCards)
         {
             inventoryManager.AddUnequippedItem(
-                building.name,
+                card.buildingIdentity.name,
                 "Defense",
                 _Canvas,
-                GetBuildingStats(building),
+                GetBuildingStats(card),
                 selectionData.CurrentFaction,
                 false,
                 CurrentCategory,
-                null,
-                building
+                dec
+            );
+        }
+    }
+
+    private void BuildAllResourceInventory(DecSelector _Dec)
+    {
+        foreach (var card in _Dec.ResourceCards)
+        {
+            inventoryManager.AddUnequippedItem(
+                card.buildingIdentity.name,
+                "Resource",
+                _Canvas,
+                GetResourceStats(card),
+                selectionData.CurrentFaction,
+                false,
+                CurrentCategory,
+                _Dec
             );
         }
     }
 
     // =========================
-    // HELPERS
+    // STATS HELPERS
     // =========================
-
     private string GetUnitStats(UnitProduceStatsSO card)
     {
         return
-            $"UnitLevel: {card.unitIdentity.spawnLevel + 1}\n" +
+            $"Level: {card.unitIdentity.spawnLevel + 1}\n" +
             $"Health: {card.unitUpgradeData[0].unitBasicStats.maxHealth}\n" +
             $"Armor: {card.unitUpgradeData[0].unitBasicStats.armor}\n" +
-            $"Attack Range: {card.unitUpgradeData[0].unitRangeStats.attackRange}";
+            $"Range: {card.unitUpgradeData[0].unitRangeStats.attackRange}";
     }
 
     private string GetBuildingStats(DefenseBuildingDataSO card)
     {
+        return $"Level: {card.buildingIdentity.spawnLevel + 1}\n" +
+            $"Health: {card.defenseBuildingUpgradeData[0].defenseAttackStats.damage}\n" +
+            $"Armor: {card.defenseBuildingUpgradeData[0].defenseAttackStats.fireRate}\n" +
+            $"Range: {card.defenseBuildingUpgradeData[0].defenseRangeStats.attackRange}";
+    }
+
+    private string GetResourceStats(ResourceBuildingDataSO card)
+    {
         return
-            $"Building Level: ";
-    }
-
-    private DeckData GetCurrentDeck()
-    {
-        return selectionData.AllFactionDecData
-            .Find(d => d.FactionType == selectionData.CurrentFaction);
-    }
-
-    private DeckData GetOrCreateDeckData(FactionName faction)
-    {
-        var deck = selectionData.AllFactionDecData
-            .Find(d => d.FactionType == faction);
-
-        if (deck == null)
-        {
-            deck = new DeckData { FactionType = faction };
-            selectionData.AddDeckData(deck);
-        }
-
-        return deck;
+            $"Level: {card.buildingIdentity.spawnLevel + 1}\n" +
+            $"Health: {card.resourceBuildingUpgradeData[0].buildingBasicStats.maxHealth}\n" +
+            $"Armor: {card.resourceBuildingUpgradeData[0].buildingBasicStats.armor}\n" +
+            $"Range: {card.resourceBuildingUpgradeData[0].buildingBuildTime}";
+            
     }
 }
 
 // =========================
 // SUPPORT
 // =========================
-
 public enum DecCategory
 {
     Offense,
-    Defense
+    Defense,
+    Resource
 }
-
 
 [System.Serializable]
 public class DecSelector
@@ -294,8 +339,10 @@ public class DecSelector
     public GameObject _Checked;
     public GameObject InActiveObj;
     public Sprite FactionSprite;
+
     public List<UnitProduceStatsSO> UnitCards = new();
     public List<DefenseBuildingDataSO> DefenseCards = new();
+    public List<ResourceBuildingDataSO> ResourceCards = new();
 }
 
 [System.Serializable]

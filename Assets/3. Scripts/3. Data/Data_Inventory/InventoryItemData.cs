@@ -15,7 +15,7 @@ public class InventoryItemData
     public Canvas itemCanvas;
     public bool IsEquipped = false;
 
-    public InventoryItemData(string id, string UnityType, Canvas _Canvas, string Details, FactionName _FName, bool Status, DecCategory Dec, UnitProduceStatsSO _Units, DefenseBuildingDataSO _Defenses)
+    public InventoryItemData(string id, string UnityType, Canvas _Canvas, string Details, FactionName _FName, bool Status, DecCategory Dec, DecSelector DecData)
     {
         itemId = id;
         itemName = id;
@@ -25,7 +25,29 @@ public class InventoryItemData
         itemCanvas = _Canvas;
         IsEquipped = Status;
         _Dec = Dec;
-        Units = _Units;
-        Defenses = _Defenses;
+        
+        foreach(var item in DecData.UnitCards)
+            {
+                if(id == item.unitIdentity.name)
+                {
+                    Units = item;
+                }
+            }
+
+        foreach(var item in DecData.DefenseCards)
+            {
+                if(id == item.buildingIdentity.name)
+                {
+                    Defenses = item;
+                }
+            }
+
+        foreach (var item in DecData.ResourceCards)
+        {
+            if(id == item.buildingIdentity.name)
+                {
+                    Resources = item;
+                }
+        }
     }
 }

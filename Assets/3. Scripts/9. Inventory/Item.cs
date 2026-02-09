@@ -22,6 +22,7 @@ public class Item : MonoBehaviour
     [Header ("Game Data")]
     [SerializeField] internal UnitProduceStatsSO unit;
     [SerializeField] internal DefenseBuildingDataSO Defense;
+    [SerializeField] internal ResourceBuildingDataSO Resource;
 
     public InventorySlot CurrentSlot { get; set; }
     internal ItemDetailsWindow itemDetailsWindow;
@@ -61,6 +62,10 @@ public class Item : MonoBehaviour
                 itemDetailsWindow.unit = unit;
             else if(_Category == DecCategory.Defense)
                  itemDetailsWindow.Defense = Defense;
+            else if(_Category == DecCategory.Resource)
+            {
+                itemDetailsWindow.Resourse = Resource;
+            }
         }
     }
 }

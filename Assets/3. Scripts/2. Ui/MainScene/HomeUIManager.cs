@@ -278,16 +278,15 @@ public class HomeUIManager : MonoBehaviour
 
     private void OnJoinButtonClicked()
     {
-        CustomGameMode.SetGameMode(GameModeType.HostClient);
-        SwitchPanel(JoinLobbyPanel, PlayerJoinedPanel);
-        PhotonNetworkManager.Instance.JoinLobby(LobbyCodeInputField.text);
+        
     }
 
     private void LoadFactionPanel()
     {
-        playerFactionPanel.Layout.alpha = 1;
-        playerFactionPanel.Layout.interactable = true;
-        playerFactionPanel.Layout.blocksRaycasts = true;
+        // playerFactionPanel.Layout.alpha = 1;
+        // playerFactionPanel.Layout.interactable = true;
+        // playerFactionPanel.Layout.blocksRaycasts = true;
+        ShowPanel(PanelName.Faction);
     }
     
     internal void OnFactionClicked()

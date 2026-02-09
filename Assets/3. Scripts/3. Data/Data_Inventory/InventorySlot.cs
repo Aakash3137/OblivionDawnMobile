@@ -63,7 +63,7 @@ public class InventorySlot : MonoBehaviour, IDropHandler
     private IEnumerator SetData(Item item)
     {
         yield return new WaitForSeconds(0.15f);
-        InventoryManager.Instance.ItemSave(item._Category);
+        InventoryManager.Instance.ItemSave(item._Category, item.factionType);
     }
 
     // ----------------------------------------------------

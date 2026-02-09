@@ -9,6 +9,7 @@ public class ItemData : ScriptableObject
     public string itemName;
     public string itemType;
     public FactionName factionType;
+    public DecCategory _Catgory;
     [TextArea] public string description;
     public Canvas ItemCanvas;
     public Sprite icon;
@@ -16,7 +17,8 @@ public class ItemData : ScriptableObject
     [Header("UI")]
     public Item itemUIPrefab;
 
-    [Header("Game Data")] 
+    [Header("Game Data = Selected Type Wise give reference")] 
     [SerializeField]internal UnitProduceStatsSO ItemSo;
     [SerializeField] internal DefenseBuildingDataSO DefenseSo;
+    [SerializeField] internal ResourceBuildingDataSO BuildingSO;
 }

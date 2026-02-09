@@ -30,10 +30,11 @@ public class ItemDatabase : MonoBehaviour
 
     public Item CreateItemUI(string itemId, string UnitType, Canvas _Canvas, string Details, FactionName _FName, ItemDetailsWindow detailsWindow, bool IsEquipped, DecCategory category)
     {
-        GameDebug.Log($"Creating Item UI for Item ID: {itemId} UnitType: {UnitType}   Details: {Details} Faction: {_FName} IsEquipped: {IsEquipped} ItemDatabase Count: {lookup.Count} Category {category}");
+        GameDebug.Log($"Item Database ==> Creating Item UI for Item ID: {itemId} UnitType: {UnitType} Details: {Details} Faction: {_FName.ToString()} IsEquipped: {IsEquipped} ItemDatabase Count: {lookup.Count} Category {category}");
         if (!lookup.TryGetValue(itemId, out var data))
         {
-            Debug.LogError($"Item ID not found: {data.name}");
+            Debug.Log(data);
+            Debug.LogError($"Item ID not found: {data.itemId}");
             return null;
         }
 
@@ -49,6 +50,10 @@ public class ItemDatabase : MonoBehaviour
         {
             item.Defense = data.DefenseSo;
         }
+        if(category == DecCategory.Resource)
+        {
+            item.Resource = data.BuildingSO;// Resourse
+        }
 
         item.SetupItem(
             data.itemName,
@@ -56,7 +61,7 @@ public class ItemDatabase : MonoBehaviour
             data.icon,
             Details,
             IsEquipped,
-            _FName,
+            data.factionType,
             detailsWindow,
             _Canvas
         );

@@ -91,20 +91,20 @@ public class InventoryManager : MonoBehaviour
     // PUBLIC API (USED BY DecManager / Slots)
     // ==================================================
 
-    public void AddEquippedItem(string itemId, string UnitType, Canvas _Canvas, string Details, FactionName _FName, bool Status, DecCategory category, UnitProduceStatsSO unit, DefenseBuildingDataSO Defense)
+    public void AddEquippedItem(string itemId, string UnitType, Canvas _Canvas, string Details, FactionName _FName, bool Status, DecCategory category, DecSelector CurrentDec)
     {
         GameDebug.LogWarning($"Add Equipped Item ==>  Item ID: {itemId} UnitType: {UnitType}   Details: {Details} Faction: {_FName} IsEquipped: {Status}");
         if (equippedData.Count >= equippedSlotCount)
             return;
 
-        equippedData.Add(new InventoryItemData(itemId, UnitType, _Canvas, Details, _FName, Status, category, unit, Defense));
+        equippedData.Add(new InventoryItemData(itemId, UnitType, _Canvas, Details, _FName, Status, category, CurrentDec));
         Debug.Log($"Added Equipped Item: {itemId} to  RefreshinhUI");
         RefreshUI();
     }
 
-    public void AddUnequippedItem(string itemId, string UnitType, Canvas _Canvas, string Details, FactionName _FName, bool Status, DecCategory decCategory, UnitProduceStatsSO unit, DefenseBuildingDataSO Defense)
+    public void AddUnequippedItem(string itemId, string UnitType, Canvas _Canvas, string Details, FactionName _FName, bool Status, DecCategory decCategory, DecSelector CurrentDec)
     {
-        unequippedData.Add(new InventoryItemData(itemId, UnitType, _Canvas, Details, _FName, Status, decCategory, unit, Defense));
+        unequippedData.Add(new InventoryItemData(itemId, UnitType, _Canvas, Details, _FName, Status, decCategory, CurrentDec));
         RefreshUI();
     }
 
@@ -233,7 +233,7 @@ public class InventoryManager : MonoBehaviour
                     equippedData[i].IsEquipped,
                     equippedData[i]._Dec
                     );
-
+            
             item._Item.isEquipped = true;
             equippedSlots[i].SetItem(item);
         }
@@ -276,7 +276,7 @@ public class InventoryManager : MonoBehaviour
 
     private DraggableObject CreateUIItem(string itemId, string UnitType, Canvas _Canvas, string Details, FactionName _FName, bool Status, DecCategory category)
     {
-        GameDebug.LogWarning($"Create UI Item ==>  Item ID: {itemId} UnitType: {UnitType}   Details: {Details} Faction: {_FName} IsEquipped: {Status}");
+        GameDebug.LogWarning($"Inventory Manager ==> Create UI Item ==>  Item ID: {itemId} UnitType: {UnitType}   Details: {Details} Faction: {_FName} IsEquipped: {Status}");
         Item itemGO =
             ItemDatabase.Instance.CreateItemUI(itemId, UnitType, _Canvas, Details, _FName, itemDetailsWindow, Status, category);
 
@@ -305,25 +305,39 @@ public class InventoryManager : MonoBehaviour
         RefreshUI();
     }
 
-    public void ItemSave(DecCategory category)
+    public void ItemSave(DecCategory category, FactionName factionName)
     {
-        if (category == DecCategory.Offense)
+        foreach(var fname in _SelectionData.AllFactionDecData)
         {
-            _SelectionData.AllFactionDecData[0].SelectedUnitDeck.Clear();
-            foreach (var item in equippedData)
+            if(fname.FactionType == factionName)
             {
-                _SelectionData.AllFactionDecData[0].FactionType = item.factionType;
-                _SelectionData.AllFactionDecData[0].SelectedUnitDeck.Add(item.Units);
-                Debug.Log("Offense data: " + item.Units.name);
-            }
-        }
-        else if (category == DecCategory.Defense)
-        {
-            _SelectionData.AllFactionDecData[0].SelectedDefenseDec.Clear();
-            foreach (var item in equippedData)
-            {
-                _SelectionData.AllFactionDecData[0].FactionType = item.factionType;
-                _SelectionData.AllFactionDecData[0].SelectedDefenseDec.Add(item.Defenses);
+                if (category == DecCategory.Offense)
+                {
+                    fname.SelectedUnitDeck.Clear();
+                    foreach (var item in equippedData)
+                    {
+                        fname.FactionType = item.factionType;
+                        fname.SelectedUnitDeck.Add(item.Units);
+                    }
+                }
+                else if (category == DecCategory.Defense)
+                {
+                    fname.SelectedDefenseDec.Clear();
+                    foreach (var item in equippedData)
+                    {
+                        fname.FactionType = item.factionType;
+                        fname.SelectedDefenseDec.Add(item.Defenses);
+                    }
+                }
+                else if(category == DecCategory.Resource)
+                {
+                    fname.SelectedResourceDeck.Clear();
+                    foreach (var item in equippedData)
+                    {
+                        fname.FactionType = item.factionType;
+                        fname.SelectedResourceDeck.Add(item.Resources);
+                    }
+                }
             }
         }
     }
