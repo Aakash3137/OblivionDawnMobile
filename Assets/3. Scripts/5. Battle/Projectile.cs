@@ -400,9 +400,10 @@ public class Projectile : MonoBehaviour
                 OnHit(hit.point, false);
                 return;
             }
-
+            
             // 2️⃣ UNIT HIT (ANY unit)
             Stats unit = hit.collider.GetComponent<Stats>();
+            GameDebug.Log("PROJECTILE HIT Unit: " + hit.collider.name +" unit side :" +unit.side+ " and shooter side: "+ ShooterSide);
             if (unit != null && unit.side != ShooterSide)
             {
                 targetUnit = unit;
@@ -412,7 +413,7 @@ public class Projectile : MonoBehaviour
             }
 
             // 3️⃣ ANY OTHER COLLIDER (walls, props, etc.)
-            OnHit(hit.point, false);
+            //OnHit(hit.point, false);
         }
     }
 
@@ -433,10 +434,11 @@ public class Projectile : MonoBehaviour
             foreach (Collider hit in hits)
             {
                 Stats unit = hit.GetComponent<Stats>();
-                if (unit != null)
+                if (unit != null && !unit.CanFly && unit.side != ShooterSide)     // stop AOE on air units and sam side units
                     unit.TakeDamage(damage);
             }
         }
+        
         // DIRECT DAMAGE ONLY IF TARGET HIT
         else if (hitTarget && targetUnit != null)
         {
