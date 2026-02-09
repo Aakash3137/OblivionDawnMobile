@@ -14,7 +14,7 @@ public class Tile : MonoBehaviour
     private SideManager sideManager;
     [ReadOnly] public bool isOpen = false; // set true when PlusIcon is activated
     [field: SerializeField, ReadOnly] public bool hasBuilding { get; private set; }
-    [ReadOnly] public bool isRegistered = false;
+    // [ReadOnly] public bool isRegistered = false;
 
 
     [field: SerializeField, ReadOnly]
@@ -99,7 +99,7 @@ public class Tile : MonoBehaviour
         // Always flip ownership to the entering unit’s side
         // occupant = unit;   // update occupant reference
         SetOwner(unitSide);
-
+        SetOpen(false);
     }
 
     // Called when a unit leaves

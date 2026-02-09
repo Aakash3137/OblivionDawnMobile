@@ -75,7 +75,7 @@ public class OffenseBuildingStats : BuildingStats
         }
         while (isProducing && currentHealth > 0);
 
-        Debug.Log("<color=magenta>Produced Unique unit from " + name + ".</color>");
+        // Debug.Log("<color=magenta>Produced Unique unit from " + name + ".</color>");
 
         if (currentHealth <= 0)
             Debug.Log("<color=red>Health is 0 for " + name + ".</color>");

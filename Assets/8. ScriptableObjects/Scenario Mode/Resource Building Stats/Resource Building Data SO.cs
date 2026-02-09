@@ -7,7 +7,6 @@ public class ResourceBuildingDataSO : BuildingDataSO
 {
     [Space(30)]
     public ScenarioResourceType resourceType;
-    public Sprite ResourceIcon;
     public ResourceBuildingUpgradeData[] resourceBuildingUpgradeData;
 
     internal override void ValidateBase()

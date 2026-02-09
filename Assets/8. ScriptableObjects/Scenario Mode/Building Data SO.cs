@@ -9,6 +9,8 @@ public class BuildingDataSO : ScriptableObject
     public Visuals buildingVisuals;
     public BuildCost[] buildingBuildCost;
 
+    public Sprite buildingIcon;
+
     internal virtual void ValidateBase() { }
     internal virtual void OnValidate()
     {

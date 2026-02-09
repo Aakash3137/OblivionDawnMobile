@@ -20,7 +20,6 @@ public class BuildingPlacementHelper : MonoBehaviour
         neighborTiles.Clear();
 
         currentTile = cgmInstance.GetCube(currentCoord);
-        currentTile.isRegistered = true;
 
         List<Vector2Int> neighborCoords;
 
@@ -39,11 +38,7 @@ public class BuildingPlacementHelper : MonoBehaviour
             if (tile == null || tile.ownerSide != side)
                 continue;
 
-            if (tile.isRegistered) //|| tile.currentOccupant.buildingType == ScenarioBuildingType.MainBuilding)
-                continue;
-
             neighborTiles.Add(tile);
-            tile.isRegistered = true;
         }
     }
 

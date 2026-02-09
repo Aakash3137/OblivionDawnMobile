@@ -13,7 +13,7 @@ public class ParticleDamageEmitter : MonoBehaviour
 
     [Header("Read Only")]
     private ParticleSystem particleInstance;
-    [SerializeField]private float damagePerParticle;
+    [SerializeField] private float damagePerParticle;
     private Stats Stats;
     private Side unitSide;
 
@@ -23,7 +23,7 @@ public class ParticleDamageEmitter : MonoBehaviour
         if (Stats != null)
             unitSide = Stats.side;
 
-        
+
         if (!particlePrefab || !muzzlePoint)
         {
             Debug.LogError("ParticleDamageEmitter missing prefab or muzzle point", this);
@@ -40,7 +40,6 @@ public class ParticleDamageEmitter : MonoBehaviour
         particleInstance.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
     }
 
-    
     public void SetFireAngle(float xAngle)
     {
         if (particleInstance == null)
@@ -50,8 +49,7 @@ public class ParticleDamageEmitter : MonoBehaviour
         rot.x = xAngle;
         particleInstance.transform.localEulerAngles = rot;
     }
-    
-    
+
     public void StartFiring()
     {
         if (particleInstance == null)
@@ -94,12 +92,12 @@ public class ParticleDamageEmitter : MonoBehaviour
     {
         if (other == gameObject)
             return;
-          
+
 
         if (!other.TryGetComponent<Stats>(out var stats))
             return;
 
-        GameDebug.Log($"Particle hit { stats.name} - {stats.side} vs myside- {unitSide}");
+        // GameDebug.Log($"Particle hit { stats.name} - {stats.side} vs myside- {unitSide}");
         if (stats.side == unitSide)
             return;
 
