@@ -11,10 +11,10 @@ public class DecSelectionData : ScriptableObject
 
     public void AddDeckData(DeckData deckData)
     {
-        if(AllFactionDecData.Count > 0)
-        {
-            AllFactionDecData.Clear();
-        }
+        // if(AllFactionDecData.Count > 0)
+        // {
+        //     AllFactionDecData.Clear();
+        // }
 
         AllFactionDecData.Add(deckData);
     }

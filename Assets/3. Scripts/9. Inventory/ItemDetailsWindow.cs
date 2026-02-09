@@ -39,6 +39,7 @@ public class ItemDetailsWindow : MonoBehaviour
     [Header ("Game Data")]
     internal  UnitProduceStatsSO unit;
     internal DefenseBuildingDataSO Defense;
+    internal ResourceBuildingDataSO Resourse;
 
 
     private void OnEnable()
