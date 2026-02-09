@@ -13,7 +13,7 @@ public class ProjectileShooter : MonoBehaviour
 
     private Side projectileSide;
 
-    void Start()
+    void Start() 
     {
         projectileSide = GetComponent<Stats>().side;
     }
@@ -41,7 +41,7 @@ public class ProjectileShooter : MonoBehaviour
             Destroy(vfx, ps.main.duration);
         }
         proj.gameObject.SetActive(true);
-
+        
         proj.Init(target, damage, projectile, GetTrailMaterial(), projectileSide);
     }
 
