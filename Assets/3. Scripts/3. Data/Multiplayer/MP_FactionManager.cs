@@ -17,10 +17,10 @@ public class MP_FactionManager : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
         }
-        else
+        /*else
         {
             Destroy(gameObject);
-        }
+        }*/
     }
 
     void Start()

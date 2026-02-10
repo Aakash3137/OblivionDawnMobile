@@ -59,9 +59,11 @@ public class PhotonNetworkManager : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         Debug.Log($"[PNM] Scene loaded: {scene.name}");
-    
-        // Refresh all player UIs after scene load
-        Invoke(nameof(RefreshAllPlayerUIs), 1f);
+        
+        if (scene.name == "GameScene")
+        {
+            Invoke(nameof(RefreshAllPlayerUIs), 0.5f);
+        }
     }
 
     private void RefreshAllPlayerUIs()

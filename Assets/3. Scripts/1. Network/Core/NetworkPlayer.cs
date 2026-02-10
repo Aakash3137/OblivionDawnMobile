@@ -33,6 +33,7 @@ public class NetworkPlayer : NetworkBehaviour
     private MeshRenderer _meshRenderer;
     private TileSelectionManager _tileSelectionManager;
     private bool _isInGameScene = false;
+    private bool _hasSubscribed = false;
     #endregion
 
     #region Unity Lifecycle & Network Events
@@ -138,12 +139,20 @@ public class NetworkPlayer : NetworkBehaviour
     
     private void SubscribeToEvents()
     {
-        UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
+        if (!_hasSubscribed)
+        {
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
+            _hasSubscribed = true;
+        }
     }
     
     private void UnsubscribeFromEvents()
     {
-        UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
+        if (_hasSubscribed)
+        {
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
+            _hasSubscribed = false;
+        }
     }
     
     private void InitializeForCurrentScene()

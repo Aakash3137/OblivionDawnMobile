@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Fusion;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LobbyManager : MonoBehaviour
 {
@@ -81,13 +82,23 @@ public class LobbyManager : MonoBehaviour
         int sceneIndex = GetSceneBuildIndex(GameSceneName);
         if (sceneIndex >= 0)
         {
-            // ✅ CRITICAL FIX: Use LoadSceneMode.Single but preserve network objects
-            _runner.LoadScene(SceneRef.FromIndex(sceneIndex), 
-                new UnityEngine.SceneManagement.LoadSceneParameters(UnityEngine.SceneManagement.LoadSceneMode.Single));
+            _runner.LoadScene(SceneRef.FromIndex(sceneIndex));
+            StartCoroutine(UnloadMainSceneAfterLoad());
         }
         else
         {
             Debug.LogError($"[LobbyManager] Cannot load scene: {GameSceneName} not found in build settings!");
+        }
+    }
+
+    private IEnumerator UnloadMainSceneAfterLoad()
+    {
+        yield return new WaitForSeconds(0.5f);
+        Scene mainScene = SceneManager.GetSceneByName("MainScene");
+        if (mainScene.isLoaded)
+        {
+            SceneManager.UnloadSceneAsync(mainScene);
+            Debug.Log("[LobbyManager] MainScene unloaded");
         }
     }
 

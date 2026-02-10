@@ -278,7 +278,9 @@ public class HomeUIManager : MonoBehaviour
 
     private void OnJoinButtonClicked()
     {
-        
+        CustomGameMode.SetGameMode(GameModeType.HostClient);
+        SwitchPanel(JoinLobbyPanel, PlayerJoinedPanel);
+        PhotonNetworkManager.Instance.JoinLobby(LobbyCodeInputField.text);
     }
 
     private void LoadFactionPanel()
@@ -291,6 +293,7 @@ public class HomeUIManager : MonoBehaviour
     
     internal void OnFactionClicked()
     {
+        
         if (GameData.GameModeType == "PVP")
         {
             Invoke(nameof(StartPvPAndShowPanel), 0.1f);
