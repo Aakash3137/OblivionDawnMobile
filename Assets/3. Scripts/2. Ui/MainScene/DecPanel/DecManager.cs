@@ -72,8 +72,14 @@ public class DecManager : MonoBehaviour
         OffenseBtn.onClick.AddListener(() => OnCategorySelected(DecCategory.Offense));
         DefenseBtn.onClick.AddListener(() => OnCategorySelected(DecCategory.Defense));
         ResourceBtn.onClick.AddListener(() => OnCategorySelected(DecCategory.Resource));
-        
+
+        ShowFaction();
+    }
+
+    void ShowFaction()
+    {
         int index = (int)selectionData.CurrentFaction;
+        Debug.Log($"Faction Name" + index);
         CurrentCategory = selectionData.CurrentCategory;
         // Safety check
         if (index < 0 || index >= deckList.Count || 
@@ -107,7 +113,8 @@ public class DecManager : MonoBehaviour
         if (selected == null) 
             return;
 
-        SelectDeck(selected);
+        selectionData.CurrentFaction = selected._FactionName;
+        ShowFaction();
     }
 
     private void SelectDeck(DecSelector selected)
@@ -167,7 +174,14 @@ public class DecManager : MonoBehaviour
                 break;
         }
 
-        RefreshAllCards(CurrentDec);
+
+        foreach(var _Data in deckList)
+        {
+            if(CurrentDec._FactionName == _Data._FactionName)
+            {
+                RefreshAllCards(_Data);
+            }
+        }
     }
 
     // =========================
