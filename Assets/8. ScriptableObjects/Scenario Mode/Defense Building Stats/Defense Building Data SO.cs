@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 [CreateAssetMenu(fileName = "Building Data SO", menuName = "Scenario Stats/Defense Building Data")]
 public class DefenseBuildingDataSO : BuildingDataSO
@@ -10,14 +11,14 @@ public class DefenseBuildingDataSO : BuildingDataSO
     public bool canAttackWalls;
     public VisionAngles defenseVisionAngles;
     public AttackTargets defenseAttackTargets;
-    public DefenseBuildingUpgradeData[] defenseBuildingUpgradeData;
+    public List<DefenseBuildingUpgradeData> defenseBuildingUpgradeData;
 
     internal override void ValidateBase()
     {
-        if (defenseBuildingUpgradeData.Length == 0)
-            defenseBuildingUpgradeData = new DefenseBuildingUpgradeData[1];
+        if (defenseBuildingUpgradeData.Count == 0)
+            defenseBuildingUpgradeData = new List<DefenseBuildingUpgradeData> { new DefenseBuildingUpgradeData() };
 
-        for (int i = 0; i < defenseBuildingUpgradeData.Length; i++)
+        for (int i = 0; i < defenseBuildingUpgradeData.Count; i++)
         {
             defenseBuildingUpgradeData[i].buildingLevel = i;
 
@@ -34,7 +35,7 @@ public class DefenseBuildingDataSO : BuildingDataSO
             }
         }
 
-        buildingIdentity.spawnLevel = Mathf.Clamp(buildingIdentity.spawnLevel, 0, defenseBuildingUpgradeData.Length - 1);
+        buildingIdentity.spawnLevel = Mathf.Clamp(buildingIdentity.spawnLevel, 0, defenseBuildingUpgradeData.Count - 1);
 
         // buildingIdentity.name = buildingIdentity.faction.ToString() + " " + defenseType.ToString();
     }

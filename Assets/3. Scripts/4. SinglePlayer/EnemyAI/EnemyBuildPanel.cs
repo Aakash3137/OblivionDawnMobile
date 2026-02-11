@@ -11,7 +11,7 @@ public class EnemyBuildPanel : MonoBehaviour
     [SerializeField] private Button enemyTankBuilding;
     [SerializeField] private AllFactionsData factionData;
 
-    [SerializeField] private FactionName EnemyfactionName;
+    [SerializeField] private FactionName enemyFactionName;
 
 
     [SerializeField] private WallParent _wallPrefab;
@@ -21,7 +21,7 @@ public class EnemyBuildPanel : MonoBehaviour
 
     private void Awake()
     {
-        GameManager.SetFactionNameThroughEnemyBuildPanel(EnemyfactionName);
+        GameManager.SetFactionNameThroughEnemyBuildPanel(enemyFactionName);
     }
     private void Start()
     {
@@ -49,7 +49,7 @@ public class EnemyBuildPanel : MonoBehaviour
     // updated code with enemy faction selection from inspector.
     private GameObject GetBuildingByType(string buildingType)
     {
-        switch (EnemyfactionName)
+        switch (enemyFactionName)
         {
             case FactionName.Medieval:
                 return buildingType switch

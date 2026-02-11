@@ -34,7 +34,7 @@ public class FactionEntityDetails : MonoBehaviour
         if (defense == null) return;
 
         EntityName.text = GetName(defense.buildingIdentity.name);
-        EntityLevel.text = $"{defense.defenseBuildingUpgradeData.Length}";
+        EntityLevel.text = $"{defense.defenseBuildingUpgradeData.Count}";
 
         Icon.sprite = defense.buildingIcon;
 
@@ -50,12 +50,12 @@ public class FactionEntityDetails : MonoBehaviour
         if (resource == null) return;
 
         EntityName.text = GetName(resource.buildingIdentity.name);
-        EntityLevel.text = $"{resource.resourceBuildingUpgradeData.Length}";
+        EntityLevel.text = $"{resource.resourceBuildingUpgradeData.Count}";
 
         Icon.sprite = resource.buildingIcon;
 
         if (OtherIcon != null)
-            OtherIcon.sprite = resource.buildingIcon; 
+            OtherIcon.sprite = resource.buildingIcon;
     }
 
     private string GetName(string name)

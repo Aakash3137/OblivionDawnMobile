@@ -37,6 +37,7 @@ public class GameManager : MonoBehaviour
 
         SpawnAllBuildings(playerSpawnPoint, playerSlots, Side.Player);
         SpawnAllBuildings(enemySpawnPoint, enemySlots, Side.Enemy);
+        // Debug.Log("[Spawner] Buildings spawned. Enemy Faction Name: " + EnemyFactionName);
     }
 
     // Get faction slots based on faction name
@@ -57,9 +58,10 @@ public class GameManager : MonoBehaviour
     }
 
 
-    public static void SetFactionNameThroughEnemyBuildPanel(FactionName enemyFactionName)
+    public static void SetFactionNameThroughEnemyBuildPanel(FactionName factionName)
     {
-        EnemyFactionName = enemyFactionName;
+        EnemyFactionName = factionName;
+        // Debug.Log($"[Spawner] Enemy Faction Name: {enemyFactionName}");
     }
 
 
@@ -82,7 +84,7 @@ public class GameManager : MonoBehaviour
 
         Instantiate(buildingPrefab, pos, Quaternion.identity, point);
 
-        Debug.Log($"[Spawner] Spawned {label} for {side}: {buildingPrefab.name}");
+        // Debug.Log($"[Spawner] Spawned {label} for {side}: {buildingPrefab.name}");
 
         // // If this is the main building, mark the tile as occupied
         // if (label == "MainBuilding")

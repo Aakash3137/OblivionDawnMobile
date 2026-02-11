@@ -31,27 +31,13 @@ public class DecManager : MonoBehaviour
     // =========================
     private void OnEnable()
     {
-        diamondtext.text = _Profile.Diamonds.ToString();
-        Coins.text = _Profile.Coins.ToString();
-
-        OffenseBtn.onClick.RemoveAllListeners();
-        DefenseBtn.onClick.RemoveAllListeners();
-        ResourceBtn.onClick.RemoveAllListeners();
-
-        OffenseBtn.onClick.AddListener(() => OnCategorySelected(DecCategory.Offense));
-        DefenseBtn.onClick.AddListener(() => OnCategorySelected(DecCategory.Defense));
-        ResourceBtn.onClick.AddListener(() => OnCategorySelected(DecCategory.Resource));
-
-        InitializeAllFactionDecks();
-
-        if (deckList.Count > 0)
-            SelectDeck(deckList[0]);
+        SetInitialData();
     }
 
     // =========================
     // INITIALIZE DATA
     // =========================
-    private void InitializeAllFactionDecks()
+    public void InitializeAllFactionDecks()
     {
         selectionData.AllFactionDecData.Clear();
 
@@ -74,6 +60,38 @@ public class DecManager : MonoBehaviour
         return list.GetRange(0, Mathf.Min(4, list.Count));
     }
 
+    private void SetInitialData()
+    {
+        diamondtext.text = _Profile.Diamonds.ToString();
+        Coins.text = _Profile.Coins.ToString();
+
+        OffenseBtn.onClick.RemoveAllListeners();
+        DefenseBtn.onClick.RemoveAllListeners();
+        ResourceBtn.onClick.RemoveAllListeners();
+
+        OffenseBtn.onClick.AddListener(() => OnCategorySelected(DecCategory.Offense));
+        DefenseBtn.onClick.AddListener(() => OnCategorySelected(DecCategory.Defense));
+        ResourceBtn.onClick.AddListener(() => OnCategorySelected(DecCategory.Resource));
+        
+        int index = (int)selectionData.CurrentFaction;
+        CurrentCategory = selectionData.CurrentCategory;
+        // Safety check
+        if (index < 0 || index >= deckList.Count || 
+            index >= selectionData.AllFactionDecData.Count)
+        {
+            Debug.LogError("Invalid faction index!");
+            return;
+        }
+
+        SelectDeck(deckList[index]);
+
+        var factionData = selectionData.AllFactionDecData[index];
+
+        CurrentDec.UnitCards     = factionData.SelectedUnitDeck;
+        CurrentDec.DefenseCards  = factionData.SelectedDefenseDec;
+        CurrentDec.ResourceCards = factionData.SelectedResourceDeck;
+    }
+
     // =========================
     // FACTION SELECTION
     // =========================
@@ -86,7 +104,8 @@ public class DecManager : MonoBehaviour
         }
 
         DecSelector selected = deckList.Find(d => d.InActiveObj == clickedButton);
-        if (selected == null) return;
+        if (selected == null) 
+            return;
 
         SelectDeck(selected);
     }
@@ -110,7 +129,7 @@ public class DecManager : MonoBehaviour
     // =========================
     private void OnCategorySelected(DecCategory category)
     {
-        CurrentCategory = category;
+        selectionData.CurrentCategory = CurrentCategory = category;
         SelectCategory(category);
     }
 

@@ -8,6 +8,7 @@ public class DecSelectionData : ScriptableObject
     public List<DeckData> AllFactionDecData = new List<DeckData>();
 
     public FactionName CurrentFaction;
+    public DecCategory CurrentCategory;
 
     public void AddDeckData(DeckData deckData)
     {

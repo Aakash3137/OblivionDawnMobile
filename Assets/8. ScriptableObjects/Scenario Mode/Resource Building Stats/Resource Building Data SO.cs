@@ -1,20 +1,21 @@
 using UnityEngine;
 using System;
 using Sirenix.OdinInspector;
+using System.Collections.Generic;
 
 [CreateAssetMenu(fileName = "Building Data SO", menuName = "Scenario Stats/Resource Building Data")]
 public class ResourceBuildingDataSO : BuildingDataSO
 {
     [Space(30)]
     public ScenarioResourceType resourceType;
-    public ResourceBuildingUpgradeData[] resourceBuildingUpgradeData;
+    public List<ResourceBuildingUpgradeData> resourceBuildingUpgradeData;
 
     internal override void ValidateBase()
     {
-        if (resourceBuildingUpgradeData.Length == 0)
-            resourceBuildingUpgradeData = new ResourceBuildingUpgradeData[1];
+        if (resourceBuildingUpgradeData.Count == 0)
+            resourceBuildingUpgradeData = new List<ResourceBuildingUpgradeData> { new ResourceBuildingUpgradeData() };
 
-        for (int i = 0; i < resourceBuildingUpgradeData.Length; i++)
+        for (int i = 0; i < resourceBuildingUpgradeData.Count; i++)
         {
             resourceBuildingUpgradeData[i].buildingLevel = i;
 
@@ -34,7 +35,7 @@ public class ResourceBuildingDataSO : BuildingDataSO
             }
         }
 
-        buildingIdentity.spawnLevel = Mathf.Clamp(buildingIdentity.spawnLevel, 0, resourceBuildingUpgradeData.Length - 1);
+        buildingIdentity.spawnLevel = Mathf.Clamp(buildingIdentity.spawnLevel, 0, resourceBuildingUpgradeData.Count - 1);
     }
 }
 
