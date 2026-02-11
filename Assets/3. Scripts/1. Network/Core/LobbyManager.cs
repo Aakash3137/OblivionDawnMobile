@@ -93,7 +93,7 @@ public class LobbyManager : MonoBehaviour
 
     private IEnumerator UnloadMainSceneAfterLoad()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(2f);
         Scene mainScene = SceneManager.GetSceneByName("MainScene");
         if (mainScene.isLoaded)
         {
