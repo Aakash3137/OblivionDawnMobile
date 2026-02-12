@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class ItemDetailsWindow : MonoBehaviour
 {
-    [Header ("Manager")]
+    [Header("Manager")]
     [SerializeField] private DecManager _DecManager;
     [Header("UI References")]
     [SerializeField] private TMP_Text itemDescriptionText;
@@ -18,26 +18,26 @@ public class ItemDetailsWindow : MonoBehaviour
     [SerializeField] private Button closeButton;
     [SerializeField] private Button UpgradeButton;
 
-    [Header ("Attributes")]
-    [SerializeField] private BlockScript AttributesPrefab;
+    [Header("Attributes")]
+    [SerializeField] private StatBlock AttributesPrefab;
     [SerializeField] private Transform AttributesParent;
     [SerializeField] List<Sprite> AllAttributesIcon;
-    [SerializeField] private List<BlockScript> GeneratedAttributes;
+    [SerializeField] private List<StatBlock> GeneratedAttributes;
     [SerializeField] private List<AttributeData> AttributeList;
 
-    [Header ("Level")]
+    [Header("Level")]
     [SerializeField] private Slider LevelSlider;
     [SerializeField] private TMP_Text LevelNoText;
     [SerializeField] private int CurrentLevel;
     [SerializeField] private int MaxLevel = 10;
 
-    [Header ("Abilities")]
+    [Header("Abilities")]
     [SerializeField] private GameObject AbilitiesPrefab;
     [SerializeField] private Transform AbilitiesParent;
     [SerializeField] private List<AbilityData> AbilityList;
 
-    [Header ("Game Data")]
-    internal  UnitProduceStatsSO unit;
+    [Header("Game Data")]
+    internal UnitProduceStatsSO unit;
     internal DefenseBuildingDataSO Defense;
     internal ResourceBuildingDataSO Resourse;
 
@@ -50,7 +50,7 @@ public class ItemDetailsWindow : MonoBehaviour
 
     void GenerateAAttributesData()
     {
-        if(AttributeList.Count > 0)
+        if (AttributeList.Count > 0)
         {
             AttributeList.Clear();
         }
@@ -71,8 +71,8 @@ public class ItemDetailsWindow : MonoBehaviour
         float fireRate = StatUpgrade.FireRate(Last.unitAttackStats.fireRate, cur.unitLevel, maxLevel);
         float moveSpeed = StatUpgrade.MoveSpeed(Last.unitMobilityStats.moveSpeed, cur.unitLevel, maxLevel);
         float attackRange = StatUpgrade.AttackRange(Last.unitRangeStats.attackRange, cur.unitLevel, maxLevel);
-        
-        for (int i = 0; i<6; i++)
+
+        for (int i = 0; i < 6; i++)
         {
             AttributeData _data = new AttributeData();
             _data.Icon = AllAttributesIcon[i];
@@ -84,42 +84,42 @@ public class ItemDetailsWindow : MonoBehaviour
                     Debug.Log("" + _data.AttributeName);
                     _data.AttributeValue = Last.unitBasicStats.maxHealth;
                     _data.AttributeIncreaseby = maxHealth - StatUpgrade.MaxHealth(Last.unitBasicStats.maxHealth, cur.unitLevel, maxLevel);
-                  break;
+                    break;
 
                 case 1:
                     _data.AttributeName = "Armor";
                     Debug.Log("" + _data.AttributeName);
                     _data.AttributeValue = Last.unitBasicStats.armor;
                     _data.AttributeIncreaseby = armor - StatUpgrade.Armour(Last.unitBasicStats.armor, cur.unitLevel, maxLevel);
-                  break;
+                    break;
 
                 case 2:
                     _data.AttributeName = "Damage";
                     Debug.Log("" + _data.AttributeName);
                     _data.AttributeValue = Last.unitAttackStats.damage;
                     _data.AttributeIncreaseby = damage - StatUpgrade.Damage(Last.unitAttackStats.damage, cur.unitLevel, maxLevel);
-                  break;
+                    break;
 
-                  case 3:
+                case 3:
                     _data.AttributeName = "Fire rate";
                     Debug.Log("" + _data.AttributeName);
                     _data.AttributeValue = Last.unitAttackStats.fireRate;
                     _data.AttributeIncreaseby = fireRate - StatUpgrade.FireRate(Last.unitAttackStats.fireRate, cur.unitLevel, maxLevel);
-                  break;
+                    break;
 
-                  case 4:
+                case 4:
                     _data.AttributeName = "Move Speed";
                     Debug.Log("" + _data.AttributeName);
                     _data.AttributeValue = Last.unitMobilityStats.moveSpeed;
                     _data.AttributeIncreaseby = moveSpeed - StatUpgrade.MoveSpeed(Last.unitMobilityStats.moveSpeed, cur.unitLevel, maxLevel);
-                  break;
+                    break;
 
-                  case 5:
+                case 5:
                     _data.AttributeName = "Range";
                     Debug.Log("" + _data.AttributeName);
                     _data.AttributeValue = Last.unitRangeStats.attackRange;
                     _data.AttributeIncreaseby = attackRange - StatUpgrade.AttackRange(Last.unitRangeStats.attackRange, cur.unitLevel, maxLevel);
-                  break;
+                    break;
             }
             AttributeList.Add(_data);
         }
@@ -129,17 +129,17 @@ public class ItemDetailsWindow : MonoBehaviour
     {
         GenerateAAttributesData();
         itemName.text = Name;
-        
+
         itemIconImage.sprite = itemIcon;
         itemTypeText.text = Type;
-        switch(_Faction)
+        switch (_Faction)
         {
             case FactionName.Galvadore:
                 FactionType.text = "Galvadore"; break;
-             
-             case FactionName.Medieval:
+
+            case FactionName.Medieval:
                 FactionType.text = "Medieval"; break;
-            
+
             case FactionName.Present:
                 FactionType.text = "Present"; break;
 
@@ -147,14 +147,14 @@ public class ItemDetailsWindow : MonoBehaviour
                 FactionType.text = "Futuristic"; break;
         }
 
-        if(AbilityList.Count > 0)
+        if (AbilityList.Count > 0)
         {
-            for(int j = 0; j < AbilityList.Count; j++)
+            for (int j = 0; j < AbilityList.Count; j++)
             {
                 GameObject abilityObj = Instantiate(AbilitiesPrefab, AbilitiesParent);
                 abilityObj.name = AbilityList[j].AbilityName;
                 abilityObj.GetComponent<Image>().sprite = AbilityList[j].AbilityImage.sprite;
-                if(AbilityList[j].UnlockStatus)
+                if (AbilityList[j].UnlockStatus)
                 {
                     abilityObj.GetComponent<Image>().color = Color.white;
                 }
@@ -165,25 +165,25 @@ public class ItemDetailsWindow : MonoBehaviour
             }
         }
 
-        for(int i = 0; i < AttributeList.Count; i++)
+        for (int i = 0; i < AttributeList.Count; i++)
+        {
+            GeneratedAttributes[i].IconImage.sprite = AttributeList[i].Icon;
+            GeneratedAttributes[i].TitleText.text = AttributeList[i].AttributeName;
+            GeneratedAttributes[i].CurrentValueText.text = ((int)AttributeList[i].AttributeValue).ToString();
+            if (AttributeList[i].AttributeIncreaseby > 0)
             {
-                GeneratedAttributes[i].IconImage.sprite = AttributeList[i].Icon;
-                GeneratedAttributes[i].TitleText.text = AttributeList[i].AttributeName;
-                GeneratedAttributes[i].CurrentValueText.text = ((int)AttributeList[i].AttributeValue).ToString();
-                if(AttributeList[i].AttributeIncreaseby > 0)
-                {
-                    GeneratedAttributes[i].Increasable = true;
-                    GeneratedAttributes[i].IncreaseByText.text =  ((int)AttributeList[i].AttributeIncreaseby).ToString() + " +";
-                }
-                else
-                {
-                    GeneratedAttributes[i].Increasable = false;
-                    GeneratedAttributes[i].IncreaseByText.text = "";
-                }
+                GeneratedAttributes[i].Increasable = true;
+                GeneratedAttributes[i].IncreaseByText.text = ((int)AttributeList[i].AttributeIncreaseby).ToString() + " +";
             }
+            else
+            {
+                GeneratedAttributes[i].Increasable = false;
+                GeneratedAttributes[i].IncreaseByText.text = "";
+            }
+        }
 
-        LevelNoText.text =  CurrentLevel.ToString();
-        LevelSlider.maxValue = MaxLevel;  
+        LevelNoText.text = CurrentLevel.ToString();
+        LevelSlider.maxValue = MaxLevel;
         LevelSlider.minValue = CurrentLevel;
         gameObject.SetActive(true);
     }

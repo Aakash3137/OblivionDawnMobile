@@ -9,7 +9,7 @@ public class UpgradePanelManager : MonoBehaviour
     [SerializeField] private CardsPanel buildingCardPanel;
     [SerializeField] private CardsPanel unitCardPanel;
 
-    [SerializeField] private CardUpgrade cardPrefab;
+    [SerializeField] private CardUpgradeData cardPrefab;
 
     private void Start()
     {
@@ -24,6 +24,11 @@ public class UpgradePanelManager : MonoBehaviour
     {
         foreach (var buildingScriptable in buildingScriptables)
         {
+            if (buildingScriptable == null)
+            {
+                Debug.Log("<color=Green> [Upgrade Panel Manager]Building Scriptable is null</color>");
+                continue;
+            }
             buildingCardPanel.AddCards(cardPrefab, buildingScriptable);
         }
     }
@@ -32,6 +37,11 @@ public class UpgradePanelManager : MonoBehaviour
     {
         foreach (var unitScriptable in unitScriptables)
         {
+            if (unitScriptable == null)
+            {
+                Debug.Log("<color=Green> [Upgrade Panel Manager]Unit Scriptable is null</color>");
+                continue;
+            }
             unitCardPanel.AddCards(cardPrefab, unitScriptable);
         }
     }

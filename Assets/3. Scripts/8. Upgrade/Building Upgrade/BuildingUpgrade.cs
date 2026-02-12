@@ -24,8 +24,8 @@ public class BuildingUpgrade
         }
 
 
-        if (_Dec != null && next >= 0)
-            _Dec.diamondtext.text = (_Dec._Profile.Diamonds -= StatUpgrade.UpgradeCost(next)).ToString();
+        // if (_Dec != null && next >= 0)
+        //     _Dec.diamondtext.text = (_Dec._Profile.Diamonds -= StatUpgrade.UpgradeCost(next)).ToString();
     }
 
     private int UpgradeOffenseBuildingStats(OffenseBuildingDataSO building)
@@ -76,7 +76,6 @@ public class BuildingUpgrade
 
         cur.defenseAttackStats.damage = StatUpgrade.Damage(last.defenseAttackStats.damage, cur.buildingLevel, maxLevel);
         cur.defenseAttackStats.fireRate = StatUpgrade.Damage(last.defenseAttackStats.fireRate, cur.buildingLevel, maxLevel);
-        cur.defenseMobilityStats.moveSpeed = StatUpgrade.MoveSpeed(last.defenseMobilityStats.moveSpeed, cur.buildingLevel, maxLevel);
         cur.defenseRangeStats.attackRange = StatUpgrade.AttackRange(last.defenseRangeStats.attackRange, cur.buildingLevel, maxLevel);
 
 

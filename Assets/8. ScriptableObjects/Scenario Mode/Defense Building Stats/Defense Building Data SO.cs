@@ -45,6 +45,5 @@ public class DefenseBuildingDataSO : BuildingDataSO
 public class DefenseBuildingUpgradeData : BuildingUpgradeData
 {
     public AttackStats defenseAttackStats;
-    public MobilityStats defenseMobilityStats;
     public RangeStats defenseRangeStats;
 }
