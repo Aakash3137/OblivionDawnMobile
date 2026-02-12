@@ -101,6 +101,11 @@ public class CameraPanningPerspective : MonoBehaviour
             transform.position += transform.right * keyboardX * Time.deltaTime;
             transform.position += transform.forward * keyboardY * Time.deltaTime;
 
+            // transform.position = new Vector3(
+            //     Mathf.Clamp(transform.position.x, cameraMinBounds.x, cameraMaxBounds.x),
+            //     Mathf.Clamp(transform.position.y, cameraMinBounds.y, cameraMaxBounds.y),
+            //     Mathf.Clamp(transform.position.z, cameraMinBounds.z, cameraMaxBounds.z));
+
             if (Input.GetMouseButtonDown(0))
             {
                 lastGroundPoint = GetGroundPointFromScreen(Input.mousePosition);

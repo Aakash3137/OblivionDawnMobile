@@ -66,6 +66,8 @@ public static class StatUpgrade
 
     public static float AttackRange(float baseValue, int level, int maxLevel)
         => GetStat(baseValue, level, maxLevel, true);
+    public static int Resource(int baseValue, int level, int maxLevel)
+   => (int)GetStat(baseValue, level, maxLevel, true);
 }
 
 
@@ -88,8 +90,8 @@ public class UnitProduceUpgrade
         Array.Resize(ref unit.unitUpgradeData, next + 1);
         unit.unitUpgradeData[next] = cur;
         unit.unitIdentity.spawnLevel = next;
-       _Dec.diamondtext.text =(_Dec._Profile.Diamonds -= StatUpgrade.UpgradeCost(next)).ToString();
-         
+        _Dec.diamondtext.text = (_Dec._Profile.Diamonds -= StatUpgrade.UpgradeCost(next)).ToString();
+
     }
 
     void ApplyFormula(UnitUpgradeData prev, ref UnitUpgradeData cur)

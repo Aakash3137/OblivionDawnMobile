@@ -22,7 +22,7 @@ public class Projectile : MonoBehaviour
     private Vector3 aimPoint;
     private bool passedAimPoint;
 
-    [ShowInInspector]private Side ShooterSide;
+    [ShowInInspector] private Side ShooterSide;
 
     [Header("Visuals")][SerializeField] private TrailRenderer[] trails;
 
@@ -38,7 +38,7 @@ public class Projectile : MonoBehaviour
 
     public Material playerTrailMaterial;
     public Material enemyTrailMaterial;
-    
+
     void Awake()
     {
         // Break shared material references once
@@ -230,7 +230,7 @@ public class Projectile : MonoBehaviour
 
         CheckHit(hitPoint);
     }
-    
+
     void MoveHomingAvoidance()
     {
         if (targetUnit == null) return;
@@ -400,10 +400,10 @@ public class Projectile : MonoBehaviour
                 OnHit(hit.point, false);
                 return;
             }
-            
+
             // 2️⃣ UNIT HIT (ANY unit)
             Stats unit = hit.collider.GetComponent<Stats>();
-            GameDebug.Log("PROJECTILE HIT Unit: " + hit.collider.name +" unit side :" +unit.side+ " and shooter side: "+ ShooterSide);
+            // GameDebug.Log("PROJECTILE HIT Unit: " + hit.collider.name +" unit side :" +unit.side+ " and shooter side: "+ ShooterSide);
             if (unit != null && unit.side != ShooterSide)
             {
                 targetUnit = unit;
@@ -438,7 +438,7 @@ public class Projectile : MonoBehaviour
                     unit.TakeDamage(damage);
             }
         }
-        
+
         // DIRECT DAMAGE ONLY IF TARGET HIT
         else if (hitTarget && targetUnit != null)
         {

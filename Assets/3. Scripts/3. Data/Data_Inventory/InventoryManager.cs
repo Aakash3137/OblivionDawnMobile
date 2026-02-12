@@ -39,7 +39,7 @@ public class InventoryManager : MonoBehaviour
 
     [SerializeField] private ItemDetailsWindow itemDetailsWindow;
 
-
+    [SerializeField] private DecManager decManager;
 
 
     private void Awake()
@@ -57,6 +57,11 @@ public class InventoryManager : MonoBehaviour
 
     private void Start()
     {
+        if (_SelectionData.AllFactionDecData.Count <= 0)
+        {
+            decManager.InitializeAllFactionDecks();
+        }
+
         //RefreshUI();
     }
 
@@ -233,7 +238,7 @@ public class InventoryManager : MonoBehaviour
                     equippedData[i].IsEquipped,
                     equippedData[i]._Dec
                     );
-            
+
             item._Item.isEquipped = true;
             equippedSlots[i].SetItem(item);
         }
@@ -307,9 +312,9 @@ public class InventoryManager : MonoBehaviour
 
     public void ItemSave(DecCategory category, FactionName factionName)
     {
-        foreach(var fname in _SelectionData.AllFactionDecData)
+        foreach (var fname in _SelectionData.AllFactionDecData)
         {
-            if(fname.FactionType == factionName)
+            if (fname.FactionType == factionName)
             {
                 if (category == DecCategory.Offense)
                 {
@@ -329,7 +334,7 @@ public class InventoryManager : MonoBehaviour
                         fname.SelectedDefenseDec.Add(item.Defenses);
                     }
                 }
-                else if(category == DecCategory.Resource)
+                else if (category == DecCategory.Resource)
                 {
                     fname.SelectedResourceDeck.Clear();
                     foreach (var item in equippedData)
