@@ -1,16 +1,10 @@
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 public class CardUpgrade : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [ReadOnly] public BuildingDataSO buildingUpgradeData;
+    [ReadOnly] public UnitProduceStatsSO unitUpgradeData;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+
 }
