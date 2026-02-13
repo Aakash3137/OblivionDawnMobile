@@ -99,7 +99,6 @@ public class Tile : MonoBehaviour
         // Always flip ownership to the entering unit’s side
         // occupant = unit;   // update occupant reference
         SetOwner(unitSide);
-        SetOpen(false);
     }
 
     // Called when a unit leaves
