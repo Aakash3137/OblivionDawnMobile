@@ -22,6 +22,12 @@ public class NetworkUnit : NetworkBehaviour
     private Transform targetMainBuilding;
     private Transform currentTarget;
     private TickTimer attackTimer;
+    
+    //optimization 
+    private TickTimer scanTimer;
+    private Vector3 lastDestination;
+    [SerializeField] private float scanInterval = 0.25f;
+
 
     [Header("Animation")]
     public Animator animator;
@@ -36,6 +42,8 @@ public class NetworkUnit : NetworkBehaviour
             Debug.Log("Unit spawned on " + OwnerSide + " side");
             FindEnemyMainBuilding();
             attackTimer = TickTimer.CreateFromSeconds(Runner, attackCooldown);
+            scanTimer = TickTimer.CreateFromSeconds(Runner, scanInterval);
+
             agent = GetComponent<NavMeshAgent>();
             agent.stoppingDistance = attackRange;
         }
@@ -88,8 +96,14 @@ public class NetworkUnit : NetworkBehaviour
     {
         if (!Object.HasStateAuthority) return;
 
-        FindNearbyEnemy();
-
+        //FindNearbyEnemy();
+        // Scan less often
+        if (scanTimer.Expired(Runner))
+        {
+            FindNearbyEnemy();
+            scanTimer = TickTimer.CreateFromSeconds(Runner, scanInterval);
+        }
+        
         if (animator == null)
             TryAssignAnimator();
 
@@ -98,11 +112,11 @@ public class NetworkUnit : NetworkBehaviour
         
         if (currentTarget != null)
         {
-            Debug.Log("Attacking enemy");
+           // Debug.Log("Attacking enemy");
             AttackTarget();
         }
         else if (targetMainBuilding != null)
-        {   Debug.Log(" MoveTowards targetMainBuilding");
+        {  // Debug.Log(" MoveTowards targetMainBuilding");
             MoveTowards(targetMainBuilding.position);
         }
     }
@@ -163,13 +177,22 @@ public class NetworkUnit : NetworkBehaviour
 
     private void MoveTowards(Vector3 targetPos)
     {
+        
         // TODO: Play move animation
         // animator.SetBool("IsMoving", true);
 
-        Debug.Log("Moving towards " + targetPos);
+        if (!agent.enabled) return;
         
-        if (targetPos != null)
+        Debug.Log("Moving towards " + targetPos);
+        if ((lastDestination - targetPos).sqrMagnitude > 0.1f)
+        {
             agent.SetDestination(targetPos);
+            lastDestination = targetPos;
+        }
+       
+        
+        //if (targetPos != null)
+           // agent.SetDestination(targetPos);
         
         /*Vector3 direction = (targetPos - transform.position).normalized;
         direction.y = 0;

@@ -19,7 +19,7 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     private BuildCost[] cachedCosts;
 
     private void Start()
-    {
+    {   
         button = GetComponent<Button>();
         UpdateButtonUI();
 

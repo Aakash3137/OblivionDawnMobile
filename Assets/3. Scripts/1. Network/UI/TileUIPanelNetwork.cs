@@ -7,12 +7,12 @@ public class TileUIPanelNetwork : MonoBehaviour
     public Button BackButton;
 
     private NetworkTile currentTile;
-    private FloatingUiManagerNetwork manager;
+   // private FloatingUiManagerNetwork manager;
     private BuildUi[] buildButtons;
 
     private void Awake()
     {
-        manager = GetComponentInParent<FloatingUiManagerNetwork>();
+       // manager = GetComponentInParent<FloatingUiManagerNetwork>();
         buildButtons = GetComponentsInChildren<BuildUi>(true);
     }
 
@@ -58,7 +58,7 @@ public class TileUIPanelNetwork : MonoBehaviour
     {
         currentTile = null;
 
-        if (manager != null)
-            manager.CloseUI();
+      //  if (manager != null)
+       //     manager.CloseUI();
     }
 }
