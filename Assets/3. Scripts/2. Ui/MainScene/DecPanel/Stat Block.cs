@@ -38,8 +38,9 @@ public class StatBlock : MonoBehaviour
             canvasGroup.blocksRaycasts = false;
         }
     }
-    public void OverrideIcon(Sprite icon)
+    public void SetIcon(Sprite icon)
     {
+        if (icon == null) return;
         IconImage.sprite = icon;
     }
 }

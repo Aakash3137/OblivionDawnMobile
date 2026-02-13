@@ -3,16 +3,26 @@ using UnityEngine;
 
 public class UpgradePanelManager : MonoBehaviour
 {
+    public static UpgradePanelManager Instance;
+
     [SerializeField] private List<UnitProduceStatsSO> unitScriptables;
     [SerializeField] private List<BuildingDataSO> buildingScriptables;
 
-    [SerializeField] private CardsPanel buildingCardPanel;
-    [SerializeField] private CardsPanel unitCardPanel;
+    [SerializeField] public CardsPanel buildingCardPanel;
+    [SerializeField] public CardsPanel unitCardPanel;
 
     [SerializeField] private CardUpgradeData cardPrefab;
+    [field: SerializeField] public UpgradePopUpPanel upgradePopUpPanel { get; private set; }
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void Start()
     {
+        upgradePopUpPanel.gameObject.SetActive(false);
+
         if (!buildingCardPanel.initializedBuildings)
             CreateBuildingCards();
 
