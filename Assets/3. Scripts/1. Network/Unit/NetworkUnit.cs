@@ -3,7 +3,7 @@ using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.AI;
 
-public enum UnitType { Soldier, Tank, Aircraft }
+public enum UnitType { Soldier, Ranged ,AOERanged, Aircraft }
 
 public class NetworkUnit : NetworkBehaviour
 {

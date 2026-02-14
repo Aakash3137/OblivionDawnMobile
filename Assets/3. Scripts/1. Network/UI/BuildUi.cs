@@ -4,17 +4,19 @@ using UnityEngine.UI;
 
 public class BuildUi : MonoBehaviour
 {
-    [SerializeField] internal string prefabNameText;
+    public UnitNameEnum unitName;
+   // public BuildingNameEnum buildingName;
+    public bool IsUnitBuilding = false;
     
     private void Start()
     {
         Debug.Log("Buttonui start");
-        gameObject.GetComponent<Button>().onClick.AddListener(() => Build(prefabNameText));
+        gameObject.GetComponent<Button>().onClick.AddListener(() => Build(unitName));
     }
 
-    public void Build(string buildingName)
+    public void Build(UnitNameEnum buildingName)
     {
-        Debug.Log($"[BuildUi] Build called with name: {buildingName}");
+        Debug.Log($"[BuildUi] Build called with name: {buildingName.ToString()}");
         if (TileSelectionManager.Instance.selectedTile == null)
         {
             Debug.LogWarning("[BuildUi] TileSelectionManager.Instance is NULL");
@@ -30,4 +32,6 @@ public class BuildUi : MonoBehaviour
         Debug.Log($"[BuildUi] Selected tile: {selected.name} (NetworkObject Id: {selected.Object?.Id.ToString() ?? "null"})");
         selected.RequestBuild(buildingName);
     }
+    
+   
 }

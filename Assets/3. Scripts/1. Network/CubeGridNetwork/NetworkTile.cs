@@ -143,7 +143,7 @@ public class NetworkTile : NetworkBehaviour
     // --------------------------------------------------------------------
     // NETWORK BUILD REQUEST
     // --------------------------------------------------------------------
-    public void RequestBuild(string buildingName)
+    public void RequestBuild(UnitNameEnum buildingName)
     {
         Debug.Log($"[NetworkTile] RequestBuild called on {name} for {buildingName}. Object.HasInputAuthority = {Object?.HasInputAuthority.ToString() ?? "null"}; Object.Id = {(Object != null ? Object.Id.ToString() : "null")}");
 

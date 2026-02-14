@@ -7,7 +7,7 @@ using System.Collections.Generic;
 public struct BuildRequestData
 {
     public string tileName;
-    public string buildingName;
+    public UnitNameEnum buildingName;
     public int ownerSide;
     public string factionName;
 }
@@ -167,7 +167,7 @@ public class NetworkBuildingManager : NetworkBehaviour
     }
 
     // ---------------- CLIENT → HOST ----------------
-    public void RequestBuild(NetworkTile tile, string building)
+    public void RequestBuild(NetworkTile tile, UnitNameEnum building)
     {
         if (tile == null) return;
         
@@ -252,7 +252,7 @@ public class NetworkBuildingManager : NetworkBehaviour
         return null;
     }
 
-    private void SpawnBuilding(NetworkTile tile, string buildingName, NetworkSide ownerSide, PlayerRef owner, string factionName)
+    private void SpawnBuilding(NetworkTile tile, UnitNameEnum buildingName, NetworkSide ownerSide, PlayerRef owner, string factionName)
     {
         if (!Runner.IsServer) return;
         
@@ -272,7 +272,7 @@ public class NetworkBuildingManager : NetworkBehaviour
         GameObject prefab = ResolveBuildingPrefab(faction, buildingName);
         if (prefab == null)
         {
-            Debug.LogError($"[NBM] No prefab for {buildingName} in faction {factionName}");
+            Debug.LogError($"[NBM] No prefab for {buildingName.ToString()} in faction {factionName}");
             return;
         }
 
@@ -292,26 +292,46 @@ public class NetworkBuildingManager : NetworkBehaviour
         
     }
     
-    private GameObject ResolveBuildingPrefab(MP_Faction faction, string buildingName)
+    private GameObject ResolveBuildingPrefab(MP_Faction faction, UnitNameEnum buildingName)
     {
         switch (buildingName)
         {
-            case "MainBuilding":
-            case "MainBuild":
+            case UnitNameEnum.MainBuilding:
                 return faction.mainBuildingPrefab;
-
-            case "UnitBuilding":
-            case "UnitBuild":
-                return faction.unitBuildingPrefab;
-
-            case "DefenceBuilding":
-            case "DefenceTurret":        
-                return faction.defenceBuildingPrefab;
-
-            case "ResourceBuilding":
-            case "GoldResource":
-                return faction.resourceBuildingPrefab;
-
+            
+            case UnitNameEnum.HumanSoldier:
+                return faction.MeleeUnitBuildingPrefab;
+            
+            case UnitNameEnum.Aircraft:
+                return faction.AirUnitBuildingPrefab;
+            
+            case UnitNameEnum.Tank:
+                return faction.RangedUnitBuildingPrefab;
+            
+            case UnitNameEnum.ArtilleryGun:
+                return faction.AOERangedUnitBuildingPrefab;
+            
+            case UnitNameEnum.AntiAir:
+                return faction.AntiAirBuildingPrefab;
+            
+            case UnitNameEnum.AntiTank:
+                return faction.AntiTankBuildingPrefab;
+            
+            case UnitNameEnum.Turret:
+                return faction.TurretBuildingPrefab;
+            
+            case UnitNameEnum.Gold:
+                return faction.GoldBuildingPrefab;
+            
+            case UnitNameEnum.Food:
+                return faction.FoodBuildingPrefab;
+            
+            case UnitNameEnum.Power:
+                return faction.PowerBuildingPrefab;
+            
+            case UnitNameEnum.Metal:
+                return faction.MetalBuildingPrefab;
+            
             default:
                 Debug.LogWarning($"[NBM] Unknown building type: {buildingName}");
                 return null;

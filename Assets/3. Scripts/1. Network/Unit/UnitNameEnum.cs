@@ -1,0 +1,27 @@
+public enum UnitNameEnum
+{
+    Sayuri,
+    Veerwithcrossbow,
+    Griffin,
+    FireBallista,
+    HumanSoldier,
+    Tank,
+    Aircraft,
+    ArtilleryGun,
+    LaserGunMechs,
+    PlasmaTurret,
+    Drone,
+    GuidedMissile,
+    Sabretooth,
+    Pugrash,
+    FireDragon,
+    Gimutshu,
+    AntiTank,
+    AntiAir,
+    Turret,
+    Gold,
+    Food,
+    Metal,
+    Power,
+    MainBuilding
+}

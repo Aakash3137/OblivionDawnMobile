@@ -21,9 +21,10 @@ public class TileUIPanelNetwork : MonoBehaviour
         if (BackButton != null)
             BackButton.onClick.AddListener(OnBackClicked);
             
-        UpdateBuildButtonNames();
+        //UpdateBuildButtonNames();
     }
     
+    /*
     private void UpdateBuildButtonNames()
     {
         if (GameData.SelectedMPFaction == null || buildButtons == null) return;
@@ -47,16 +48,18 @@ public class TileUIPanelNetwork : MonoBehaviour
             }
         }
     }
+    */
 
     public void Open(NetworkTile tile)
     {
         currentTile = tile;
-        UpdateBuildButtonNames();
+       // UpdateBuildButtonNames();
     }
 
     private void OnBackClicked()
     {
         currentTile = null;
+        gameObject.SetActive(false);
 
       //  if (manager != null)
        //     manager.CloseUI();
