@@ -161,7 +161,7 @@ public class ResourceBuildingStats : BuildingStats
 
     internal override void Die()
     {
-        DecreaseGlobalCapacity(); 
+        DecreaseGlobalCapacity();
         DecreaseGenerationRate();
 
         base.Die();
@@ -177,5 +177,11 @@ public class ResourceBuildingStats : BuildingStats
     public float GetGenerationTime()
     {
         return resourceBuildingData.resourceTimeToProduce;
+    }
+
+
+    public ResourceBuildingDataSO GetBuildingSO()
+    {
+        return buildingStats as ResourceBuildingDataSO;
     }
 }

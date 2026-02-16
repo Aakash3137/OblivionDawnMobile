@@ -21,7 +21,7 @@ public class TileUIPanel : MonoBehaviour
     private bool _mainWallPlaced = false;
     private float _wallYOffset = 1f;
     private Tile currentTile;
-    private GameObject spawnedBuilding;
+    private BuildingStats spawnedBuilding;
 
 
     private void Start()
@@ -50,7 +50,7 @@ public class TileUIPanel : MonoBehaviour
         buildPanel.HideBuildPanel(canvasGroup);
     }
 
-    public void PlaceBuilding(GameObject buildingPrefab)
+    public void PlaceBuilding(BuildingStats buildingPrefab)
     {
         if (currentTile == null || buildingPrefab == null || buildingPrefab == null) return;
         if (currentTile.hasBuilding) return;
@@ -96,7 +96,7 @@ public class TileUIPanel : MonoBehaviour
              .BindToColorA(errorText);
     }
 
-    private bool CanPlaceBuilding(GameObject buildingPrefab)
+    private bool CanPlaceBuilding(BuildingStats buildingPrefab)
     {
         BuildCost[] buildingBuildCost = null;
 

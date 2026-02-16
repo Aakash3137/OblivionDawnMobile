@@ -7,6 +7,7 @@ public class OffenseBuildingStats : BuildingStats
     public ScenarioOffenseType offenseType { get; private set; }
     public OffenseBuildingUpgradeData offenseBuildingData { get; private set; }
     private CubeGridManager cgmInstance;
+    // private CharacterDatabase characterDatabase => CharacterDatabase.Instance;
 
     [ReadOnly]
     public UnitStats producedUnit;
@@ -121,5 +122,9 @@ public class OffenseBuildingStats : BuildingStats
     {
         if (producedUnit != null)
             producedUnit.GetComponent<UnitStats>().onUniqueUnitDied -= StartProducingUnits;
+    }
+    public void SetUnitPrefab(UnitStats prefab)
+    {
+        unit = prefab;
     }
 }

@@ -11,6 +11,8 @@ public class UnitProduceStatsSO : ScriptableObject
     public VisionAngles unitVisionAngles;
     public AttackTargets unitAttackTargets;
 
+    public OffenseBuildingStats spawnerBuilding;
+
     public bool canFly;
     [ShowIf(nameof(canFly))]
     public FlyStats unitFlyStats;

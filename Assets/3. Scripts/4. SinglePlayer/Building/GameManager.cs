@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Data")]
     public AllFactionsData data;
+    public DecSelectionData decSelectionData;
 
     [Header("Spawn points")]
     public Transform playerSpawnPoint;
@@ -25,7 +26,7 @@ public class GameManager : MonoBehaviour
         }
 
         // Use the faction selected in the menu
-        var playerFaction = GameData.SelectedFaction;
+        var playerFaction = decSelectionData.CurrentFaction;
         var playerSlots = GetFactionSlots(playerFaction);
 
         // var enemySlots = GetFactionSlots(GetRandomEnemyFaction(playerFaction));

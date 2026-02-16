@@ -13,6 +13,10 @@ public class BuildPanelManager : MonoBehaviour
         tileUIPanel = GetComponent<TileUIPanel>();
         buildPanelTransform = GetComponent<RectTransform>();
         buildPanelContainer = transform.parent.GetComponent<RectTransform>();
+
+        if (canvasRect == null)
+            canvasRect = GetComponentInParent<Canvas>().GetComponent<RectTransform>();
+
         CloseBuildPanel();
     }
     public void OpenBuildPanel(Tile tile)
