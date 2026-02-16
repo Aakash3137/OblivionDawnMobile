@@ -46,8 +46,6 @@ public class BuildingUpgrade
         cur.buildingBasicStats.armor = StatUpgrade.Armour(last.buildingBasicStats.armor, cur.buildingLevel, maxLevel);
         cur.buildingBuildTime = StatUpgrade.BuildTime(last.buildingBuildTime, cur.buildingLevel, maxLevel);
 
-        cur.unitSpawnTime = StatUpgrade.BuildTime(last.unitSpawnTime, cur.buildingLevel, maxLevel);
-
         building.offenseBuildingUpgradeData.Add(cur);
 
         building.offenseBuildingUpgradeData[next] = cur;
@@ -107,7 +105,7 @@ public class BuildingUpgrade
 
         cur.resourceAmountPerBatch = StatUpgrade.Resource(last.resourceAmountPerBatch, cur.buildingLevel, maxLevel);
         // cur.resourceTimeToProduce = StatUpgrade.BuildTime(last.resourceTimeToProduce, cur.buildingLevel, maxLevel);
-        cur.resourceAmountCapacity = StatUpgrade.Resource(last.resourceAmountCapacity, cur.buildingLevel, maxLevel);
+        cur.resourceAmountCapacity = StatUpgrade.Capacity(last.resourceAmountCapacity, cur.buildingLevel, maxLevel);
 
 
         building.resourceBuildingUpgradeData.Add(cur);

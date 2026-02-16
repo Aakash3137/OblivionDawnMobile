@@ -68,13 +68,15 @@ public static class StatUpgrade
         => GetStat(baseValue, level, maxLevel, true);
     public static int Resource(int baseValue, int level, int maxLevel)
    => (int)GetStat(baseValue, level, maxLevel, true);
+    public static int Capacity(int baseValue, int level, int maxLevel)
+    => (int)GetStat(baseValue, level, maxLevel, true);
 }
 
 
 public class UnitProduceUpgrade
 {
     public int maxLevel = 20;
-    public void UpgradeNext(UnitProduceStatsSO unit, DecManager _Dec)
+    public void UpgradeNext(UnitProduceStatsSO unit, DecManager _Dec = null)
     {
         int next = unit.unitUpgradeData.Length;
 
@@ -90,7 +92,9 @@ public class UnitProduceUpgrade
         Array.Resize(ref unit.unitUpgradeData, next + 1);
         unit.unitUpgradeData[next] = cur;
         unit.unitIdentity.spawnLevel = next;
-        _Dec.diamondtext.text = (_Dec._Profile.Diamonds -= StatUpgrade.UpgradeCost(next)).ToString();
+
+        if (_Dec != null)
+            _Dec.diamondtext.text = (_Dec._Profile.Diamonds -= StatUpgrade.UpgradeCost(next)).ToString();
 
     }
 
