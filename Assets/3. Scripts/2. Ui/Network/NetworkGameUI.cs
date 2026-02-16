@@ -17,6 +17,8 @@ public class NetworkGameUI : MonoBehaviour
     
     internal Color playerColor = Color.green;
     internal Color enemyColor = Color.red;
+
+    [SerializeField] internal GameObject LoadingPanel;
     
     private bool _cameraRotationApplied = false;
 
@@ -28,6 +30,13 @@ public class NetworkGameUI : MonoBehaviour
         Invoke(nameof(RefreshPlayerInfo), 1f);
         InvokeRepeating(nameof(RefreshPlayerInfo), 1f, 2f);
         
+        LoadingPanel.SetActive(true);
+        Invoke(nameof(TurnOffLoadingPanel), 5f);
+    }
+
+    private void TurnOffLoadingPanel()
+    {
+        LoadingPanel.SetActive(false);
     }
 
     public void RefreshPlayerInfo()

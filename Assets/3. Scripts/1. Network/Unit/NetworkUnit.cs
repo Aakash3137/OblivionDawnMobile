@@ -10,7 +10,8 @@ public class NetworkUnit : NetworkBehaviour
     [Header("Unit Settings")]
     public UnitType unitType;
     [SerializeField] private float moveSpeed = 3f;
-    [SerializeField] private float attackRange = 2f;
+    [SerializeField] private float attackRange = 5f;
+    [SerializeField] private float DetectionRange = 15f;
     [SerializeField] private float attackDamage = 10f;
     [SerializeField] private float attackCooldown = 1f;
     public float aggroRadius = 3f;
@@ -34,7 +35,7 @@ public class NetworkUnit : NetworkBehaviour
     // TODO: Add animation references
     // private Animator animator;
     // Animation states: Idle, Move, Attack, Death
-
+    
     public override void Spawned()
     {
         if (Object.HasStateAuthority)
@@ -259,4 +260,20 @@ public class NetworkUnit : NetworkBehaviour
             Runner.Despawn(Object);
         }
     }
+    
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+
+        /*if (target != null)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(transform.position, target.transform.position);
+        }*/
+        
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, DetectionRange);
+    }
+
 }
