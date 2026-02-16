@@ -52,44 +52,36 @@ public class NetworkUnit : NetworkBehaviour
 
     private void FindEnemyMainBuilding()
     {
-        NetworkTile[] mainTiles = { 
-            NetworkCubeGridManager.Instance.MainBuildingTile1, 
-            NetworkCubeGridManager.Instance.MainBuildingTile2 
-        };
+        NetworkPlayer[] allPlayers = FindObjectsOfType<NetworkPlayer>();
+        NetworkPlayer myPlayer = null;
+        NetworkPlayer enemyPlayer = null;
 
-       // Debug.Log("Finding enemy main building");
-        foreach (var mainTile in mainTiles)
+        foreach (var player in allPlayers)
         {
-            Debug.Log(" main tile");
-            if (mainTile == null || !mainTile.IsOccupied) continue;
+            if (player.Object.InputAuthority == Object.InputAuthority)
+                myPlayer = player;
+            else
+                enemyPlayer = player;
+        }
 
-            Debug.Log(" main tile is at " + mainTile.Coord);
-            foreach (var enemyTile in NetworkCubeGridManager.Instance.enemyTiles)
+        if (enemyPlayer == null)
+        {
+            Debug.LogWarning("[NetworkUnit] Enemy player not found");
+            return;
+        }
+
+        NetworkTile enemyMainTile = enemyPlayer.SpawnId == 0 
+            ? NetworkCubeGridManager.Instance.MainBuildingTile1 
+            : NetworkCubeGridManager.Instance.MainBuildingTile2;
+
+        if (enemyMainTile != null && enemyMainTile.IsOccupied)
+        {
+            GameObject tileObj = NetworkCubeGridManager.Instance.GetCube(enemyMainTile.Coord);
+            if (tileObj != null)
             {
-                Debug.Log("Checking enemy tile at " + enemyTile.Coord);
-                if (enemyTile.Coord == mainTile.Coord)
-                {
-                    Debug.Log("Enemy main building found at " + enemyTile.Coord);
-                    targetMainBuilding = NetworkCubeGridManager.Instance.GetCube(mainTile.Coord).transform;
-                    Debug.Log("Enemy main building found at " + targetMainBuilding.position);
-                    return;
-                } 
+                targetMainBuilding = tileObj.transform;
+                Debug.Log($"[NetworkUnit] Enemy main building found at {targetMainBuilding.position} for SpawnId {enemyPlayer.SpawnId}");
             }
-           
-            
-            /* GameObject tileObj = NetworkCubeGridManager.Instance.GetCube(mainTile.Coord);
-             if (tileObj == null) continue;
-
-             foreach (Transform child in tileObj.transform)
-             {
-                 NetworkBuilding building = child.GetComponent<NetworkBuilding>();
-                 if (building != null && building.OwnerSide != OwnerSide)
-                 {
-                     targetMainBuilding = building.enemyVisual != null ? building.enemyVisual.transform : building.transform;
-                     Debug.Log("Enemy main building found at " + targetMainBuilding.position);
-                     return;
-                 }
-             }*/
         }
     }
 
@@ -141,13 +133,14 @@ public class NetworkUnit : NetworkBehaviour
                     closest = hit.transform;
                 }
             }
-        }
+        } 
 
         currentTarget = closest;
     }
 
     private void AttackTarget()
-    {
+    {   
+        
         if (currentTarget == null) return;
 
         float dist = Vector3.Distance(transform.position, currentTarget.position);
