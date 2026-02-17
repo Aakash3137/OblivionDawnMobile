@@ -8,6 +8,7 @@ public class FactionButton : MonoBehaviour
     [Header("Faction Info")]
     [SerializeField] private FactionName faction;        // enum value (Past, Present, Future, Monster)
     [SerializeField] private AllFactionsData data;       // reference to the ScriptableObject asset
+    [SerializeField] private DecSelectionData decSelectionData;
     [SerializeField] MP_Faction mpFaction;
 
     [SerializeField] private Button button;
@@ -24,6 +25,7 @@ public class FactionButton : MonoBehaviour
         // Store player’s choice globally
         GameData.SelectedFaction = faction;   // <-- critical line
         GameData.AllFactionsData = data;
+        decSelectionData.CurrentFaction = faction;
 
         GameData.SelectedFactionName = faction.ToString();
         Debug.Log($"[FactionButton] Player faction selected: {GameData.SelectedFaction}");

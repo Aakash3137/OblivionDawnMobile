@@ -5,8 +5,11 @@ using UnityEngine.UI;
 
 public class ResourceUpdateUI : MonoBehaviour
 {
+
     [Header("Assign PlayerResourceManager Reference")]
     [SerializeField] private ResourceManager rmReference;
+
+    [SerializeField] private DecSelectionData decSelectionData;
 
     [Header("Resource Amount Texts")]
     [SerializeField] private TMP_Text foodText;
@@ -103,59 +106,18 @@ public class ResourceUpdateUI : MonoBehaviour
     #region  Resource Sprites
     private void GetResourceSprites()
     {
-        FactionName currentFaction = GameData.SelectedFaction;
-
-        switch (currentFaction)
+        if (decSelectionData == null)
         {
-            case FactionName.Medieval:
-                SetMedievalSprites();
-                break;
-            case FactionName.Present:
-                SetPresentSprites();
-                break;
-            case FactionName.Futuristic:
-                SetFutureSprites();
-                break;
-            case FactionName.Galvadore:
-                SetGalvadoreSprites();
-                break;
+            Debug.Log("<color=#000000>[ResourceUpdateUI] DecSelectionData is null</color>");
+            return;
         }
-    }
 
-    private void SetMedievalSprites()
-    {
-        var allFactionData = GameData.AllFactionsData;
-        foodSprite = allFactionData.medievalFoodBuilding.GetComponent<BuildingStats>().buildingStats.buildingIcon;
-        goldSprite = allFactionData.medievalGoldBuilding.GetComponent<BuildingStats>().buildingStats.buildingIcon;
-        metalSprite = allFactionData.medievalMetalBuilding.GetComponent<BuildingStats>().buildingStats.buildingIcon;
-        powerSprite = allFactionData.medievalPowerBuilding.GetComponent<BuildingStats>().buildingStats.buildingIcon;
-    }
+        FactionName currentFaction = decSelectionData.CurrentFaction;
 
-    private void SetPresentSprites()
-    {
-        var allFactionData = GameData.AllFactionsData;
-        foodSprite = allFactionData.presentFoodBuilding.GetComponent<BuildingStats>().buildingStats.buildingIcon;
-        goldSprite = allFactionData.presentGoldBuilding.GetComponent<BuildingStats>().buildingStats.buildingIcon;
-        metalSprite = allFactionData.presentMetalBuilding.GetComponent<BuildingStats>().buildingStats.buildingIcon;
-        powerSprite = allFactionData.presentPowerBuilding.GetComponent<BuildingStats>().buildingStats.buildingIcon;
-    }
-
-    private void SetFutureSprites()
-    {
-        var allFactionData = GameData.AllFactionsData;
-        foodSprite = allFactionData.futureFoodBuilding.GetComponent<BuildingStats>().buildingStats.buildingIcon;
-        goldSprite = allFactionData.futureGoldBuilding.GetComponent<BuildingStats>().buildingStats.buildingIcon;
-        metalSprite = allFactionData.futureMetalBuilding.GetComponent<BuildingStats>().buildingStats.buildingIcon;
-        powerSprite = allFactionData.futurePowerBuilding.GetComponent<BuildingStats>().buildingStats.buildingIcon;
-    }
-
-    private void SetGalvadoreSprites()
-    {
-        var allFactionData = GameData.AllFactionsData;
-        foodSprite = allFactionData.galvadoreFoodBuilding.GetComponent<BuildingStats>().buildingStats.buildingIcon;
-        goldSprite = allFactionData.galvadoreGoldBuilding.GetComponent<BuildingStats>().buildingStats.buildingIcon;
-        metalSprite = allFactionData.galvadoreMetalBuilding.GetComponent<BuildingStats>().buildingStats.buildingIcon;
-        powerSprite = allFactionData.galvadorePowerBuilding.GetComponent<BuildingStats>().buildingStats.buildingIcon;
+        foodSprite = decSelectionData.AllFactionDecData[(int)currentFaction].SelectedResourceDeck[0].buildingIcon;
+        goldSprite = decSelectionData.AllFactionDecData[(int)currentFaction].SelectedResourceDeck[1].buildingIcon;
+        metalSprite = decSelectionData.AllFactionDecData[(int)currentFaction].SelectedResourceDeck[2].buildingIcon;
+        powerSprite = decSelectionData.AllFactionDecData[(int)currentFaction].SelectedResourceDeck[3].buildingIcon;
     }
     #endregion
 }

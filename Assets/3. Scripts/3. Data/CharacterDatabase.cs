@@ -1,89 +1,126 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 
 public class CharacterDatabase : MonoBehaviour
 {
-    public List<GameObject> UnitPrefabs;
+    public static CharacterDatabase Instance { get; private set; }
 
-    public List<GameObject> BuildingPrefabs;
-    
-    private Dictionary<UnitProduceStatsSO, GameObject> lookup;
-    private Dictionary<BuildingDataSO, GameObject> lookupBuildings;
+    public List<UnitStats> unitPrefabs;
+    public List<DefenseBuildingStats> defenseBuildingPrefabs;
+    public List<ResourceBuildingStats> resourceBuildingPrefabs;
+    private Dictionary<UnitProduceStatsSO, UnitStats> lookup;
+    private Dictionary<DefenseBuildingDataSO, DefenseBuildingStats> defenseLookup;
+    private Dictionary<ResourceBuildingDataSO, ResourceBuildingStats> resourceLookup;
 
-    void Awake()
+    private void Awake()
     {
-        lookup = new Dictionary<UnitProduceStatsSO, GameObject>();
-        
-        lookupBuildings = new Dictionary<BuildingDataSO, GameObject>();
-
-        foreach (GameObject characterPrefab in UnitPrefabs)
+        if (Instance == null)
         {
-            UnitStats unitStats = characterPrefab.GetComponent<UnitStats>();
-            
-            if (unitStats == null)
-            {
-                Debug.LogError(characterPrefab.name + " has no UnitStats component!");
-                continue;
-            }
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+            Destroy(gameObject);
 
-            if (unitStats.unitProduceSO == null)
+        RegisterUnits();
+        RegisterDefenseBuildings();
+        RegisterResourceBuildings();
+    }
+    private void RegisterUnits()
+    {
+        lookup = new Dictionary<UnitProduceStatsSO, UnitStats>();
+
+        foreach (var characterPrefab in unitPrefabs)
+        {
+            if (characterPrefab.unitProduceSO == null)
             {
                 Debug.LogError(characterPrefab.name + " has no UnitProduceStatsSO assigned!");
                 continue;
             }
 
-            if (lookup.ContainsKey(unitStats.unitProduceSO))
+            if (lookup.ContainsKey(characterPrefab.unitProduceSO))
             {
-                Debug.LogError("Duplicate ScriptableObject found: " + unitStats.unitProduceSO.name);
-                continue;
-            }
-            
-            lookup.Add(unitStats.unitProduceSO, characterPrefab);
-        }
-        
-        foreach (GameObject buildingPrefab in BuildingPrefabs)
-        {
-            BuildingStats buildingStats = buildingPrefab.GetComponent<BuildingStats>();
-
-            if (buildingStats == null)
-            {
-                Debug.LogError(buildingPrefab.name + " has no BuildingStats component!");
+                Debug.LogError("Duplicate ScriptableObject found: " + characterPrefab.unitProduceSO.name);
                 continue;
             }
 
-            if (buildingStats.buildingStats == null)
-            {
-                Debug.LogError(buildingPrefab.name + " has no BuildingDataSO assigned!");
-                continue;
-            }
-
-            if (lookupBuildings.ContainsKey(buildingStats.buildingStats))
-            {
-                Debug.LogError("Duplicate ScriptableObject found: " + buildingStats.buildingStats.name);
-                continue;
-            }
-
-            lookupBuildings.Add(buildingStats.buildingStats, buildingPrefab);
+            lookup.Add(characterPrefab.unitProduceSO, characterPrefab);
         }
     }
 
-    public GameObject GetPrefab(UnitProduceStatsSO unitProduceStats)
+    private void RegisterDefenseBuildings()
     {
-        if (lookup.TryGetValue(unitProduceStats, out GameObject prefab))
+        defenseLookup = new Dictionary<DefenseBuildingDataSO, DefenseBuildingStats>();
+
+        foreach (var defensePrefab in defenseBuildingPrefabs)
+        {
+            if (defensePrefab.GetBuildingSO() == null)
+            {
+                Debug.LogError(defensePrefab.name + " has no DefenseBuildingDataSO assigned!");
+                continue;
+            }
+
+            if (defenseLookup.ContainsKey(defensePrefab.GetBuildingSO()))
+            {
+                Debug.LogError("Duplicate ScriptableObject found: " + defensePrefab.GetBuildingSO().name);
+                continue;
+            }
+
+            defenseLookup.Add(defensePrefab.GetBuildingSO(), defensePrefab);
+        }
+    }
+
+    private void RegisterResourceBuildings()
+    {
+        resourceLookup = new Dictionary<ResourceBuildingDataSO, ResourceBuildingStats>();
+
+        foreach (var resourcePrefab in resourceBuildingPrefabs)
+        {
+            if (resourcePrefab.GetBuildingSO() == null)
+            {
+                Debug.LogError(resourcePrefab.name + " has no ResourceBuildingDataSO assigned!");
+                continue;
+            }
+
+            if (resourceLookup.ContainsKey(resourcePrefab.GetBuildingSO()))
+            {
+                Debug.LogError("Duplicate ScriptableObject found: " + resourcePrefab.GetBuildingSO().name);
+                continue;
+            }
+
+            resourceLookup.Add(resourcePrefab.GetBuildingSO(), resourcePrefab);
+        }
+    }
+
+    public UnitStats GetUnitPrefab(UnitProduceStatsSO unitProduceStats)
+    {
+        if (lookup.TryGetValue(unitProduceStats, out UnitStats prefab))
             return prefab;
 
         Debug.LogError("No prefab found for: " + unitProduceStats.name);
         return null;
     }
-    /*public GameObject GetOffenseBuilding(BuildingDataSO buildingStats)
+
+    public OffenseBuildingStats GetSpawnerBuilding(UnitProduceStatsSO unitProduceStats)
     {
-        if (buildingStats is OffenseBuildingDataSO offenseBuildingStats)
-        {
-            if (lookupBuildings.TryGetValue(offenseBuildingStats, out GameObject prefab))
-                return prefab;
-        }
-        Debug.LogError("Scriptable Object is not offense Building: " + buildingStats.name);
+        return unitProduceStats.spawnerBuilding;
+    }
+
+    public DefenseBuildingStats GetDefenseBuildingPrefab(DefenseBuildingDataSO defenseBuildingData)
+    {
+        if (defenseLookup.TryGetValue(defenseBuildingData, out DefenseBuildingStats prefab))
+            return prefab;
+
+        Debug.LogError("No prefab found for: " + defenseBuildingData.name);
         return null;
-    }*/
+    }
+
+    public ResourceBuildingStats GetResourceBuildingPrefab(ResourceBuildingDataSO resourceBuildingData)
+    {
+        if (resourceLookup.TryGetValue(resourceBuildingData, out ResourceBuildingStats prefab))
+            return prefab;
+
+        Debug.LogError("No prefab found for: " + resourceBuildingData.name);
+        return null;
+    }
 }
