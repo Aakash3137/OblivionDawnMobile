@@ -86,10 +86,10 @@ public class MatchOverManager : MonoBehaviour
     
     private void ShowMatchOverPanel()
     {
-        if (matchOverPanel != null)
-        {
-            matchOverPanel.SetActive(true);
-        }
+        // if (matchOverPanel != null)
+        // {
+        //     matchOverPanel.SetActive(true);
+        // }
     }
     
     private void OnPlayAgain()
@@ -113,16 +113,16 @@ public class MatchOverManager : MonoBehaviour
         Debug.Log("[MatchOverManager] Main Menu clicked");
         
         // Hide match over panel
-        if (matchOverPanel != null)
-            matchOverPanel.SetActive(false);
-            
+        // if (matchOverPanel != null)
+        //     matchOverPanel.SetActive(false);
+            SceneManager.LoadScene(0);
         // Show home panel
-        if (HomeUIManager.Instance != null)
-        {
-            GameObject homePanel = GameObject.Find("HomePanel");
-            if (homePanel != null)
-                homePanel.SetActive(true);
-        }
+        // if (HomeUIManager.Instance != null)
+        // {
+        //     GameObject homePanel = GameObject.Find("HomePanel");
+        //     if (homePanel != null)
+        //         homePanel.SetActive(true);
+        // }
     }
     
     private void OnDestroy()

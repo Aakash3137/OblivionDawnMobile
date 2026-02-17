@@ -2,28 +2,31 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Fusion;
+using NUnit.Framework;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class LobbyManager : MonoBehaviour
 {
-    public static LobbyManager Instance { get; private set; }
 
     [Header("Game Scene Name")]
     public string GameSceneName = "GameScene";
 
     public float CountdownTime = 5f;
-    
     private NetworkRunner _runner;
     private bool _countdownStarted = false;
 
-    private void Awake()
-    {
-        Instance = this;
-    }
+    [SerializeField] private NetworkGameUI GameUI;
+    [SerializeField] private Button CretaeLobbyBtn, outerJoinLobbyBtn, joinLobbyBtn;
 
     private void Start()
     {
+        GameUI.ShowLobby(LobbyName.PrivateLobby);
+        CretaeLobbyBtn.onClick.AddListener(OnClickCreateLobbyButton);
+        outerJoinLobbyBtn.onClick.AddListener(OpenJoinOuterLobbyPanel);
+        joinLobbyBtn.onClick.AddListener(OnJoinInnerButtonClicked);
         _runner = PhotonNetworkManager.Instance?.Runner;
     }
 
@@ -117,4 +120,79 @@ public class LobbyManager : MonoBehaviour
     {
         return _runner.ActivePlayers.Count();
     }
+
+    #region  GameSceneFixup
+      public void OnClickPVPButton()
+    {
+        CustomGameMode.SetGameMode(GameModeType.PvP);
+        GameData.GameModeType = "PVP";
+        GameUI.ShowPanel(Mode.Multiplayer_PVP_Type);
+    }
+
+   
+   
+
+    public void OnClickPrivateLobbyButton()
+    {
+        GameData.GameModeType = "Lobby";
+        //SwitchPanel(HomePanel, PrivateLobbyPanel);
+        //LoadFactionPanel();
+
+        GameUI.ShowPanel(Mode.MultiPlayer_Lobby_Type);
+        GameUI.ShowLobby(LobbyName.PrivateLobby);
+    }
+
+    private void OnClickCreateLobbyButton()
+    {
+        CustomGameMode.SetGameMode(GameModeType.HostClient);
+        
+        GameUI.ShowPanel(Mode.None);           
+        Invoke(nameof(StartLobbyAndShowPanel), 0.1f);
+    }
+
+    private void StartLobbyAndShowPanel()
+    {
+        PhotonNetworkManager.Instance.CreateLobby(GameUI);
+
+        GameUI.ShowLobby(LobbyName.PlayerJoined);
+        // GameUI._MainCamera.gameObject.SetActive(false);
+        // Show lobby panel after 3 seconds (unlimited waiting after that)
+        Invoke(nameof(ShowLobbyPanel), 3f);
+    }
+
+    private void ShowLobbyPanel()
+    {
+        GameUI._MainCamera.gameObject.SetActive(false);
+        GameUI.ShowPanel(Mode.MultiPlayer_Lobby_Type);
+    }
+
+    private void OpenJoinOuterLobbyPanel()
+    {
+        //PrivateLobbyPanel is Parent of JoinLobbyPanel so disable PrivateLobbyPanel will disable JoinLobbyPanel
+        GameUI.ShowLobby(LobbyName.JoinLobby); /*  */
+    }
+
+    private void OnJoinInnerButtonClicked()
+    {
+        CustomGameMode.SetGameMode(GameModeType.HostClient);
+        GameUI._MainCamera.gameObject.SetActive(false);
+        GameUI.ShowLobby(LobbyName.PlayerJoined);
+        PhotonNetworkManager.Instance.JoinLobby(GameUI.LobbyCodeInputField.text);
+    }
+    #endregion
+}
+
+
+[System.Serializable]
+public class LobbyType
+{
+    public LobbyName PanelName;
+    public GameObject PanelObject;
+}
+
+public enum LobbyName
+{
+    PrivateLobby,
+    JoinLobby,
+    PlayerJoined
 }

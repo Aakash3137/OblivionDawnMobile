@@ -21,6 +21,7 @@ public class PhotonNetworkManager : MonoBehaviour
     public NetworkRunner Runner => _runner;
 
     public event Action<string> OnLobbyCreated;
+    public NetworkGameUI GameUI;
     public event Action OnLobbyJoined;
 
     
@@ -52,7 +53,7 @@ public class PhotonNetworkManager : MonoBehaviour
     {
         if (AutoStart)
         {
-            CreateLobby();
+            CreateLobby(GameUI);
         }
     }
     
@@ -97,15 +98,16 @@ public class PhotonNetworkManager : MonoBehaviour
     }
     // ---------------------- CREATE ----------------------
 
-    public void CreateLobby()
+    public void CreateLobby(NetworkGameUI gameUI)
     {
         string code = UnityEngine.Random.Range(100000, 999999).ToString();
         LastSessionName = code;
 
         Debug.Log($"[PNM] Creating lobby: {code}");
         StartRunner(Fusion.GameMode.Host, code).Forget();
-
-        HomeUIManager.Instance.UpdateSessionCode(code);
+        GameUI.SessionCodeText.text = $"Session code: {code}";
+        
+        //HomeUIManager.Instance.UpdateSessionCode(code);
         OnLobbyCreated?.Invoke(code);
     }
 
@@ -160,7 +162,7 @@ public class PhotonNetworkManager : MonoBehaviour
                 { "VISIBLE", 1 }
             }
         };
-
+        // GameUI._MainCamera.gameObject.SetActive(false);
         Debug.Log($"[PNM] Starting runner as {mode} (Room={sessionName})...");
         var result = await _runner.StartGame(startArgs);
 

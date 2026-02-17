@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Fusion;
 using TMPro;
@@ -5,6 +6,15 @@ using UnityEngine;
 
 public class NetworkGameUI : MonoBehaviour
 {
+    [Header("Panels and Popups")]
+    public List<PanelInfo> panels;
+    public List<PopupInfo> popups;
+    [SerializeField] internal List<LobbyType> LobbyPanels;
+    [SerializeField] internal TMP_InputField LobbyCodeInputField;
+    [SerializeField] internal TMP_Text Player1NameText;
+    [SerializeField] internal TMP_Text Player2NameText;
+    [SerializeField] internal TMP_Text SessionCodeText;
+
     [Header("Player 1 Info")]
     [SerializeField] internal TextMeshProUGUI player1NameText;
     [SerializeField] internal TextMeshProUGUI player1RankText;
@@ -20,6 +30,8 @@ public class NetworkGameUI : MonoBehaviour
 
     [SerializeField] internal GameObject LoadingPanel;
     
+    [SerializeField] private GameSelectionMode CurrentMode;
+    [SerializeField] internal Camera _MainCamera;
     private bool _cameraRotationApplied = false;
 
     private void Start()
@@ -37,7 +49,37 @@ public class NetworkGameUI : MonoBehaviour
     private void TurnOffLoadingPanel()
     {
         LoadingPanel.SetActive(false);
+        ShowPanel(CurrentMode.CurrentType);
     }
+
+#region UI Management
+    public void ShowPanel(Mode panel)
+    {
+        foreach (var panelInfo in panels)
+        {
+            panelInfo.PanelObject.SetActive(false);
+        }
+        panels.Find(p => p.PanelName == panel)?.PanelObject.SetActive(true);
+    }
+
+    public void ShowPopup(PopupType popup)
+    {
+        foreach(var panelInfo in panels)        
+        {
+            panelInfo.PanelObject.SetActive(false);
+        }
+        popups.Find(p => p.PopupName == popup)?.PopupObject.SetActive(true);
+    }
+
+    internal void ShowLobby(LobbyName lobbyName)
+    {
+        foreach(LobbyType lobby in LobbyPanels)
+        {
+            lobby.PanelObject.SetActive(false);
+        }
+        LobbyPanels.Find(X => X.PanelName == lobbyName)?.PanelObject.SetActive(true);
+    }
+#endregion
 
     public void RefreshPlayerInfo()
     {
@@ -114,4 +156,31 @@ public class NetworkGameUI : MonoBehaviour
     {
         CancelInvoke(nameof(RefreshPlayerInfo));
     }
+}
+
+[System.Serializable]
+public class PanelInfo
+{
+    public GameObject PanelObject;
+    public Mode PanelName;
+}
+
+[System.Serializable]
+public class PopupInfo
+{
+    public GameObject PopupObject;
+    public PopupType PopupName;
+}
+
+public enum PopupType
+{
+    BuildPopup
+}
+public enum GameScenePanels
+{
+    GamePlay,
+    PrivateLobby,
+    PVP,
+    MatchOver,
+    Loading
 }

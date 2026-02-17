@@ -257,7 +257,7 @@ public class HomeUIManager : MonoBehaviour
 
     private void StartLobbyAndShowPanel()
     {
-        PhotonNetworkManager.Instance.CreateLobby();
+       // PhotonNetworkManager.Instance.CreateLobby();
 
         // Show lobby panel after 3 seconds (unlimited waiting after that)
         Invoke(nameof(ShowLobbyPanel), 3f);
@@ -389,7 +389,6 @@ public class HomeUIManager : MonoBehaviour
 
     public void ShowPanel(PanelName TargetPanel)
     {
-
         Debug.Log($"Target Panel: {TargetPanel}");
         foreach(PanelDetails panel in UIPanels)
         {
@@ -426,7 +425,8 @@ public enum PanelName
     Friends,
     Message, 
     Ranking,
-    HeroJourney
+    HeroJourney, 
+    Loading
 }
 
 [System.Serializable]

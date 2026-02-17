@@ -13,15 +13,15 @@ public class GameSelectionMode : ScriptableObject
     {   
        switch(CurrentType)
         {
-            case Mode.Death_Solo:
+            case Mode.SinglePlayer_Type:
                 HomeUIManager.Instance.OnClickCampaignButton();
             break;
 
-            case Mode.MultiPlayer_Type:
+            case Mode.MultiPlayer_Lobby_Type:
                 HomeUIManager.Instance.OnClickPrivateLobbyButton();
             break;
 
-            case Mode.PVP_Type:
+            case Mode.Multiplayer_PVP_Type:
                 HomeUIManager.Instance.OnClickPVPButton();
             break;
 
@@ -35,9 +35,9 @@ public class GameSelectionMode : ScriptableObject
 
 public enum Mode
 {
-    Death_Solo,
-    MultiPlayer_Type,
-    PVP_Type,
+    SinglePlayer_Type,
+    MultiPlayer_Lobby_Type,
+    Multiplayer_PVP_Type,
     Scenario_Type, 
     None
 }

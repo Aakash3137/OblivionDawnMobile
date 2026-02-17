@@ -30,38 +30,22 @@ public class FactionButton : MonoBehaviour
         Debug.Log($"[FactionButton] Player faction name selected: {GameData.SelectedFactionName}");
         Debug.Log($"[FactionButton] Player MP faction selected: {GameData.SelectedMPFaction.factionName}");
 
+        // HomeUIManager.Instance.ShowPanel(PanelName.Loading);
+        HomeUIManager.Instance.LoadingPanel.SetActive(true);
         if (GameData.GameModeType == "Campaign")
         {
-            OnFactionSelected();
+            StartCoroutine(LoadSceneAfterDelay(2, "SinglePlayerScene"));
         }
         else
         {
-            HomeUIManager.Instance.OnFactionClicked();
-            DeactivateFactionPanel();
+            StartCoroutine(LoadSceneAfterDelay(2, "GameScene"));
         }
     }
 
-    void OnFactionSelected()
-    {
-        DeactivateFactionPanel();
-        HomeUIManager.Instance.SwitchPanel(HomeUIManager.Instance.HomePanel, HomeUIManager.Instance.LoadingPanel);
-        StartCoroutine(LoadSceneAfterDelay(2));
-    }
-
-    private void DeactivateFactionPanel()
-    {
-
-        // if (factionPanel != null)
-        // {
-        //     factionPanel.alpha = 0f;
-        //     factionPanel.interactable = false;
-        //     factionPanel.blocksRaycasts = false;
-        // }
-    }
-
-    private IEnumerator LoadSceneAfterDelay(float delay)
+    
+    private IEnumerator LoadSceneAfterDelay(float delay, string sceneName )
     {
         yield return new WaitForSeconds(delay);
-        SceneManager.LoadScene("SinglePlayerScene");
+        SceneManager.LoadScene(sceneName);
     }
 }

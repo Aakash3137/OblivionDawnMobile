@@ -12,6 +12,7 @@ namespace Ricimi
 	// using buttons.
 	public class SelectionSlider : MonoBehaviour
 	{
+		[Header("Selection of GameModes")]
 		public List<GameObject> Options;
 		public Transform Root;
 
