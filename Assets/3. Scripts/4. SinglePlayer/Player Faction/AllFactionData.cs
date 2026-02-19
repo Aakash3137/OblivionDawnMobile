@@ -55,7 +55,7 @@ public class AllFactionsData : ScriptableObject
     public GameObject medievalMainBuilding;
     public GameObject medievalAntiAirBuilding;
     public GameObject medievalAntiTankBuilding;
-    public GameObject pastTurretBuilding;
+    public GameObject medievalTurretBuilding;
     public GameObject medievalWallBuilding;
 
     public GameObject medievalAirBuilding;

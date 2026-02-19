@@ -1,13 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-public enum EnemyAIMode
-{
-    FullAttack,
-    SemiAttacking,
-    Defence,
-    OnlyDefence
-}
+public enum BuildingCategory { Unit, Resource, Defense }
 
 public class EnemyAIHandler : MonoBehaviour
 {
@@ -16,50 +11,11 @@ public class EnemyAIHandler : MonoBehaviour
     [SerializeField] private EnemyBuildPanel enemyBuildPanel;
     [SerializeField] private AllFactionsData factionData;
     [SerializeField] private FactionName enemyFactionName;
-
-    [Header("AI Behavior Mode")]
-    [SerializeField] private EnemyAIMode aiMode = EnemyAIMode.SemiAttacking;
-
-    [Header("Full Attack Mode Settings")]
-    [Range(0f, 1f)]
-    [SerializeField] private float fullAttack_UnitBuildingRatio = 0.8f;
-    [Range(0f, 1f)]
-    [SerializeField] private float fullAttack_ResourceBuildingRatio = 0.2f;
-
-    [Header("Semi Attacking Mode Settings")]
-    [Range(0f, 1f)]
-    [SerializeField] private float semiAttack_UnitBuildingRatio = 0.5f;
-    [Range(0f, 1f)]
-    [SerializeField] private float semiAttack_ResourceBuildingRatio = 0.3f;
-    [Range(0f, 1f)]
-    [SerializeField] private float semiAttack_DefenceBuildingRatio = .1f;
-
-    [Header("Defence Mode Settings")]
-    [SerializeField] private int defence_InitialDefenceCount = 3;
-    [Range(0f, 1f)]
-    [SerializeField] private float defence_ResourceRatio = 0.4f;
-    [Range(0f, 1f)]
-    [SerializeField] private float defence_AttackRatio = 0.6f;
-
-    [Header("Only Defence Mode Settings")]
-    [Range(0f, 1f)]
-    [SerializeField] private float onlyDefence_DefenceRatio = 0.8f;
-    [Range(0f, 1f)]
-    [SerializeField] private float onlyDefence_ResourceRatio = 0.2f;
-    [SerializeField] private bool onlyDefence_AllowAttackBuildings = false;
-    [SerializeField] private int onlyDefence_AttackBuildingsAfterDefenceCount = 6;
-
-    [Header("Resources")]
-
-    [Header("Spawn Settings")]
-    [SerializeField] private float spawnInterval = 5f;
-    [SerializeField] private int maxEnemyBuildings = 30;
-    [SerializeField] private bool reduceSpawningAfterMax = false;
-    [SerializeField] private float reducedSpawnInterval = 15f;
+    [SerializeField] private EnemyPersonality currentPersonality;
 
     private Transform enemyMainBuildingTransform;
-    [SerializeField] private List<Tile> spawnableTiles = new List<Tile>();
-    private int defenceBuildingsSpawned = 0;
+    private Transform playerMainBuildingTransform;
+    private List<Tile> spawnableTiles = new List<Tile>();
     private int totalBuildingsSpawned = 0;
     private float spawnTimer = 0f;
     private int resourceBuildingIndex = 0;
@@ -67,104 +23,69 @@ public class EnemyAIHandler : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("[EnemyAI] Start called");
-
         if (GameManager.Instance == null)
         {
-            Debug.LogError("[EnemyAI] MainBuildingSpawner.Instance is null!");
+            Debug.LogError("[EnemyAI] GameManager.Instance is null!");
             return;
         }
 
         enemyMainBuildingTransform = GameManager.Instance.enemySpawnPoint;
-        // GameDebug.Log($"[EnemyAI] Enemy main building transform: {enemyMainBuildingTransform}");
+        playerMainBuildingTransform = GameManager.Instance.playerSpawnPoint;
 
         Invoke(nameof(InitializeSpawnableTiles), 1f);
     }
 
     void Update()
     {
-        if (enemyModeSwitch == null)
-            return;
-
-        if (enemyModeSwitch.EnemyMode != CurrentEnemyMode.EnemyAIMode)
+        if (enemyModeSwitch == null || enemyModeSwitch.EnemyMode != CurrentEnemyMode.EnemyAIMode)
             return;
 
         RemoveInvalidSpawnableTiles();
 
-        float currentInterval = (reduceSpawningAfterMax && totalBuildingsSpawned >= maxEnemyBuildings)
-            ? reducedSpawnInterval
-            : spawnInterval;
+        float interval = currentPersonality.spawnInterval;
+
 
         spawnTimer += Time.deltaTime;
-        if (spawnTimer >= currentInterval)
+        if (spawnTimer >= interval)
         {
             spawnTimer = 0f;
             TrySpawnBuilding();
         }
     }
 
-    // Initialize spawnable tiles around the enemy main building. 
     void InitializeSpawnableTiles()
     {
-        // GameDebug.Log("[EnemyAI] InitializeSpawnableTiles called");
-
-        if (enemyMainBuildingTransform == null)
-        {
-            Debug.LogError("[EnemyAI] enemyMainBuildingTransform is null!");
+        if (enemyMainBuildingTransform == null || CubeGridManager.Instance == null)
             return;
-        }
 
-        if (CubeGridManager.Instance == null)
-        {
-            Debug.LogError("[EnemyAI] CubeGridManager.Instance is null!");
-            return;
-        }
-
-        Vector2Int mainBuildingGrid = CubeGridManager.Instance.WorldToGrid(enemyMainBuildingTransform.position);
-        // GameDebug.Log($"[EnemyAI] Main building grid: {mainBuildingGrid}");
-
-        UpdateSpawnableTiles(mainBuildingGrid);
-        // GameDebug.Log($"[EnemyAI] Spawnable tiles count: {spawnableTiles.Count}");
+        Vector2Int mainGrid = CubeGridManager.Instance.WorldToGrid(enemyMainBuildingTransform.position);
+        UpdateSpawnableTiles(mainGrid);
     }
 
     void UpdateSpawnableTiles(Vector2Int buildingGrid)
     {
-        List<Vector2Int> neighbors = CubeGridManager.Instance.GetAllNeighbors(buildingGrid);
-        // GameDebug.Log($"[EnemyAI] Checking {neighbors.Count} neighbors for grid {buildingGrid}");
-
-        foreach (var neighborGrid in neighbors)
+        foreach (var neighborGrid in CubeGridManager.Instance.GetAllNeighbors(buildingGrid))
         {
             Tile tile = CubeGridManager.Instance.GetCube(neighborGrid);
             if (tile == null || tile.hasBuilding || tile.ownerSide != Side.Enemy)
                 continue;
 
-            //All neighbors must be enemy
             if (!AreAllNeighborsEnemy(neighborGrid))
                 continue;
 
             if (!spawnableTiles.Contains(tile))
-            {
                 spawnableTiles.Add(tile);
-                // GameDebug.Log($"[EnemyAI] Added spawnable tile at {neighborGrid}");
-            }
         }
     }
 
     bool AreAllNeighborsEnemy(Vector2Int gridPos)
     {
-        List<Vector2Int> neighbors = CubeGridManager.Instance.GetAllNeighbors(gridPos);
-
-        foreach (var neighbor in neighbors)
+        foreach (var neighbor in CubeGridManager.Instance.GetAllNeighbors(gridPos))
         {
             Tile neighborTile = CubeGridManager.Instance.GetCube(neighbor);
-            if (neighborTile == null)
-                continue;
-
-            //  If any neighbor is Player tile fail
-            if (neighborTile.ownerSide == Side.Player)
+            if (neighborTile != null && neighborTile.ownerSide == Side.Player)
                 return false;
         }
-
         return true;
     }
 
@@ -174,171 +95,240 @@ public class EnemyAIHandler : MonoBehaviour
             tile == null ||
             tile.hasBuilding ||
             tile.ownerSide != Side.Enemy ||
-            !AreAllNeighborsEnemy(
-                CubeGridManager.Instance.WorldToGrid(tile.transform.position)
-            )
+            !AreAllNeighborsEnemy(CubeGridManager.Instance.WorldToGrid(tile.transform.position))
         );
     }
 
-
     void TrySpawnBuilding()
     {
-        if (!reduceSpawningAfterMax && totalBuildingsSpawned >= maxEnemyBuildings)
-        {
-            // GameDebug.Log($"[EnemyAI] Max buildings reached ({maxEnemyBuildings}). Spawning stopped.");
+        if (totalBuildingsSpawned >= currentPersonality.maxEnemyBuildings)
             return;
-        }
-
-        // GameDebug.Log($"[EnemyAI] TrySpawnBuilding - Spawnable tiles: {spawnableTiles.Count}");
 
         if (spawnableTiles.Count == 0)
-        {
-            // GameDebug.LogWarning("[EnemyAI] No spawnable tiles available!");
             return;
+
+        bool makeMistake = Random.value < currentPersonality.mistakeProbability;
+        GameObject buildingPrefab = null;
+        BuildingCategory category = BuildingCategory.Unit;
+
+        if (makeMistake)
+        {
+            buildingPrefab = GetRandomBuildingAny();
+        }
+        else
+        {
+            buildingPrefab = DecideBuildingUsingPersonality(out category);
         }
 
-        Tile selectedTile = SelectSpawnTile();
-        if (selectedTile == null)
-        {
-            Debug.LogWarning("[EnemyAI] Failed to select spawn tile!");
-            return;
-        }
-
-        GameObject buildingPrefab = DecideBuildingToSpawn();
         if (buildingPrefab == null)
         {
-            Debug.LogError("[EnemyAI] Failed to decide building to spawn!");
+            Debug.LogWarning("[EnemyAI] No building prefab selected");
             return;
         }
 
-        // GameDebug.Log($"[EnemyAI] Spawning {buildingPrefab.name} at tile {selectedTile.transform.position}");
+        Tile selectedTile = null;
+        bool useOptimalTile = Random.value < currentPersonality.tacticalDiscipline;
+
+        if (useOptimalTile && currentPersonality.tacticalPrecision > 0f)
+        {
+            selectedTile = SelectBestTileForCategory(category);
+        }
+        else
+        {
+            selectedTile = SelectRandomSpawnableTile();
+        }
+
+        if (selectedTile == null)
+        {
+            Debug.LogWarning("[EnemyAI] No valid tile selected");
+            return;
+        }
 
         SpawnBuilding(selectedTile, buildingPrefab);
     }
 
-    Tile SelectSpawnTile()
+    GameObject DecideBuildingUsingPersonality(out BuildingCategory category)
     {
-        spawnableTiles.RemoveAll(t => t == null || t.hasBuilding);
+        // Normalize category weights
+        float total = currentPersonality.unitBuildingWeight
+                    + currentPersonality.resourceBuildingWeight
+                    + currentPersonality.defenseBuildingWeight;
+        float rand = Random.value * total;
 
-        if (spawnableTiles.Count == 0)
-            return null;
-
-        return spawnableTiles[Random.Range(0, spawnableTiles.Count)];
-    }
-
-    GameObject DecideBuildingToSpawn()
-    {
-        switch (aiMode)
+        if (rand < currentPersonality.unitBuildingWeight)
         {
-            case EnemyAIMode.FullAttack:
-                return DecideFullAttackBuilding();
-            case EnemyAIMode.SemiAttacking:
-                return DecideSemiAttackBuilding();
-            case EnemyAIMode.Defence:
-                return DecideDefenceBuilding();
-            case EnemyAIMode.OnlyDefence:
-                return DecideOnlyDefenceBuilding();
-            default:
-                return null;
+            category = BuildingCategory.Unit;
+            return GetWeightedUnitBuilding();
+        }
+        rand -= currentPersonality.unitBuildingWeight;
+        if (rand < currentPersonality.resourceBuildingWeight)
+        {
+            category = BuildingCategory.Resource;
+            return GetWeightedResourceBuilding();
+        }
+        else
+        {
+            category = BuildingCategory.Defense;
+            return GetWeightedDefenseBuilding();
         }
     }
 
-    GameObject DecideFullAttackBuilding()
-    {
-        float rand = Random.value;
-        if (rand < fullAttack_UnitBuildingRatio)
-            return GetRandomUnitBuilding();
-        else
-            return GetRandomResourceBuilding();
-    }
-
-    GameObject DecideSemiAttackBuilding()
-    {
-        float rand = Random.value;
-        if (rand < semiAttack_UnitBuildingRatio)
-            return GetRandomUnitBuilding();
-        else if (rand < semiAttack_UnitBuildingRatio + semiAttack_ResourceBuildingRatio)
-            return GetRandomResourceBuilding();
-        else
-            return GetRandomDefenceBuilding();
-    }
-
-    GameObject DecideDefenceBuilding()
-    {
-        if (defenceBuildingsSpawned < defence_InitialDefenceCount)
-        {
-            defenceBuildingsSpawned++;
-            return GetRandomDefenceBuilding();
-        }
-
-        float rand = Random.value;
-
-        if (rand < defence_ResourceRatio)
-            return GetRandomResourceBuilding();
-        else
-            return GetRandomUnitBuilding();
-    }
-
-    GameObject DecideOnlyDefenceBuilding()
-    {
-        if (onlyDefence_AllowAttackBuildings && defenceBuildingsSpawned >= onlyDefence_AttackBuildingsAfterDefenceCount)
-        {
-            float rand = Random.value;
-            if (rand < 0.3f)
-                return GetRandomUnitBuilding();
-        }
-
-        float rand2 = Random.value;
-        if (rand2 < onlyDefence_DefenceRatio)
-        {
-            defenceBuildingsSpawned++;
-            return GetRandomDefenceBuilding();
-        }
-        else
-            return GetRandomResourceBuilding();
-    }
-
-    GameObject GetRandomUnitBuilding()
+    GameObject GetWeightedUnitBuilding()
     {
         GameObject[] buildings = GetUnitBuildings();
-        return buildings[Random.Range(0, buildings.Length)];
+        float[] weights = currentPersonality.unitTypeWeights;
+        return GetWeightedRandom(buildings, weights);
     }
 
-    GameObject GetRandomResourceBuilding()
+    GameObject GetWeightedResourceBuilding()
     {
         GameObject[] buildings = GetResourceBuildings();
-
-        if (!allResourcesCovered)
+        float[] weights = currentPersonality.resourceTypeWeights;
+        
+        // Handle sequential resource building selection if not all resources covered
+        if (!allResourcesCovered && buildings.Length > 0)
         {
             GameObject building = buildings[resourceBuildingIndex];
             resourceBuildingIndex++;
             if (resourceBuildingIndex >= buildings.Length)
                 allResourcesCovered = true;
-
             return building;
         }
-        return buildings[Random.Range(0, buildings.Length)];
+        
+        return GetWeightedRandom(buildings, weights);
     }
 
-    GameObject GetRandomDefenceBuilding()
+    GameObject GetWeightedDefenseBuilding()
     {
         GameObject[] buildings = GetDefenceBuildings();
-        return buildings[Random.Range(0, buildings.Length)];
+        float[] weights = currentPersonality.defenseTypeWeights;
+        return GetWeightedRandom(buildings, weights);
     }
+
+    GameObject GetWeightedRandom(GameObject[] options, float[] weights)
+    {
+        if (options.Length == 0 || weights.Length == 0)
+            return null;
+
+        // Ensure weights array matches options length
+        float[] normalizedWeights = new float[options.Length];
+        for (int i = 0; i < options.Length; i++)
+        {
+            normalizedWeights[i] = (i < weights.Length) ? weights[i] : 1f / options.Length;
+        }
+
+        float total = normalizedWeights.Sum();
+        float rand = Random.value * total;
+        float accum = 0f;
+
+        for (int i = 0; i < options.Length; i++)
+        {
+            accum += normalizedWeights[i];
+            if (rand < accum)
+                return options[i];
+        }
+        return options[options.Length - 1];
+    }
+
+    GameObject GetRandomBuildingAny()
+    {
+        var allBuildings = new List<GameObject>();
+        allBuildings.AddRange(GetUnitBuildings());
+        allBuildings.AddRange(GetResourceBuildings());
+        allBuildings.AddRange(GetDefenceBuildings());
+        if (allBuildings.Count == 0) return null;
+        return allBuildings[Random.Range(0, allBuildings.Count)];
+    }
+
+    Tile SelectRandomSpawnableTile()
+    {
+        spawnableTiles.RemoveAll(t => t == null || t.hasBuilding);
+        if (spawnableTiles.Count == 0) return null;
+        return spawnableTiles[Random.Range(0, spawnableTiles.Count)];
+    }
+
+    Tile SelectBestTileForCategory(BuildingCategory category)
+    {
+        if (spawnableTiles.Count == 0) return null;
+
+        Vector3 enemyPos = enemyMainBuildingTransform.position;
+        Vector3 playerPos = playerMainBuildingTransform.position;
+        Vector3 dirToPlayer = (playerPos - enemyPos).normalized;
+
+        Tile bestTile = null;
+        float bestScore = float.MinValue;
+
+        foreach (Tile tile in spawnableTiles)
+        {
+            if (tile == null || tile.hasBuilding) continue;
+
+            Vector3 tilePos = tile.transform.position;
+            float forwardness = Vector3.Dot(tilePos - enemyPos, dirToPlayer);
+
+            float score = 0f;
+            switch (category)
+            {
+                case BuildingCategory.Defense:
+                    score = forwardness; // prefer forward (closer to player)
+                    break;
+                case BuildingCategory.Resource:
+                    score = -forwardness; // prefer backward (away from player)
+                    break;
+                case BuildingCategory.Unit:
+                    score = 0f; // neutral
+                    break;
+            }
+
+            // Add some randomness based on tacticalPrecision
+            score = (score * currentPersonality.tacticalPrecision) + 
+                    (Random.Range(-1f, 1f) * (1f - currentPersonality.tacticalPrecision));
+
+            if (score > bestScore)
+            {
+                bestScore = score;
+                bestTile = tile;
+            }
+        }
+
+        return bestTile ?? SelectRandomSpawnableTile();
+    }
+
+    // ============== BUILDING RETRIEVAL METHODS ==============
 
     GameObject[] GetUnitBuildings()
     {
         switch (enemyFactionName)
         {
             case FactionName.Medieval:
-                return new[] { factionData.medievalAirBuilding, factionData.medievalMeleeBuilding, factionData.medievalRangedBuilding };
+                return new[] { 
+                    factionData.medievalAirBuilding, 
+                    factionData.medievalMeleeBuilding, 
+                    factionData.medievalRangedBuilding, 
+                    factionData.medievalAOERangedBuilding
+                };
             case FactionName.Present:
-                return new[] { factionData.presentAirBuilding, factionData.presentMeleeBuilding, factionData.presentRangedBuilding };
+                return new[] { 
+                    factionData.presentAirBuilding, 
+                    factionData.presentMeleeBuilding, 
+                    factionData.presentRangedBuilding, 
+                    factionData.presentAOERangedBuilding
+                };
             case FactionName.Futuristic:
-                return new[] { factionData.futureAirBuilding, factionData.futureMeleeBuilding, factionData.futureRangedBuilding };
+                return new[] { 
+                    factionData.futureAirBuilding, 
+                    factionData.futureMeleeBuilding, 
+                    factionData.futureRangedBuilding, 
+                    factionData.futureAOERangedBuilding
+                };
             case FactionName.Galvadore:
-                return new[] { factionData.galvadoreAirBuilding, factionData.galvadoreMeleeBuilding, factionData.galvadoreRangedBuilding };
+                return new[] { 
+                    factionData.galvadoreAirBuilding, 
+                    factionData.galvadoreMeleeBuilding, 
+                    factionData.galvadoreRangedBuilding, 
+                    factionData.galvadoreAOERangedBuilding
+                };
             default:
+                Debug.LogWarning($"[EnemyAI] Unknown faction: {enemyFactionName}");
                 return new GameObject[0];
         }
     }
@@ -348,14 +338,35 @@ public class EnemyAIHandler : MonoBehaviour
         switch (enemyFactionName)
         {
             case FactionName.Medieval:
-                return new[] { factionData.medievalFoodBuilding, factionData.medievalGoldBuilding, factionData.medievalMetalBuilding, factionData.medievalPowerBuilding };
+                return new[] { 
+                    factionData.medievalFoodBuilding, 
+                    factionData.medievalGoldBuilding, 
+                    factionData.medievalMetalBuilding, 
+                    factionData.medievalPowerBuilding 
+                };
             case FactionName.Present:
-                return new[] { factionData.presentFoodBuilding, factionData.presentGoldBuilding, factionData.presentMetalBuilding, factionData.presentPowerBuilding };
+                return new[] { 
+                    factionData.presentFoodBuilding, 
+                    factionData.presentGoldBuilding, 
+                    factionData.presentMetalBuilding, 
+                    factionData.presentPowerBuilding 
+                };
             case FactionName.Futuristic:
-                return new[] { factionData.futureFoodBuilding, factionData.futureGoldBuilding, factionData.futureMetalBuilding, factionData.futurePowerBuilding };
+                return new[] { 
+                    factionData.futureFoodBuilding, 
+                    factionData.futureGoldBuilding, 
+                    factionData.futureMetalBuilding, 
+                    factionData.futurePowerBuilding 
+                };
             case FactionName.Galvadore:
-                return new[] { factionData.galvadoreFoodBuilding, factionData.galvadoreGoldBuilding, factionData.galvadoreMetalBuilding, factionData.galvadorePowerBuilding };
+                return new[] { 
+                    factionData.galvadoreFoodBuilding, 
+                    factionData.galvadoreGoldBuilding, 
+                    factionData.galvadoreMetalBuilding, 
+                    factionData.galvadorePowerBuilding 
+                };
             default:
+                Debug.LogWarning($"[EnemyAI] Unknown faction: {enemyFactionName}");
                 return new GameObject[0];
         }
     }
@@ -365,25 +376,41 @@ public class EnemyAIHandler : MonoBehaviour
         switch (enemyFactionName)
         {
             case FactionName.Medieval:
-                return new[] { factionData.medievalAntiAirBuilding, factionData.medievalAntiTankBuilding, factionData.pastTurretBuilding };
+                return new[] { 
+                    factionData.medievalAntiAirBuilding, 
+                    factionData.medievalAntiTankBuilding, 
+                    factionData.medievalTurretBuilding
+                };
             case FactionName.Present:
-                return new[] { factionData.presentAntiAirBuilding, factionData.presentAntiTankBuilding, factionData.presentTurretBuilding };
+                return new[] { 
+                    factionData.presentAntiAirBuilding, 
+                    factionData.presentAntiTankBuilding, 
+                    factionData.presentTurretBuilding 
+                };
             case FactionName.Futuristic:
-                return new[] { factionData.futureAntiAirBuilding, factionData.futureAntiTankBuilding, factionData.futureTurretBuilding };
+                return new[] { 
+                    factionData.futureAntiAirBuilding, 
+                    factionData.futureAntiTankBuilding, 
+                    factionData.futureTurretBuilding 
+                };
             case FactionName.Galvadore:
-                return new[] { factionData.galvadoreAntiAirBuilding, factionData.galvadoreAntiTankBuilding, factionData.galvadoreTurretBuilding };
+                return new[] { 
+                    factionData.galvadoreAntiAirBuilding, 
+                    factionData.galvadoreAntiTankBuilding, 
+                    factionData.galvadoreTurretBuilding 
+                };
             default:
+                Debug.LogWarning($"[EnemyAI] Unknown faction: {enemyFactionName}");
                 return new GameObject[0];
         }
     }
 
+    // ============== SPAWNING METHOD ==============
+
     void SpawnBuilding(Tile tile, GameObject buildingPrefab)
     {
         if (tile == null || buildingPrefab == null || tile.hasBuilding)
-        {
-            Debug.LogWarning("[EnemyAI] Cannot spawn building - invalid tile or prefab");
             return;
-        }
 
         Vector3 spawnPos = tile.transform.position + Vector3.up * 2f;
 
@@ -394,7 +421,20 @@ public class EnemyAIHandler : MonoBehaviour
             UpdateSpawnableTiles(tileGrid);
             totalBuildingsSpawned++;
 
-            // GameDebug.Log($"[EnemyAI] Building spawned! Total: {totalBuildingsSpawned}, Spawnable tiles: {spawnableTiles.Count}");
+            Debug.Log($"[EnemyAI] Spawned {buildingPrefab.name}. Total: {totalBuildingsSpawned}");
         }
+    }
+
+    // ============== PUBLIC METHODS ==============
+
+    public void SetPersonality(EnemyPersonality personality)
+    {
+        currentPersonality = personality;
+        Debug.Log($"[EnemyAI] Personality set to: {personality.personalityName}");
+    }
+
+    public void SetFaction(FactionName faction)
+    {
+        enemyFactionName = faction;
     }
 }
