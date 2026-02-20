@@ -5,14 +5,15 @@ public class DefenseBuildingStats : BuildingStats
     public ScenarioDefenseType defenseType { get; private set; }
     public DefenseBuildingUpgradeData defenseBuildingData { get; private set; }
 
-    internal override void Start()
+    internal override void Initialize()
     {
-        identity = buildingStats.buildingIdentity;
+        identity = buildingStatsSO.buildingIdentity;
 
-        if (buildingStats is DefenseBuildingDataSO defenseWallSO)
+        if (buildingStatsSO is DefenseBuildingDataSO defenseWallSO)
         {
             defenseType = defenseWallSO.defenseType;
             defenseBuildingData = defenseWallSO.defenseBuildingUpgradeData[identity.spawnLevel];
+            buildTime = defenseBuildingData.buildingBuildTime;
 
             basicStats = defenseBuildingData.buildingBasicStats;
         }
@@ -21,7 +22,7 @@ public class DefenseBuildingStats : BuildingStats
             Debug.Log($"<color=#FAFA00>Building {name} missing DefenseBuildingDataSO. Assign correct ScriptableObject.</color>");
         }
 
-        base.Start();
+        base.Initialize();
     }
 
     internal override void Die()
@@ -37,6 +38,6 @@ public class DefenseBuildingStats : BuildingStats
     }
     public DefenseBuildingDataSO GetBuildingSO()
     {
-        return buildingStats as DefenseBuildingDataSO;
+        return buildingStatsSO as DefenseBuildingDataSO;
     }
 }

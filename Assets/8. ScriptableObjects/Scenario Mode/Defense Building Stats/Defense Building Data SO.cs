@@ -21,23 +21,12 @@ public class DefenseBuildingDataSO : BuildingDataSO
         for (int i = 0; i < defenseBuildingUpgradeData.Count; i++)
         {
             defenseBuildingUpgradeData[i].buildingLevel = i;
-
-            var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
-
-            if (buildingBuildCost == null || buildingBuildCost.Length != enumValues.Length)
-            {
-                buildingBuildCost = new BuildCost[enumValues.Length];
-            }
-
-            for (int j = 0; j < buildingBuildCost.Length; j++)
-            {
-                buildingBuildCost[j].resourceType = (ScenarioResourceType)enumValues.GetValue(j);
-            }
         }
 
         buildingIdentity.spawnLevel = Mathf.Clamp(buildingIdentity.spawnLevel, 0, defenseBuildingUpgradeData.Count - 1);
 
         // buildingIdentity.name = buildingIdentity.faction.ToString() + " " + defenseType.ToString();
+        base.ValidateBase();
     }
 }
 

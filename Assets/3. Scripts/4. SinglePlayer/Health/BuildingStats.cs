@@ -7,22 +7,23 @@ public class BuildingStats : Stats
 {
     [field: Header("Assign Building Stats")]
     [field: SerializeField]
-    public BuildingDataSO buildingStats { get; private set; }
+    public BuildingDataSO buildingStatsSO { get; private set; }
     public ScenarioBuildingType buildingType { get; private set; }
+    public float buildTime { get; protected set; }
     private GameObject buildingPool;
     [field: SerializeField, ReadOnly]
     public Tile currentTile { get; private set; }
 
 
-    internal override void Start()
+    internal override void Initialize()
     {
-        if (buildingStats == null)
+        if (buildingStatsSO == null)
         {
             Debug.Log($"<color=red>Building {name} missing BuildingStats. Assign the script.</color>");
         }
 
-        buildingType = buildingStats.buildingType;
-        visuals = buildingStats.buildingVisuals;
+        buildingType = buildingStatsSO.buildingType;
+        visuals = buildingStatsSO.buildingVisuals;
 
         currentTile = GetComponentInParent<Tile>();
         currentTile.SetOccupant(this);
@@ -31,12 +32,12 @@ public class BuildingStats : Stats
 
         if (visuals.playerUnitMaterial == null)
         {
-            Debug.Log($"<color=magenta>Assign materials for {name} on {buildingStats.name} ScriptableObject</color>");
+            Debug.Log($"<color=magenta>Assign materials for {name} on {buildingStatsSO.name} ScriptableObject</color>");
         }
 
         SetParent();
 
-        base.Start();
+        base.Initialize();
     }
 
     private void SetParent()
@@ -77,6 +78,7 @@ public class BuildingStats : Stats
 
     internal virtual void OnDestroy()
     {
-        currentTile.ClearOccupant();
+        if (currentTile != null)
+            currentTile.ClearOccupant();
     }
 }

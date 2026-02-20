@@ -10,6 +10,9 @@ public class UnitProduceStatsSO : ScriptableObject
     public Visuals unitVisuals;
     public VisionAngles unitVisionAngles;
     public AttackTargets unitAttackTargets;
+    public BuildCost[] unitUpkeep;
+
+    public OffenseBuildingStats spawnerBuilding;
 
     public bool canFly;
     [ShowIf(nameof(canFly))]
@@ -32,18 +35,6 @@ public class UnitProduceStatsSO : ScriptableObject
         {
             unitUpgradeData[i].unitLevel = i;
 
-            // var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
-
-            // if (unitBuildCost == null || unitBuildCost.Length != enumValues.Length)
-            // {
-            //     unitBuildCost = new BuildCost[enumValues.Length];
-            // }
-
-            // for (int j = 0; j < enumValues.Length; j++)
-            // {
-            //     unitBuildCost[j].resourceType = (ScenarioResourceType)enumValues.GetValue(j);
-            // }
-
             if (unitType == ScenarioUnitType.Air)
             {
                 canFly = true;
@@ -51,10 +42,34 @@ public class UnitProduceStatsSO : ScriptableObject
         }
 
         unitIdentity.spawnLevel = Mathf.Clamp(unitIdentity.spawnLevel, 0, unitUpgradeData.Length - 1);
+
+        var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
+
+        if (unitUpkeep == null || unitUpkeep.Length != enumValues.Length)
+        {
+            unitUpkeep = new BuildCost[enumValues.Length];
+        }
+
+        for (int j = 0; j < enumValues.Length; j++)
+        {
+            unitUpkeep[j].resourceType = (ScenarioResourceType)enumValues.GetValue(j);
+        }
+
     }
     private void OnValidate()
     {
         ValidateBase();
+    }
+    [Button]
+    public void SetUpKeepCost(float increasePercent)
+    {
+        increasePercent = increasePercent / 100f;
+        float discount = 1f + increasePercent;
+        var baseCosts = unitUpkeep;
+        for (int i = 0; i < unitUpkeep.Length; i++)
+        {
+            unitUpkeep[i].resourceAmount = Mathf.RoundToInt(baseCosts[i].resourceAmount * discount);
+        }
     }
 }
 [Serializable]
@@ -78,7 +93,7 @@ public struct BasicStats
 public struct BuildCost
 {
     public ScenarioResourceType resourceType;
-    public int resourceCost;
+    public int resourceAmount;
 }
 
 [Serializable]

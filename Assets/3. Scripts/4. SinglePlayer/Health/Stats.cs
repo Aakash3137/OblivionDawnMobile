@@ -45,7 +45,7 @@ public class Stats : MonoBehaviour
         //Debug.Log($"<color=#FFC0CB>{name} missing HealthBar. Assign the script.</color>");
 
     }
-    internal virtual void Start()
+    internal virtual void Initialize()
     {
         currentHealth = basicStats.maxHealth;
 
@@ -53,7 +53,7 @@ public class Stats : MonoBehaviour
             healthBar.UpdateFillAmount(currentHealth / basicStats.maxHealth);
 
         Renderer renderer = GetComponentInChildren<Renderer>();
-        
+
         if (renderer != null)
         {
             switch (side)
@@ -65,10 +65,7 @@ public class Stats : MonoBehaviour
                     else
                         gameObject.layer = LayerMask.NameToLayer("PlayerGround");
                     if (visuals.playerUnitMaterial != null)
-                    {
                         renderer.sharedMaterial = visuals.playerUnitMaterial;
-                    }
-
                     break;
                 case Side.Enemy:
 
@@ -77,8 +74,8 @@ public class Stats : MonoBehaviour
                     else
                         gameObject.layer = LayerMask.NameToLayer("EnemyGround");
 
-                    if(visuals.enemyUnitMaterial != null)
-                    renderer.sharedMaterial = visuals.enemyUnitMaterial;
+                    if (visuals.enemyUnitMaterial != null)
+                        renderer.sharedMaterial = visuals.enemyUnitMaterial;
                     break;
             }
         }

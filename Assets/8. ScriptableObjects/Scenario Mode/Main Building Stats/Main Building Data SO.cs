@@ -20,16 +20,6 @@ public class MainBuildingDataSO : BuildingDataSO
 
             var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
 
-            if (buildingBuildCost == null || buildingBuildCost.Length != enumValues.Length)
-            {
-                buildingBuildCost = new BuildCost[enumValues.Length];
-            }
-
-            for (int j = 0; j < buildingBuildCost.Length; j++)
-            {
-                buildingBuildCost[j].resourceType = (ScenarioResourceType)enumValues.GetValue(j);
-            }
-
             if (mainBuildingUpgradeData[i].starterResources == null || mainBuildingUpgradeData[i].starterResources.Length != enumValues.Length)
             {
                 mainBuildingUpgradeData[i].starterResources = new BuildCost[enumValues.Length];
@@ -44,6 +34,7 @@ public class MainBuildingDataSO : BuildingDataSO
         buildingIdentity.spawnLevel = Mathf.Clamp(buildingIdentity.spawnLevel, 0, mainBuildingUpgradeData.Count - 1);
 
         // buildingIdentity.name = buildingIdentity.faction.ToString() + " " + buildingType.ToString();
+        base.ValidateBase();
     }
 }
 

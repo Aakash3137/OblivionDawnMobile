@@ -6,11 +6,11 @@ public class DefenseWallStats : BuildingStats
     public ScenarioDefenseType defenseType { get; private set; }
 
 
-    internal override void Start()
+    internal override void Initialize()
     {
-        identity = buildingStats.buildingIdentity;
+        identity = buildingStatsSO.buildingIdentity;
 
-        if (buildingStats is WallUpgradeDataSO defenseWallStats)
+        if (buildingStatsSO is WallUpgradeDataSO defenseWallStats)
         {
             defenseType = defenseWallStats.defenseType;
         }
@@ -19,7 +19,7 @@ public class DefenseWallStats : BuildingStats
             Debug.Log($"<color=#FAFA00>Building {name} missing WallUpgradeDataSO. Assign correct ScriptableObject.</color>");
         }
 
-        base.Start();
+        base.Initialize();
     }
 
     internal override void Die()

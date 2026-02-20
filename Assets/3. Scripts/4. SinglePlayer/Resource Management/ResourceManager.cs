@@ -36,10 +36,10 @@ public class ResourceManager : MonoBehaviour
 
     public void SetResources(BuildCost[] resources)
     {
-        currentFood = resources[0].resourceCost;
-        currentGold = resources[1].resourceCost;
-        currentMetal = resources[2].resourceCost;
-        CurrentPower = resources[3].resourceCost;
+        currentFood = resources[0].resourceAmount;
+        currentGold = resources[1].resourceAmount;
+        currentMetal = resources[2].resourceAmount;
+        CurrentPower = resources[3].resourceAmount;
 
         maxFood = currentFood;
         maxGold = currentGold;
@@ -123,10 +123,10 @@ public class ResourceManager : MonoBehaviour
 
     public void SpendResources(BuildCost[] resources)
     {
-        currentFood -= resources[0].resourceCost;
-        currentGold -= resources[1].resourceCost;
-        currentMetal -= resources[2].resourceCost;
-        CurrentPower -= resources[3].resourceCost;
+        currentFood -= resources[0].resourceAmount;
+        currentGold -= resources[1].resourceAmount;
+        currentMetal -= resources[2].resourceAmount;
+        CurrentPower -= resources[3].resourceAmount;
 
         // Invoke the event to notify listeners
         OnResourcesChanged?.Invoke();
@@ -177,10 +177,10 @@ public class ResourceManager : MonoBehaviour
     }
     public bool HasResources(BuildCost[] resources, bool debug = false)
     {
-        int food = resources[0].resourceCost;
-        int gold = resources[1].resourceCost;
-        int metal = resources[2].resourceCost;
-        int power = resources[3].resourceCost;
+        int food = resources[0].resourceAmount;
+        int gold = resources[1].resourceAmount;
+        int metal = resources[2].resourceAmount;
+        int power = resources[3].resourceAmount;
 
         if (debug)
         {

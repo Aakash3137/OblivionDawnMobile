@@ -7,6 +7,7 @@ public class OffenseBuildingStats : BuildingStats
     public ScenarioOffenseType offenseType { get; private set; }
     public OffenseBuildingUpgradeData offenseBuildingData { get; private set; }
     private CubeGridManager cgmInstance;
+    // private CharacterDatabase characterDatabase => CharacterDatabase.Instance;
 
     [ReadOnly]
     public UnitStats producedUnit;
@@ -16,16 +17,17 @@ public class OffenseBuildingStats : BuildingStats
     private Tile nearestTile;
     private WaitForSeconds waitTime;
     public bool isProducing { get; private set; }
+    private BuildingSkeleton buildingSkeleton;
 
-    internal override void Start()
+    internal override void Initialize()
     {
-        identity = buildingStats.buildingIdentity;
+        identity = buildingStatsSO.buildingIdentity;
 
         isProducing = true;
 
         cgmInstance = CubeGridManager.Instance;
 
-        if (buildingStats is OffenseBuildingDataSO offenseBuildingSO)
+        if (buildingStatsSO is OffenseBuildingDataSO offenseBuildingSO)
         {
             offenseType = offenseBuildingSO.offenseType;
             offenseBuildingData = offenseBuildingSO.offenseBuildingUpgradeData[identity.spawnLevel];
@@ -37,6 +39,8 @@ public class OffenseBuildingStats : BuildingStats
 
             unit = offenseBuildingSO.unitPrefab;
 
+            buildTime = offenseBuildingData.buildingBuildTime;
+
             if (unit != null && unit.unitProduceSO.unitIdentity.isUnique)
                 isProducing = false;
         }
@@ -45,11 +49,11 @@ public class OffenseBuildingStats : BuildingStats
             Debug.Log($"<color=#FAFA00>Building {name} missing OffenseBuildingDataSO. Assign correct ScriptableObject.</color>");
         }
 
-        base.Start();
+        base.Initialize();
 
         currentGrid = CubeGridManager.Instance.WorldToGrid(currentTile.transform.position);
 
-        StartProducingUnits();
+        // StartProducingUnits();
     }
 
     private void StartProducingUnits()
@@ -59,6 +63,20 @@ public class OffenseBuildingStats : BuildingStats
         if (offenseBuildingData != null)
             StartCoroutine(ProductionLoop());
     }
+
+    private void StartProductionLoop()
+    {
+        producedUnit = null;
+        isProducing = true;
+        if (offenseBuildingData != null)
+            StartCoroutine(ProductionLoop());
+    }
+    private void StopProduction()
+    {
+        isProducing = false;
+        StopAllCoroutines();
+    }
+
 
     private IEnumerator ProductionLoop()
     {
@@ -99,6 +117,8 @@ public class OffenseBuildingStats : BuildingStats
 
         producedUnit.spawnerBuilding = this;
 
+        producedUnit.Initialize();
+
         if (producedUnit != null && !isProducing)
         {
             producedUnit.GetComponent<UnitStats>().onUniqueUnitDied += StartProducingUnits;
@@ -116,10 +136,25 @@ public class OffenseBuildingStats : BuildingStats
 
         KillCounterManager.Instance.AddOffenseBuildingDestroyedData(offenseType, side);
     }
+    private void OnEnable()
+    {
+        if (buildingSkeleton == null)
+            buildingSkeleton = GetComponent<BuildingSkeleton>();
+
+        buildingSkeleton.onBuildingBuilt += StartProductionLoop;
+    }
 
     private void OnDisable()
     {
         if (producedUnit != null)
             producedUnit.GetComponent<UnitStats>().onUniqueUnitDied -= StartProducingUnits;
+
+        if (buildingSkeleton != null)
+            buildingSkeleton.onBuildingBuilt -= StartProductionLoop;
+    }
+
+    public void SetUnitPrefab(UnitStats prefab)
+    {
+        unit = prefab;
     }
 }

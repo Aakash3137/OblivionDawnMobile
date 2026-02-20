@@ -55,7 +55,7 @@ public class FactionEntityDetails : MonoBehaviour
         Icon.sprite = resource.buildingIcon;
 
         if (OtherIcon != null)
-            OtherIcon.sprite = resource.buildingIcon;
+            OtherIcon.sprite = resource.buildingIcon; 
     }
 
     private string GetName(string name)

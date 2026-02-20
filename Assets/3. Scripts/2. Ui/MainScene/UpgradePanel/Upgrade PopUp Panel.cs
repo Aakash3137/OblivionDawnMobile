@@ -27,8 +27,8 @@ public class UpgradePopUpPanel : MonoBehaviour
     [SerializeField] private Button upgradeButton;
     [SerializeField] private Button closeButton;
 
-    private UnitProduceUpgrade unitUpgrade;
-    private BuildingUpgrade buildingUpgradeData;
+    private UnitProduceStatsSO currentUnitData;
+    private BuildingDataSO currentBuildingData;
 
     [Header("Sprite references")]
     [SerializeField] private Sprite healthIcon;
@@ -56,11 +56,11 @@ public class UpgradePopUpPanel : MonoBehaviour
             cardImage.sprite = dataSO.buildingIcon;
 
             buildingTypeText.text = dataSO.buildingType.ToString();
-            cardLevel.SetText($"Level : {dataSO.buildingIdentity.spawnLevel + 1}");
             InitializeStatBlocks(dataSO);
         }
 
         ToggleIconType(buildingTypeIcon.gameObject);
+        currentBuildingData = dataSO;
     }
 
     public void OpenPopUpPanel(UnitProduceStatsSO dataSO)
@@ -78,25 +78,46 @@ public class UpgradePopUpPanel : MonoBehaviour
             cardImage.sprite = dataSO.UnitIcon;
 
             unitTypeText.SetText(dataSO.unitType.ToString());
-            cardLevel.SetText($"Level : {dataSO.unitIdentity.spawnLevel + 1}");
             InitializeStatBlocks(dataSO);
         }
 
         ToggleIconType(unitTypeIcon.gameObject);
+        currentUnitData = dataSO;
     }
 
     private void OnClickClose()
     {
         gameObject.SetActive(false);
+        currentBuildingData = null;
+        currentUnitData = null;
     }
 
     private void OnClickUpgrade()
     {
-
+        if (currentBuildingData != null)
+        {
+            BuildingUpgrade _UpgradeData = new BuildingUpgrade();
+            _UpgradeData.UpgradeNext(currentBuildingData);
+            InitializeStatBlocks(currentBuildingData);
+            userdata.Diamonds -= StatUpgrade.UpgradeCost(currentBuildingData.buildingIdentity.spawnLevel + 1);
+        }
+        else if (currentUnitData != null)
+        {
+            UnitProduceUpgrade _UpgradeData = new UnitProduceUpgrade();
+            _UpgradeData.UpgradeNext(currentUnitData);
+            InitializeStatBlocks(currentUnitData);
+            userdata.Diamonds -= StatUpgrade.UpgradeCost(currentUnitData.unitIdentity.spawnLevel + 1);
+        }
+        else
+        {
+            return;
+        }
     }
 
     private void InitializeStatBlocks(BuildingDataSO buildingData)
     {
+        cardLevel.SetText($"Level : {buildingData.buildingIdentity.spawnLevel + 1}");
+
         if (buildingData is OffenseBuildingDataSO offenseBuilding)
         {
             OffenseBuildingUpgradeData upgradeData = offenseBuilding.offenseBuildingUpgradeData[offenseBuilding.buildingIdentity.spawnLevel];
@@ -205,6 +226,8 @@ public class UpgradePopUpPanel : MonoBehaviour
 
     private void InitializeStatBlocks(UnitProduceStatsSO unitData)
     {
+        cardLevel.SetText($"Level : {unitData.unitIdentity.spawnLevel + 1}");
+
         UnitUpgradeData upgradeData = unitData.unitUpgradeData[unitData.unitIdentity.spawnLevel];
 
         statBlocks[0].EnableBlock();

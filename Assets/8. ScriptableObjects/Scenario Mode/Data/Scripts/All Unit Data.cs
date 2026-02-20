@@ -1,36 +1,39 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "All Unit Data", menuName = "Data/All Unit Data")]
 public class AllUnitData : ScriptableObject
 {
-    [Header("Medieval")]
-    public Unit[] airUnitDataMedieval;
-    public Unit[] infantryUnitDataMedieval;
-    public Unit[] meleeUnitDataMedieval;
-    public Unit[] tankUnitDataMedieval;
+    public List<Unit> allUnits;
 
-    [Header("Present")]
-    public Unit[] airUnitDataPresent;
-    public Unit[] infantryUnitDataPresent;
-    public Unit[] meleeUnitDataPresent;
-    public Unit[] tankUnitDataPresent;
+    private void OnValidate()
+    {
+        var enumValues = Enum.GetValues(typeof(FactionName));
 
-    [Header("Futuristic")]
-    public Unit[] airUnitDataFuturistic;
-    public Unit[] infantryUnitDataFuturistic;
-    public Unit[] meleeUnitDataFuturistic;
-    public Unit[] tankUnitDataFuturistic;
+        if (allUnits == null)
+            allUnits = new List<Unit>();
 
-    [Header("Galvadore")]
-    public Unit[] airUnitDataGalvadore;
-    public Unit[] infantryUnitDataGalvadore;
-    public Unit[] meleeUnitDataGalvadore;
-    public Unit[] tankUnitDataGalvadore;
+        while (allUnits.Count < enumValues.Length)
+            allUnits.Add(new Unit());
+
+        while (allUnits.Count > enumValues.Length)
+            allUnits.RemoveAt(allUnits.Count - 1);
+
+        for (int i = 0; i < enumValues.Length; i++)
+        {
+            allUnits[i].faction = (FactionName)enumValues.GetValue(i);
+        }
+    }
+
 }
 
-[System.Serializable]
-public struct Unit
+[Serializable]
+public class Unit
 {
-    public GameObject prefab;
-    public SpriteRenderer icon;
+    public FactionName faction;
+    public List<UnitProduceStatsSO> airUnits;
+    public List<UnitProduceStatsSO> meleeUnits;
+    public List<UnitProduceStatsSO> aoeRangedUnits;
+    public List<UnitProduceStatsSO> rangedUnits;
 }

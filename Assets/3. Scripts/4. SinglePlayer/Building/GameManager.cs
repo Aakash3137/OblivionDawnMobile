@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Data")]
     public AllFactionsData data;
+    public DecSelectionData decSelectionData;
 
     [Header("Spawn points")]
     public Transform playerSpawnPoint;
@@ -25,7 +26,7 @@ public class GameManager : MonoBehaviour
         }
 
         // Use the faction selected in the menu
-        var playerFaction = GameData.SelectedFaction;
+        var playerFaction = decSelectionData.CurrentFaction;
         var playerSlots = GetFactionSlots(playerFaction);
 
         // var enemySlots = GetFactionSlots(GetRandomEnemyFaction(playerFaction));
@@ -46,7 +47,7 @@ public class GameManager : MonoBehaviour
         switch (name)
         {
             case FactionName.Medieval:
-                return new[] { data.medievalMainBuilding, data.pastTurretBuilding, data.medievalMeleeBuilding, data.medievalGoldBuilding };
+                return new[] { data.medievalMainBuilding, data.medievalTurretBuilding, data.medievalMeleeBuilding, data.medievalGoldBuilding };
             case FactionName.Present:
                 return new[] { data.presentMainBuilding, data.presentTurretBuilding, data.presentMeleeBuilding, data.presentGoldBuilding };
             case FactionName.Futuristic:
@@ -82,7 +83,8 @@ public class GameManager : MonoBehaviour
         // Check if something is being called on enable
         // Some references are not yet initialized
 
-        Instantiate(buildingPrefab, pos, Quaternion.identity, point);
+        var mainBuilding = Instantiate(buildingPrefab, pos, Quaternion.identity, point);
+        mainBuilding.GetComponent<BuildingStats>().Initialize();
 
         // Debug.Log($"[Spawner] Spawned {label} for {side}: {buildingPrefab.name}");
 

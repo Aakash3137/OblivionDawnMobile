@@ -25,7 +25,7 @@ public class UnitStats : Stats
     public Action onUniqueUnitDied;
 
 
-    internal override void Start()
+    internal override void Initialize()
     {
         identity = unitProduceSO.unitIdentity;
         unitData = unitProduceSO.unitUpgradeData[identity.spawnLevel];
@@ -50,7 +50,7 @@ public class UnitStats : Stats
             Debug.Log($"<color=magenta>Assign materials for {name} on {unitProduceSO.name} ScriptableObject</color>");
         }
 
-        base.Start();
+        base.Initialize();
 
         unitPool = GameObject.FindWithTag("UnitPool");
 
