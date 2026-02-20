@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
+#if UNITY_EDITOR
 [CustomPropertyDrawer(typeof(DefenseBuildingToggleEntry))]
 public class DefenseBuildingToggleEntryDrawer : PropertyDrawer
 {
@@ -37,3 +38,4 @@ public class DefenseBuildingToggleEntryDrawer : PropertyDrawer
         EditorGUI.EndDisabledGroup();
     }
 }
+#endif

@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
+#if UNITY_EDITOR
 [CustomPropertyDrawer(typeof(UnitToggleEntry))]
 public class UnitToggleEntryDrawer : PropertyDrawer
 {
@@ -37,3 +38,4 @@ public class UnitToggleEntryDrawer : PropertyDrawer
         EditorGUI.EndDisabledGroup();
     }
 }
+#endif
