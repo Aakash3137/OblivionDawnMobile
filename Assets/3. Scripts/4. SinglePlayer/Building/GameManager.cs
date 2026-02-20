@@ -83,7 +83,8 @@ public class GameManager : MonoBehaviour
         // Check if something is being called on enable
         // Some references are not yet initialized
 
-        Instantiate(buildingPrefab, pos, Quaternion.identity, point);
+        var mainBuilding = Instantiate(buildingPrefab, pos, Quaternion.identity, point);
+        mainBuilding.GetComponent<BuildingStats>().Initialize();
 
         // Debug.Log($"[Spawner] Spawned {label} for {side}: {buildingPrefab.name}");
 

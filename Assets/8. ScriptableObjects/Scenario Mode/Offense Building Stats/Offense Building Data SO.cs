@@ -19,23 +19,12 @@ public class OffenseBuildingDataSO : BuildingDataSO
         for (int i = 0; i < offenseBuildingUpgradeData.Count; i++)
         {
             offenseBuildingUpgradeData[i].buildingLevel = i;
-
-            var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
-
-            if (buildingBuildCost == null || buildingBuildCost.Length != enumValues.Length)
-            {
-                buildingBuildCost = new BuildCost[enumValues.Length];
-            }
-
-            for (int j = 0; j < buildingBuildCost.Length; j++)
-            {
-                buildingBuildCost[j].resourceType = (ScenarioResourceType)enumValues.GetValue(j);
-            }
         }
 
         buildingIdentity.spawnLevel = Mathf.Clamp(buildingIdentity.spawnLevel, 0, offenseBuildingUpgradeData.Count - 1);
 
         // buildingIdentity.name = buildingIdentity.faction.ToString() + " " + offenseType.ToString();
+        base.ValidateBase();
     }
 }
 

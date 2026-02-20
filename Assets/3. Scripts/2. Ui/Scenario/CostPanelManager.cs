@@ -40,7 +40,7 @@ public class CostPanelManager : MonoBehaviour
 
     private static void SetCostValue(BuildCost cost, TMP_Text text, GameObject root)
     {
-        int value = cost.resourceCost;
+        int value = cost.resourceAmount;
 
         if (value == 0)
         {

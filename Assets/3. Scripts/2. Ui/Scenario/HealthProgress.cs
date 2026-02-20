@@ -5,7 +5,6 @@ using UnityEngine;
 [RequireComponent(typeof(CanvasGroup))]
 public class HealthProgress : ProgressManager
 {
-    private CanvasGroup canvasGroup;
     [SerializeField] private float fadeTime;
     [SerializeField] private float visibleTime;
     public bool isVisible;

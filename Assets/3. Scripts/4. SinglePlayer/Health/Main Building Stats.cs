@@ -4,21 +4,22 @@ public class MainBuildingStats : BuildingStats
 {
     public MainBuildingUpgradeData mainBuildingData { get; private set; }
 
-    internal override void Start()
+    internal override void Initialize()
     {
-        identity = buildingStats.buildingIdentity;
+        identity = buildingStatsSO.buildingIdentity;
 
-        if (buildingStats is MainBuildingDataSO mainBuildingStats)
+        if (buildingStatsSO is MainBuildingDataSO mainBuildingStats)
         {
             mainBuildingData = mainBuildingStats.mainBuildingUpgradeData[identity.spawnLevel];
             basicStats = mainBuildingData.buildingBasicStats;
+            buildTime = mainBuildingData.buildingBuildTime;
         }
         else
         {
             Debug.Log($"<color=#FAFA00>Building {name} missing MainBuildingDataSO. Assign correct ScriptableObject.</color>");
         }
 
-        base.Start();
+        base.Initialize();
     }
 
     internal override void Die()
