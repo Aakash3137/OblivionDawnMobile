@@ -65,10 +65,7 @@ public class Stats : MonoBehaviour
                     else
                         gameObject.layer = LayerMask.NameToLayer("PlayerGround");
                     if (visuals.playerUnitMaterial != null)
-                    {
                         renderer.sharedMaterial = visuals.playerUnitMaterial;
-                    }
-
                     break;
                 case Side.Enemy:
 

@@ -114,7 +114,7 @@ public class EnemyBuildPanel : MonoBehaviour
     {
         BuildCost[] buildingBuildCost = null;
 
-            buildingBuildCost = buildingPrefab.buildingStats.buildingBuildCost;
+            buildingBuildCost = buildingPrefab.buildingStatsSO.buildingBuildCost;
         
         if (buildingBuildCost == null || !EnemyResourceManager.Instance.HasResources(buildingBuildCost))
         {
