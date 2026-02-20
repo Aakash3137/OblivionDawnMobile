@@ -13,14 +13,16 @@ public class ResourceBuildingStats : BuildingStats
     private EnemyResourceManager ermInstance;
     private WaitForSeconds waitTime;
 
-    internal override void Start()
+    private BuildingSkeleton buildingSkeleton;
+
+    internal override void Initialize()
     {
-        identity = buildingStats.buildingIdentity;
+        identity = buildingStatsSO.buildingIdentity;
 
         prmInstance = PlayerResourceManager.Instance;
         ermInstance = EnemyResourceManager.Instance;
 
-        if (buildingStats is ResourceBuildingDataSO resourceBuildingSO)
+        if (buildingStatsSO is ResourceBuildingDataSO resourceBuildingSO)
         {
             resourceType = resourceBuildingSO.resourceType;
             resourceBuildingData = resourceBuildingSO.resourceBuildingUpgradeData[identity.spawnLevel];
@@ -28,16 +30,22 @@ public class ResourceBuildingStats : BuildingStats
             basicStats = resourceBuildingData.buildingBasicStats;
             buildCost = resourceBuildingSO.buildingBuildCost;
             waitTime = new WaitForSeconds(resourceBuildingData.resourceTimeToProduce);
+
+            buildTime = resourceBuildingData.buildingBuildTime;
         }
         else
         {
             Debug.Log($"<color=#FAFA00>Building {name} missing ResourceBuildingDataSO. Assign correct ScriptableObject.</color>");
         }
 
-        base.Start();
+        base.Initialize();
 
         isProducing = false;
 
+    }
+
+    private void StartProducing()
+    {
         IncreaseGlobalCapacity();
         StartCoroutine(StartResourceGeneration());
     }
@@ -173,6 +181,19 @@ public class ResourceBuildingStats : BuildingStats
     {
         base.OnDestroy();
     }
+    private void OnEnable()
+    {
+        if (buildingSkeleton == null)
+            buildingSkeleton = GetComponent<BuildingSkeleton>();
+
+        buildingSkeleton.onBuildingBuilt += StartProducing;
+    }
+
+    private void OnDisable()
+    {
+        if (buildingSkeleton != null)
+            buildingSkeleton.onBuildingBuilt -= StartProducing;
+    }
 
     public float GetGenerationTime()
     {
@@ -182,6 +203,6 @@ public class ResourceBuildingStats : BuildingStats
 
     public ResourceBuildingDataSO GetBuildingSO()
     {
-        return buildingStats as ResourceBuildingDataSO;
+        return buildingStatsSO as ResourceBuildingDataSO;
     }
 }

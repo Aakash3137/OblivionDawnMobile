@@ -101,6 +101,8 @@ public class EnemyBuildPanel : MonoBehaviour
 
         spawnedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
 
+        spawnedBuilding.GetComponent<BuildingStats>().Initialize();
+
         // currentTile.SetBuildingPlaced();
 
         PlaceWallsOnMainBuilding();
@@ -124,6 +126,7 @@ public class EnemyBuildPanel : MonoBehaviour
         }
 
         spawnedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
+        spawnedBuilding.GetComponent<BuildingStats>().Initialize();
 
         // currentTile.SetBuildingPlaced();
 
@@ -141,7 +144,7 @@ public class EnemyBuildPanel : MonoBehaviour
         if (buildingPrefab.TryGetComponent<BuildingStats>(out var spawnBuildingStats))
         {
             //int spawnLevel = spawnBuildingStats.buildingStats.buildingSpawnLevel;
-            buildingBuildCost = spawnBuildingStats.buildingStats.buildingBuildCost;
+            buildingBuildCost = spawnBuildingStats.buildingStatsSO.buildingBuildCost;
         }
         // else if (buildingPrefab.TryGetComponent<WallStats>(out var spawnWallStats))
         // {

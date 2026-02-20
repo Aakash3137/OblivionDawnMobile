@@ -28,7 +28,7 @@ public class BuildingButtonsManager : MonoBehaviour
 
         selectedFaction = decSelectionData.CurrentFaction;
 
-        GameDebug.Log($"<color=blue> [BuildingButtonsManager] Selected Faction : {selectedFaction} </color>");
+        GameDebug.Log($"<color=#40E0D0> [BuildingButtonsManager] Selected Faction : {selectedFaction} </color>");
 
         offenseBuildingsCount = decSelectionData.AllFactionDecData[(int)selectedFaction].SelectedUnitDeck.Count;
         defenseBuildingsCount = decSelectionData.AllFactionDecData[(int)selectedFaction].SelectedDefenseDec.Count;
@@ -38,7 +38,7 @@ public class BuildingButtonsManager : MonoBehaviour
 
         buttons = new List<BuildButton>(totalBuildingsCount);
 
-        GameDebug.Log($"<color=blue> [BuildingButtonsManager] Offense Buildings Count : {offenseBuildingsCount} </color>");
+        GameDebug.Log($"<color=#40E0D0> [BuildingButtonsManager] Offense Buildings Count : {offenseBuildingsCount} </color>");
 
         for (int i = 0; i < offenseBuildingsCount; i++)
         {
@@ -48,7 +48,7 @@ public class BuildingButtonsManager : MonoBehaviour
             if (buttons[i].buildingPrefab is OffenseBuildingStats offenseBuildingPrefab)
                 offenseBuildingPrefab.SetUnitPrefab(characterDatabase.GetUnitPrefab(decSelectionData.AllFactionDecData[(int)selectedFaction].SelectedUnitDeck[i]));
 
-            GameDebug.Log($"<color=blue> [BuildingButtonsManager] Offense Building : {buttons[i].buildingPrefab.name} with spawning unit {characterDatabase.GetUnitPrefab(decSelectionData.AllFactionDecData[(int)selectedFaction].SelectedUnitDeck[i]).name}</color>");
+            GameDebug.Log($"<color=#40E0D0> [BuildingButtonsManager] Offense Building : {buttons[i].buildingPrefab.name} with spawning unit {characterDatabase.GetUnitPrefab(decSelectionData.AllFactionDecData[(int)selectedFaction].SelectedUnitDeck[i]).name}</color>");
         }
 
         for (int i = offenseBuildingsCount; i < defenseBuildingsCount + offenseBuildingsCount; i++)

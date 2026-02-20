@@ -21,21 +21,10 @@ public class ResourceBuildingDataSO : BuildingDataSO
 
             //resourceBuildingUpgradeData[i].resourceGenerationRate = resourceBuildingUpgradeData[i].resourceAmountPerBatch / resourceBuildingUpgradeData[i].resourceTimeToProduce;
             resourceBuildingUpgradeData[i].resourceGenerationRate = resourceBuildingUpgradeData[i].resourceAmountPerBatch;
-
-            var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
-
-            if (buildingBuildCost == null || buildingBuildCost.Length != enumValues.Length)
-            {
-                buildingBuildCost = new BuildCost[enumValues.Length];
-            }
-
-            for (int j = 0; j < buildingBuildCost.Length; j++)
-            {
-                buildingBuildCost[j].resourceType = (ScenarioResourceType)enumValues.GetValue(j);
-            }
         }
 
         buildingIdentity.spawnLevel = Mathf.Clamp(buildingIdentity.spawnLevel, 0, resourceBuildingUpgradeData.Count - 1);
+        base.ValidateBase();
     }
 }
 

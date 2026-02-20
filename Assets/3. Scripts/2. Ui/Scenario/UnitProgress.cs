@@ -36,13 +36,17 @@ public class UnitProgress : ProgressManager
         //     return;
         // }
 
-        if (!spawner.isProducing && spawner.producedUnit != null)
+        if (!spawner.isProducing)
         {
             currentTime = 0f;
             progressAmount = currentTime / waitTime;
             UpdateFillAmount(progressAmount);
+            canvasGroup.alpha = 0f;
             return;
         }
+
+        if (canvasGroup.alpha != 1f)
+            canvasGroup.alpha = 1f;
 
         if (currentTime > waitTime)
         {
@@ -59,7 +63,7 @@ public class UnitProgress : ProgressManager
     {
         if (spawner.side == Side.Enemy)
         {
-            _canvasGroup.alpha = 0f;
+            canvasGroup.alpha = 0f;
         }
     }
 

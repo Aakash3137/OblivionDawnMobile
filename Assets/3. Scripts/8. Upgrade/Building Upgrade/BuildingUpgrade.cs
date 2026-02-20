@@ -136,7 +136,7 @@ public class BuildingUpgrade
         cur.buildingBuildTime = StatUpgrade.BuildTime(last.buildingBuildTime, cur.buildingLevel, maxLevel);
 
         for (int i = 0; i < cur.starterResources.Length; i++)
-            cur.starterResources[i].resourceCost = StatUpgrade.Resource(last.starterResources[i].resourceCost, cur.buildingLevel, maxLevel);
+            cur.starterResources[i].resourceAmount = StatUpgrade.Resource(last.starterResources[i].resourceAmount, cur.buildingLevel, maxLevel);
 
         building.mainBuildingUpgradeData.Add(cur);
 

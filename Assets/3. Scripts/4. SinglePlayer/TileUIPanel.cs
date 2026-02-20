@@ -71,6 +71,8 @@ public class TileUIPanel : MonoBehaviour
 
         spawnedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
 
+        spawnedBuilding.Initialize();
+
         // currentTile.SetBuildingPlaced();
 
         // Fade out build panel
@@ -103,7 +105,7 @@ public class TileUIPanel : MonoBehaviour
         if (buildingPrefab.TryGetComponent<BuildingStats>(out var spawnBuildingStats))
         {
             //int spawnLevel = spawnBuildingStats.buildingStats.buildingSpawnLevel;
-            buildingBuildCost = spawnBuildingStats.buildingStats.buildingBuildCost;
+            buildingBuildCost = spawnBuildingStats.buildingStatsSO.buildingBuildCost;
         }
         // else if (buildingPrefab.TryGetComponent<WallStats>(out var spawnWallStats))
         // {

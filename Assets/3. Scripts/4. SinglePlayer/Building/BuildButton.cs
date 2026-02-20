@@ -19,8 +19,8 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         if (buildingPrefab == null)
             Debug.Log($"<color=red> [BuildButton] No BuildingStats or found on {buildingPrefab.name}</color>");
 
-        if (buildingPrefab.buildingStats.buildingIcon != null)
-            iconImage.sprite = buildingPrefab.buildingStats.buildingIcon;
+        if (buildingPrefab.buildingStatsSO.buildingIcon != null)
+            iconImage.sprite = buildingPrefab.buildingStatsSO.buildingIcon;
 
         button = GetComponent<Button>();
 
@@ -39,7 +39,7 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
         if (buildingPrefab != null)
         {
-            cachedCosts = buildingPrefab.buildingStats.buildingBuildCost;
+            cachedCosts = buildingPrefab.buildingStatsSO.buildingBuildCost;
         }
         else
             Debug.Log($"<color=red> [BuildButton] No BuildingStats or found on {buildingPrefab.name}</color>");

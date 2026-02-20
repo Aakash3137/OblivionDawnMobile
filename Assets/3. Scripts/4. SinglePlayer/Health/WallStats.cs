@@ -10,7 +10,7 @@ public class WallStats : Stats
     public Action<float, float> wallHealthEvent;
     private WallParent wallParent;
 
-    internal override void Start()
+    internal override void Initialize()
     {
         wallParent = GetComponentInParent<WallParent>();
 
@@ -33,7 +33,7 @@ public class WallStats : Stats
             Debug.Log($"<color=magenta>Assign materials for {name} on {wallStatsSO.name} ScriptableObject</color>");
         }
 
-        base.Start();
+        base.Initialize();
 
         if (currentHealth > 0)
             wallHealthEvent?.Invoke(currentHealth, basicStats.maxHealth);

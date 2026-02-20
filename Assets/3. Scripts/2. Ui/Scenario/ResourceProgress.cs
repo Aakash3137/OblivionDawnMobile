@@ -43,8 +43,12 @@ public class ResourceProgress : ProgressManager
             currentTime = 0f;
             progressAmount = currentTime / waitTime;
             UpdateFillAmount(progressAmount);
+            canvasGroup.alpha = 0f;
             return;
         }
+
+        if (canvasGroup.alpha != 1f)
+            canvasGroup.alpha = 1f;
 
         if (currentTime > waitTime)
         {
@@ -85,7 +89,7 @@ public class ResourceProgress : ProgressManager
     {
         if (resourceBuilding.side == Side.Enemy)
         {
-            _canvasGroup.alpha = 0f;
+            canvasGroup.alpha = 0f;
         }
     }
 }
