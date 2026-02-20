@@ -9,15 +9,16 @@ public class EnemyBuildPanel : MonoBehaviour
     [SerializeField] private Button enemyAirBuilding;
     [SerializeField] private Button enemyInfantryBuilding;
     [SerializeField] private Button enemyTankBuilding;
+    [SerializeField] private Button enemyAOERangedBuilding;
     [SerializeField] private AllFactionsData factionData;
 
     [SerializeField] private FactionName enemyFactionName;
-
+    [SerializeField] private DecSelectionData AIDecSelectionData;
 
     [SerializeField] private WallParent _wallPrefab;
     private bool _mainWallPlaced = false;
     private float _wallYOffset = 1f;
-    private GameObject spawnedBuilding;
+    private BuildingStats spawnedBuilding;
 
     private void Awake()
     {
@@ -28,67 +29,39 @@ public class EnemyBuildPanel : MonoBehaviour
         enemyAirBuilding.onClick.AddListener(PlaceEnemyAirBuilding);
         enemyInfantryBuilding.onClick.AddListener(PlaceEnemyInfantryBuilding);
         enemyTankBuilding.onClick.AddListener(PlaceEnemyTankBuilding);
+        enemyAOERangedBuilding.onClick.AddListener(PlaceEnemyAOERangedBuilding);
         gameObject.SetActive(false);
     }
     public void PlaceEnemyAirBuilding()
     {
-        var slot = GetBuildingByType("Air");
+        var slot = GetBuildingByType(0);
         PlaceBuilding(slot);
     }
     public void PlaceEnemyInfantryBuilding()
     {
-        var slot = GetBuildingByType("Infantry");
+        var slot = GetBuildingByType(1);
         PlaceBuilding(slot);
     }
     public void PlaceEnemyTankBuilding()
     {
-        var slot = GetBuildingByType("Tank");
+        var slot = GetBuildingByType(2);
+        PlaceBuilding(slot);
+    }
+    public void PlaceEnemyAOERangedBuilding()
+    {
+        var slot = GetBuildingByType(3);
         PlaceBuilding(slot);
     }
 
+
     // updated code with enemy faction selection from inspector.
-    private GameObject GetBuildingByType(string buildingType)
+    private BuildingStats GetBuildingByType(int k)
     {
-        switch (enemyFactionName)
-        {
-            case FactionName.Medieval:
-                return buildingType switch
-                {
-                    "Air" => factionData.medievalAirBuilding,
-                    "Infantry" => factionData.medievalMeleeBuilding,
-                    "Tank" => factionData.medievalRangedBuilding,
-                    _ => null
-                };
-            case FactionName.Present:
-                return buildingType switch
-                {
-                    "Air" => factionData.presentAirBuilding,
-                    "Infantry" => factionData.presentMeleeBuilding,
-                    "Tank" => factionData.presentRangedBuilding,
-                    _ => null
-                };
-            case FactionName.Futuristic:
-                return buildingType switch
-                {
-                    "Air" => factionData.futureAirBuilding,
-                    "Infantry" => factionData.futureMeleeBuilding,
-                    "Tank" => factionData.futureRangedBuilding,
-                    _ => null
-                };
-            case FactionName.Galvadore:
-                return buildingType switch
-                {
-                    "Air" => factionData.galvadoreAirBuilding,
-                    "Infantry" => factionData.galvadoreMeleeBuilding,
-                    "Tank" => factionData.galvadoreRangedBuilding,
-                    _ => null
-                };
-            default:
-                return null;
-        }
+        return CharacterDatabase.Instance.GetSpawnerBuilding(AIDecSelectionData.AllFactionDecData[(int)enemyFactionName]
+            .SelectedUnitDeck[k]);
     }
 
-    private void PlaceBuilding(GameObject buildingPrefab)
+    private void PlaceBuilding(BuildingStats buildingPrefab)
     {
         if (currentTile == null || buildingPrefab == null) return;
 
@@ -108,7 +81,7 @@ public class EnemyBuildPanel : MonoBehaviour
         CloseBuildPanel();
     }
 
-    public bool PlaceBuildingAI(GameObject buildingPrefab, Vector3 spawnPos, Tile tile)
+    public bool PlaceBuildingAI(BuildingStats buildingPrefab, Vector3 spawnPos, Tile tile)
     {
 
         if (tile == null || buildingPrefab == null) return false;
@@ -134,20 +107,12 @@ public class EnemyBuildPanel : MonoBehaviour
         return true;
     }
 
-    private bool CanPlaceBuilding(GameObject buildingPrefab)
+    private bool CanPlaceBuilding(BuildingStats buildingPrefab)
     {
         BuildCost[] buildingBuildCost = null;
 
-        if (buildingPrefab.TryGetComponent<BuildingStats>(out var spawnBuildingStats))
-        {
-            //int spawnLevel = spawnBuildingStats.buildingStats.buildingSpawnLevel;
-            buildingBuildCost = spawnBuildingStats.buildingStats.buildingBuildCost;
-        }
-        // else if (buildingPrefab.TryGetComponent<WallStats>(out var spawnWallStats))
-        // {
-        //     int spawnLevel = spawnWallStats.wallStats.wallSpawnLevel;
-        //     buildingBuildCost = spawnWallStats.wallStats.wallLevelData[spawnLevel].wallBuildCosts;
-        // }
+            buildingBuildCost = buildingPrefab.buildingStats.buildingBuildCost;
+        
         if (buildingBuildCost == null || !EnemyResourceManager.Instance.HasResources(buildingBuildCost))
         {
             //Debug.Log("<color=red>Insufficient Resources Building cannot be placed</color>");
