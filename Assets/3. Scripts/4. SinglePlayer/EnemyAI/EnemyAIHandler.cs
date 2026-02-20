@@ -10,9 +10,11 @@ public class EnemyAIHandler : MonoBehaviour
     [SerializeField] private EnemyModeSwitch enemyModeSwitch;
     [SerializeField] private EnemyBuildPanel enemyBuildPanel;
     [SerializeField] private AllFactionsData factionData;
-    [SerializeField] private FactionName enemyFactionName;
+    [SerializeField] internal FactionName enemyFactionName;
     [SerializeField] private EnemyPersonality currentPersonality;
 
+    [SerializeField] private EnemyPersonality AttackPersonality;
+    [SerializeField] private EnemyPersonality DefensivePersonality;
     [SerializeField] private DecSelectionData AIDecSelectionData;
     
     private Transform enemyMainBuildingTransform;
@@ -23,6 +25,7 @@ public class EnemyAIHandler : MonoBehaviour
     private int resourceBuildingIndex = 0;
     private bool allResourcesCovered = false;
 
+    
     void Start()
     {
         if (GameManager.Instance == null)
@@ -31,8 +34,22 @@ public class EnemyAIHandler : MonoBehaviour
             return;
         }
 
+        if (MenuManager.Instance != null)
+        {
+            if (MenuManager.Instance.isAttackPersonality == true)
+            {
+                currentPersonality = AttackPersonality;
+            }
+            else
+            {
+                currentPersonality = DefensivePersonality;
+            }
+        }
+        
         enemyMainBuildingTransform = GameManager.Instance.enemySpawnPoint;
         playerMainBuildingTransform = GameManager.Instance.playerSpawnPoint;
+        
+        GameManager.Instance.EnemyFactionName = enemyFactionName;
 
         Invoke(nameof(InitializeSpawnableTiles), 1f);
     }

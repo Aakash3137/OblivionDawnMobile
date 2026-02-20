@@ -22,7 +22,7 @@ public class EnemyBuildPanel : MonoBehaviour
 
     private void Awake()
     {
-        GameManager.SetFactionNameThroughEnemyBuildPanel(enemyFactionName);
+       // GameManager.SetFactionNameThroughEnemyBuildPanel(enemyFactionName);
     }
     private void Start()
     {

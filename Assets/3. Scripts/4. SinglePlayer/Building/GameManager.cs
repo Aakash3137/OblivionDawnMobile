@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
     public Transform enemySpawnPoint;
     public float yOffset = 1f;
 
-    private static FactionName EnemyFactionName;
+    internal FactionName EnemyFactionName;
 
     void Awake() => Instance = this;
 
@@ -26,6 +26,13 @@ public class GameManager : MonoBehaviour
         }
 
         // Use the faction selected in the menu
+        
+       Generic.Delay(SpawnMainBuilding,1f);
+        // Debug.Log("[Spawner] Buildings spawned. Enemy Faction Name: " + EnemyFactionName);
+    }
+    
+    private void SpawnMainBuilding()
+    {
         var playerFaction = decSelectionData.CurrentFaction;
         var playerSlots = GetFactionSlots(playerFaction);
 
@@ -38,7 +45,6 @@ public class GameManager : MonoBehaviour
 
         SpawnAllBuildings(playerSpawnPoint, playerSlots, Side.Player);
         SpawnAllBuildings(enemySpawnPoint, enemySlots, Side.Enemy);
-        // Debug.Log("[Spawner] Buildings spawned. Enemy Faction Name: " + EnemyFactionName);
     }
 
     // Get faction slots based on faction name
@@ -59,11 +65,11 @@ public class GameManager : MonoBehaviour
     }
 
 
-    public static void SetFactionNameThroughEnemyBuildPanel(FactionName factionName)
+    /*public static void SetFactionNameThroughEnemyBuildPanel(FactionName factionName)
     {
         EnemyFactionName = factionName;
         // Debug.Log($"[Spawner] Enemy Faction Name: {enemyFactionName}");
-    }
+    }*/
 
 
     void SpawnAllBuildings(Transform rootPoint, GameObject[] buildingPrefabs, Side side)
