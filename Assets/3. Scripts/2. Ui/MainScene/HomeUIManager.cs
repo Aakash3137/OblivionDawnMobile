@@ -67,7 +67,7 @@ public class HomeUIManager : MonoBehaviour
     #region UI Elements
     [Header("Play as Guest")]
     [SerializeField] private TMP_InputField userNameInput;
-    [SerializeField] private TMP_Text userNameError; 
+    [SerializeField] private TMP_Text userNameError;
 
     [Header("Join Panel Elements")]
     [SerializeField] private TMP_InputField LobbyCodeInputField;
@@ -84,7 +84,7 @@ public class HomeUIManager : MonoBehaviour
 
 
     #region Scriptable Objects
-    [Header ("Profile")]
+    [Header("Profile")]
     [SerializeField] private Userdata Profiledata;
     #endregion
 
@@ -95,16 +95,16 @@ public class HomeUIManager : MonoBehaviour
         InitializeSingleton();
     }
 
-    private void OnEnable() 
+    private void OnEnable()
     {
-        if(Profiledata.GuestUser && Profiledata.UserName != "")
+        if (Profiledata.GuestUser && Profiledata.UserName != "")
         {
             Debug.Log("Login");
             ShowPanel(PanelName.Home);
         }
         else
         {
-            Debug.Log("GO Home with "+Profiledata.GuestUser);
+            Debug.Log("GO Home with " + Profiledata.GuestUser);
             ShowPanel(PanelName.Login);
         }
     }
@@ -166,10 +166,12 @@ public class HomeUIManager : MonoBehaviour
     {
         // ActivatePanel(HomePanel);
         ShowPanel(PanelName.Home);
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
     public void OnClickSignUpButton()
     {
         ShowPanel(PanelName.Signup);
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
     public void OnClickGuestLogin()
     {
@@ -185,21 +187,23 @@ public class HomeUIManager : MonoBehaviour
         Profiledata.GuestUser = true;
         Debug.Log("Guest Username: " + username);
         ShowPanel(PanelName.Home);
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
 
     private IEnumerator DisableErrortext()
     {
         yield return new WaitForSeconds(5f);
         userNameError.gameObject.SetActive(false);
-    } 
-    
+    }
+
     private void OnClickProfileButton()
     {
         //ProfilePanel.SetActive(true);
         //HomePanel.SetActive(false);
         ShowPanel(PanelName.Profile);
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
-    
+
     public void OnClickCampaignButton()
     {
         // SwitchPanel(HomePanel, LoadingPanel);
@@ -207,6 +211,7 @@ public class HomeUIManager : MonoBehaviour
         // StartCoroutine(LoadSceneAfterDelay(2));
         GameData.GameModeType = "Campaign";
         LoadFactionPanel();
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
     private IEnumerator LoadSceneAfterDelay(float delay)
     {
@@ -221,6 +226,7 @@ public class HomeUIManager : MonoBehaviour
         //SwitchPanel(HomePanel, LoadingPanel);
 
         LoadFactionPanel();
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
 
     private void StartPvPAndShowPanel()
@@ -241,18 +247,20 @@ public class HomeUIManager : MonoBehaviour
         GameData.GameModeType = "Lobby";
         //SwitchPanel(HomePanel, PrivateLobbyPanel);
         LoadFactionPanel();
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
 
     private void OnClickCreateLobbyButton()
     {
         CustomGameMode.SetGameMode(GameModeType.HostClient);
         //SwitchPanel(PrivateLobbyPanel, LoadingPanel);
-        
-        LoadingPanel.SetActive(true);                
+
+        LoadingPanel.SetActive(true);
         //PrivateLobbyPanel is Parent of PlayerJoinedPanel so disable PrivateLobbyPanel will disable PlayerJoinedPanel
-        
+
         // Start lobby creation and show panel after delay
         Invoke(nameof(StartLobbyAndShowPanel), 0.1f);
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
 
     private void StartLobbyAndShowPanel()
@@ -271,9 +279,10 @@ public class HomeUIManager : MonoBehaviour
     private void OpenJoinLobbyPanel()
     {
         //SwitchPanel(PrivateLobbyPanel, JoinLobbyPanel);
-        
+
         //PrivateLobbyPanel is Parent of JoinLobbyPanel so disable PrivateLobbyPanel will disable JoinLobbyPanel
-        JoinLobbyPanel.SetActive(true);    
+        JoinLobbyPanel.SetActive(true);
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
 
     private void OnJoinButtonClicked()
@@ -281,6 +290,7 @@ public class HomeUIManager : MonoBehaviour
         CustomGameMode.SetGameMode(GameModeType.HostClient);
         SwitchPanel(JoinLobbyPanel, PlayerJoinedPanel);
         PhotonNetworkManager.Instance.JoinLobby(LobbyCodeInputField.text);
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
 
     private void LoadFactionPanel()
@@ -290,30 +300,33 @@ public class HomeUIManager : MonoBehaviour
         // playerFactionPanel.Layout.blocksRaycasts = true;
         ShowPanel(PanelName.Faction);
     }
-    
+
     internal void OnFactionClicked()
     {
-        
+
         if (GameData.GameModeType == "PVP")
         {
             Invoke(nameof(StartPvPAndShowPanel), 0.1f);
         }
-        else if(GameData.GameModeType == "Lobby")
+        else if (GameData.GameModeType == "Lobby")
         {
             //
             ShowPanel(PanelName.Home);
-            SwitchPanel(playerFactionPanel.gameObject,PrivateLobbyPanel);
+            SwitchPanel(playerFactionPanel.gameObject, PrivateLobbyPanel);
             //PrivateLobbyPanel.SetActive(true);    
         }
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
-    
+
     public void OnClickShopButton()
     {
         ShowPanel(PanelName.Shop);
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
     public void OnClickUpgradeButton()
     {
         ShowPanel(PanelName.Upgrade);
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
 
     #endregion
@@ -323,11 +336,13 @@ public class HomeUIManager : MonoBehaviour
     private void OnPrivateLobbyBackButton()
     {
         SwitchPanel(PrivateLobbyPanel, HomePanel);
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
 
     private void OnJoinLobbyBackButton()
     {
         SwitchPanel(JoinLobbyPanel, PrivateLobbyPanel);
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
 
     #endregion
@@ -391,7 +406,7 @@ public class HomeUIManager : MonoBehaviour
     {
 
         Debug.Log($"Target Panel: {TargetPanel}");
-        foreach(PanelDetails panel in UIPanels)
+        foreach (PanelDetails panel in UIPanels)
         {
             panel.PanelObject.SetActive(false);
         }
@@ -424,7 +439,7 @@ public enum PanelName
     Upgrade,
     Rewards,
     Friends,
-    Message, 
+    Message,
     Ranking,
     HeroJourney
 }

@@ -31,7 +31,13 @@ public class DecManager : MonoBehaviour
     // =========================
     private void OnEnable()
     {
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
         SetInitialData();
+    }
+
+    private void OnDisable()
+    {
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
 
     // =========================
@@ -82,7 +88,7 @@ public class DecManager : MonoBehaviour
         Debug.Log($"Faction Name" + index);
         CurrentCategory = selectionData.CurrentCategory;
         // Safety check
-        if (index < 0 || index >= deckList.Count || 
+        if (index < 0 || index >= deckList.Count ||
             index >= selectionData.AllFactionDecData.Count)
         {
             Debug.LogError("Invalid faction index!");
@@ -93,8 +99,8 @@ public class DecManager : MonoBehaviour
 
         var factionData = selectionData.AllFactionDecData[index];
 
-        CurrentDec.UnitCards     = factionData.SelectedUnitDeck;
-        CurrentDec.DefenseCards  = factionData.SelectedDefenseDec;
+        CurrentDec.UnitCards = factionData.SelectedUnitDeck;
+        CurrentDec.DefenseCards = factionData.SelectedDefenseDec;
         CurrentDec.ResourceCards = factionData.SelectedResourceDeck;
     }
 
@@ -110,7 +116,7 @@ public class DecManager : MonoBehaviour
         }
 
         DecSelector selected = deckList.Find(d => d.InActiveObj == clickedButton);
-        if (selected == null) 
+        if (selected == null)
             return;
 
         selectionData.CurrentFaction = selected._FactionName;
@@ -138,6 +144,7 @@ public class DecManager : MonoBehaviour
     {
         selectionData.CurrentCategory = CurrentCategory = category;
         SelectCategory(category);
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
 
     private void SelectCategory(DecCategory category)
@@ -175,9 +182,9 @@ public class DecManager : MonoBehaviour
         }
 
 
-        foreach(var _Data in deckList)
+        foreach (var _Data in deckList)
         {
-            if(CurrentDec._FactionName == _Data._FactionName)
+            if (CurrentDec._FactionName == _Data._FactionName)
             {
                 RefreshAllCards(_Data);
             }
@@ -284,7 +291,7 @@ public class DecManager : MonoBehaviour
                 GetUnitStats(card),
                 selectionData.CurrentFaction,
                 false,
-                CurrentCategory, 
+                CurrentCategory,
                 _Dec
             );
         }
@@ -351,7 +358,7 @@ public class DecManager : MonoBehaviour
             $"Health: {card.resourceBuildingUpgradeData[0].buildingBasicStats.maxHealth}\n" +
             $"Armor: {card.resourceBuildingUpgradeData[0].buildingBasicStats.armor}\n" +
             $"Range: {card.resourceBuildingUpgradeData[0].buildingBuildTime}";
-            
+
     }
 }
 

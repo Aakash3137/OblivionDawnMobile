@@ -41,6 +41,9 @@ public class FactionButton : MonoBehaviour
             HomeUIManager.Instance.OnFactionClicked();
             DeactivateFactionPanel();
         }
+
+        RTSGameStateManager.Instance.ChangeState(RTSGameState.PLAYING);
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
 
     void OnFactionSelected()

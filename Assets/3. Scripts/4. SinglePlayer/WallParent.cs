@@ -15,6 +15,11 @@ public class WallParent : MonoBehaviour
     {
         foreach (var wall in wallStats)
         {
+            wall.Initialize();
+        }
+
+        foreach (var wall in wallStats)
+        {
             wall.wallHealthEvent += HandleWallHealth;
             wall.onDieEvent += HandleWallDestroy;
         }
@@ -32,11 +37,6 @@ public class WallParent : MonoBehaviour
     private void Awake()
     {
         healthBar = GetComponentInChildren<HealthProgress>();
-
-        foreach (var wall in wallStats)
-        {
-            wall.Initialize();
-        }
     }
 
     // private async Awaitable Start()

@@ -46,13 +46,17 @@ public class RTSGameStateManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);  // Persist across scenes
             RegisterDictionary();
-            InitializeCallbacks();
-            ChangeState(RTSGameState.PLAYING);  // Start here
+            InitializeCallbacks(); // Start here
         }
         else
         {
             Destroy(gameObject);
         }
+    }
+
+    private void Start()
+    {
+        ChangeState(RTSGameState.MAIN_MENU);
     }
 
     void InitializeCallbacks()

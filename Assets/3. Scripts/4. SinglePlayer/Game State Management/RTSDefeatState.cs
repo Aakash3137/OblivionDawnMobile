@@ -1,17 +1,17 @@
 using UnityEngine;
 
-public class RTSDefeatState : MonoBehaviour
+public class RTSDefeatState : RTSState
 {
-    [SerializeField] Canvas gameOverCanvas;
+    [SerializeField] private Canvas gameOverCanvas;
     private Canvas _gameOverCanvas;
 
-    public void OnStateEnter()
+    public override void OnStateEnter()
     {
         Time.timeScale = 0f;
         _gameOverCanvas = Instantiate(gameOverCanvas, Vector3.zero, Quaternion.identity);
     }
 
-    public void OnStateExit()
+    public override void OnStateExit()
     {
         Time.timeScale = 1f;
         Destroy(_gameOverCanvas, 0.1f);
