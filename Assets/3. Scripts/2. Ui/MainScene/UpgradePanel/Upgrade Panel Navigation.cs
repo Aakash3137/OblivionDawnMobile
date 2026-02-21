@@ -55,34 +55,41 @@ public class UpgradePanelNavigation : MonoBehaviour
     {
         selectedFaction = FactionName.Medieval;
         categoryButtons[0].isOn = isDefaultPanelUnits;
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
     private void OnClickPresent()
     {
         selectedFaction = FactionName.Present;
         categoryButtons[0].isOn = isDefaultPanelUnits;
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
     private void OnClickFuture()
     {
         selectedFaction = FactionName.Futuristic;
         categoryButtons[0].isOn = isDefaultPanelUnits;
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
     private void OnClickGalvadore()
     {
         selectedFaction = FactionName.Galvadore;
         categoryButtons[0].isOn = isDefaultPanelUnits;
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
 
     private void OnClickUnits(FactionName factionName)
     {
         ToggleTypePanel(upgradePanelManager.unitCardPanel.gameObject);
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
     private void OnClickBuildings(FactionName factionName)
     {
         ToggleTypePanel(upgradePanelManager.buildingCardPanel.gameObject);
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
     private void OnClickBack()
     {
         HomeUIManager.Instance.ShowPanel(PanelName.Home);
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
     private void ToggleTypePanel(GameObject panel)
     {
