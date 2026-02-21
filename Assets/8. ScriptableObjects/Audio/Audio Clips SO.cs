@@ -31,6 +31,7 @@ public struct AudioList
 }
 public enum GameAudioType
 {
+    NONE,
     ButtonClick,
     PlayButton,
     BackButton,

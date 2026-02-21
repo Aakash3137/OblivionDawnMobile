@@ -13,30 +13,37 @@ MonoBehaviour:
   m_Name: AudioClipsSO
   m_EditorClassIdentifier: Assembly-CSharp::AudioClipsSO
   audioClips:
-  - name: ButtonClick
+  - name: NONE
     audioType: 0
+    mixerGroup: {fileID: 0}
+    clips: []
+  - name: ButtonClick
+    audioType: 1
     mixerGroup: {fileID: 6540512827465152657, guid: 211f46fc758270549a0781600f615ab9, type: 2}
     clips:
     - {fileID: 8300000, guid: b00cb0f8157967d4498645b413b0617b, type: 3}
   - name: PlayButton
-    audioType: 1
-    mixerGroup: {fileID: 6540512827465152657, guid: 211f46fc758270549a0781600f615ab9, type: 2}
-    clips: []
-  - name: BackButton
     audioType: 2
     mixerGroup: {fileID: 6540512827465152657, guid: 211f46fc758270549a0781600f615ab9, type: 2}
-    clips: []
-  - name: MenuMusic
-    audioType: 3
-    mixerGroup: {fileID: 107600654495929768, guid: 211f46fc758270549a0781600f615ab9, type: 2}
     clips:
-    - {fileID: 8300000, guid: fbe74ae6b0a09b94ca4a17661e7fcf40, type: 3}
-  - name: GameMusic
+    - {fileID: 8300000, guid: b00cb0f8157967d4498645b413b0617b, type: 3}
+  - name: BackButton
+    audioType: 3
+    mixerGroup: {fileID: 6540512827465152657, guid: 211f46fc758270549a0781600f615ab9, type: 2}
+    clips:
+    - {fileID: 8300000, guid: b00cb0f8157967d4498645b413b0617b, type: 3}
+  - name: MenuMusic
     audioType: 4
     mixerGroup: {fileID: 107600654495929768, guid: 211f46fc758270549a0781600f615ab9, type: 2}
     clips:
     - {fileID: 8300000, guid: fbe74ae6b0a09b94ca4a17661e7fcf40, type: 3}
-  - name: BattleMusic
+  - name: GameMusic
     audioType: 5
     mixerGroup: {fileID: 107600654495929768, guid: 211f46fc758270549a0781600f615ab9, type: 2}
-    clips: []
+    clips:
+    - {fileID: 8300000, guid: 5da41b200075f7e4886dd2e1ca98787a, type: 3}
+  - name: BattleMusic
+    audioType: 6
+    mixerGroup: {fileID: 107600654495929768, guid: 211f46fc758270549a0781600f615ab9, type: 2}
+    clips:
+    - {fileID: 8300000, guid: 5da41b200075f7e4886dd2e1ca98787a, type: 3}
