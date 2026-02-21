@@ -25,13 +25,13 @@ public class BuildingSkeleton : MonoBehaviour
         if (progress != null)
             progress.gameObject.SetActive(false);
 
-        graphicObject = transform.GetChild(0).gameObject;
-        graphicObject.SetActive(false);
-
         if (constructionIcon != null)
             constructionIcon.SetActive(true);
 
         await Awaitable.NextFrameAsync();
+        
+        graphicObject = transform.GetChild(0).gameObject;
+        graphicObject.SetActive(false);
 
         GenericComponents = GetComponents<MonoBehaviour>();
 

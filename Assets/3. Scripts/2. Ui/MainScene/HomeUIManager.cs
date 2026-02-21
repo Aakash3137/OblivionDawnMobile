@@ -404,7 +404,6 @@ public class HomeUIManager : MonoBehaviour
 
     public void ShowPanel(PanelName TargetPanel)
     {
-
         Debug.Log($"Target Panel: {TargetPanel}");
         foreach (PanelDetails panel in UIPanels)
         {
