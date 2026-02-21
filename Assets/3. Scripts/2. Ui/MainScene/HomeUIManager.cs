@@ -426,7 +426,9 @@ public enum PanelName
     Friends,
     Message, 
     Ranking,
-    HeroJourney
+    HeroJourney, 
+    Setting,
+    Level
 }
 
 [System.Serializable]

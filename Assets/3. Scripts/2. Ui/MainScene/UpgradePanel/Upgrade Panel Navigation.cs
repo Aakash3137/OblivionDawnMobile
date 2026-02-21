@@ -82,7 +82,7 @@ public class UpgradePanelNavigation : MonoBehaviour
     }
     private void OnClickBack()
     {
-        gameObject.SetActive(false);
+        HomeUIManager.Instance.ShowPanel(PanelName.Home);
     }
     private void ToggleTypePanel(GameObject panel)
     {

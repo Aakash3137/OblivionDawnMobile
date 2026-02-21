@@ -25,11 +25,13 @@ public class UiHomePanelScript : MonoBehaviour
     [SerializeField] internal GameObject SelectionWindown;
 
     [SerializeField] private float duration = 0.7f;
+    
+    public Buttonrefernce Buttons;
 
     #endregion
 
     #region  LifeCycle
-    
+
     private void OnEnable() 
     {
         UserNameTxt.text = PlayerData.UserName;
@@ -48,9 +50,23 @@ public class UiHomePanelScript : MonoBehaviour
     }
     void Start()
     {
+        Buttons.Play.onClick.AddListener(OnClickPlayButton);
+        Buttons.Profile.onClick.AddListener(OpenProfileManager);
+        Buttons.Shop.onClick.AddListener(OnClickShopButton);
+        Buttons.Level.onClick.AddListener(OnClickLevelButton);
+        Buttons.Setting.onClick.AddListener(OnClickSettingButton);
+        Buttons.Deck.onClick.AddListener(OnClickDeckButton);
+        Buttons.Upgrade.onClick.AddListener(OnClickUpgradeButton);
+        Buttons.HeroJourney.onClick.AddListener(OnClickHeroJourney);
         
     }
-
+    
+    
+    public void OnClickHomeButton()
+    {
+        HomeUIManager.Instance.ShowPanel(PanelName.Home);
+    }
+    
     public void OpenProfileManager()
     {
         HomeUIManager.Instance.ShowPanel(PanelName.Profile);
@@ -60,6 +76,39 @@ public class UiHomePanelScript : MonoBehaviour
     public void OnClickPlayButton()
     {
         SelectionWindown.SetActive(true);
+    }
+    
+    
+    public void OnClickShopButton()
+    {
+        HomeUIManager.Instance.ShowPanel(PanelName.Shop);
+    }
+    
+    
+    public void OnClickSettingButton()
+    {
+        HomeUIManager.Instance.ShowPanel(PanelName.Setting);
+    }
+    
+    
+    public void OnClickDeckButton()
+    {
+        HomeUIManager.Instance.ShowPanel(PanelName.Deck);
+    }
+
+    public void OnClickUpgradeButton()
+    {
+        HomeUIManager.Instance.ShowPanel(PanelName.Upgrade);
+    }
+
+    public void OnClickHeroJourney()
+    {
+        HomeUIManager.Instance.ShowPanel(PanelName.HeroJourney);
+    }
+
+    public void OnClickLevelButton()
+    {
+        HomeUIManager.Instance.ShowPanel(PanelName.Level);
     }
 
     public void OnClickCloseSelectionWindow()
@@ -85,4 +134,17 @@ public class UiHomePanelScript : MonoBehaviour
         SelectionWindown.SetActive(false);
     }
     #endregion
+}
+
+[System.Serializable]
+public class Buttonrefernce
+{
+    public Button Deck;
+    public Button Upgrade;
+    public Button HeroJourney;
+    public Button Level;
+    public Button Shop;
+    public Button Setting;
+    public Button Play;
+    public Button Profile;
 }

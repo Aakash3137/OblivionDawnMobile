@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -25,6 +26,7 @@ public class DecManager : MonoBehaviour
     [SerializeField] internal Userdata _Profile;
     [SerializeField] private TMP_Text Coins;
     [SerializeField] private Button OffenseBtn, DefenseBtn, ResourceBtn;
+    [SerializeField] private Button backBtn;
 
     // =========================
     // LIFECYCLE
@@ -32,6 +34,16 @@ public class DecManager : MonoBehaviour
     private void OnEnable()
     {
         SetInitialData();
+    }
+
+    private void Start()
+    {
+       backBtn.onClick.AddListener(OnclickCloseBtn);
+    }
+
+    private void OnclickCloseBtn()
+    {
+        HomeUIManager.Instance.ShowPanel(PanelName.Home);
     }
 
     // =========================
