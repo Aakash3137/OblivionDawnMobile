@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7651046837831953334}
   - component: {fileID: 8971268174141590450}
   - component: {fileID: 5242158270234831317}
+  - component: {fileID: 1244704137639097703}
   m_Layer: 0
   m_Name: Game State manager
   m_TagString: Untagged
@@ -120,10 +121,34 @@ MonoBehaviour:
   - state: 4
     onEnter:
       m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 1244704137639097703}
+          m_TargetAssemblyTypeName: RTSPlayingState, Assembly-CSharp
+          m_MethodName: OnStateEnter
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
     onExit:
       m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 1244704137639097703}
+          m_TargetAssemblyTypeName: RTSPlayingState, Assembly-CSharp
+          m_MethodName: OnStateExit
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
   - state: 5
     onEnter:
       m_PersistentCalls:
@@ -236,5 +261,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0d45fb6e10e351a418dc841e402525f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1244704137639097703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4075326501364963983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 538182265efeb24428d8b29cc39daebd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

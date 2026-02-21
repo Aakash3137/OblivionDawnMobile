@@ -56,7 +56,7 @@ public class RTSGameStateManager : MonoBehaviour
 
     private void Start()
     {
-        ChangeState(RTSGameState.MAIN_MENU);
+        onEnterEvents[currentState]?.Invoke();
     }
 
     void InitializeCallbacks()
