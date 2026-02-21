@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3536920102843749079}
   - component: {fileID: 7651046837831953334}
   - component: {fileID: 8971268174141590450}
+  - component: {fileID: 5242158270234831317}
   m_Layer: 0
   m_Name: Game State manager
   m_TagString: Untagged
@@ -74,10 +75,34 @@ MonoBehaviour:
   - state: 1
     onEnter:
       m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 5242158270234831317}
+          m_TargetAssemblyTypeName: RTSMainMenuState, Assembly-CSharp
+          m_MethodName: OnStateEnter
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
     onExit:
       m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 5242158270234831317}
+          m_TargetAssemblyTypeName: RTSMainMenuState, Assembly-CSharp
+          m_MethodName: OnStateExit
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
   - state: 2
     onEnter:
       m_PersistentCalls:
@@ -201,3 +226,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameOverCanvas: {fileID: 288928632458549551, guid: d6ac40a975a8729449848bcfc76235a3, type: 3}
+--- !u!114 &5242158270234831317
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4075326501364963983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d45fb6e10e351a418dc841e402525f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -11,8 +11,18 @@ public class JourneyManager : MonoBehaviour
         cross_button.onClick.AddListener(OnClickShowHomePage);
     }
 
+    void OnEnable()
+    {
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
+    }
+    private void OnDisable()
+    {
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
+    }
+
     public void OnClickShowHomePage()
     {
         HomeUIManager.Instance.ShowPanel(PanelName.Home);
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
 }

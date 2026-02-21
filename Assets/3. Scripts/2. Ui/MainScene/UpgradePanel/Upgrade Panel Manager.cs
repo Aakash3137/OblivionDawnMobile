@@ -14,6 +14,16 @@ public class UpgradePanelManager : MonoBehaviour
     [SerializeField] private CardUpgradeData cardPrefab;
     [field: SerializeField] public UpgradePopUpPanel upgradePopUpPanel { get; private set; }
 
+    private void OnEnable()
+    {
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
+    }
+
+    private void OnDisable()
+    {
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
+    }
+
     private void Awake()
     {
         Instance = this;
