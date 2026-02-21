@@ -20,14 +20,23 @@ MonoBehaviour:
     priority: 1
   unitType: 1
   unitVisuals:
-    playerUnitMaterial: {fileID: 2100000, guid: fa046f282d5ae8548b5a16b3f104eafb, type: 2}
-    enemyUnitMaterial: {fileID: 2100000, guid: 45a6950ac6a486f458172024d5141246, type: 2}
+    playerUnitMaterial: {fileID: 0}
+    enemyUnitMaterial: {fileID: 0}
   unitVisionAngles:
     narrowViewAngle: 10
     wideViewAngle: 45
   unitAttackTargets:
     canAttackAir: 0
     canAttackGround: 1
+  unitUpkeep:
+  - resourceType: 0
+    resourceAmount: 0
+  - resourceType: 1
+    resourceAmount: 0
+  - resourceType: 2
+    resourceAmount: 0
+  - resourceType: 3
+    resourceAmount: 0
   spawnerBuilding: {fileID: -8976530165009927266, guid: 8d6bb49f4de22e743a17288e2055b7ed, type: 3}
   canFly: 0
   unitFlyStats:
@@ -53,4 +62,4 @@ MonoBehaviour:
       moveSpeed: 2
     unitRangeStats:
       detectionRange: 40
-      attackRange: 6
+      attackRange: 1
