@@ -6,20 +6,20 @@ public class AudioClipsSO : ScriptableObject
 {
     public AudioList[] audioClips;
 
-    void OnValidate()
-    {
-        var enumValues = System.Enum.GetValues(typeof(GameAudioType));
-        if (audioClips.Length != enumValues.Length)
-        {
-            audioClips = new AudioList[enumValues.Length];
-        }
+    // void OnValidate()
+    // {
+    //     var enumValues = System.Enum.GetValues(typeof(GameAudioType));
+    //     if (audioClips.Length != enumValues.Length)
+    //     {
+    //         audioClips = new AudioList[enumValues.Length];
+    //     }
 
-        for (int i = 0; i < audioClips.Length; i++)
-        {
-            audioClips[i].audioType = (GameAudioType)enumValues.GetValue(i);
-            audioClips[i].name = audioClips[i].audioType.ToString();
-        }
-    }
+    //     for (int i = 0; i < audioClips.Length; i++)
+    //     {
+    //         audioClips[i].audioType = (GameAudioType)enumValues.GetValue(i);
+    //         audioClips[i].name = audioClips[i].audioType.ToString();
+    //     }
+    // }
 }
 [System.Serializable]
 public struct AudioList

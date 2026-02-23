@@ -11,7 +11,7 @@ public class ScenarioGem : MonoBehaviour
 
     private Button button;
 
-    private RewardUpdateUI rewardUpdateUI;
+    private RewardCanvas rewardCanvas;
     private MotionHandle scaleHandle;
     // private MotionHandle rotateHandle;
     // private MotionHandle moveHandle;
@@ -23,19 +23,24 @@ public class ScenarioGem : MonoBehaviour
 
         // Destroy(transform.parent.gameObject, despawnTime);
         AnimateObject();
-        rewardUpdateUI = RewardUpdateUI.Instance;
+        rewardCanvas = RewardCanvas.Instance;
         button.onClick.AddListener(OnGemClaim);
     }
 
-    private void OnGemClaim()
+    private void ClaimAllGems()
     {
-        Destroy(gameObject);
+        rewardCanvas.ClearRewards();
+    }
+
+    public void OnGemClaim()
+    {
+        rewardCanvas.RemoveReward(this);
 
         StopAnimation();
 
-        if (rewardUpdateUI != null)
+        if (rewardCanvas.rewardUpdateUI != null)
         {
-            rewardUpdateUI.SpawnGemAndAnimate(transform.position);
+            rewardCanvas.rewardUpdateUI.SpawnGemAndAnimate(transform.position);
         }
         else
         {

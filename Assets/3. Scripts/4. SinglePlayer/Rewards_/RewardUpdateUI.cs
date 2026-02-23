@@ -6,7 +6,6 @@ using UnityEngine;
 
 public class RewardUpdateUI : MonoBehaviour
 {
-    public static RewardUpdateUI Instance { get; private set; }
 
     [SerializeField] private TMP_Text gemCountText;
     [SerializeField] private Transform gemIcon;
@@ -22,9 +21,6 @@ public class RewardUpdateUI : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-            Instance = this;
-
         mainCamera = Camera.main;
     }
 
