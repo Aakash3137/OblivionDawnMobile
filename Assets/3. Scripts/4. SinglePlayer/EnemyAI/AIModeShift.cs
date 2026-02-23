@@ -1,44 +1,46 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
+
+[System.Serializable]
+public class PersonalityButton
+{
+    public AIPersonalityEnum personality;
+    public Button button;
+}
 
 public class AIModeShift : MonoBehaviour
 {
-    [Header("Buttons")]
-    public Button attackButton;
-    public Button defenseButton;
-
+    [Header("Personality Buttons")]
+    public List<PersonalityButton> personalityButtons; // each button tagged with its enum
 
     private void Start()
     {
-        attackButton.onClick.AddListener(() => SelectMode(true));
-        defenseButton.onClick.AddListener(() => SelectMode(false));
+        foreach (var pb in personalityButtons)
+        {
+            AIPersonalityEnum captured = pb.personality;
+            pb.button.onClick.AddListener(() => SelectPersonality(captured));
+        }
 
-        // Default selection = Attack
-        SelectMode(true);
+        // Default = Dragon_Flare
+        SelectPersonality(AIPersonalityEnum.Dragon_Flare);
     }
 
-    void SelectMode(bool isAttack)
+    void SelectPersonality(AIPersonalityEnum selected)
     {
-        MenuManager.Instance.isAttackPersonality = isAttack;
-        if (isAttack)
+        MenuManager.Instance.SetPersonality(selected);
+
+        foreach (var pb in personalityButtons)
         {
-            SetButtonAlpha(attackButton, 1f);
-            SetButtonAlpha(defenseButton, 0.4f);
-        }
-        else
-        {
-            SetButtonAlpha(defenseButton, 1f);
-            SetButtonAlpha(attackButton, 0.4f);
+            SetButtonAlpha(pb.button, pb.personality == selected ? 1f : 0.4f);
         }
     }
 
     void SetButtonAlpha(Button button, float alpha)
     {
         ColorBlock colors = button.colors;
-
         Color normal = colors.normalColor;
         normal.a = alpha;
-
         colors.normalColor = normal;
         button.colors = colors;
     }

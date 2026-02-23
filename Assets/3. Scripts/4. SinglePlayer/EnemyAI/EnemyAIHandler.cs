@@ -3,7 +3,6 @@ using System.Linq;
 using UnityEngine;
 
 public enum BuildingCategory { Unit, Resource, Defense }
-
 public class EnemyAIHandler : MonoBehaviour
 {
     [Header("References")]
@@ -13,8 +12,9 @@ public class EnemyAIHandler : MonoBehaviour
     [SerializeField] internal FactionName enemyFactionName;
     [SerializeField] private EnemyPersonality currentPersonality;
 
-    [SerializeField] private EnemyPersonality AttackPersonality;
-    [SerializeField] private EnemyPersonality DefensivePersonality;
+    [SerializeField] private List<EnemyPersonality> AIPersonalities;
+    /*[SerializeField] private EnemyPersonality AttackPersonality;
+    [SerializeField] private EnemyPersonality DefensivePersonality;*/
     [SerializeField] private DecSelectionData AIDecSelectionData;
     
     private Transform enemyMainBuildingTransform;
@@ -36,14 +36,8 @@ public class EnemyAIHandler : MonoBehaviour
 
         if (MenuManager.Instance != null)
         {
-            if (MenuManager.Instance.isAttackPersonality == true)
-            {
-                currentPersonality = AttackPersonality;
-            }
-            else
-            {
-                currentPersonality = DefensivePersonality;
-            }
+            AIPersonalityEnum chosen = MenuManager.Instance.SelectedPersonalityFromMenu();
+            currentPersonality = AIPersonalities.Find(p => p.personalityName == chosen);
         }
         
         enemyMainBuildingTransform = GameManager.Instance.enemySpawnPoint;
@@ -56,6 +50,7 @@ public class EnemyAIHandler : MonoBehaviour
 
     void Update()
     {
+        
         if (enemyModeSwitch == null || enemyModeSwitch.EnemyMode != CurrentEnemyMode.EnemyAIMode)
             return;
 
