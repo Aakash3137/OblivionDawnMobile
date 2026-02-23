@@ -15,13 +15,13 @@ public class WallParent : MonoBehaviour
     {
         foreach (var wall in wallStats)
         {
-            wall.Initialize();
+            wall.wallHealthEvent += HandleWallHealth;
+            wall.onDieEvent += HandleWallDestroy;
         }
 
         foreach (var wall in wallStats)
         {
-            wall.wallHealthEvent += HandleWallHealth;
-            wall.onDieEvent += HandleWallDestroy;
+            wall.Initialize();
         }
     }
 
