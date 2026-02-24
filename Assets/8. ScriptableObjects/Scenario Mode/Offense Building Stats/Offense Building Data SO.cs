@@ -32,4 +32,5 @@ public class OffenseBuildingDataSO : BuildingDataSO
 public class OffenseBuildingUpgradeData : BuildingUpgradeData
 {
     public float unitSpawnTime;
+    public int maxSpawnableUnits;
 }

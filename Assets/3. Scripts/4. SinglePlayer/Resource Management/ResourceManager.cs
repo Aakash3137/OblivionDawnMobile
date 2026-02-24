@@ -74,23 +74,19 @@ public class ResourceManager : MonoBehaviour
         {
             case ScenarioResourceType.Food:
                 maxFood -= amount;
-                currentFood = Mathf.Min(currentFood, maxFood);
                 break;
             case ScenarioResourceType.Gold:
                 maxGold -= amount;
-                currentGold = Mathf.Min(currentGold, maxGold);
                 break;
             case ScenarioResourceType.Metal:
                 maxMetal -= amount;
-                currentMetal = Mathf.Min(currentMetal, maxMetal);
                 break;
             case ScenarioResourceType.Power:
                 maxPower -= amount;
-                CurrentPower = Mathf.Min(CurrentPower, maxPower);
                 break;
         }
 
-        OnResourcesChanged?.Invoke();
+        ClampResources();
     }
 
 
@@ -101,24 +97,20 @@ public class ResourceManager : MonoBehaviour
         {
             case ScenarioResourceType.Food:
                 currentFood += amount;
-                currentFood = Mathf.Min(currentFood, maxFood);
                 break;
             case ScenarioResourceType.Gold:
                 currentGold += amount;
-                currentGold = Mathf.Min(currentGold, maxGold);
                 break;
             case ScenarioResourceType.Metal:
                 currentMetal += amount;
-                currentMetal = Mathf.Min(currentMetal, maxMetal);
                 break;
             case ScenarioResourceType.Power:
                 CurrentPower += amount;
-                CurrentPower = Mathf.Min(CurrentPower, maxPower);
                 break;
         }
 
         // Invoke the event to notify listeners
-        OnResourcesChanged?.Invoke();
+        ClampResources();
     }
 
     public void SpendResources(BuildCost[] resources)
@@ -129,9 +121,41 @@ public class ResourceManager : MonoBehaviour
         CurrentPower -= resources[3].resourceAmount;
 
         // Invoke the event to notify listeners
+        ClampResources();
+    }
+
+    public bool HasResources(BuildCost[] resources, bool debug = false)
+    {
+        int food = resources[0].resourceAmount;
+        int gold = resources[1].resourceAmount;
+        int metal = resources[2].resourceAmount;
+        int power = resources[3].resourceAmount;
+
+        if (debug)
+        {
+            if (currentFood - food < 0)
+                Debug.Log($"<color=#C6616B>Not enough food, Need {food - currentFood} more food</color>");
+            if (currentGold - gold < 0)
+                Debug.Log($"<color=#D4B608>Not enough gold, Need {gold - currentGold} more gold</color>");
+            if (currentMetal - metal < 0)
+                Debug.Log($"<color=#ADB4BD>Not enough metal, Need {metal - currentMetal} more metal</color>");
+            if (CurrentPower - power < 0)
+                Debug.Log($"<color=#4AAEDB>Not enough power, Need {power - CurrentPower} more power</color>");
+        }
+
+        return currentFood >= food && currentGold >= gold && currentMetal >= metal && CurrentPower >= power;
+    }
+    private void ClampResources()
+    {
+        currentFood = Mathf.Clamp(currentFood, 0, maxFood);
+        currentGold = Mathf.Clamp(currentGold, 0, maxGold);
+        currentMetal = Mathf.Clamp(currentMetal, 0, maxMetal);
+        CurrentPower = Mathf.Clamp(CurrentPower, 0, maxPower);
+
         OnResourcesChanged?.Invoke();
     }
 
+    #region Resource Generation
     public void IncreaseResourceGenerationRate(ScenarioResourceType resourceType, float amount = 0)
     {
         switch (resourceType)
@@ -149,6 +173,17 @@ public class ResourceManager : MonoBehaviour
                 currentPowerGenerationRate += amount;
                 break;
         }
+
+        // This event is handling both resources changed and resource generation rate changed
+        OnResourcesChanged?.Invoke();
+    }
+
+    public void IncreaseResourceGenerationRate(BuildCost[] resources)
+    {
+        currentFoodGenerationRate += resources[0].resourceAmount;
+        currentGoldGenerationRate += resources[1].resourceAmount;
+        currentMetalGenerationRate += resources[2].resourceAmount;
+        currentPowerGenerationRate += resources[3].resourceAmount;
 
         // This event is handling both resources changed and resource generation rate changed
         OnResourcesChanged?.Invoke();
@@ -175,40 +210,18 @@ public class ResourceManager : MonoBehaviour
         // This event is handling both resources changed and resource generation rate changed
         OnResourcesChanged?.Invoke();
     }
-    public bool HasResources(BuildCost[] resources, bool debug = false)
+
+    public void DecreaseResourceGenerationRate(BuildCost[] resources)
     {
-        int food = resources[0].resourceAmount;
-        int gold = resources[1].resourceAmount;
-        int metal = resources[2].resourceAmount;
-        int power = resources[3].resourceAmount;
+        currentFoodGenerationRate -= resources[0].resourceAmount;
+        currentGoldGenerationRate -= resources[1].resourceAmount;
+        currentMetalGenerationRate -= resources[2].resourceAmount;
+        currentPowerGenerationRate -= resources[3].resourceAmount;
 
-        if (debug)
-        {
-            if (currentFood - food < 0)
-                Debug.Log($"<color=#C6616B>Not enough food, Need {food - currentFood} more food</color>");
-            if (currentGold - gold < 0)
-                Debug.Log($"<color=#D4B608>Not enough gold, Need {gold - currentGold} more gold</color>");
-            if (currentMetal - metal < 0)
-                Debug.Log($"<color=#ADB4BD>Not enough metal, Need {metal - currentMetal} more metal</color>");
-            if (CurrentPower - power < 0)
-                Debug.Log($"<color=#4AAEDB>Not enough power, Need {power - CurrentPower} more power</color>");
-        }
-
-        return currentFood >= food && currentGold >= gold && currentMetal >= metal && CurrentPower >= power;
+        // This event is handling both resources changed and resource generation rate changed
+        OnResourcesChanged?.Invoke();
     }
-    void OnValidate()
-    {
-        var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
-        if (startingResources == null || startingResources.Length != enumValues.Length)
-        {
-            startingResources = new BuildCost[enumValues.Length];
-        }
-
-        for (int i = 0; i < startingResources.Length; i++)
-        {
-            startingResources[i].resourceType = (ScenarioResourceType)enumValues.GetValue(i);
-        }
-    }
+    #endregion
 
     public bool CanAddResource(ScenarioResourceType type, int amount)
     {
@@ -224,5 +237,18 @@ public class ResourceManager : MonoBehaviour
                 return CurrentPower + amount <= maxPower;
         }
         return false;
+    }
+    void OnValidate()
+    {
+        var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
+        if (startingResources == null || startingResources.Length != enumValues.Length)
+        {
+            startingResources = new BuildCost[enumValues.Length];
+        }
+
+        for (int i = 0; i < startingResources.Length; i++)
+        {
+            startingResources[i].resourceType = (ScenarioResourceType)enumValues.GetValue(i);
+        }
     }
 }

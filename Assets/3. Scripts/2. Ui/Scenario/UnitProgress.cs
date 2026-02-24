@@ -24,18 +24,6 @@ public class UnitProgress : ProgressManager
 
     private void Update()
     {
-        ///
-        /// DO NOT DELETE COMMENTS
-        /// 
-
-        // if (!spawner.HasResources())
-        // {
-        //     currentTime = 0f;
-        //     progressAmount = 0f;
-        //     UpdateFillAmount(progressAmount);
-        //     return;
-        // }
-
         if (!spawner.isProducing)
         {
             currentTime = 0f;

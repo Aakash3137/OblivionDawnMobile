@@ -47,7 +47,11 @@ public class ResourceUpdateUI : MonoBehaviour
         //Subscribe to the event
         if (rmReference != null)
             rmReference.OnResourcesChanged += UpdateUI;
+
+        SetResourceSprites();
     }
+
+
 
     void OnDisable()
     {
@@ -60,26 +64,29 @@ public class ResourceUpdateUI : MonoBehaviour
         if (rmReference == null)
             return;
 
+        ResourceTextHandler();
+        GenerationTextHandler();
+        UIStorageFillHandler();
+    }
+
+    private void ResourceTextHandler()
+    {
         foodText.SetText("{0}", rmReference.currentFood);
         goldText.SetText("{0}", rmReference.currentGold);
         metalText.SetText("{0}", rmReference.currentMetal);
         powerText.SetText("{0}", rmReference.CurrentPower);
+    }
 
-        ToggleText(foodGenerationRateText, rmReference.currentFoodGenerationRate > 0);
-        ToggleText(goldGenerationRateText, rmReference.currentGoldGenerationRate > 0);
-        ToggleText(metalGenerationRateText, rmReference.currentMetalGenerationRate > 0);
-        ToggleText(powerGenerationRateText, rmReference.currentPowerGenerationRate > 0);
+    private void GenerationTextHandler()
+    {
+        ToggleText(foodGenerationRateText, rmReference.currentFoodGenerationRate);
+        ToggleText(goldGenerationRateText, rmReference.currentGoldGenerationRate);
+        ToggleText(metalGenerationRateText, rmReference.currentMetalGenerationRate);
+        ToggleText(powerGenerationRateText, rmReference.currentPowerGenerationRate);
+    }
 
-        foodGenerationRateText.SetText("+{0}", rmReference.currentFoodGenerationRate);
-        goldGenerationRateText.SetText("+{0}", rmReference.currentGoldGenerationRate);
-        metalGenerationRateText.SetText("+{0}", rmReference.currentMetalGenerationRate);
-        powerGenerationRateText.SetText("+{0}", rmReference.currentPowerGenerationRate);
-
-        foodIconImage.sprite = foodSprite;
-        goldIconImage.sprite = goldSprite;
-        metalIconImage.sprite = metalSprite;
-        powerIconImage.sprite = powerSprite;
-
+    private void UIStorageFillHandler()
+    {
         float foodPercent = (float)rmReference.currentFood / rmReference.maxFood;
         float goldPercent = (float)rmReference.currentGold / rmReference.maxGold;
         float metalPercent = (float)rmReference.currentMetal / rmReference.maxMetal;
@@ -91,10 +98,16 @@ public class ResourceUpdateUI : MonoBehaviour
         UpdateFillAmount(powerFillBar, powerPercent);
     }
 
-    private void ToggleText(TMP_Text text, bool show)
+    private void ToggleText(TMP_Text text, float amount)
     {
+        bool show = amount != 0;
         var textGO = text.GetComponent<CanvasGroup>();
         textGO.alpha = show ? 1f : 0f;
+
+        if (amount > 0)
+            text.SetText("+{0}", amount);
+        else if (amount < 0)
+            text.SetText("{0}", amount);
     }
 
     private void UpdateFillAmount(Image fillImage, float amount)
@@ -118,6 +131,14 @@ public class ResourceUpdateUI : MonoBehaviour
         goldSprite = decSelectionData.AllFactionDecData[(int)currentFaction].SelectedResourceDeck[1].buildingIcon;
         metalSprite = decSelectionData.AllFactionDecData[(int)currentFaction].SelectedResourceDeck[2].buildingIcon;
         powerSprite = decSelectionData.AllFactionDecData[(int)currentFaction].SelectedResourceDeck[3].buildingIcon;
+    }
+
+    private void SetResourceSprites()
+    {
+        foodIconImage.sprite = foodSprite;
+        goldIconImage.sprite = goldSprite;
+        metalIconImage.sprite = metalSprite;
+        powerIconImage.sprite = powerSprite;
     }
     #endregion
 }

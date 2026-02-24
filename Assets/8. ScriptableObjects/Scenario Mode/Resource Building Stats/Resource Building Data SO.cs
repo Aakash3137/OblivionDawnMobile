@@ -32,7 +32,7 @@ public class ResourceBuildingDataSO : BuildingDataSO
 public class ResourceBuildingUpgradeData : BuildingUpgradeData
 {
     public int resourceAmountPerBatch;
-    public float resourceTimeToProduce;
+    [field: SerializeField] public float resourceTimeToProduce { get; private set; }
     public int resourceAmountCapacity;
     [ReadOnly]
     public float resourceGenerationRate;

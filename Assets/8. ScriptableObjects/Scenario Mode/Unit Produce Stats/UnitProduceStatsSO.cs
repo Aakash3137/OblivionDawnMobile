@@ -10,8 +10,15 @@ public class UnitProduceStatsSO : ScriptableObject
     public Visuals unitVisuals;
     public VisionAngles unitVisionAngles;
     public AttackTargets unitAttackTargets;
-    public BuildCost[] unitUpkeep;
 
+    [Space(20)]
+    public bool hasUpkeep;
+    [ShowIf(nameof(hasUpkeep))]
+    public BuildCost[] upKeepCost;
+    [field: SerializeField, Space(10), ShowIf(nameof(hasUpkeep))]
+    public float upKeepTime { get; private set; }
+
+    [Space(20)]
     public OffenseBuildingStats spawnerBuilding;
 
     public bool canFly;
@@ -20,7 +27,7 @@ public class UnitProduceStatsSO : ScriptableObject
     public int unitPopulationCost;
     public Sprite UnitIcon;
 
-    [Header("Unit Upgrade Data")]
+    [Space(20), Header("Unit Upgrade Data")]
     public UnitUpgradeData[] unitUpgradeData;
 
     private void ValidateBase()
@@ -45,14 +52,14 @@ public class UnitProduceStatsSO : ScriptableObject
 
         var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
 
-        if (unitUpkeep == null || unitUpkeep.Length != enumValues.Length)
+        if (upKeepCost == null || upKeepCost.Length != enumValues.Length)
         {
-            unitUpkeep = new BuildCost[enumValues.Length];
+            upKeepCost = new BuildCost[enumValues.Length];
         }
 
         for (int j = 0; j < enumValues.Length; j++)
         {
-            unitUpkeep[j].resourceType = (ScenarioResourceType)enumValues.GetValue(j);
+            upKeepCost[j].resourceType = (ScenarioResourceType)enumValues.GetValue(j);
         }
 
     }
@@ -60,15 +67,18 @@ public class UnitProduceStatsSO : ScriptableObject
     {
         ValidateBase();
     }
-    [Button]
+    [ShowIf(nameof(hasUpkeep)), Button]
     public void SetUpKeepCost(float increasePercent)
     {
         increasePercent = increasePercent / 100f;
         float discount = 1f + increasePercent;
-        var baseCosts = unitUpkeep;
-        for (int i = 0; i < unitUpkeep.Length; i++)
+        var baseCosts = upKeepCost;
+        for (int i = 0; i < upKeepCost.Length; i++)
         {
-            unitUpkeep[i].resourceAmount = Mathf.RoundToInt(baseCosts[i].resourceAmount * discount);
+            var amt = Mathf.RoundToInt(baseCosts[i].resourceAmount * discount);
+
+            if (upKeepCost[i].resourceAmount != 0)
+                upKeepCost[i].resourceAmount = Mathf.Max(amt, 1);
         }
     }
 }

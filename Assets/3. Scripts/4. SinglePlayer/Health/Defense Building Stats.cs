@@ -4,6 +4,7 @@ public class DefenseBuildingStats : BuildingStats
 {
     public ScenarioDefenseType defenseType { get; private set; }
     public DefenseBuildingUpgradeData defenseBuildingData { get; private set; }
+    DefenseUnit defenseUnit;
 
     internal override void Initialize()
     {
@@ -13,9 +14,10 @@ public class DefenseBuildingStats : BuildingStats
         {
             defenseType = defenseWallSO.defenseType;
             defenseBuildingData = defenseWallSO.defenseBuildingUpgradeData[identity.spawnLevel];
-            buildTime = defenseBuildingData.buildingBuildTime;
-
             basicStats = defenseBuildingData.buildingBasicStats;
+
+            buildTime = defenseBuildingData.buildingBuildTime;
+            buildingWaitTime = new WaitForSeconds(buildTime);
         }
         else
         {
@@ -23,8 +25,19 @@ public class DefenseBuildingStats : BuildingStats
         }
 
         base.Initialize();
-    }
 
+        defenseUnit = GetComponent<DefenseUnit>();
+    }
+    internal override void EnableFunctionality()
+    {
+        if (defenseUnit != null)
+            defenseUnit.enabled = true;
+    }
+    internal override void DisableFunctionality()
+    {
+        if (defenseUnit != null)
+            defenseUnit.enabled = false;
+    }
     internal override void Die()
     {
         base.Die();

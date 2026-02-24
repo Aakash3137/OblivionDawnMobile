@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Sirenix.OdinInspector;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -13,6 +14,11 @@ public class BuildingStats : Stats
     private GameObject buildingPool;
     [field: SerializeField, ReadOnly]
     public Tile currentTile { get; private set; }
+
+    private ResourceManager rmInstance;
+    private BuildCost[] buildingUpkeepCost;
+    private bool hasUpkeep;
+    public WaitForSeconds buildingWaitTime { get; protected set; }
 
 
     internal override void Initialize()
@@ -30,6 +36,8 @@ public class BuildingStats : Stats
 
         side = currentTile.ownerSide;
 
+        buildingUpkeepCost = buildingStatsSO.upKeepCost;
+
         if (visuals.playerUnitMaterial == null)
         {
             Debug.Log($"<color=magenta>Assign materials for {name} on {buildingStatsSO.name} ScriptableObject</color>");
@@ -38,6 +46,24 @@ public class BuildingStats : Stats
         SetParent();
 
         base.Initialize();
+
+        switch (side)
+        {
+            case Side.Player:
+                rmInstance = PlayerResourceManager.Instance;
+                break;
+            case Side.Enemy:
+                rmInstance = EnemyResourceManager.Instance;
+                break;
+            default:
+                Debug.Log("<color=green>No Resource Manager found</color>");
+                break;
+        }
+
+        hasUpkeep = buildingStatsSO.hasUpkeep;
+
+        if (hasUpkeep)
+            InitializeBuildingUpkeep();
     }
 
     private void SetParent()
@@ -69,6 +95,48 @@ public class BuildingStats : Stats
         transform.parent = buildingPool?.transform;
     }
 
+    private void InitializeBuildingUpkeep() => StartCoroutine(BuildingUpkeepHandler());
+
+    private IEnumerator BuildingUpkeepHandler()
+    {
+        yield return new WaitForSeconds(buildTime);
+
+        var upKeepTime = new WaitForSeconds(buildingStatsSO.upKeepTime);
+        DecreaseGenerationRate();
+
+        while (currentHealth > 0)
+        {
+            if (CanMaintain())
+            {
+                EnableFunctionality();
+                rmInstance.SpendResources(buildingUpkeepCost);
+            }
+            else
+                DisableFunctionality();
+
+            yield return upKeepTime;
+        }
+    }
+
+    internal virtual void EnableFunctionality() { }
+    internal virtual void DisableFunctionality() { }
+
+    public bool CanMaintain()
+    {
+        return rmInstance.HasResources(buildingUpkeepCost);
+    }
+    private void IncreaseGenerationRate()
+    {
+        if (rmInstance != null)
+            rmInstance.IncreaseResourceGenerationRate(buildingUpkeepCost);
+    }
+
+    private void DecreaseGenerationRate()
+    {
+        if (rmInstance != null)
+            rmInstance.DecreaseResourceGenerationRate(buildingUpkeepCost);
+    }
+
     internal override void Die()
     {
         base.Die();
@@ -78,6 +146,9 @@ public class BuildingStats : Stats
 
     internal virtual void OnDestroy()
     {
+        if (hasUpkeep)
+            IncreaseGenerationRate();
+
         if (currentTile != null)
             currentTile.ClearOccupant();
     }

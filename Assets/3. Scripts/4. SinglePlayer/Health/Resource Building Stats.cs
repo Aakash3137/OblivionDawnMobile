@@ -6,14 +6,11 @@ public class ResourceBuildingStats : BuildingStats
 {
     [ReadOnly] public ScenarioResourceType resourceType { get; private set; }
     public ResourceBuildingUpgradeData resourceBuildingData { get; private set; }
-
     [field: SerializeField, ReadOnly] public bool isProducing { get; private set; }
-    // [field: SerializeField, ReadOnly] public int generatedResourceAmount;
+
     private PlayerResourceManager prmInstance;
     private EnemyResourceManager ermInstance;
     private WaitForSeconds waitTime;
-
-    private BuildingSkeleton buildingSkeleton;
 
     internal override void Initialize()
     {
@@ -32,6 +29,7 @@ public class ResourceBuildingStats : BuildingStats
             waitTime = new WaitForSeconds(resourceBuildingData.resourceTimeToProduce);
 
             buildTime = resourceBuildingData.buildingBuildTime;
+            buildingWaitTime = new WaitForSeconds(buildTime);
         }
         else
         {
@@ -40,23 +38,21 @@ public class ResourceBuildingStats : BuildingStats
 
         base.Initialize();
 
-        isProducing = false;
 
+        StartProducing();
     }
 
     private void StartProducing()
     {
-        IncreaseGlobalCapacity();
         StartCoroutine(StartResourceGeneration());
     }
 
-    /// <summary>
-    /// This coroutine will start generating resources for the building at the specified interval.
-    /// If the building is destroyed, the coroutine will end.
-    /// If the building's resource generation rate changes, the coroutine will adjust to the new rate.
-    /// </summary>
     private IEnumerator StartResourceGeneration()
     {
+        isProducing = false;
+        yield return buildingWaitTime;
+
+        IncreaseGlobalCapacity();
         bool wasProducing = false;
 
         while (currentHealth > 0)
@@ -81,10 +77,9 @@ public class ResourceBuildingStats : BuildingStats
 
             yield return waitTime;
 
-            if (canProduce)
-            {
-                Produce();
-            }
+            // if (canProduce)            
+            Produce();
+
         }
 
         if (wasProducing)
@@ -139,8 +134,6 @@ public class ResourceBuildingStats : BuildingStats
             ermInstance.DecreaseResourceGenerationRate(resourceType, resourceBuildingData.resourceGenerationRate);
     }
 
-
-
     private void IncreaseGlobalCapacity()
     {
         switch (side)
@@ -181,25 +174,11 @@ public class ResourceBuildingStats : BuildingStats
     {
         base.OnDestroy();
     }
-    private void OnEnable()
-    {
-        if (buildingSkeleton == null)
-            buildingSkeleton = GetComponent<BuildingSkeleton>();
-
-        buildingSkeleton.onBuildingBuilt += StartProducing;
-    }
-
-    private void OnDisable()
-    {
-        if (buildingSkeleton != null)
-            buildingSkeleton.onBuildingBuilt -= StartProducing;
-    }
 
     public float GetGenerationTime()
     {
         return resourceBuildingData.resourceTimeToProduce;
     }
-
 
     public ResourceBuildingDataSO GetBuildingSO()
     {

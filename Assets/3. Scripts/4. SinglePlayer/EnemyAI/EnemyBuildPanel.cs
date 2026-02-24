@@ -18,11 +18,11 @@ public class EnemyBuildPanel : MonoBehaviour
     [SerializeField] private WallParent _wallPrefab;
     private bool _mainWallPlaced = false;
     private float _wallYOffset = 1f;
-    private BuildingStats spawnedBuilding;
+    private BuildingStats placedBuilding;
 
     private void Awake()
     {
-       // GameManager.SetFactionNameThroughEnemyBuildPanel(enemyFactionName);
+        // GameManager.SetFactionNameThroughEnemyBuildPanel(enemyFactionName);
     }
     private void Start()
     {
@@ -72,9 +72,9 @@ public class EnemyBuildPanel : MonoBehaviour
 
         Vector3 spawnPos = currentTile.transform.position + Vector3.up * 2f;
 
-        spawnedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
+        placedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
 
-        spawnedBuilding.GetComponent<BuildingStats>().Initialize();
+        placedBuilding.Initialize();
 
         // currentTile.SetBuildingPlaced();
 
@@ -98,8 +98,8 @@ public class EnemyBuildPanel : MonoBehaviour
             return false;
         }
 
-        spawnedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
-        spawnedBuilding.GetComponent<BuildingStats>().Initialize();
+        placedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
+        placedBuilding.Initialize();
 
         // currentTile.SetBuildingPlaced();
 
@@ -114,8 +114,8 @@ public class EnemyBuildPanel : MonoBehaviour
     {
         BuildCost[] buildingBuildCost = null;
 
-            buildingBuildCost = buildingPrefab.buildingStatsSO.buildingBuildCost;
-        
+        buildingBuildCost = buildingPrefab.buildingStatsSO.buildingBuildCost;
+
         if (buildingBuildCost == null || !EnemyResourceManager.Instance.HasResources(buildingBuildCost))
         {
             //Debug.Log("<color=red>Insufficient Resources Building cannot be placed</color>");
@@ -159,7 +159,7 @@ public class EnemyBuildPanel : MonoBehaviour
 
         WallParent currentWall = Instantiate(_wallPrefab,
             new Vector3(_currentTileCords.x, _wallYOffset, _currentTileCords.z),
-            Quaternion.identity, spawnedBuilding.transform);
+            Quaternion.identity, placedBuilding.transform);
 
         for (int i = 0; i < adjacentTiles.Length; i++)
         {

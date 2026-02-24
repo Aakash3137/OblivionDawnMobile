@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -19,11 +20,12 @@ public class UnitStats : Stats
     [ShowIf(nameof(canFly)), ReadOnly]
     public FlyStats unitFlyStats;
     public override bool CanFly => canFly;
-
+    public BuildCost[] unitUpkeepCost;
     public OffenseBuildingStats spawnerBuilding { private get; set; }
     public UnitUpgradeData unitData { get; private set; }
-    public Action onUniqueUnitDied;
 
+    private ResourceManager rmInstance;
+    private bool hasUpkeep;
 
     internal override void Initialize()
     {
@@ -33,6 +35,9 @@ public class UnitStats : Stats
 
         visuals = unitProduceSO.unitVisuals;
         canFly = unitProduceSO.canFly;
+
+        unitUpkeepCost = unitProduceSO.upKeepCost;
+        hasUpkeep = unitProduceSO.hasUpkeep;
 
         side = spawnerBuilding.side;
 
@@ -58,6 +63,22 @@ public class UnitStats : Stats
             Debug.Log("<color=green>No GameObject with tag 'UnitPool' found in scene!</color>");
         else
             transform.parent = unitPool.transform;
+
+        switch (side)
+        {
+            case Side.Player:
+                rmInstance = PlayerResourceManager.Instance;
+                break;
+            case Side.Enemy:
+                rmInstance = EnemyResourceManager.Instance;
+                break;
+            default:
+                Debug.Log("<color=green>No Resource Manager found</color>");
+                break;
+        }
+
+        if (hasUpkeep)
+            InitializeUnitUpkeep();
     }
 
     public void FireWeapon()
@@ -70,15 +91,49 @@ public class UnitStats : Stats
 
     }
 
+    private void InitializeUnitUpkeep() => StartCoroutine(UnitUpkeepHandler());
+
+    private IEnumerator UnitUpkeepHandler()
+    {
+        var upKeepTime = new WaitForSeconds(unitProduceSO.upKeepTime);
+        DecreaseGenerationRate();
+
+        while (gameObject.activeInHierarchy)
+        {
+            if (CanMaintain())
+                rmInstance.SpendResources(unitUpkeepCost);
+            else
+                TakeDamage(10f);
+
+            yield return upKeepTime;
+        }
+    }
+    private bool CanMaintain()
+    {
+        return rmInstance.HasResources(unitUpkeepCost);
+    }
+    private void IncreaseGenerationRate()
+    {
+        if (rmInstance != null)
+            rmInstance.IncreaseResourceGenerationRate(unitUpkeepCost);
+    }
+
+    private void DecreaseGenerationRate()
+    {
+        if (rmInstance != null)
+            rmInstance.DecreaseResourceGenerationRate(unitUpkeepCost);
+    }
+
     internal override void Die()
     {
         base.Die();
+        spawnerBuilding.producedUnits.Remove(this);
         KillCounterManager.Instance.AddUnitKillData(unitType, side);
     }
 
     private void OnDestroy()
     {
-        if (unitProduceSO.unitIdentity.isUnique == true)
-            onUniqueUnitDied?.Invoke();
+        if (hasUpkeep)
+            IncreaseGenerationRate();
     }
 }

@@ -9,8 +9,6 @@ public class BuildingSkeleton : MonoBehaviour
 
     [SerializeField] ProgressManager progress;
     [SerializeField] BuildingProgress buildingProgress;
-
-    public Action onBuildingBuilt;
     private GameObject graphicObject;
     private GameObject constructionIcon;
 
@@ -29,7 +27,7 @@ public class BuildingSkeleton : MonoBehaviour
             constructionIcon.SetActive(true);
 
         await Awaitable.NextFrameAsync();
-        
+
         graphicObject = transform.GetChild(0).gameObject;
         graphicObject.SetActive(false);
 
@@ -71,6 +69,5 @@ public class BuildingSkeleton : MonoBehaviour
         if (constructionIcon != null)
             constructionIcon.SetActive(false);
         graphicObject.SetActive(true);
-        onBuildingBuilt?.Invoke();
     }
 }

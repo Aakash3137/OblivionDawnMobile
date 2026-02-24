@@ -21,7 +21,7 @@ public class TileUIPanel : MonoBehaviour
     private bool _mainWallPlaced = false;
     private float _wallYOffset = 1f;
     private Tile currentTile;
-    private BuildingStats spawnedBuilding;
+    private BuildingStats placedBuilding;
 
 
     private void Start()
@@ -69,9 +69,9 @@ public class TileUIPanel : MonoBehaviour
 
         Vector3 spawnPos = currentTile.transform.position + Vector3.up * 2f;
 
-        spawnedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
+        placedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
 
-        spawnedBuilding.Initialize();
+        placedBuilding.Initialize();
 
         // currentTile.SetBuildingPlaced();
 
@@ -142,7 +142,7 @@ public class TileUIPanel : MonoBehaviour
 
         WallParent currentWall = Instantiate(_wallPrefab,
             new Vector3(_currentTileCords.x, _wallYOffset, _currentTileCords.z),
-            Quaternion.identity, spawnedBuilding.transform);
+            Quaternion.identity, placedBuilding.transform);
 
         for (int i = 0; i < adjacentTiles.Length; i++)
         {

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -10,20 +11,19 @@ public class OffenseBuildingStats : BuildingStats
     // private CharacterDatabase characterDatabase => CharacterDatabase.Instance;
 
     [ReadOnly]
-    public UnitStats producedUnit;
-    private UnitStats unit;
+    public List<UnitStats> producedUnits = new List<UnitStats>();
+    [SerializeField, ReadOnly] private UnitStats unit;
     private Vector2Int currentGrid;
 
     private Tile nearestTile;
     private WaitForSeconds waitTime;
-    public bool isProducing { get; private set; }
-    private BuildingSkeleton buildingSkeleton;
+    private bool canMaintain => CanMaintain();
+    [field: SerializeField, ReadOnly] public bool isProducing { get; private set; }
+    private int maxSpawnableUnits;
 
     internal override void Initialize()
     {
         identity = buildingStatsSO.buildingIdentity;
-
-        isProducing = true;
 
         cgmInstance = CubeGridManager.Instance;
 
@@ -33,16 +33,17 @@ public class OffenseBuildingStats : BuildingStats
             offenseBuildingData = offenseBuildingSO.offenseBuildingUpgradeData[identity.spawnLevel];
 
             buildCost = offenseBuildingSO.buildingBuildCost;
-            waitTime = new WaitForSeconds(offenseBuildingData.unitSpawnTime);
 
-            basicStats = offenseBuildingData.buildingBasicStats;
+            waitTime = new WaitForSeconds(offenseBuildingData.unitSpawnTime);
 
             unit = offenseBuildingSO.unitPrefab;
 
-            buildTime = offenseBuildingData.buildingBuildTime;
+            basicStats = offenseBuildingData.buildingBasicStats;
 
-            if (unit != null && unit.unitProduceSO.unitIdentity.isUnique)
-                isProducing = false;
+            buildTime = offenseBuildingData.buildingBuildTime;
+            buildingWaitTime = new WaitForSeconds(buildTime);
+
+            maxSpawnableUnits = offenseBuildingData.maxSpawnableUnits;
         }
         else
         {
@@ -53,76 +54,76 @@ public class OffenseBuildingStats : BuildingStats
 
         currentGrid = CubeGridManager.Instance.WorldToGrid(currentTile.transform.position);
 
-        // StartProducingUnits();
+        StartProduction();
     }
 
-    private void StartProducingUnits()
+    private void StartProduction()
     {
-        producedUnit = null;
-
-        if (offenseBuildingData != null)
-            StartCoroutine(ProductionLoop());
+        StartCoroutine(ProduceUnits());
     }
 
-    private void StartProductionLoop()
-    {
-        producedUnit = null;
-        isProducing = true;
-        if (offenseBuildingData != null)
-            StartCoroutine(ProductionLoop());
-    }
-    private void StopProduction()
+    private IEnumerator ProduceUnits()
     {
         isProducing = false;
-        StopAllCoroutines();
-    }
+        yield return new WaitForSeconds(buildTime);
 
-
-    private IEnumerator ProductionLoop()
-    {
-        do
+        while (currentHealth > 0)
         {
-            // if (HasResources())
-            // {
-            //     yield return unitBuildTimeDelay;
-            //     SpawnUnit();
-            //     //prmInstance.SpendResources(unitUpgradeCosts);
-            // }
+            if (canMaintain && maxSpawnableUnits > producedUnits.Count)
+            {
+                isProducing = true;
+            }
+            else
+            {
+                isProducing = false;
+                yield return new WaitUntil(FulFillSpawnConditions);
+                continue;
+            }
+
+            if (!TryGetSpawnPosition(out Vector3 spawnPoint))
+            {
+                isProducing = false;
+                yield return new WaitForSeconds(1f);
+                continue;
+            }
+
+            isProducing = true;
             yield return waitTime;
-            SpawnUnit();
+
+            // if (canMaintain)
+            SpawnUnit(spawnPoint);
         }
-        while (isProducing && currentHealth > 0);
-
-        // Debug.Log("<color=magenta>Produced Unique unit from " + name + ".</color>");
-
-        if (currentHealth <= 0)
-            Debug.Log("<color=red>Health is 0 for " + name + ".</color>");
     }
 
-    private void SpawnUnit()
+    private bool FulFillSpawnConditions()
     {
-        // nearestTile = cgmInstance.GetNearestOpenTile(currentTile, currentGrid);
+        return canMaintain && maxSpawnableUnits > producedUnits.Count;
+    }
 
+    private void SpawnUnit(Vector3 spawnPoint)
+    {
+        if (producedUnits.Count >= maxSpawnableUnits)
+            return;
+
+        var intUnit = Instantiate(unit, spawnPoint, Quaternion.identity, transform);
+        intUnit.spawnerBuilding = this;
+        intUnit.Initialize();
+
+        producedUnits.Add(intUnit);
+    }
+
+    private bool TryGetSpawnPosition(out Vector3 spawnPosition)
+    {
         nearestTile = cgmInstance.GetNearestOpenTile(currentGrid, side, transform.position);
 
-        if (nearestTile == null)
+        if (nearestTile != null)
         {
-            Debug.Log($"{name} has no open tile to spawn units on!");
-            return;
+            spawnPosition = nearestTile.transform.position + Vector3.up * 2f;
+            return true;
         }
 
-        Vector3 spawnPoint = nearestTile.transform.position + Vector3.up * 2f;
-
-        producedUnit = Instantiate(unit, spawnPoint, Quaternion.identity, transform);
-
-        producedUnit.spawnerBuilding = this;
-
-        producedUnit.Initialize();
-
-        if (producedUnit != null && !isProducing)
-        {
-            producedUnit.GetComponent<UnitStats>().onUniqueUnitDied += StartProducingUnits;
-        }
+        spawnPosition = Vector3.zero;
+        return false;
     }
 
     public float GetUnitSpawnTime()
@@ -135,22 +136,6 @@ public class OffenseBuildingStats : BuildingStats
         base.Die();
 
         KillCounterManager.Instance.AddOffenseBuildingDestroyedData(offenseType, side);
-    }
-    private void OnEnable()
-    {
-        if (buildingSkeleton == null)
-            buildingSkeleton = GetComponent<BuildingSkeleton>();
-
-        buildingSkeleton.onBuildingBuilt += StartProductionLoop;
-    }
-
-    private void OnDisable()
-    {
-        if (producedUnit != null)
-            producedUnit.GetComponent<UnitStats>().onUniqueUnitDied -= StartProducingUnits;
-
-        if (buildingSkeleton != null)
-            buildingSkeleton.onBuildingBuilt -= StartProductionLoop;
     }
 
     public void SetUnitPrefab(UnitStats prefab)

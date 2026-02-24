@@ -28,15 +28,18 @@ MonoBehaviour:
   unitAttackTargets:
     canAttackAir: 1
     canAttackGround: 1
-  unitUpkeep:
+  maxSpawnable: 1
+  hasUpkeep: 0
+  upKeepCost:
   - resourceType: 0
-    resourceAmount: 0
+    resourceAmount: 1
   - resourceType: 1
-    resourceAmount: 0
+    resourceAmount: 3
   - resourceType: 2
-    resourceAmount: 0
+    resourceAmount: 4
   - resourceType: 3
-    resourceAmount: 0
+    resourceAmount: 2
+  <upKeepTime>k__BackingField: 5
   spawnerBuilding: {fileID: -1173357006952606888, guid: b448788bf42798242969731998522c60, type: 3}
   canFly: 1
   unitFlyStats:
