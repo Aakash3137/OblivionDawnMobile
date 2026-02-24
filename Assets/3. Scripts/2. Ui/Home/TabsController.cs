@@ -1,50 +1,65 @@
+using System;
 using UnityEngine;
 
 public class TabsController : MonoBehaviour
 {
-    [Header("Assign In Enum Order")]
-    [SerializeField] private TabButton[] buttons;   // size 5
-    [SerializeField] private GameObject[] panels;   // size 5
+    public TabButton01[] tabButtons;
+    public GameObject[] panels;
 
     private int currentIndex = -1;
 
-    private void Awake()
+    void Start()
     {
-        // Safety check (editor only)
-#if UNITY_EDITOR
-        if (buttons.Length != 5 || panels.Length != 5)
-            Debug.LogError("TabsController requires exactly 5 buttons and 5 panels.");
-#endif
-
-        for (int i = 0; i < buttons.Length; i++)
+        for (int i = 0; i < tabButtons.Length; i++)
         {
-            buttons[i].Initialize(this, (UITab)i);
+            tabButtons[i].Init(this, i);
         }
+
+        SelectTab(2); // Default tab
     }
 
-    private void Start()
+    public void SelectTab(int index)
     {
-        SelectTab(UITab.Home);
-    }
-
-    public void SelectTab(UITab tab)
-    {
-        int newIndex = (int)tab;
-
-        if (newIndex == currentIndex)
+        if (currentIndex == index)
             return;
 
-        // Disable previous
-        if (currentIndex >= 0)
+        currentIndex = index;
+
+        for (int i = 0; i < tabButtons.Length; i++)
         {
-            panels[currentIndex].SetActive(false);
-            buttons[currentIndex].SetSelected(false);
+            bool isSelected = i == index;
+
+            tabButtons[i].SetSelected(isSelected);
+            panels[i].SetActive(isSelected);
+
+            //get child of button named "Icon" and set it's scale to 1.2 using lerp animation
+            
+            Transform iconTransform = tabButtons[i].transform.Find("Icon");
+            if (iconTransform != null)
+            {
+                //set recttransform scale to 1.2 using lerp animation
+                Vector3 targetScale = isSelected ? Vector3.one * 1.2f : Vector3.one * 0.8f;
+                StartCoroutine(LerpScale(iconTransform, targetScale, 0.15f));
+
+            }
+
+
+        }
+    }
+
+    private System.Collections.IEnumerator LerpScale(Transform iconTransform, Vector3 targetScale, float duration)
+    {
+        Vector3 startScale = iconTransform.localScale;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsedTime / duration);
+            iconTransform.localScale = Vector3.Lerp(startScale, targetScale, t);
+            yield return null;
         }
 
-        // Enable new
-        panels[newIndex].SetActive(true);
-        buttons[newIndex].SetSelected(true);
-
-        currentIndex = newIndex;
+        iconTransform.localScale = targetScale;
     }
 }

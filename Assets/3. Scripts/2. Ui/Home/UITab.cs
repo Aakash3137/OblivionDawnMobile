@@ -1,8 +1,8 @@
 public enum UITab
 {
-    Home = 0,
-    Army = 1,
-    Shop = 2,
-    Research = 3,
-    Profile = 4
+    Shop = 0,
+    Level = 1,
+    Battle = 2,
+    Upgrades = 3,
+    Deck = 4
 }
