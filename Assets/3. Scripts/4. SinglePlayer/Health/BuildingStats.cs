@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Microsoft.Unity.VisualStudio.Editor;
 using Sirenix.OdinInspector;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -19,6 +20,8 @@ public class BuildingStats : Stats
     private BuildCost[] buildingUpkeepCost;
     private bool hasUpkeep;
     public WaitForSeconds buildingWaitTime { get; protected set; }
+
+    public FunctionalityUI functionalityUI { get; private set; }
 
 
     internal override void Initialize()
@@ -61,6 +64,8 @@ public class BuildingStats : Stats
         }
 
         hasUpkeep = buildingStatsSO.hasUpkeep;
+
+        functionalityUI = GetComponentInChildren<FunctionalityUI>();
 
         if (hasUpkeep)
             InitializeBuildingUpkeep();

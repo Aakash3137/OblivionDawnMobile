@@ -76,22 +76,20 @@ public class OffenseBuildingStats : BuildingStats
             else
             {
                 isProducing = false;
+                if (functionalityUI != null)
+                    functionalityUI.ShowUI();
                 yield return new WaitUntil(FulFillSpawnConditions);
                 continue;
             }
 
-            if (!TryGetSpawnPosition(out Vector3 spawnPoint))
-            {
-                isProducing = false;
-                yield return new WaitForSeconds(1f);
-                continue;
-            }
-
             isProducing = true;
+            if (functionalityUI != null)
+                functionalityUI.HideUI();
+
             yield return waitTime;
 
             // if (canMaintain)
-            SpawnUnit(spawnPoint);
+            SpawnUnit();
         }
     }
 
@@ -100,16 +98,22 @@ public class OffenseBuildingStats : BuildingStats
         return canMaintain && maxSpawnableUnits > producedUnits.Count;
     }
 
-    private void SpawnUnit(Vector3 spawnPoint)
+    private void SpawnUnit()
     {
         if (producedUnits.Count >= maxSpawnableUnits)
             return;
 
-        var intUnit = Instantiate(unit, spawnPoint, Quaternion.identity, transform);
-        intUnit.spawnerBuilding = this;
-        intUnit.Initialize();
-
-        producedUnits.Add(intUnit);
+        if (TryGetSpawnPosition(out Vector3 spawnPoint))
+        {
+            var intUnit = Instantiate(unit, spawnPoint, Quaternion.identity, transform);
+            intUnit.spawnerBuilding = this;
+            intUnit.Initialize();
+            producedUnits.Add(intUnit);
+        }
+        else
+        {
+            Debug.Log("<color=red>[OffenseBuildingStats] No spawn position found</color>");
+        }
     }
 
     private bool TryGetSpawnPosition(out Vector3 spawnPosition)

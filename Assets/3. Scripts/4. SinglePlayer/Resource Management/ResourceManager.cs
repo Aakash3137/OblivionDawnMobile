@@ -7,150 +7,103 @@ public class ResourceManager : MonoBehaviour
 {
     [Header("Set Starting Resources")]
     public BuildCost[] startingResources;
-    public int currentFood { get; protected set; }
-    public int currentGold { get; protected set; }
-    public int currentMetal { get; protected set; }
-    public int CurrentPower { get; protected set; }
 
-    public int maxFood { get; protected set; }
-    public int maxGold { get; protected set; }
-    public int maxMetal { get; protected set; }
-    public int maxPower { get; protected set; }
+    [Header("Current Resources"), ReadOnly]
+    public BuildCost[] currentResources;
 
-    [field: Header("EDITOR VIEW ONLY")]
-    [field: SerializeField, ReadOnly]
-    public float currentFoodGenerationRate { get; protected set; }
-    [field: SerializeField, ReadOnly]
-    public float currentGoldGenerationRate { get; protected set; }
-    [field: SerializeField, ReadOnly]
-    public float currentMetalGenerationRate { get; protected set; }
-    [field: SerializeField, ReadOnly]
-    public float currentPowerGenerationRate { get; protected set; }
+    [Header("Max Resources (Capacity)"), ReadOnly]
+    public BuildCost[] maxResources;
+
+    [Header("Generation Rates"), ReadOnly]
+    public BuildCost[] currentGenerationRates;
 
     public Action OnResourcesChanged;
 
+
     private void Start()
     {
-        SetResources(startingResources);
+        InitializeResources(startingResources);
+    }
+
+    public void InitializeResources(BuildCost[] resources)
+    {
+        currentResources = new BuildCost[resources.Length];
+        maxResources = new BuildCost[resources.Length];
+        currentGenerationRates = new BuildCost[resources.Length];
+
+        for (int i = 0; i < resources.Length; i++)
+        {
+            currentResources[i].resourceType = resources[i].resourceType;
+            maxResources[i].resourceType = resources[i].resourceType;
+            currentGenerationRates[i].resourceType = resources[i].resourceType;
+
+            maxResources[i].resourceAmount = resources[i].resourceAmount;
+            currentResources[i].resourceAmount = resources[i].resourceAmount;
+        }
+
+        ClampResources();
     }
 
     public void SetResources(BuildCost[] resources)
     {
-        currentFood = resources[0].resourceAmount;
-        currentGold = resources[1].resourceAmount;
-        currentMetal = resources[2].resourceAmount;
-        CurrentPower = resources[3].resourceAmount;
+        for (int i = 0; i < currentResources.Length; i++)
+        {
+            currentResources[i].resourceAmount = resources[i].resourceAmount;
+            maxResources[i].resourceAmount = resources[i].resourceAmount;
+        }
 
-        maxFood = currentFood;
-        maxGold = currentGold;
-        maxMetal = currentMetal;
-        maxPower = CurrentPower;
-
-        // Invoke the event to notify listeners
-        OnResourcesChanged?.Invoke();
+        ClampResources();
     }
 
     public void IncreaseResourcesCap(ScenarioResourceType resourceType, int amount = 0)
     {
-        switch (resourceType)
-        {
-            case ScenarioResourceType.Food:
-                maxFood += amount;
-                break;
-            case ScenarioResourceType.Gold:
-                maxGold += amount;
-                break;
-            case ScenarioResourceType.Metal:
-                maxMetal += amount;
-                break;
-            case ScenarioResourceType.Power:
-                maxPower += amount;
-                break;
-        }
-    }
-    public void DecreaseResourcesCap(ScenarioResourceType resourceType, int amount = 0)
-    {
-        switch (resourceType)
-        {
-            case ScenarioResourceType.Food:
-                maxFood -= amount;
-                break;
-            case ScenarioResourceType.Gold:
-                maxGold -= amount;
-                break;
-            case ScenarioResourceType.Metal:
-                maxMetal -= amount;
-                break;
-            case ScenarioResourceType.Power:
-                maxPower -= amount;
-                break;
-        }
-
+        maxResources[(int)resourceType].resourceAmount += amount;
         ClampResources();
     }
 
+    public void DecreaseResourcesCap(ScenarioResourceType resourceType, int amount = 0)
+    {
+        maxResources[(int)resourceType].resourceAmount -= amount;
+        ClampResources();
+    }
 
     public void AddResources(ScenarioResourceType resourceType, int amount = 0)
     {
-        // Don't over produce
-        switch (resourceType)
-        {
-            case ScenarioResourceType.Food:
-                currentFood += amount;
-                break;
-            case ScenarioResourceType.Gold:
-                currentGold += amount;
-                break;
-            case ScenarioResourceType.Metal:
-                currentMetal += amount;
-                break;
-            case ScenarioResourceType.Power:
-                CurrentPower += amount;
-                break;
-        }
-
-        // Invoke the event to notify listeners
+        currentResources[(int)resourceType].resourceAmount += amount;
         ClampResources();
     }
-
     public void SpendResources(BuildCost[] resources)
     {
-        currentFood -= resources[0].resourceAmount;
-        currentGold -= resources[1].resourceAmount;
-        currentMetal -= resources[2].resourceAmount;
-        CurrentPower -= resources[3].resourceAmount;
-
-        // Invoke the event to notify listeners
+        for (int i = 0; i < resources.Length; i++)
+        {
+            currentResources[i].resourceAmount -= resources[i].resourceAmount;
+        }
         ClampResources();
     }
 
     public bool HasResources(BuildCost[] resources, bool debug = false)
     {
-        int food = resources[0].resourceAmount;
-        int gold = resources[1].resourceAmount;
-        int metal = resources[2].resourceAmount;
-        int power = resources[3].resourceAmount;
+        bool hasAllResources = true;
 
-        if (debug)
+        for (int i = 0; i < currentResources.Length; i++)
         {
-            if (currentFood - food < 0)
-                Debug.Log($"<color=#C6616B>Not enough food, Need {food - currentFood} more food</color>");
-            if (currentGold - gold < 0)
-                Debug.Log($"<color=#D4B608>Not enough gold, Need {gold - currentGold} more gold</color>");
-            if (currentMetal - metal < 0)
-                Debug.Log($"<color=#ADB4BD>Not enough metal, Need {metal - currentMetal} more metal</color>");
-            if (CurrentPower - power < 0)
-                Debug.Log($"<color=#4AAEDB>Not enough power, Need {power - CurrentPower} more power</color>");
+            if (currentResources[i].resourceAmount - resources[i].resourceAmount < 0)
+            {
+                if (debug)
+                    Debug.Log($"<color=#C6616B>Not enough {currentResources[i].resourceType}, Need {currentResources[i].resourceAmount - resources[i].resourceAmount} more {currentResources[i].resourceType}</color>");
+                hasAllResources = false;
+            }
         }
 
-        return currentFood >= food && currentGold >= gold && currentMetal >= metal && CurrentPower >= power;
+        return hasAllResources;
     }
+
     private void ClampResources()
     {
-        currentFood = Mathf.Clamp(currentFood, 0, maxFood);
-        currentGold = Mathf.Clamp(currentGold, 0, maxGold);
-        currentMetal = Mathf.Clamp(currentMetal, 0, maxMetal);
-        CurrentPower = Mathf.Clamp(CurrentPower, 0, maxPower);
+        for (int i = 0; i < currentResources.Length; i++)
+        {
+            currentResources[i].resourceAmount = Mathf.Clamp(currentResources[i].resourceAmount, 0, maxResources[i].resourceAmount);
+        }
 
         OnResourcesChanged?.Invoke();
     }
@@ -158,85 +111,38 @@ public class ResourceManager : MonoBehaviour
     #region Resource Generation
     public void IncreaseResourceGenerationRate(ScenarioResourceType resourceType, float amount = 0)
     {
-        switch (resourceType)
-        {
-            case ScenarioResourceType.Food:
-                currentFoodGenerationRate += amount;
-                break;
-            case ScenarioResourceType.Gold:
-                currentGoldGenerationRate += amount;
-                break;
-            case ScenarioResourceType.Metal:
-                currentMetalGenerationRate += amount;
-                break;
-            case ScenarioResourceType.Power:
-                currentPowerGenerationRate += amount;
-                break;
-        }
-
-        // This event is handling both resources changed and resource generation rate changed
-        OnResourcesChanged?.Invoke();
+        currentGenerationRates[(int)resourceType].resourceAmount += (int)amount;
+        ClampResources();
     }
 
     public void IncreaseResourceGenerationRate(BuildCost[] resources)
     {
-        currentFoodGenerationRate += resources[0].resourceAmount;
-        currentGoldGenerationRate += resources[1].resourceAmount;
-        currentMetalGenerationRate += resources[2].resourceAmount;
-        currentPowerGenerationRate += resources[3].resourceAmount;
-
-        // This event is handling both resources changed and resource generation rate changed
-        OnResourcesChanged?.Invoke();
+        for (int i = 0; i < resources.Length; i++)
+        {
+            currentGenerationRates[i].resourceAmount += resources[i].resourceAmount;
+        }
+        ClampResources();
     }
 
     public void DecreaseResourceGenerationRate(ScenarioResourceType resourceType, float amount = 0)
     {
-        switch (resourceType)
-        {
-            case ScenarioResourceType.Food:
-                currentFoodGenerationRate -= amount;
-                break;
-            case ScenarioResourceType.Gold:
-                currentGoldGenerationRate -= amount;
-                break;
-            case ScenarioResourceType.Metal:
-                currentMetalGenerationRate -= amount;
-                break;
-            case ScenarioResourceType.Power:
-                currentPowerGenerationRate -= amount;
-                break;
-        }
-
-        // This event is handling both resources changed and resource generation rate changed
-        OnResourcesChanged?.Invoke();
+        currentGenerationRates[(int)resourceType].resourceAmount -= (int)amount;
+        ClampResources();
     }
 
     public void DecreaseResourceGenerationRate(BuildCost[] resources)
     {
-        currentFoodGenerationRate -= resources[0].resourceAmount;
-        currentGoldGenerationRate -= resources[1].resourceAmount;
-        currentMetalGenerationRate -= resources[2].resourceAmount;
-        currentPowerGenerationRate -= resources[3].resourceAmount;
-
-        // This event is handling both resources changed and resource generation rate changed
-        OnResourcesChanged?.Invoke();
+        for (int i = 0; i < resources.Length; i++)
+        {
+            currentGenerationRates[i].resourceAmount -= resources[i].resourceAmount;
+        }
+        ClampResources();
     }
     #endregion
 
     public bool CanAddResource(ScenarioResourceType type, int amount)
     {
-        switch (type)
-        {
-            case ScenarioResourceType.Food:
-                return currentFood + amount <= maxFood;
-            case ScenarioResourceType.Gold:
-                return currentGold + amount <= maxGold;
-            case ScenarioResourceType.Metal:
-                return currentMetal + amount <= maxMetal;
-            case ScenarioResourceType.Power:
-                return CurrentPower + amount <= maxPower;
-        }
-        return false;
+        return currentResources[(int)type].resourceAmount + amount <= maxResources[(int)type].resourceAmount;
     }
     void OnValidate()
     {
@@ -250,5 +156,16 @@ public class ResourceManager : MonoBehaviour
         {
             startingResources[i].resourceType = (ScenarioResourceType)enumValues.GetValue(i);
         }
+    }
+
+    [Button]
+    public void DecreaseAllResources(int amount)
+    {
+        for (int i = 0; i < currentResources.Length; i++)
+        {
+            currentResources[i].resourceAmount -= amount;
+        }
+
+        ClampResources();
     }
 }
