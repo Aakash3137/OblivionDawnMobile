@@ -389,7 +389,7 @@ public class HomeUIManager : MonoBehaviour
     private void DisableAllPanels()
     {
         _uiLoginPanel.SetActive(false);
-        HomePanel.SetActive(false);
+        //HomePanel.SetActive(false);
         PrivateLobbyPanel.SetActive(false);
         PvpDisplayPanel.SetActive(false);
         LoadingPanel.SetActive(false);
