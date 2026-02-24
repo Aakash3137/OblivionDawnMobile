@@ -8,38 +8,22 @@ public class ResourceUpdateUI : MonoBehaviour
 
     [Header("Assign PlayerResourceManager Reference")]
     [SerializeField] private ResourceManager rmReference;
-
     [SerializeField] private DecSelectionData decSelectionData;
 
     [Header("Resource Amount Texts")]
-    [SerializeField] private TMP_Text foodText;
-    [SerializeField] private TMP_Text goldText;
-    [SerializeField] private TMP_Text metalText;
-    [SerializeField] private TMP_Text powerText;
+    [SerializeField] private TMP_Text[] resourceTexts;
 
     [Header("Generation Rate Texts")]
-    [SerializeField] private TMP_Text foodGenerationRateText;
-    [SerializeField] private TMP_Text goldGenerationRateText;
-    [SerializeField] private TMP_Text metalGenerationRateText;
-    [SerializeField] private TMP_Text powerGenerationRateText;
-
+    [SerializeField] private TMP_Text[] generationRateTexts;
 
     [Header("Resource Icon Images")]
-    [SerializeField] private Image foodIconImage;
-    [SerializeField] private Image goldIconImage;
-    [SerializeField] private Image metalIconImage;
-    [SerializeField] private Image powerIconImage;
+    [SerializeField] private Image[] resourceIconImages;
 
     [Header("Resource Icon FillBar")]
-    [SerializeField] private Image foodFillBar;
-    [SerializeField] private Image goldFillBar;
-    [SerializeField] private Image metalFillBar;
-    [SerializeField] private Image powerFillBar;
+    [SerializeField] private Image[] resourceFillBars;
 
-    private Sprite foodSprite;
-    private Sprite goldSprite;
-    private Sprite metalSprite;
-    private Sprite powerSprite;
+    private Sprite[] resourceSprites;
+
 
     private void OnEnable()
     {
@@ -74,31 +58,29 @@ public class ResourceUpdateUI : MonoBehaviour
 
     private void ResourceTextHandler()
     {
-        foodText.SetText("{0}", rmReference.currentFood);
-        goldText.SetText("{0}", rmReference.currentGold);
-        metalText.SetText("{0}", rmReference.currentMetal);
-        powerText.SetText("{0}", rmReference.CurrentPower);
+        for (int i = 0; i < rmReference.currentResources.Length; i++)
+        {
+            resourceTexts[i].SetText("{0}", rmReference.currentResources[i].resourceAmount);
+        }
     }
 
     private void GenerationTextHandler()
     {
-        ToggleText(foodGenerationRateText, rmReference.currentFoodGenerationRate);
-        ToggleText(goldGenerationRateText, rmReference.currentGoldGenerationRate);
-        ToggleText(metalGenerationRateText, rmReference.currentMetalGenerationRate);
-        ToggleText(powerGenerationRateText, rmReference.currentPowerGenerationRate);
+        for (int i = 0; i < generationRateTexts.Length; i++)
+        {
+            ToggleText(generationRateTexts[i], rmReference.currentGenerationRates[i].resourceAmount);
+        }
     }
 
     private void UIStorageFillHandler()
     {
-        float foodPercent = (float)rmReference.currentFood / rmReference.maxFood;
-        float goldPercent = (float)rmReference.currentGold / rmReference.maxGold;
-        float metalPercent = (float)rmReference.currentMetal / rmReference.maxMetal;
-        float powerPercent = (float)rmReference.CurrentPower / rmReference.maxPower;
+        float[] resourcePercentages = new float[rmReference.currentResources.Length];
 
-        UpdateFillAmount(foodFillBar, foodPercent);
-        UpdateFillAmount(goldFillBar, goldPercent);
-        UpdateFillAmount(metalFillBar, metalPercent);
-        UpdateFillAmount(powerFillBar, powerPercent);
+        for (int i = 0; i < rmReference.currentResources.Length; i++)
+        {
+            resourcePercentages[i] = (float)rmReference.currentResources[i].resourceAmount / rmReference.maxResources[i].resourceAmount;
+            UpdateFillAmount(resourceFillBars[i], resourcePercentages[i]);
+        }
     }
 
     private void ToggleText(TMP_Text text, float amount)
@@ -128,20 +110,29 @@ public class ResourceUpdateUI : MonoBehaviour
             return;
         }
 
-        FactionName currentFaction = decSelectionData.CurrentFaction;
+        var decFactionData = decSelectionData.AllFactionDecData[(int)decSelectionData.CurrentFaction];
+        var totalResources = decFactionData.SelectedResourceDeck.Count;
 
-        foodSprite = decSelectionData.AllFactionDecData[(int)currentFaction].SelectedResourceDeck[0].buildingIcon;
-        goldSprite = decSelectionData.AllFactionDecData[(int)currentFaction].SelectedResourceDeck[1].buildingIcon;
-        metalSprite = decSelectionData.AllFactionDecData[(int)currentFaction].SelectedResourceDeck[2].buildingIcon;
-        powerSprite = decSelectionData.AllFactionDecData[(int)currentFaction].SelectedResourceDeck[3].buildingIcon;
+        resourceSprites = new Sprite[totalResources];
+
+        for (int i = 0; i < totalResources; i++)
+        {
+            resourceSprites[i] = decFactionData.SelectedResourceDeck[i].buildingIcon;
+        }
     }
 
     private void SetResourceSprites()
     {
-        foodIconImage.sprite = foodSprite;
-        goldIconImage.sprite = goldSprite;
-        metalIconImage.sprite = metalSprite;
-        powerIconImage.sprite = powerSprite;
+        if (resourceSprites.Length != resourceIconImages.Length)
+        {
+            Debug.Log($"<color=#000000>[ResourceUpdateUI] {gameObject.name} ResourceSprites from decSelectionData and ResourceIconImages on UI are not the same length</color>");
+        }
+
+
+        for (int i = 0; i < resourceIconImages.Length; i++)
+        {
+            resourceIconImages[i].sprite = resourceSprites[i];
+        }
     }
     #endregion
 }
