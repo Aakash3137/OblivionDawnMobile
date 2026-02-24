@@ -32,11 +32,17 @@ public class DefenseBuildingStats : BuildingStats
     {
         if (defenseUnit != null)
             defenseUnit.enabled = true;
+
+        if (functionalityUI != null)
+            functionalityUI.HideUI();
     }
     internal override void DisableFunctionality()
     {
         if (defenseUnit != null)
             defenseUnit.enabled = false;
+
+        if (functionalityUI != null)
+            functionalityUI.ShowUI();
     }
     internal override void Die()
     {

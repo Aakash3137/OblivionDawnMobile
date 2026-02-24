@@ -48,6 +48,7 @@ public class ResourceManager : MonoBehaviour
 
         // Invoke the event to notify listeners
         OnResourcesChanged?.Invoke();
+        Debug.Log("Starting Resources Set for " + gameObject.name);
     }
 
     public void IncreaseResourcesCap(ScenarioResourceType resourceType, int amount = 0)
@@ -112,7 +113,6 @@ public class ResourceManager : MonoBehaviour
         // Invoke the event to notify listeners
         ClampResources();
     }
-
     public void SpendResources(BuildCost[] resources)
     {
         currentFood -= resources[0].resourceAmount;
@@ -250,5 +250,17 @@ public class ResourceManager : MonoBehaviour
         {
             startingResources[i].resourceType = (ScenarioResourceType)enumValues.GetValue(i);
         }
+    }
+
+
+    [Button]
+    public void DecreaseAllResources(int amount)
+    {
+        currentFood -= amount;
+        currentGold -= amount;
+        currentMetal -= amount;
+        CurrentPower -= amount;
+
+        ClampResources();
     }
 }

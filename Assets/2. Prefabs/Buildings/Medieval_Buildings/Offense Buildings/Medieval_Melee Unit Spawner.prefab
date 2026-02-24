@@ -293,6 +293,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GenericComponents: []
+  <buildTime>k__BackingField: 0
   progress: {fileID: 0}
   buildingProgress: {fileID: 0}
 --- !u!114 &-8976530165009927266
@@ -320,7 +321,9 @@ MonoBehaviour:
   <side>k__BackingField: 0
   <buildingStatsSO>k__BackingField: {fileID: 11400000, guid: ec0f48af94393d04d9e1a07b0323dfcd, type: 2}
   <currentTile>k__BackingField: {fileID: 0}
-  producedUnit: {fileID: 0}
+  producedUnits: []
+  unit: {fileID: 0}
+  <isProducing>k__BackingField: 0
 --- !u!114 &-5704572815166906137
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -333,8 +336,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd86b6216a32ed04a869483ef87f6485, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gem: {fileID: 4905414917278168185, guid: dc03cc3b50d14154ca3cee99725916ab, type: 3}
-  gemYOffset: -0.5
 --- !u!1001 &1512948493298473283
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -565,11 +566,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1227113396630195234, guid: d90d60e492017bb42a309058f633fc5c, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 120
       objectReference: {fileID: 0}
     - target: {fileID: 1227113396630195234, guid: d90d60e492017bb42a309058f633fc5c, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 120
       objectReference: {fileID: 0}
     - target: {fileID: 1227113396630195234, guid: d90d60e492017bb42a309058f633fc5c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -605,7 +606,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1227113396630195234, guid: d90d60e492017bb42a309058f633fc5c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.78
+      value: 0.9
       objectReference: {fileID: 0}
     - target: {fileID: 1227113396630195234, guid: d90d60e492017bb42a309058f633fc5c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

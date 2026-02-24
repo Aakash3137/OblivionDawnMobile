@@ -79,11 +79,7 @@ public class ResourceBuildingStats : BuildingStats
 
             // if (canProduce)            
             Produce();
-
         }
-
-        if (wasProducing)
-            DecreaseGenerationRate();
     }
 
 
@@ -162,17 +158,12 @@ public class ResourceBuildingStats : BuildingStats
 
     internal override void Die()
     {
-        DecreaseGlobalCapacity();
-        DecreaseGenerationRate();
-
         base.Die();
 
+        DecreaseGlobalCapacity();
+        if (isProducing)
+            DecreaseGenerationRate();
         KillCounterManager.Instance.AddResourceBuildingDestroyedData(resourceType, side);
-    }
-
-    internal override void OnDestroy()
-    {
-        base.OnDestroy();
     }
 
     public float GetGenerationTime()

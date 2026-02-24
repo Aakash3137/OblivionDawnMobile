@@ -41,24 +41,27 @@ public class ResourceUpdateUI : MonoBehaviour
     private Sprite metalSprite;
     private Sprite powerSprite;
 
-    void Start()
+    private void OnEnable()
+    {
+        if (rmReference != null)
+        {
+            rmReference.OnResourcesChanged += UpdateUI;
+            Debug.Log("[ResourceUpdateUI] Subscribed to OnResourcesChanged event for " + gameObject.name);
+        }
+    }
+    private void Start()
     {
         GetResourceSprites();
-        //Subscribe to the event
-        if (rmReference != null)
-            rmReference.OnResourcesChanged += UpdateUI;
-
         SetResourceSprites();
     }
 
-
-
-    void OnDisable()
+    private void OnDisable()
     {
         //Unsubscribe from the event
         if (rmReference != null)
             rmReference.OnResourcesChanged -= UpdateUI;
     }
+
     public void UpdateUI()
     {
         if (rmReference == null)
