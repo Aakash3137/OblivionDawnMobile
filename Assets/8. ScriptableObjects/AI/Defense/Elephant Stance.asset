@@ -10,31 +10,31 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d55e17a833c29e044a4389398a35b5cc, type: 3}
-  m_Name: Dragon
+  m_Name: Elephant Stance
   m_EditorClassIdentifier: 
-  personalityName: Dragon
-  unitBuildingWeight: 0.8
+  personalityName: 4
+  unitBuildingWeight: 0.25
   resourceBuildingWeight: 0.15
-  defenseBuildingWeight: 0.05
+  defenseBuildingWeight: 0.6
   unitTypeWeights:
   - 0.25
-  - 0.2
-  - 0.2
-  - 0.35
+  - 0.25
+  - 0.25
+  - 0.25
   resourceTypeWeights:
-  - 0.1
-  - 0.45
-  - 0.35
-  - 0.1
-  defenseTypeWeights:
-  - 0.6
+  - 0.2
+  - 0.25
+  - 0.25
   - 0.3
-  - 0.1
-  spawnInterval: 1
-  mistakeProbability: 0
-  tacticalDiscipline: 1
-  tacticalPrecision: 1
-  maxEnemyBuildings: 150
+  defenseTypeWeights:
+  - 0.3
+  - 0.3
+  - 0.4
+  spawnInterval: 2
+  mistakeProbability: 0.05
+  tacticalDiscipline: 0.6
+  tacticalPrecision: 0.9
+  maxEnemyBuildings: 300
   unitLevelCurve:
     serializedVersion: 2
     m_Curve:
@@ -66,27 +66,27 @@ MonoBehaviour:
   - faction: 0
     unitSelections:
     - unit: {fileID: 11400000, guid: 9891769d75e5ba94d95560a6e8f8d1d7, type: 2}
-      selected: 1
-      amount: 4
+      selected: 0
+      amount: 0
     - unit: {fileID: 11400000, guid: 0fe30ec43def3464eade33c48ed8186f, type: 2}
-      selected: 1
-      amount: 2
+      selected: 0
+      amount: 0
     - unit: {fileID: 11400000, guid: df3c036bb98a8454db51a159b896e0fc, type: 2}
-      selected: 1
-      amount: 4
+      selected: 0
+      amount: 0
     - unit: {fileID: 11400000, guid: c3fcccb4a7f9cb34fa36d26ba6a9eeb5, type: 2}
       selected: 0
       amount: 0
     defenseBuildingSelections:
     - building: {fileID: 11400000, guid: c1e84b945efeee1468a674f4d6ba1d94, type: 2}
-      selected: 1
-      amount: 1
+      selected: 0
+      amount: 0
     - building: {fileID: 11400000, guid: 72d66f6c0c92a6f4eb212d8e6e2e254a, type: 2}
       selected: 0
       amount: 0
     - building: {fileID: 11400000, guid: e29526836ec22ff449477b94d0f2bd49, type: 2}
-      selected: 1
-      amount: 2
+      selected: 0
+      amount: 0
   - faction: 1
     unitSelections:
     - unit: {fileID: 11400000, guid: 29cecefd816eac14bad5daea5ebad5a3, type: 2}

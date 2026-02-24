@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewEnemyPersonality", menuName = "AI/Enemy Personality")]
 public class EnemyPersonality : ScriptableObject
 {
-    public string personalityName;
+    public AIPersonalityEnum personalityName;
 
     [Header("Building Category Weights")]
     [Range(0f, 1f)] public float unitBuildingWeight = 0.5f;
