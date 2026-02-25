@@ -109,6 +109,18 @@ public class OffenseBuildingStats : BuildingStats
             Debug.Log("<color=red>[OffenseBuildingStats] No spawn position found</color>");
         }
     }
+    
+    internal override void EnableFunctionality()
+    {
+        if (isProducingUnits && functionalityUI != null)
+            functionalityUI.HideUI();
+    }
+    
+    internal override void DisableFunctionality()
+    {
+        if (!isProducingUnits && functionalityUI != null)
+            functionalityUI.ShowUI();
+    }
 
     private bool TryGetSpawnPosition(out Vector3 spawnPosition)
     {

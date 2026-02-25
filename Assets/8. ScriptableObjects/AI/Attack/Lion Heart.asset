@@ -16,50 +16,19 @@ MonoBehaviour:
   unitBuildingWeight: 0.7
   resourceBuildingWeight: 0.15
   defenseBuildingWeight: 0.15
-  unitTypeWeights:
-  - 0.1
-  - 0.3
-  - 0.25
-  - 0.35
-  resourceTypeWeights:
-  - 0.2
-  - 0.35
-  - 0.35
-  - 0.1
-  defenseTypeWeights:
-  - 0.6
-  - 0.2
-  - 0.2
   spawnInterval: 0.5
   mistakeProbability: 0.1
   tacticalDiscipline: 0.9
   tacticalPrecision: 0.8
   maxEnemyBuildings: 300
-  unitLevelCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
+  resourceTypeWeights:
+  - 0.2
+  - 0.35
+  - 0.35
+  - 0.1
   maxDeckSlots: 8
+  isEnemyAwarenessEnabled: 0
+  AutoDeckSelection: 0
   allUnitData: {fileID: 11400000, guid: 90c0c7229539be9438ba47db8397c923, type: 2}
   allBuildingData: {fileID: 11400000, guid: 46347f96dd2847b40a2a617ce6aaecbc, type: 2}
   factionDeckSelections:
@@ -67,98 +36,156 @@ MonoBehaviour:
     unitSelections:
     - unit: {fileID: 11400000, guid: 9891769d75e5ba94d95560a6e8f8d1d7, type: 2}
       selected: 1
-      amount: 4
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.25
     - unit: {fileID: 11400000, guid: 0fe30ec43def3464eade33c48ed8186f, type: 2}
       selected: 1
-      amount: 2
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.25
     - unit: {fileID: 11400000, guid: df3c036bb98a8454db51a159b896e0fc, type: 2}
       selected: 1
-      amount: 4
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.25
     - unit: {fileID: 11400000, guid: c3fcccb4a7f9cb34fa36d26ba6a9eeb5, type: 2}
-      selected: 0
-      amount: 0
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.25
     defenseBuildingSelections:
     - building: {fileID: 11400000, guid: c1e84b945efeee1468a674f4d6ba1d94, type: 2}
       selected: 1
       amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.33
     - building: {fileID: 11400000, guid: 72d66f6c0c92a6f4eb212d8e6e2e254a, type: 2}
-      selected: 0
-      amount: 0
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.33
     - building: {fileID: 11400000, guid: e29526836ec22ff449477b94d0f2bd49, type: 2}
       selected: 1
-      amount: 2
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.33
   - faction: 1
     unitSelections:
     - unit: {fileID: 11400000, guid: 29cecefd816eac14bad5daea5ebad5a3, type: 2}
-      selected: 0
-      amount: 0
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.25
     - unit: {fileID: 11400000, guid: 354cce241621c764abadc11d56c0b62e, type: 2}
-      selected: 0
-      amount: 0
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.25
     - unit: {fileID: 11400000, guid: 5222fca2bffbc8d4092a67fa6b78bf9f, type: 2}
-      selected: 0
-      amount: 0
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.25
     - unit: {fileID: 11400000, guid: f905ae58faf337b4ab75ce8b4beb30f6, type: 2}
-      selected: 0
-      amount: 0
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.25
     defenseBuildingSelections:
     - building: {fileID: 11400000, guid: 108e62337b6a9614f9ed3b79441cf14d, type: 2}
-      selected: 0
-      amount: 0
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.33
     - building: {fileID: 11400000, guid: cf22e18c1c8edaa4d9393b8a6903302d, type: 2}
-      selected: 0
-      amount: 0
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.33
     - building: {fileID: 11400000, guid: e1efa2bbd30093a43afaef8f6aa09ff9, type: 2}
-      selected: 0
-      amount: 0
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.33
   - faction: 2
     unitSelections:
     - unit: {fileID: 11400000, guid: 16e022d22f6625740b247ea4bfecafbe, type: 2}
-      selected: 0
-      amount: 0
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.25
     - unit: {fileID: 11400000, guid: 3b0b6889fb68b644c81b7e9a1a4a4e2d, type: 2}
-      selected: 0
-      amount: 0
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.25
     - unit: {fileID: 11400000, guid: 15066ff1f51d62d48afb2e03f580c92a, type: 2}
-      selected: 0
-      amount: 0
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.25
     - unit: {fileID: 11400000, guid: c9f894773f0214a48a740032bd85dbd2, type: 2}
-      selected: 0
-      amount: 0
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.25
     defenseBuildingSelections:
     - building: {fileID: 11400000, guid: 85a4287234b94b44ca7aa23cfdaae2f0, type: 2}
-      selected: 0
-      amount: 0
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.33
     - building: {fileID: 11400000, guid: 79385e38203689e40b3020b5c70991be, type: 2}
-      selected: 0
-      amount: 0
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.33
     - building: {fileID: 11400000, guid: 36ab49ce3b9dd2844954bb3454db579e, type: 2}
-      selected: 0
-      amount: 0
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.33
   - faction: 3
     unitSelections:
     - unit: {fileID: 11400000, guid: 11122cc73490b274199a1a546e7d17af, type: 2}
-      selected: 0
-      amount: 0
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.25
     - unit: {fileID: 11400000, guid: 397cf632c0743844ab19c1d748720db2, type: 2}
       selected: 0
       amount: 0
+      UnitsSpawnLevel: 0
+      weight: 0.25
     - unit: {fileID: 11400000, guid: 643550df153702d429f737c7be9d6657, type: 2}
-      selected: 0
-      amount: 0
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.25
     - unit: {fileID: 11400000, guid: 4cab1bc3d2ffe30439025fe9edc3e7bb, type: 2}
-      selected: 0
-      amount: 0
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.25
     - unit: {fileID: 11400000, guid: 485d577b8c15a1a4c91e1e19434a55e7, type: 2}
-      selected: 0
-      amount: 0
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.25
     defenseBuildingSelections:
     - building: {fileID: 11400000, guid: 0a9ffb731f4046d4e8c125a6ec96f3a1, type: 2}
-      selected: 0
-      amount: 0
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.33
     - building: {fileID: 11400000, guid: bdbf4bce66161304196af3fbfdcc5448, type: 2}
-      selected: 0
-      amount: 0
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.33
     - building: {fileID: 11400000, guid: 35c4e91f6a9d3ac41be1428683945b85, type: 2}
-      selected: 0
-      amount: 0
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.33
