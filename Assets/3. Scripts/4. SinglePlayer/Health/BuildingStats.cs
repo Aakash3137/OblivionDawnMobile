@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
-using Microsoft.Unity.VisualStudio.Editor;
 using Sirenix.OdinInspector;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class BuildingStats : Stats
