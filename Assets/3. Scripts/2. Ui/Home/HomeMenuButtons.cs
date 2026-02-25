@@ -9,6 +9,7 @@ public class HomeMenuButtons : MonoBehaviour
     [SerializeField] private GameObject GameModeSelectionPanel;
     [SerializeField] private GameObject SettingsPanel;
     [SerializeField] private GameObject HeroJourneyPanel;
+    [SerializeField] private GameObject PlayerFaction;
 
     private List<GameObject> allPanels;
 
@@ -39,6 +40,7 @@ public class HomeMenuButtons : MonoBehaviour
         ShowPanel(UILoginPanel);
     }
 
+
     public void OnClickProfilePanel()
     {
         ShowPanel(ProfilePanel);
@@ -47,6 +49,11 @@ public class HomeMenuButtons : MonoBehaviour
     public void OnClickSettingsPanel()
     {
         ShowPanel(SettingsPanel);
+    }
+    
+    public void OnClickLoadingPanel()
+    {
+        ShowPanel(LoadingPanel);
     }
 
     public void OnClickGameModeSelectionPanel()
