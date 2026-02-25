@@ -1,6 +1,5 @@
 using Sirenix.OdinInspector;
 
-
 public class PlayerResourceManager : ResourceManager
 {
     public static PlayerResourceManager Instance;

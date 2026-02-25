@@ -15,6 +15,7 @@ public class ResourceUpdateUI : MonoBehaviour
 
     [Header("Generation Rate Texts")]
     [SerializeField] private TMP_Text[] generationRateTexts;
+    private CanvasGroup[] generationRateTextCanvasGroups;
 
     [Header("Resource Icon Images")]
     [SerializeField] private Image[] resourceIconImages;
@@ -33,17 +34,33 @@ public class ResourceUpdateUI : MonoBehaviour
             Debug.Log("[ResourceUpdateUI] Subscribed to OnResourcesChanged event for " + gameObject.name);
         }
     }
+
+    private void Awake()
+    {
+        if (generationRateTextCanvasGroups == null || generationRateTextCanvasGroups.Length != generationRateTexts.Length)
+        {
+            generationRateTextCanvasGroups = new CanvasGroup[generationRateTexts.Length];
+
+            for (int i = 0; i < generationRateTexts.Length; i++)
+            {
+                generationRateTextCanvasGroups[i] = generationRateTexts[i].GetComponent<CanvasGroup>();
+            }
+        }
+    }
+
     private void Start()
     {
         GetResourceSprites();
         SetResourceSprites();
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
-        //Unsubscribe from the event
         if (rmReference != null)
+        {
             rmReference.OnResourcesChanged -= UpdateUI;
+            // Debug.Log("[ResourceUpdateUI] Unsubscribed from OnResourcesChanged event for " + gameObject.name);
+        }
     }
 
     public void UpdateUI()
@@ -68,7 +85,7 @@ public class ResourceUpdateUI : MonoBehaviour
     {
         for (int i = 0; i < generationRateTexts.Length; i++)
         {
-            ToggleText(generationRateTexts[i], rmReference.currentGenerationRates[i].resourceAmount);
+            ToggleText(generationRateTexts[i], generationRateTextCanvasGroups[i], rmReference.currentGenerationRates[i].resourceAmount);
         }
     }
 
@@ -78,16 +95,17 @@ public class ResourceUpdateUI : MonoBehaviour
 
         for (int i = 0; i < rmReference.currentResources.Length; i++)
         {
-            resourcePercentages[i] = (float)rmReference.currentResources[i].resourceAmount / rmReference.maxResources[i].resourceAmount;
+            if (rmReference.maxResources[i].resourceAmount > 0)
+                resourcePercentages[i] = (float)rmReference.currentResources[i].resourceAmount / rmReference.maxResources[i].resourceAmount;
+            else
+                resourcePercentages[i] = 0f;
             UpdateFillAmount(resourceFillBars[i], resourcePercentages[i]);
         }
     }
 
-    private void ToggleText(TMP_Text text, float amount)
+    private void ToggleText(TMP_Text text, CanvasGroup textCanvas, float amount)
     {
-        bool show = amount != 0;
-        var textGO = text.GetComponent<CanvasGroup>();
-        textGO.alpha = show ? 1f : 0f;
+        textCanvas.alpha = amount != 0 ? 1f : 0f;
 
         if (amount > 0)
             text.SetText("+{0}", amount);
@@ -123,11 +141,11 @@ public class ResourceUpdateUI : MonoBehaviour
 
     private void SetResourceSprites()
     {
-        if (resourceSprites.Length != resourceIconImages.Length)
+        if (resourceSprites == null || resourceSprites.Length != resourceIconImages.Length)
         {
             Debug.Log($"<color=#000000>[ResourceUpdateUI] {gameObject.name} ResourceSprites from decSelectionData and ResourceIconImages on UI are not the same length</color>");
+            return;
         }
-
 
         for (int i = 0; i < resourceIconImages.Length; i++)
         {

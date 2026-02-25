@@ -17,7 +17,6 @@ public class DefenseBuildingStats : BuildingStats
             basicStats = defenseBuildingData.buildingBasicStats;
 
             buildTime = defenseBuildingData.buildingBuildTime;
-            buildingWaitTime = new WaitForSeconds(buildTime);
         }
         else
         {
@@ -30,19 +29,17 @@ public class DefenseBuildingStats : BuildingStats
     }
     internal override void EnableFunctionality()
     {
+        base.EnableFunctionality();
+
         if (defenseUnit != null)
             defenseUnit.enabled = true;
-
-        if (functionalityUI != null)
-            functionalityUI.HideUI();
     }
     internal override void DisableFunctionality()
     {
+        base.DisableFunctionality();
+
         if (defenseUnit != null)
             defenseUnit.enabled = false;
-
-        if (functionalityUI != null)
-            functionalityUI.ShowUI();
     }
     internal override void Die()
     {

@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class ResourceManager : MonoBehaviour
 {
+    [Header("Global Resource Tick")]
+    [field: SerializeField] public float globalTickTime { get; private set; }
+
     [Header("Set Starting Resources")]
     public BuildCost[] startingResources;
 
@@ -18,13 +21,26 @@ public class ResourceManager : MonoBehaviour
     public BuildCost[] currentGenerationRates;
 
     public Action OnResourcesChanged;
+    public Action GlobalResourceTick;
 
 
     private void Start()
     {
         InitializeResources(startingResources);
+
+        _ = StartGlobalTick();
     }
 
+    private async Awaitable StartGlobalTick()
+    {
+        while (gameObject.activeInHierarchy)
+        {
+            await Awaitable.WaitForSecondsAsync(globalTickTime, destroyCancellationToken);
+            GlobalResourceTick?.Invoke();
+        }
+    }
+
+    #region  Helper Functions
     public void InitializeResources(BuildCost[] resources)
     {
         currentResources = new BuildCost[resources.Length];
@@ -159,13 +175,14 @@ public class ResourceManager : MonoBehaviour
     }
 
     [Button]
-    public void DecreaseAllResources(int amount)
+    public void AddResources(int amount)
     {
         for (int i = 0; i < currentResources.Length; i++)
         {
-            currentResources[i].resourceAmount -= amount;
+            currentResources[i].resourceAmount += amount;
         }
 
         ClampResources();
     }
+    #endregion
 }

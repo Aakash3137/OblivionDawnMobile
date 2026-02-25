@@ -24,7 +24,7 @@ public class UnitProgress : ProgressManager
 
     private void Update()
     {
-        if (!spawner.isProducing)
+        if (!spawner.isProducingUnits)
         {
             currentTime = 0f;
             progressAmount = currentTime / waitTime;

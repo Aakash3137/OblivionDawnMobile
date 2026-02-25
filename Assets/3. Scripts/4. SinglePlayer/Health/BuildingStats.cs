@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -11,15 +9,16 @@ public class BuildingStats : Stats
     public ScenarioBuildingType buildingType { get; private set; }
     public float buildTime { get; protected set; }
     private GameObject buildingPool;
+
     [field: SerializeField, ReadOnly]
     public Tile currentTile { get; private set; }
-
-    private ResourceManager rmInstance;
     private BuildCost[] buildingUpkeepCost;
     private bool hasUpkeep;
-    public WaitForSeconds buildingWaitTime { get; protected set; }
-
+    public bool hasBuilt { get; protected set; }
     public FunctionalityUI functionalityUI { get; private set; }
+    public ResourceManager rmInstance { get; private set; }
+
+    private float upkeepTickSyncTime;
 
 
     internal override void Initialize()
@@ -65,8 +64,7 @@ public class BuildingStats : Stats
 
         functionalityUI = GetComponentInChildren<FunctionalityUI>();
 
-        if (hasUpkeep)
-            InitializeBuildingUpkeep();
+        _ = InitializeOnBuilt();
     }
 
     private void SetParent()
@@ -98,31 +96,65 @@ public class BuildingStats : Stats
         transform.parent = buildingPool?.transform;
     }
 
-    private void InitializeBuildingUpkeep() => StartCoroutine(BuildingUpkeepHandler());
-
-    private IEnumerator BuildingUpkeepHandler()
+    internal virtual async Awaitable InitializeOnBuilt()
     {
-        yield return new WaitForSeconds(buildTime);
+        hasBuilt = false;
+        await Awaitable.WaitForSecondsAsync(buildTime, destroyCancellationToken);
+        hasBuilt = true;
 
-        var upKeepTime = new WaitForSeconds(buildingStatsSO.upKeepTime);
-        DecreaseGenerationRate();
-
-        while (currentHealth > 0)
+        if (hasUpkeep)
         {
-            if (CanMaintain())
-            {
-                EnableFunctionality();
-                rmInstance.SpendResources(buildingUpkeepCost);
-            }
-            else
-                DisableFunctionality();
-
-            yield return upKeepTime;
+            upkeepTickSyncTime = Time.time;
+            rmInstance.GlobalResourceTick += InitializeBuildingUpkeep;
+            DecreaseGenerationRate();
         }
     }
 
-    internal virtual void EnableFunctionality() { }
-    internal virtual void DisableFunctionality() { }
+    private void InitializeBuildingUpkeep()
+    {
+        if (CanMaintain())
+        {
+            EnableFunctionality();
+            if (Time.time - upkeepTickSyncTime >= rmInstance.globalTickTime)
+                rmInstance.SpendResources(buildingUpkeepCost);
+        }
+        else
+        {
+            DisableFunctionality();
+        }
+    }
+
+    // private IEnumerator BuildingUpkeepHandler()
+    // {
+    //     yield return new WaitForSeconds(buildTime);
+
+    //     var upKeepTime = new WaitForSeconds(buildingStatsSO.upKeepTime);
+    //     DecreaseGenerationRate();
+
+    //     while (currentHealth > 0)
+    //     {
+    //         if (CanMaintain())
+    //         {
+    //             EnableFunctionality();
+    //             rmInstance.SpendResources(buildingUpkeepCost);
+    //         }
+    //         else
+    //             DisableFunctionality();
+
+    //         yield return upKeepTime;
+    //     }
+    // }
+
+    internal virtual void EnableFunctionality()
+    {
+        if (functionalityUI != null)
+            functionalityUI.HideUI();
+    }
+    internal virtual void DisableFunctionality()
+    {
+        if (functionalityUI != null)
+            functionalityUI.ShowUI();
+    }
 
     public bool CanMaintain()
     {
@@ -144,14 +176,17 @@ public class BuildingStats : Stats
     {
         base.Die();
 
+        if (hasBuilt && hasUpkeep)
+        {
+            IncreaseGenerationRate();
+            rmInstance.GlobalResourceTick -= InitializeBuildingUpkeep;
+        }
+
         KillCounterManager.Instance.AddBuildingDestroyedData(buildingType, side);
     }
 
     internal virtual void OnDestroy()
     {
-        if (hasUpkeep)
-            IncreaseGenerationRate();
-
         if (currentTile != null)
             currentTile.ClearOccupant();
     }

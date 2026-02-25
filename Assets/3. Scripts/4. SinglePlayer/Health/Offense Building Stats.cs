@@ -8,6 +8,7 @@ public class OffenseBuildingStats : BuildingStats
     public ScenarioOffenseType offenseType { get; private set; }
     public OffenseBuildingUpgradeData offenseBuildingData { get; private set; }
     private CubeGridManager cgmInstance;
+
     // private CharacterDatabase characterDatabase => CharacterDatabase.Instance;
 
     [ReadOnly]
@@ -17,8 +18,9 @@ public class OffenseBuildingStats : BuildingStats
 
     private Tile nearestTile;
     private WaitForSeconds waitTime;
+    private float unitSpawnTime;
     private bool canMaintain => CanMaintain();
-    [field: SerializeField, ReadOnly] public bool isProducing { get; private set; }
+    [field: SerializeField, ReadOnly] public bool isProducingUnits { get; private set; }
     private int maxSpawnableUnits;
 
     internal override void Initialize()
@@ -34,14 +36,14 @@ public class OffenseBuildingStats : BuildingStats
 
             buildCost = offenseBuildingSO.buildingBuildCost;
 
-            waitTime = new WaitForSeconds(offenseBuildingData.unitSpawnTime);
+            unitSpawnTime = offenseBuildingData.unitSpawnTime;
+            waitTime = new WaitForSeconds(unitSpawnTime);
 
             unit = offenseBuildingSO.unitPrefab;
 
             basicStats = offenseBuildingData.buildingBasicStats;
 
             buildTime = offenseBuildingData.buildingBuildTime;
-            buildingWaitTime = new WaitForSeconds(buildTime);
 
             maxSpawnableUnits = offenseBuildingData.maxSpawnableUnits;
         }
@@ -54,41 +56,33 @@ public class OffenseBuildingStats : BuildingStats
 
         currentGrid = CubeGridManager.Instance.WorldToGrid(currentTile.transform.position);
 
-        StartProduction();
     }
 
-    private void StartProduction()
+    internal override async Awaitable InitializeOnBuilt()
     {
-        StartCoroutine(ProduceUnits());
+        isProducingUnits = false;
+        await base.InitializeOnBuilt();
+        await ProduceUnits();
     }
 
-    private IEnumerator ProduceUnits()
+    private async Awaitable ProduceUnits()
     {
-        isProducing = false;
-        yield return new WaitForSeconds(buildTime);
-
         while (currentHealth > 0)
         {
-            if (canMaintain && maxSpawnableUnits > producedUnits.Count)
+            if (!FulFillSpawnConditions())
             {
-                isProducing = true;
-            }
-            else
-            {
-                isProducing = false;
-                if (functionalityUI != null)
-                    functionalityUI.ShowUI();
-                yield return new WaitUntil(FulFillSpawnConditions);
+                isProducingUnits = false;
+
+                // if(maxSpawnableUnits > producedUnits.Count)
+                //  TO DO SHOW ICON FOR BUILDING FULL
+
+                while (!FulFillSpawnConditions())
+                    await Awaitable.WaitForSecondsAsync(0.5f, destroyCancellationToken);    // wait for 0.5 seconds till spawn conditions are met
                 continue;
             }
 
-            isProducing = true;
-            if (functionalityUI != null)
-                functionalityUI.HideUI();
-
-            yield return waitTime;
-
-            // if (canMaintain)
+            isProducingUnits = true;
+            await Awaitable.WaitForSecondsAsync(unitSpawnTime, destroyCancellationToken);
             SpawnUnit();
         }
     }
