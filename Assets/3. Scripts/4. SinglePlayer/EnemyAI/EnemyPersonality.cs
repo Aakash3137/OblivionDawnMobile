@@ -33,6 +33,9 @@ public class EnemyPersonality : ScriptableObject
     
     [Min(1)] public int maxDeckSlots = 8;
     
+    public bool isEnemyAwarenessEnabled = false;
+    public bool AutoDeckSelection = false;
+    
     public AllUnitData allUnitData;
     public AllBuildingData allBuildingData;
 
@@ -54,7 +57,7 @@ public class EnemyPersonality : ScriptableObject
             FactionDeckSelection block = factionDeckSelections.Find(f => f.faction == faction);
 
             if (block == null)
-            {
+            {  
                 block = new FactionDeckSelection();
                 block.faction = faction;
                 factionDeckSelections.Add(block);
