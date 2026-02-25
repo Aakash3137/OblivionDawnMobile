@@ -6,18 +6,14 @@ public class ResourceBuildingStats : BuildingStats
 {
     [ReadOnly] public ScenarioResourceType resourceType { get; private set; }
     public ResourceBuildingUpgradeData resourceBuildingData { get; private set; }
-    [field: SerializeField, ReadOnly] public bool isProducing { get; private set; }
-
-    private PlayerResourceManager prmInstance;
-    private EnemyResourceManager ermInstance;
+    [field: SerializeField, ReadOnly] public bool isProducingResources { get; private set; }
     private WaitForSeconds waitTime;
+    private float productionTickSyncTime;
+    private float generationTime;
 
     internal override void Initialize()
     {
         identity = buildingStatsSO.buildingIdentity;
-
-        prmInstance = PlayerResourceManager.Instance;
-        ermInstance = EnemyResourceManager.Instance;
 
         if (buildingStatsSO is ResourceBuildingDataSO resourceBuildingSO)
         {
@@ -26,10 +22,10 @@ public class ResourceBuildingStats : BuildingStats
 
             basicStats = resourceBuildingData.buildingBasicStats;
             buildCost = resourceBuildingSO.buildingBuildCost;
-            waitTime = new WaitForSeconds(resourceBuildingData.resourceTimeToProduce);
+            // waitTime = new WaitForSeconds(resourceBuildingData.resourceTimeToProduce);
 
             buildTime = resourceBuildingData.buildingBuildTime;
-            buildingWaitTime = new WaitForSeconds(buildTime);
+            // buildingWaitTime = new WaitForSeconds(buildTime);
         }
         else
         {
@@ -38,146 +34,128 @@ public class ResourceBuildingStats : BuildingStats
 
         base.Initialize();
 
+        generationTime = resourceBuildingData.resourceAmountPerBatch; // rmInstance.globalTickTime;
+    }
 
-        StartProducing();
+    internal override async Awaitable InitializeOnBuilt()
+    {
+        isProducingResources = false;
+        await base.InitializeOnBuilt();
+
+        IncreaseGlobalCapacity();
+        productionTickSyncTime = Time.time;
+        rmInstance.GlobalResourceTick += StartProducing;
     }
 
     private void StartProducing()
     {
-        StartCoroutine(StartResourceGeneration());
-    }
+        bool canProduce = CanProduce();
 
-    private IEnumerator StartResourceGeneration()
-    {
-        isProducing = false;
-        yield return buildingWaitTime;
-
-        IncreaseGlobalCapacity();
-        bool wasProducing = false;
-
-        while (currentHealth > 0)
+        if (canProduce && !isProducingResources)
         {
-            bool canProduce = CanProduce();
-
-            if (canProduce && !wasProducing)
-            {
-                IncreaseGenerationRate();
-                isProducing = true;
-                wasProducing = true;
-            }
-
-            if (!canProduce && wasProducing)
-            {
-                DecreaseGenerationRate();
-                isProducing = false;
-                wasProducing = false;
-                yield return new WaitUntil(CanProduce);
-                continue;
-            }
-
-            yield return waitTime;
-
-            // if (canProduce)            
-            Produce();
-
+            IncreaseGenerationRate();
+            isProducingResources = true;
+        }
+        else if (!canProduce && isProducingResources)
+        {
+            DecreaseGenerationRate();
+            isProducingResources = false;
         }
 
-        if (wasProducing)
+        if (Time.time - productionTickSyncTime >= rmInstance.globalTickTime)
+            Produce();
+
+        if (!canProduce && isProducingResources)
+        {
             DecreaseGenerationRate();
+            isProducingResources = false;
+        }
     }
+
+    // private IEnumerator StartResourceGeneration()
+    // {
+    //     isProducing = false;
+    //     yield return buildingWaitTime;
+
+    //     IncreaseGlobalCapacity();
+    //     bool wasProducing = false;
+
+    //     while (currentHealth > 0)
+    //     {
+    //         bool canProduce = CanProduce();
+
+    //         if (canProduce && !wasProducing)
+    //         {
+    //             IncreaseGenerationRate();
+    //             isProducing = true;
+    //             wasProducing = true;
+    //         }
+
+    //         if (!canProduce && wasProducing)
+    //         {
+    //             DecreaseGenerationRate();
+    //             isProducing = false;
+    //             wasProducing = false;
+    //             yield return new WaitUntil(CanProduce);
+    //             continue;
+    //         }
+
+    //         yield return waitTime;
+
+    //         // if (canProduce)            
+    //         Produce();
+    //     }
+    // }
 
 
     private void Produce()
     {
-        switch (side)
-        {
-            case Side.Player:
-                prmInstance.AddResources(resourceType, resourceBuildingData.resourceAmountPerBatch);
-                break;
-            case Side.Enemy:
-                ermInstance.AddResources(resourceType, resourceBuildingData.resourceAmountPerBatch);
-                break;
-        }
+        rmInstance.AddResources(resourceType, resourceBuildingData.resourceAmountPerBatch);
+
     }
 
     private bool CanProduce()
     {
-        switch (side)
-        {
-            case Side.Player:
-                return prmInstance.CanAddResource(resourceType, resourceBuildingData.resourceAmountPerBatch);
-            case Side.Enemy:
-                return ermInstance.CanAddResource(resourceType, resourceBuildingData.resourceAmountPerBatch);
-        }
-        return false;
+        return rmInstance.CanAddResource(resourceType, resourceBuildingData.resourceAmountPerBatch);
     }
 
     private void IncreaseGenerationRate()
     {
-        switch (side)
-        {
-            case Side.Player:
-                prmInstance.IncreaseResourceGenerationRate(resourceType, resourceBuildingData.resourceGenerationRate);
-                break;
-            case Side.Enemy:
-                ermInstance.IncreaseResourceGenerationRate(resourceType, resourceBuildingData.resourceGenerationRate);
-                break;
-        }
+        rmInstance.IncreaseResourceGenerationRate(resourceType, generationTime);
     }
 
     private void DecreaseGenerationRate()
     {
-        isProducing = false;
-        if (side == Side.Player)
-            prmInstance.DecreaseResourceGenerationRate(resourceType, resourceBuildingData.resourceGenerationRate);
-        else if (side == Side.Enemy)
-            ermInstance.DecreaseResourceGenerationRate(resourceType, resourceBuildingData.resourceGenerationRate);
+        rmInstance.DecreaseResourceGenerationRate(resourceType, generationTime);
     }
 
     private void IncreaseGlobalCapacity()
     {
-        switch (side)
-        {
-            case Side.Player:
-                prmInstance.IncreaseResourcesCap(resourceType, resourceBuildingData.resourceAmountCapacity);
-                break;
-            case Side.Enemy:
-                ermInstance.IncreaseResourcesCap(resourceType, resourceBuildingData.resourceAmountCapacity);
-                break;
-        }
+        rmInstance.IncreaseResourcesCap(resourceType, resourceBuildingData.resourceAmountCapacity);
     }
 
     private void DecreaseGlobalCapacity()
     {
-        switch (side)
-        {
-            case Side.Player:
-                prmInstance.DecreaseResourcesCap(resourceType, resourceBuildingData.resourceAmountCapacity);
-                break;
-            case Side.Enemy:
-                ermInstance.DecreaseResourcesCap(resourceType, resourceBuildingData.resourceAmountCapacity);
-                break;
-        }
+        rmInstance.DecreaseResourcesCap(resourceType, resourceBuildingData.resourceAmountCapacity);
     }
 
     internal override void Die()
     {
-        DecreaseGlobalCapacity();
-        DecreaseGenerationRate();
-
         base.Die();
+
+        if (hasBuilt)
+            DecreaseGlobalCapacity();
+        if (hasBuilt && isProducingResources)
+            DecreaseGenerationRate();
+
+        rmInstance.GlobalResourceTick -= StartProducing;
 
         KillCounterManager.Instance.AddResourceBuildingDestroyedData(resourceType, side);
     }
 
-    internal override void OnDestroy()
-    {
-        base.OnDestroy();
-    }
-
     public float GetGenerationTime()
     {
-        return resourceBuildingData.resourceTimeToProduce;
+        return rmInstance.globalTickTime;
     }
 
     public ResourceBuildingDataSO GetBuildingSO()

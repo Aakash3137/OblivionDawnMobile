@@ -1,8 +1,11 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class CostPanelManager : MonoBehaviour
 {
+    [SerializeField] private DecSelectionData decSelectionData;
+
     [Header("Texts")]
     [SerializeField] private TMP_Text foodText;
     [SerializeField] private TMP_Text goldText;
@@ -15,7 +18,24 @@ public class CostPanelManager : MonoBehaviour
     [SerializeField] private GameObject metalRoot;
     [SerializeField] private GameObject powerRoot;
 
+    [Header("Resource Icon Images")]
+    [SerializeField] private Image foodIconImage;
+    [SerializeField] private Image goldIconImage;
+    [SerializeField] private Image metalIconImage;
+    [SerializeField] private Image powerIconImage;
+
+    private Sprite foodSprite;
+    private Sprite goldSprite;
+    private Sprite metalSprite;
+    private Sprite powerSprite;
+
     private bool isVisible = false;
+
+    private void Start()
+    {
+        GetResourceSprites();
+        SetResourceSprites();
+    }
 
     public void Show(BuildCost[] costs)
     {
@@ -54,4 +74,30 @@ public class CostPanelManager : MonoBehaviour
 
         text.SetText("{}", value);
     }
+
+    #region  Resource Sprites
+    private void GetResourceSprites()
+    {
+        if (decSelectionData == null)
+        {
+            Debug.Log("<color=#000000>[ResourceUpdateUI] DecSelectionData is null</color>");
+            return;
+        }
+
+        FactionName currentFaction = decSelectionData.CurrentFaction;
+
+        foodSprite = decSelectionData.AllFactionDecData[(int)currentFaction].SelectedResourceDeck[0].buildingIcon;
+        goldSprite = decSelectionData.AllFactionDecData[(int)currentFaction].SelectedResourceDeck[1].buildingIcon;
+        metalSprite = decSelectionData.AllFactionDecData[(int)currentFaction].SelectedResourceDeck[2].buildingIcon;
+        powerSprite = decSelectionData.AllFactionDecData[(int)currentFaction].SelectedResourceDeck[3].buildingIcon;
+    }
+
+    private void SetResourceSprites()
+    {
+        foodIconImage.sprite = foodSprite;
+        goldIconImage.sprite = goldSprite;
+        metalIconImage.sprite = metalSprite;
+        powerIconImage.sprite = powerSprite;
+    }
+    #endregion
 }

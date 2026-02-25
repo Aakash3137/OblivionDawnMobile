@@ -38,7 +38,7 @@ public class ResourceProgress : ProgressManager
 
     private void UIResourceBuildingProgress()
     {
-        if (!resourceBuilding.isProducing)
+        if (!resourceBuilding.isProducingResources)
         {
             currentTime = 0f;
             progressAmount = currentTime / waitTime;

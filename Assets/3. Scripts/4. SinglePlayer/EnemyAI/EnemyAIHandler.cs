@@ -1,31 +1,49 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using UnityEngine;
 
-public enum BuildingCategory { Unit, Resource, Defense }
+public enum BuildingCategory
+{
+    Unit,
+    Resource,
+    Defense
+}
+
 public class EnemyAIHandler : MonoBehaviour
 {
-    [Header("References")]
-    [SerializeField] private EnemyModeSwitch enemyModeSwitch;
+    [Header("References")] [SerializeField]
+    private EnemyModeSwitch enemyModeSwitch;
+
     [SerializeField] private EnemyBuildPanel enemyBuildPanel;
     [SerializeField] private AllFactionsData factionData;
     [SerializeField] internal FactionName enemyFactionName;
     [SerializeField] private EnemyPersonality currentPersonality;
 
     [SerializeField] private List<EnemyPersonality> AIPersonalities;
-    /*[SerializeField] private EnemyPersonality AttackPersonality;
-    [SerializeField] private EnemyPersonality DefensivePersonality;*/
     [SerializeField] private DecSelectionData AIDecSelectionData;
-    
+
+    [SerializeField] private float minResourcePercent = 15f; // never drop below 15% of each resource
+
     private Transform enemyMainBuildingTransform;
     private Transform playerMainBuildingTransform;
     private List<Tile> spawnableTiles = new List<Tile>();
+
     private int totalBuildingsSpawned = 0;
     private float spawnTimer = 0f;
+
     private int resourceBuildingIndex = 0;
     private bool allResourcesCovered = false;
 
-    
+    [Header("READ ONLY")] [SerializeField] private int unitBuilt = 0;
+    [SerializeField] private int resourceBuilt = 0;
+    [SerializeField] private int defenseBuilt = 0;
+
+    // Resource need tracking
+    [SerializeField] private float[] resourceNeedPercentages = new float[4]; // % out of 100 for each resource
+    private float timeSinceLastAnalysis = 0f;
+    private const float RECHECK_INTERVAL = 10f;
+
     void Start()
     {
         if (GameManager.Instance == null)
@@ -39,28 +57,27 @@ public class EnemyAIHandler : MonoBehaviour
             AIPersonalityEnum chosen = MenuManager.Instance.SelectedPersonalityFromMenu();
             currentPersonality = AIPersonalities.Find(p => p.personalityName == chosen);
         }
-        
+
         enemyMainBuildingTransform = GameManager.Instance.enemySpawnPoint;
         playerMainBuildingTransform = GameManager.Instance.playerSpawnPoint;
-        
+
         GameManager.Instance.EnemyFactionName = enemyFactionName;
 
+        Invoke(nameof(AnalyzeResourceNeeds), 1.5f);
         Invoke(nameof(InitializeSpawnableTiles), 1f);
     }
 
     void Update()
     {
-        
         if (enemyModeSwitch == null || enemyModeSwitch.EnemyMode != CurrentEnemyMode.EnemyAIMode)
             return;
 
         RemoveInvalidSpawnableTiles();
 
-        float interval = currentPersonality.spawnInterval;
-
+        timeSinceLastAnalysis += Time.deltaTime;
 
         spawnTimer += Time.deltaTime;
-        if (spawnTimer >= interval)
+        if (spawnTimer >= currentPersonality.spawnInterval)
         {
             spawnTimer = 0f;
             TrySpawnBuilding();
@@ -102,6 +119,7 @@ public class EnemyAIHandler : MonoBehaviour
             if (neighborTile != null && neighborTile.ownerSide == Side.Player)
                 return false;
         }
+
         return true;
     }
 
@@ -114,9 +132,9 @@ public class EnemyAIHandler : MonoBehaviour
             !AreAllNeighborsEnemy(CubeGridManager.Instance.WorldToGrid(tile.transform.position))
         );
     }
-    
-    #endregion 
-    
+
+    #endregion
+
     void TrySpawnBuilding()
     {
         if (totalBuildingsSpawned >= currentPersonality.maxEnemyBuildings)
@@ -125,18 +143,10 @@ public class EnemyAIHandler : MonoBehaviour
         if (spawnableTiles.Count == 0)
             return;
 
-        bool makeMistake = Random.value < currentPersonality.mistakeProbability;
         BuildingStats buildingPrefab = null;
         BuildingCategory category = BuildingCategory.Unit;
 
-        if (makeMistake)
-        {
-            buildingPrefab = GetRandomBuildingAny();
-        }
-        else
-        {
-            buildingPrefab = DecideBuildingUsingPersonality(out category);
-        }
+        buildingPrefab = DecideBuildingUsingPersonality(out category);
 
         if (buildingPrefab == null)
         {
@@ -162,48 +172,168 @@ public class EnemyAIHandler : MonoBehaviour
             return;
         }
 
-        SpawnBuilding(selectedTile, buildingPrefab);
+        SpawnBuilding(selectedTile, buildingPrefab, category);
     }
 
     BuildingStats DecideBuildingUsingPersonality(out BuildingCategory category)
     {
-        // Normalize category weights
-        float total = currentPersonality.unitBuildingWeight
-                    + currentPersonality.resourceBuildingWeight
-                    + currentPersonality.defenseBuildingWeight;
-        float rand = Random.value * total;
+        float unit = currentPersonality.unitBuildingWeight;
+        float resource = currentPersonality.resourceBuildingWeight;
+        float defense = currentPersonality.defenseBuildingWeight;
 
-        if (rand < currentPersonality.unitBuildingWeight)
+        // Step 1: Normalize weights automatically
+        float totalWeight = unit + resource + defense;
+
+        if (totalWeight <= 0f)
         {
             category = BuildingCategory.Unit;
             return GetWeightedUnitBuilding();
         }
-        rand -= currentPersonality.unitBuildingWeight;
-        if (rand < currentPersonality.resourceBuildingWeight)
+
+        unit /= totalWeight;
+        resource /= totalWeight;
+        defense /= totalWeight;
+
+        // Step 2: Calculate targets based on ratio
+        int totalSoFar = unitBuilt + resourceBuilt + defenseBuilt + 1;
+
+        float unitTarget = totalSoFar * unit;
+        float resourceTarget = totalSoFar * resource;
+        float defenseTarget = totalSoFar * defense;
+
+        float unitDeficit = unitTarget - unitBuilt;
+        float resourceDeficit = resourceTarget - resourceBuilt;
+        float defenseDeficit = defenseTarget - defenseBuilt;
+
+        // ================= Resource-aware check =================
+        // If any resource is below minResourcePercent, force a resource building
+        var enemyRM = GetComponent<EnemyResourceManager>();
+        if (enemyRM != null && enemyRM.currentResources != null && enemyRM.currentResources.Length >= 4)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                if (enemyRM.currentResources[i].resourceAmount < minResourcePercent)
+                {
+                    category = BuildingCategory.Resource;
+                    return GetWeightedResourceBuilding();
+                }
+            }
+        }
+
+        // ================= Default deficit-based choice =================
+        if (unitDeficit >= resourceDeficit && unitDeficit >= defenseDeficit)
+        {
+            category = BuildingCategory.Unit;
+            return GetWeightedUnitBuilding();
+        }
+
+        if (resourceDeficit >= defenseDeficit)
         {
             category = BuildingCategory.Resource;
             return GetWeightedResourceBuilding();
         }
-        else
-        {
-            category = BuildingCategory.Defense;
-            return GetWeightedDefenseBuilding();
-        }
+
+        category = BuildingCategory.Defense;
+        return GetWeightedDefenseBuilding();
     }
+
+    #region Personality Deck Access
+
+    FactionDeckSelection GetCurrentFactionDeck()
+    {
+        if (currentPersonality == null)
+            return null;
+
+        return currentPersonality.factionDeckSelections
+            .Find(f => f.faction == enemyFactionName);
+    }
+
+    #endregion
+
+    #region Weighted Building Selection
 
     BuildingStats GetWeightedUnitBuilding()
     {
-        BuildingStats[] buildings = GetUnitBuildings();
-        float[] weights = currentPersonality.unitTypeWeights;
-        return GetWeightedRandom(buildings, weights);
+        var deck = GetCurrentFactionDeck();
+        if (deck == null)
+            return null;
+
+        List<BuildingStats> options = new List<BuildingStats>();
+        List<float> weights = new List<float>();
+
+        foreach (var entry in deck.unitSelections)
+        {
+            if (!entry.selected || entry.amount <= 0)
+                continue;
+
+            var building =
+                CharacterDatabase.Instance
+                    .GetSpawnerBuilding(entry.unit);
+
+            if (building == null)
+                continue;
+
+            options.Add(building);
+            weights.Add(entry.weight);
+        }
+
+        return GetWeightedRandom(
+            options.ToArray(),
+            weights.ToArray());
+    }
+
+    BuildingStats GetWeightedDefenseBuilding()
+    {
+        var deck = GetCurrentFactionDeck();
+        if (deck == null)
+            return null;
+
+        List<BuildingStats> options = new List<BuildingStats>();
+        List<float> weights = new List<float>();
+
+        foreach (var entry in deck.defenseBuildingSelections)
+        {
+            if (!entry.selected || entry.amount <= 0)
+                continue;
+
+            var building =
+                CharacterDatabase.Instance
+                    .GetDefenseBuildingPrefab(entry.building);
+
+            if (building == null)
+                continue;
+
+            options.Add(building);
+            weights.Add(entry.weight);
+        }
+
+        return GetWeightedRandom(
+            options.ToArray(),
+            weights.ToArray());
     }
 
     BuildingStats GetWeightedResourceBuilding()
     {
         BuildingStats[] buildings = GetResourceBuildings();
-        float[] weights = currentPersonality.resourceTypeWeights;
-        
-        // Handle sequential resource building selection if not all resources covered
+        if (buildings == null || buildings.Length == 0)
+            return null;
+
+        // Recheck resource needs every 10 seconds
+        if (timeSinceLastAnalysis >= RECHECK_INTERVAL)
+        {
+            AnalyzeResourceNeeds();
+            timeSinceLastAnalysis = 0f;
+        }
+
+        bool makeMistake = Random.value < currentPersonality.mistakeProbability;
+
+        if (makeMistake)
+        {
+            Debug.Log("[EnemyAI] Resource selection mistake triggered!");
+            return GetMistakeResourceBuilding(buildings);
+        }
+
+        // Use analyzed needs
         if (!allResourcesCovered && buildings.Length > 0)
         {
             BuildingStats building = buildings[resourceBuildingIndex];
@@ -212,94 +342,292 @@ public class EnemyAIHandler : MonoBehaviour
                 allResourcesCovered = true;
             return building;
         }
-        
-        return GetWeightedRandom(buildings, weights);
+
+        return GetWeightedRandom(buildings, resourceNeedPercentages);
     }
 
-    BuildingStats GetWeightedDefenseBuilding()
+    BuildingStats GetMistakeResourceBuilding(BuildingStats[] buildings)
     {
-        BuildingStats[] buildings = GetDefenceBuildings();
-        float[] weights = currentPersonality.defenseTypeWeights;
-        return GetWeightedRandom(buildings, weights);
-    }
+        if (buildings.Length == 1)
+            return buildings[0];
 
-    BuildingStats GetWeightedRandom(BuildingStats[] options, float[] weights)
-    {
-        if (options.Length == 0 || weights.Length == 0)
-            return null;
-
-        // Ensure weights array matches options length
-        float[] normalizedWeights = new float[options.Length];
-        for (int i = 0; i < options.Length; i++)
+        // Find least needed resource and pick it (mistake)
+        int leastNeededIndex = 0;
+        float minNeed = resourceNeedPercentages[0];
+        for (int i = 1; i < Mathf.Min(buildings.Length, resourceNeedPercentages.Length); i++)
         {
-            normalizedWeights[i] = (i < weights.Length) ? weights[i] : 1f / options.Length;
+            if (resourceNeedPercentages[i] < minNeed)
+            {
+                minNeed = resourceNeedPercentages[i];
+                leastNeededIndex = i;
+            }
         }
 
-        float total = normalizedWeights.Sum();
+        return buildings[leastNeededIndex];
+    }
+
+    BuildingStats GetWeightedRandom(
+        BuildingStats[] options,
+        float[] weights)
+    {
+        if (options == null ||
+            weights == null ||
+            options.Length == 0 ||
+            weights.Length == 0)
+            return null;
+
+        int count = Mathf.Min(options.Length, weights.Length);
+
+        float total = 0f;
+        for (int i = 0; i < count; i++)
+            total += weights[i];
+
+        if (total <= 0f)
+            return options[Random.Range(0, count)];
+
         float rand = Random.value * total;
         float accum = 0f;
 
-        for (int i = 0; i < options.Length; i++)
+        for (int i = 0; i < count; i++)
         {
-            accum += normalizedWeights[i];
-            if (rand < accum)
+            accum += weights[i];
+            if (rand <= accum)
                 return options[i];
         }
-        return options[options.Length - 1];
+
+        return options[count - 1];
+    }
+
+    #endregion
+
+    #region Resource Need Analysis
+
+    void AnalyzeResourceNeeds()
+    {
+        float[] totalCosts = new float[4];
+        var deck = GetCurrentFactionDeck();
+        if (deck == null) return;
+
+        // Analyze offense buildings
+        foreach (var entry in deck.unitSelections)
+        {
+            if (!entry.selected || entry.amount <= 0) continue;
+            var building = CharacterDatabase.Instance.GetSpawnerBuilding(entry.unit);
+            if (building != null && building.buildingStatsSO != null)
+            {
+                var costs = building.buildingStatsSO.buildingBuildCost;
+                for (int i = 0; i < Mathf.Min(costs.Length, 4); i++)
+                    totalCosts[i] += costs[i].resourceAmount * entry.weight;
+            }
+        }
+
+        // Analyze defense buildings
+        foreach (var entry in deck.defenseBuildingSelections)
+        {
+            if (!entry.selected || entry.amount <= 0) continue;
+            var building = CharacterDatabase.Instance.GetDefenseBuildingPrefab(entry.building);
+            if (building != null && building.buildingStatsSO != null)
+            {
+                var costs = building.buildingStatsSO.buildingBuildCost;
+                for (int i = 0; i < Mathf.Min(costs.Length, 4); i++)
+                    totalCosts[i] += costs[i].resourceAmount * entry.weight;
+            }
+        }
+
+        // Factor in current available resources (lacking resources get higher priority)
+        var enemyRM = GetComponent<EnemyResourceManager>();
+        if (enemyRM != null && enemyRM.currentResources != null && enemyRM.currentResources.Length >= 4)
+        {
+            float[] currentAmounts = new float[4];
+            for (int i = 0; i < 4; i++)
+                currentAmounts[i] = enemyRM.currentResources[i].resourceAmount;
+
+            float totalAvailable = currentAmounts[0] + currentAmounts[1] + currentAmounts[2] + currentAmounts[3];
+            if (totalAvailable > 0f)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    float lackFactor = 1f - (currentAmounts[i] / totalAvailable);
+                    totalCosts[i] *= (1f + lackFactor);
+                }
+            }
+        }
+
+        // Convert to percentages
+        float sum = totalCosts[0] + totalCosts[1] + totalCosts[2] + totalCosts[3];
+        if (sum > 0f)
+        {
+            for (int i = 0; i < 4; i++)
+                resourceNeedPercentages[i] = (totalCosts[i] / sum) * 100f;
+        }
+        else
+        {
+            for (int i = 0; i < 4; i++)
+                resourceNeedPercentages[i] = 25f;
+        }
+
+        Debug.Log(
+            $"[EnemyAI] Resource Needs: Gold={resourceNeedPercentages[0]:F1}%, Wood={resourceNeedPercentages[1]:F1}%, Stone={resourceNeedPercentages[2]:F1}%, Food={resourceNeedPercentages[3]:F1}%");
+    }
+
+    #endregion
+
+    // ============== BUILDING RETRIEVAL METHODS ==============
+
+    #region Building Retrieval
+
+    OffenseBuildingStats[] GetUnitBuildings()
+    {
+        var deck = GetCurrentFactionDeck();
+        if (deck == null)
+            return new OffenseBuildingStats[0];
+
+        List<OffenseBuildingStats> buildings =
+            new List<OffenseBuildingStats>();
+
+        foreach (var entry in deck.unitSelections)
+        {
+            if (!entry.selected || entry.amount <= 0)
+                continue;
+
+            var building =
+                CharacterDatabase.Instance
+                    .GetSpawnerBuilding(entry.unit);
+
+            if (building != null)
+                buildings.Add(building);
+        }
+
+        return buildings.ToArray();
+    }
+
+    BuildingStats[] GetResourceBuildings()
+    {
+        var deck =
+            AIDecSelectionData
+                .AllFactionDecData[(int)enemyFactionName]
+                .SelectedResourceDeck;
+
+        if (deck == null || deck.Count == 0)
+            return new BuildingStats[0];
+
+        BuildingStats[] buildings =
+            new BuildingStats[deck.Count];
+
+        for (int i = 0; i < deck.Count; i++)
+        {
+            buildings[i] =
+                CharacterDatabase.Instance
+                    .GetResourceBuildingPrefab(deck[i]);
+        }
+
+        return buildings;
+    }
+
+    BuildingStats[] GetDefenceBuildings()
+    {
+        var deck = GetCurrentFactionDeck();
+        if (deck == null)
+            return new BuildingStats[0];
+
+        List<BuildingStats> buildings =
+            new List<BuildingStats>();
+
+        foreach (var entry in deck.defenseBuildingSelections)
+        {
+            if (!entry.selected || entry.amount <= 0)
+                continue;
+
+            var building =
+                CharacterDatabase.Instance
+                    .GetDefenseBuildingPrefab(entry.building);
+
+            if (building != null)
+                buildings.Add(building);
+        }
+
+        return buildings.ToArray();
     }
 
     BuildingStats GetRandomBuildingAny()
     {
-        var allBuildings = new List<BuildingStats>();
-        allBuildings.AddRange(GetUnitBuildings());
-        allBuildings.AddRange(GetResourceBuildings());
-        allBuildings.AddRange(GetDefenceBuildings());
-        if (allBuildings.Count == 0) return null;
-        return allBuildings[Random.Range(0, allBuildings.Count)];
+        var all = new List<BuildingStats>();
+
+        all.AddRange(GetUnitBuildings());
+        all.AddRange(GetResourceBuildings());
+        all.AddRange(GetDefenceBuildings());
+
+        if (all.Count == 0)
+            return null;
+
+        return all[Random.Range(0, all.Count)];
     }
+
+    #endregion
+
+    // ============== TILE SELECTION ==============
+
+    #region Tile Selection
 
     Tile SelectRandomSpawnableTile()
     {
         spawnableTiles.RemoveAll(t => t == null || t.hasBuilding);
-        if (spawnableTiles.Count == 0) return null;
-        return spawnableTiles[Random.Range(0, spawnableTiles.Count)];
+
+        if (spawnableTiles.Count == 0)
+            return null;
+
+        return spawnableTiles[
+            Random.Range(0, spawnableTiles.Count)];
     }
 
-    Tile SelectBestTileForCategory(BuildingCategory category)
+    Tile SelectBestTileForCategory(
+        BuildingCategory category)
     {
-        if (spawnableTiles.Count == 0) return null;
+        if (spawnableTiles.Count == 0)
+            return null;
 
-        Vector3 enemyPos = enemyMainBuildingTransform.position;
-        Vector3 playerPos = playerMainBuildingTransform.position;
-        Vector3 dirToPlayer = (playerPos - enemyPos).normalized;
+        Vector3 enemyPos =
+            enemyMainBuildingTransform.position;
+
+        Vector3 playerPos =
+            playerMainBuildingTransform.position;
+
+        Vector3 dirToPlayer =
+            (playerPos - enemyPos).normalized;
 
         Tile bestTile = null;
         float bestScore = float.MinValue;
 
         foreach (Tile tile in spawnableTiles)
         {
-            if (tile == null || tile.hasBuilding) continue;
+            if (tile == null || tile.hasBuilding)
+                continue;
 
             Vector3 tilePos = tile.transform.position;
-            float forwardness = Vector3.Dot(tilePos - enemyPos, dirToPlayer);
+            float forwardness =
+                Vector3.Dot(tilePos - enemyPos, dirToPlayer);
 
             float score = 0f;
+
             switch (category)
             {
                 case BuildingCategory.Defense:
-                    score = forwardness; // prefer forward (closer to player)
+                    score = forwardness;
                     break;
+
                 case BuildingCategory.Resource:
-                    score = -forwardness; // prefer backward (away from player)
+                    score = -forwardness;
                     break;
+
                 case BuildingCategory.Unit:
-                    score = 0f; // neutral
+                    score = 0f;
                     break;
             }
 
-            // Add some randomness based on tacticalPrecision
-            score = (score * currentPersonality.tacticalPrecision) + 
-                    (Random.Range(-1f, 1f) * (1f - currentPersonality.tacticalPrecision));
+            score =
+                (score * currentPersonality.tacticalPrecision) +
+                (Random.Range(-1f, 1f) *
+                 (1f - currentPersonality.tacticalPrecision));
 
             if (score > bestScore)
             {
@@ -311,70 +639,12 @@ public class EnemyAIHandler : MonoBehaviour
         return bestTile ?? SelectRandomSpawnableTile();
     }
 
-    // ============== BUILDING RETRIEVAL METHODS ==============
+    #endregion
 
-    OffenseBuildingStats[] GetUnitBuildings()
-    {
-        var deck = AIDecSelectionData
-            .AllFactionDecData[(int)enemyFactionName]
-            .SelectedUnitDeck;
-
-        if (deck == null || deck.Count == 0)
-            return new OffenseBuildingStats[0];
-
-        OffenseBuildingStats[] buildings = new OffenseBuildingStats[deck.Count];
-
-        for (int i = 0; i < deck.Count; i++)
-        {
-            buildings[i] = CharacterDatabase.Instance.GetSpawnerBuilding(deck[i]);
-        }
-
-        return buildings;
-    }
-
-    
-    BuildingStats[] GetResourceBuildings()
-    {
-        var deck = AIDecSelectionData
-            .AllFactionDecData[(int)enemyFactionName]
-            .SelectedResourceDeck;
-
-        if (deck == null || deck.Count == 0)
-            return new BuildingStats[0];
-
-        BuildingStats[] buildings = new BuildingStats[deck.Count];
-
-        for (int i = 0; i < deck.Count; i++)
-        {
-            buildings[i] = CharacterDatabase.Instance.GetResourceBuildingPrefab(deck[i]);
-        }
-
-        return buildings;
-    }
-
-
-    BuildingStats[] GetDefenceBuildings()
-    {
-        var deck = AIDecSelectionData
-            .AllFactionDecData[(int)enemyFactionName]
-            .SelectedDefenseDec;
-
-        if (deck == null || deck.Count == 0)
-            return new BuildingStats[0];
-
-        BuildingStats[] buildings = new BuildingStats[deck.Count];
-
-        for (int i = 0; i < deck.Count; i++)
-        {
-            buildings[i] = CharacterDatabase.Instance.GetDefenseBuildingPrefab(deck[i]);
-        }
-
-        return buildings;
-    }
 
     // ============== SPAWNING METHOD ==============
 
-    void SpawnBuilding(Tile tile, BuildingStats buildingPrefab)
+    void SpawnBuilding(Tile tile, BuildingStats buildingPrefab, BuildingCategory category)
     {
         if (tile == null || buildingPrefab == null || tile.hasBuilding)
             return;
@@ -387,6 +657,20 @@ public class EnemyAIHandler : MonoBehaviour
             Vector2Int tileGrid = CubeGridManager.Instance.WorldToGrid(tile.transform.position);
             UpdateSpawnableTiles(tileGrid);
             totalBuildingsSpawned++;
+
+            // ✅ Increment only after success
+            switch (category)
+            {
+                case BuildingCategory.Unit:
+                    unitBuilt++;
+                    break;
+                case BuildingCategory.Resource:
+                    resourceBuilt++;
+                    break;
+                case BuildingCategory.Defense:
+                    defenseBuilt++;
+                    break;
+            }
 
             Debug.Log($"[EnemyAI] Spawned {buildingPrefab.name}. Total: {totalBuildingsSpawned}");
         }

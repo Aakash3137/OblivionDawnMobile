@@ -11,15 +11,7 @@ public class EnemyPersonality : ScriptableObject
     [Range(0f, 1f)] public float unitBuildingWeight = 0.5f;
     [Range(0f, 1f)] public float resourceBuildingWeight = 0.3f;
     [Range(0f, 1f)] public float defenseBuildingWeight = 0.2f;
-
-    [Header("Unit Type Weights")]
-    public float[] unitTypeWeights = new float[4] { 0.25f, 0.25f, 0.25f, 0.25f };
-
-    [Header("Resource Type Weights")]
-    public float[] resourceTypeWeights = new float[4] { 0.25f, 0.25f, 0.25f, 0.25f };
-
-    [Header("Defense Type Weights")]
-    public float[] defenseTypeWeights = new float[3] { 0.33f, 0.33f, 0.34f };
+    
 
     [Header("Thinking")]
     public float spawnInterval = 5f;
@@ -33,14 +25,17 @@ public class EnemyPersonality : ScriptableObject
 
     [Header("Limits")]
     public int maxEnemyBuildings = 150;
-
-    [Header("Unit Levels")]
-    public AnimationCurve unitLevelCurve;
-
-    [Header("Deck Rules")]
-    [Min(1)] public int maxDeckSlots = 8;
+    
+    [Header("Resource Type Weights (Food, Gold, Metal, Power)")]
+    public float[] resourceTypeWeights = new float[4] { 0.25f, 0.25f, 0.25f, 0.25f };
 
     [Header("Deck Selection")]
+    
+    [Min(1)] public int maxDeckSlots = 8;
+    
+    public bool isEnemyAwarenessEnabled = false;
+    public bool AutoDeckSelection = false;
+    
     public AllUnitData allUnitData;
     public AllBuildingData allBuildingData;
 
@@ -62,7 +57,7 @@ public class EnemyPersonality : ScriptableObject
             FactionDeckSelection block = factionDeckSelections.Find(f => f.faction == faction);
 
             if (block == null)
-            {
+            {  
                 block = new FactionDeckSelection();
                 block.faction = faction;
                 factionDeckSelections.Add(block);
@@ -95,7 +90,9 @@ public class EnemyPersonality : ScriptableObject
                 {
                     unit = unit,
                     selected = false,
-                    amount = 0
+                    amount = 0,
+                    UnitsSpawnLevel = 0,
+                    weight = 0.25f
                 });
             }
         }
@@ -123,7 +120,9 @@ public class EnemyPersonality : ScriptableObject
                 {
                     building = building,
                     selected = false,
-                    amount = 0
+                    amount = 0,
+                    UnitsSpawnLevel = 0,
+                    weight = 0.33f
                 });
             }
         }
@@ -136,14 +135,47 @@ public class EnemyPersonality : ScriptableObject
             int total = 0;
 
             foreach (var unit in faction.unitSelections)
+            {
+                unit.UnitsSpawnLevel = Mathf.Clamp(unit.UnitsSpawnLevel, 0, 10);
                 if (unit.selected) total += unit.amount;
+            }
 
             foreach (var defense in faction.defenseBuildingSelections)
+            {
+                defense.UnitsSpawnLevel = Mathf.Clamp(defense.UnitsSpawnLevel, 0, 10);
                 if (defense.selected) total += defense.amount;
+            }
 
             if (total > maxDeckSlots)
             {
-                Debug.LogWarning($"Faction {faction.faction} exceeds max deck slots ({maxDeckSlots}). Current: {total}", this);
+                   ClampDeckAmounts(faction, total);
+            }
+        }
+    }
+
+    void ClampDeckAmounts(FactionDeckSelection faction, int currentTotal)
+    {
+        int excess = currentTotal - maxDeckSlots;
+        
+        for (int i = faction.unitSelections.Count - 1; i >= 0 && excess > 0; i--)
+        {
+            var unit = faction.unitSelections[i];
+            if (unit.selected && unit.amount > 0)
+            {
+                int reduction = Mathf.Min(unit.amount, excess);
+                unit.amount -= reduction;
+                excess -= reduction;
+            }
+        }
+        
+        for (int i = faction.defenseBuildingSelections.Count - 1; i >= 0 && excess > 0; i--)
+        {
+            var defense = faction.defenseBuildingSelections[i];
+            if (defense.selected && defense.amount > 0)
+            {
+                int reduction = Mathf.Min(defense.amount, excess);
+                defense.amount -= reduction;
+                excess -= reduction;
             }
         }
     }
@@ -163,6 +195,8 @@ public class UnitToggleEntry
     public UnitProduceStatsSO unit;
     public bool selected;
     [Min(0)] public int amount;
+    [Min(0)] public int UnitsSpawnLevel;
+    [Range(0f, 1f)] public float weight = 0.25f;
 }
 
 [Serializable]
@@ -171,4 +205,6 @@ public class DefenseBuildingToggleEntry
     public DefenseBuildingDataSO building;
     public bool selected;
     [Min(0)] public int amount;
+    [Min(0)] public int UnitsSpawnLevel;
+    [Range(0f, 1f)] public float weight = 0.33f;
 }

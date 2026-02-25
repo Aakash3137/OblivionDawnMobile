@@ -8,6 +8,7 @@ public class OffenseBuildingStats : BuildingStats
     public ScenarioOffenseType offenseType { get; private set; }
     public OffenseBuildingUpgradeData offenseBuildingData { get; private set; }
     private CubeGridManager cgmInstance;
+
     // private CharacterDatabase characterDatabase => CharacterDatabase.Instance;
 
     [ReadOnly]
@@ -17,8 +18,9 @@ public class OffenseBuildingStats : BuildingStats
 
     private Tile nearestTile;
     private WaitForSeconds waitTime;
+    private float unitSpawnTime;
     private bool canMaintain => CanMaintain();
-    [field: SerializeField, ReadOnly] public bool isProducing { get; private set; }
+    [field: SerializeField, ReadOnly] public bool isProducingUnits { get; private set; }
     private int maxSpawnableUnits;
 
     internal override void Initialize()
@@ -34,14 +36,14 @@ public class OffenseBuildingStats : BuildingStats
 
             buildCost = offenseBuildingSO.buildingBuildCost;
 
-            waitTime = new WaitForSeconds(offenseBuildingData.unitSpawnTime);
+            unitSpawnTime = offenseBuildingData.unitSpawnTime;
+            waitTime = new WaitForSeconds(unitSpawnTime);
 
             unit = offenseBuildingSO.unitPrefab;
 
             basicStats = offenseBuildingData.buildingBasicStats;
 
             buildTime = offenseBuildingData.buildingBuildTime;
-            buildingWaitTime = new WaitForSeconds(buildTime);
 
             maxSpawnableUnits = offenseBuildingData.maxSpawnableUnits;
         }
@@ -54,44 +56,34 @@ public class OffenseBuildingStats : BuildingStats
 
         currentGrid = CubeGridManager.Instance.WorldToGrid(currentTile.transform.position);
 
-        StartProduction();
     }
 
-    private void StartProduction()
+    internal override async Awaitable InitializeOnBuilt()
     {
-        StartCoroutine(ProduceUnits());
+        isProducingUnits = false;
+        await base.InitializeOnBuilt();
+        await ProduceUnits();
     }
 
-    private IEnumerator ProduceUnits()
+    private async Awaitable ProduceUnits()
     {
-        isProducing = false;
-        yield return new WaitForSeconds(buildTime);
-
         while (currentHealth > 0)
         {
-            if (canMaintain && maxSpawnableUnits > producedUnits.Count)
+            if (!FulFillSpawnConditions())
             {
-                isProducing = true;
-            }
-            else
-            {
-                isProducing = false;
-                yield return new WaitUntil(FulFillSpawnConditions);
+                isProducingUnits = false;
+
+                // if(maxSpawnableUnits > producedUnits.Count)
+                //  TO DO SHOW ICON FOR BUILDING FULL
+
+                while (!FulFillSpawnConditions())
+                    await Awaitable.WaitForSecondsAsync(0.5f, destroyCancellationToken);    // wait for 0.5 seconds till spawn conditions are met
                 continue;
             }
 
-            if (!TryGetSpawnPosition(out Vector3 spawnPoint))
-            {
-                isProducing = false;
-                yield return new WaitForSeconds(1f);
-                continue;
-            }
-
-            isProducing = true;
-            yield return waitTime;
-
-            // if (canMaintain)
-            SpawnUnit(spawnPoint);
+            isProducingUnits = true;
+            await Awaitable.WaitForSecondsAsync(unitSpawnTime, destroyCancellationToken);
+            SpawnUnit();
         }
     }
 
@@ -100,16 +92,22 @@ public class OffenseBuildingStats : BuildingStats
         return canMaintain && maxSpawnableUnits > producedUnits.Count;
     }
 
-    private void SpawnUnit(Vector3 spawnPoint)
+    private void SpawnUnit()
     {
         if (producedUnits.Count >= maxSpawnableUnits)
             return;
 
-        var intUnit = Instantiate(unit, spawnPoint, Quaternion.identity, transform);
-        intUnit.spawnerBuilding = this;
-        intUnit.Initialize();
-
-        producedUnits.Add(intUnit);
+        if (TryGetSpawnPosition(out Vector3 spawnPoint))
+        {
+            var intUnit = Instantiate(unit, spawnPoint, Quaternion.identity, transform);
+            intUnit.spawnerBuilding = this;
+            intUnit.Initialize();
+            producedUnits.Add(intUnit);
+        }
+        else
+        {
+            Debug.Log("<color=red>[OffenseBuildingStats] No spawn position found</color>");
+        }
     }
 
     private bool TryGetSpawnPosition(out Vector3 spawnPosition)
