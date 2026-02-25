@@ -10,8 +10,6 @@ public class UpgradePanelNavigation : MonoBehaviour
     [Header("Category Buttons : 0 = Units ; 1 = Buildings")]
     [SerializeField] private List<Toggle> categoryButtons;
 
-    [SerializeField] private Button backButton;
-
     private UpgradePanelManager upgradePanelManager;
     private FactionName selectedFaction;
 
@@ -35,7 +33,6 @@ public class UpgradePanelNavigation : MonoBehaviour
         categoryButtons[0].onValueChanged.AddListener((isOn) => OnClickUnits(selectedFaction));
         categoryButtons[1].onValueChanged.AddListener((isOn) => OnClickBuildings(selectedFaction));
 
-        backButton.onClick.AddListener(OnClickBack);
     }
     private void RemoveListeners()
     {
@@ -48,7 +45,6 @@ public class UpgradePanelNavigation : MonoBehaviour
             toggle.onValueChanged.RemoveAllListeners();
         }
 
-        backButton.onClick.RemoveAllListeners();
     }
 
     private void OnClickMedieval()
@@ -86,11 +82,7 @@ public class UpgradePanelNavigation : MonoBehaviour
         ToggleTypePanel(upgradePanelManager.buildingCardPanel.gameObject);
         AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
-    private void OnClickBack()
-    {
-        HomeUIManager.Instance.ShowPanel(PanelName.Home);
-        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
-    }
+
     private void ToggleTypePanel(GameObject panel)
     {
         upgradePanelManager.buildingCardPanel.gameObject.SetActive(false);
