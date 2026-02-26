@@ -89,7 +89,7 @@ public struct Identity
     public string name;
     public int spawnLevel;
     public FactionName faction;
-    public bool isUnique;
+    public bool isLocked;
     public int priority;
 }
 

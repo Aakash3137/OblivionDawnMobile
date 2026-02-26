@@ -5,11 +5,14 @@ public class UpgradePanelManager : MonoBehaviour
 {
     public static UpgradePanelManager Instance;
 
+    [SerializeField] private List<MainBuildingDataSO> cityCenterScriptables;
     [SerializeField] private List<UnitProduceStatsSO> unitScriptables;
     [SerializeField] private List<BuildingDataSO> buildingScriptables;
 
-    [SerializeField] public CardsPanel buildingCardPanel;
+    [SerializeField] public CardsPanel cityCenterCardPanel;
     [SerializeField] public CardsPanel unitCardPanel;
+    [SerializeField] public CardsPanel buildingCardPanel;
+
 
     [SerializeField] private CardUpgradeData cardPrefab;
     [field: SerializeField] public UpgradePopUpPanel upgradePopUpPanel { get; private set; }
@@ -29,6 +32,23 @@ public class UpgradePanelManager : MonoBehaviour
 
         if (!unitCardPanel.initializedUnits)
             CreateUnitCards();
+
+        if (!cityCenterCardPanel.initializedBuildings)
+            CreateCityCenterCards();
+    }
+
+    public void CreateCityCenterCards()
+    {
+        foreach (var cityCenterScriptable in cityCenterScriptables)
+        {
+            if (cityCenterScriptable == null)
+            {
+                Debug.Log("<color=Green> [Upgrade Panel Manager]Building Scriptable is null</color>");
+                continue;
+            }
+
+            cityCenterCardPanel.AddCards(cardPrefab, cityCenterScriptable);
+        }
     }
 
     public void CreateBuildingCards()

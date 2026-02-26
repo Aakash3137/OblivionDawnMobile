@@ -13,7 +13,7 @@ public class UpgradePanelNavigation : MonoBehaviour
     private UpgradePanelManager upgradePanelManager;
     private FactionName selectedFaction;
 
-    public bool isDefaultPanelUnits = true;
+    public bool isDefaultPanelCityCenter = true;
 
     private void Start()
     {
@@ -30,8 +30,9 @@ public class UpgradePanelNavigation : MonoBehaviour
         factionButtons[2].onValueChanged.AddListener((isOn) => OnClickFuture());
         factionButtons[3].onValueChanged.AddListener((isOn) => OnClickGalvadore());
 
-        categoryButtons[0].onValueChanged.AddListener((isOn) => OnClickUnits(selectedFaction));
-        categoryButtons[1].onValueChanged.AddListener((isOn) => OnClickBuildings(selectedFaction));
+        categoryButtons[0].onValueChanged.AddListener((isOn) => OnClickCityCenter(selectedFaction));
+        categoryButtons[1].onValueChanged.AddListener((isOn) => OnClickUnits(selectedFaction));
+        categoryButtons[2].onValueChanged.AddListener((isOn) => OnClickBuildings(selectedFaction));
 
     }
     private void RemoveListeners()
@@ -50,25 +51,31 @@ public class UpgradePanelNavigation : MonoBehaviour
     private void OnClickMedieval()
     {
         selectedFaction = FactionName.Medieval;
-        categoryButtons[0].isOn = isDefaultPanelUnits;
+        categoryButtons[0].isOn = isDefaultPanelCityCenter;
         AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
     private void OnClickPresent()
     {
         selectedFaction = FactionName.Present;
-        categoryButtons[0].isOn = isDefaultPanelUnits;
+        categoryButtons[0].isOn = isDefaultPanelCityCenter;
         AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
     private void OnClickFuture()
     {
         selectedFaction = FactionName.Futuristic;
-        categoryButtons[0].isOn = isDefaultPanelUnits;
+        categoryButtons[0].isOn = isDefaultPanelCityCenter;
         AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
     private void OnClickGalvadore()
     {
         selectedFaction = FactionName.Galvadore;
-        categoryButtons[0].isOn = isDefaultPanelUnits;
+        categoryButtons[0].isOn = isDefaultPanelCityCenter;
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
+    }
+
+    private void OnClickCityCenter(FactionName factionName)
+    {
+        ToggleTypePanel(upgradePanelManager.cityCenterCardPanel.gameObject);
         AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
 
@@ -87,6 +94,7 @@ public class UpgradePanelNavigation : MonoBehaviour
     {
         upgradePanelManager.buildingCardPanel.gameObject.SetActive(false);
         upgradePanelManager.unitCardPanel.gameObject.SetActive(false);
+        upgradePanelManager.cityCenterCardPanel.gameObject.SetActive(false);
 
         panel.SetActive(true);
     }
