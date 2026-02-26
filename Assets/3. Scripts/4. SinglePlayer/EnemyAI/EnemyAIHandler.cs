@@ -12,7 +12,8 @@ public enum BuildingCategory
 
 public class EnemyAIHandler : MonoBehaviour
 {
-    [Header("References")] [SerializeField]
+    [Header("References")]
+    [SerializeField]
     private EnemyModeSwitch enemyModeSwitch;
 
     [SerializeField] private EnemyBuildPanel enemyBuildPanel;
@@ -35,7 +36,7 @@ public class EnemyAIHandler : MonoBehaviour
     private int resourceBuildingIndex = 0;
     private bool allResourcesCovered = false;
 
-    [Header("READ ONLY")] [SerializeField] private int unitBuilt = 0;
+    [Header("READ ONLY")][SerializeField] private int unitBuilt = 0;
     [SerializeField] private int resourceBuilt = 0;
     [SerializeField] private int defenseBuilt = 0;
 
@@ -61,7 +62,7 @@ public class EnemyAIHandler : MonoBehaviour
         enemyMainBuildingTransform = GameManager.Instance.enemySpawnPoint;
         playerMainBuildingTransform = GameManager.Instance.playerSpawnPoint;
 
-        GameManager.Instance.EnemyFactionName = enemyFactionName;
+        GameManager.Instance.SetEnemyFaction(enemyFactionName);
 
         Invoke(nameof(AnalyzeResourceNeeds), 1.5f);
         Invoke(nameof(InitializeSpawnableTiles), 1f);

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -9,105 +10,104 @@ public class GameManager : MonoBehaviour
     public DecSelectionData decSelectionData;
 
     [Header("Spawn points")]
-    public Transform playerSpawnPoint;
-    public Transform enemySpawnPoint;
-    public float yOffset = 1f;
+    public Tile playerTile;
+    public Tile enemyTile;
 
-    internal FactionName EnemyFactionName;
+    public Transform obstaclePool;
+
+    [HideInInspector]
+    public Transform playerSpawnPoint => playerTile.transform;
+    [HideInInspector]
+    public Transform enemySpawnPoint => enemyTile.transform;
+
+    public float yOffset = 2f;
+    internal FactionName enemyFaction;
+
+    public GameObject defaultObstacle;
+    public NeutralBuildingsData[] neutralBuildingsData;
 
     void Awake() => Instance = this;
 
     void Start()
     {
-        if (data == null)
-        {
-            Debug.LogError("[Spawner] FactionsData is not assigned.");
-            return;
-        }
-
-        // Use the faction selected in the menu
-        
-       Generic.Delay(SpawnMainBuilding,1f);
-        // Debug.Log("[Spawner] Buildings spawned. Enemy Faction Name: " + EnemyFactionName);
+        SpawnMainBuilding();
+        SpawnNeutralBuildings();
     }
-    
+
     private void SpawnMainBuilding()
     {
         var playerFaction = decSelectionData.CurrentFaction;
-        var playerSlots = GetFactionSlots(playerFaction);
+        var playerMainBuilding = GetMainBuilding(playerFaction);
+        var enemyMainBuilding = GetMainBuilding(enemyFaction);
 
-        // var enemySlots = GetFactionSlots(GetRandomEnemyFaction(playerFaction));
+        var playerBuilding = Instantiate(playerMainBuilding, playerSpawnPoint.position + Vector3.up * yOffset, Quaternion.identity);
+        var enemyBuilding = Instantiate(enemyMainBuilding, enemySpawnPoint.position + Vector3.up * yOffset, Quaternion.identity);
 
-        // updated enemy main building faction selection through enemy build panel script 
-        var enemySlots = GetFactionSlots(EnemyFactionName);
+        var playerMainBuildingStats = playerBuilding.GetComponent<BuildingStats>();
+        var enemyMainBuildingStats = enemyBuilding.GetComponent<BuildingStats>();
 
-        if (playerSlots == null || enemySlots == null) return;
+        playerMainBuildingStats.SetBuildingTile(playerTile);
+        playerMainBuildingStats.Initialize();
 
-        SpawnAllBuildings(playerSpawnPoint, playerSlots, Side.Player);
-        SpawnAllBuildings(enemySpawnPoint, enemySlots, Side.Enemy);
+        enemyMainBuildingStats.SetBuildingTile(enemyTile);
+        enemyMainBuildingStats.Initialize();
     }
 
-    // Get faction slots based on faction name
-    GameObject[] GetFactionSlots(FactionName name)
+
+    private void SpawnNeutralBuildings(Side side = Side.NeutralAlly)
+    {
+        foreach (var building in neutralBuildingsData)
+        {
+            if (building.tile == null) continue;
+
+            var prefab = defaultObstacle;
+
+            if (building.prefab != null)
+                prefab = building.prefab;
+
+            var pos = building.tileTransform.position + Vector3.up * building.yOffset;
+            var neutralBuilding = Instantiate(prefab, pos, Quaternion.identity, building.tileTransform);
+
+            if (obstaclePool != null)
+                neutralBuilding.transform.parent = obstaclePool;
+
+            BuildingStats buildingStats = neutralBuilding.GetComponent<BuildingStats>();
+
+            building.tile.SetOwner(side);
+            buildingStats.SetBuildingTile(building.tile);
+
+            //Initialize if scriptable object is not null
+            // buildingStats.Initialize();
+        }
+    }
+    public void SetEnemyFaction(FactionName name)
+    {
+        enemyFaction = name;
+    }
+
+    GameObject GetMainBuilding(FactionName name)
     {
         switch (name)
         {
             case FactionName.Medieval:
-                return new[] { data.medievalMainBuilding, data.medievalTurretBuilding, data.medievalMeleeBuilding, data.medievalGoldBuilding };
+                return data.medievalMainBuilding;
             case FactionName.Present:
-                return new[] { data.presentMainBuilding, data.presentTurretBuilding, data.presentMeleeBuilding, data.presentGoldBuilding };
+                return data.presentMainBuilding;
             case FactionName.Futuristic:
-                return new[] { data.futureMainBuilding, data.futureTurretBuilding, data.futureMeleeBuilding, data.futureGoldBuilding };
+                return data.futureMainBuilding;
             case FactionName.Galvadore:
-                return new[] { data.galvadoreMainBuilding, data.galvadoreTurretBuilding, data.galvadoreMeleeBuilding, data.galvadoreGoldBuilding };
+                return data.galvadoreMainBuilding;
             default: return null;
         }
     }
+}
 
-
-    /*public static void SetFactionNameThroughEnemyBuildPanel(FactionName factionName)
-    {
-        EnemyFactionName = factionName;
-        // Debug.Log($"[Spawner] Enemy Faction Name: {enemyFactionName}");
-    }*/
-
-
-    void SpawnAllBuildings(Transform rootPoint, GameObject[] buildingPrefabs, Side side)
-    {
-        if (rootPoint == null || buildingPrefabs == null) return;
-
-        SpawnEntry(rootPoint, buildingPrefabs[0], side, "MainBuilding");
-    }
-
-    void SpawnEntry(Transform point, GameObject buildingPrefab, Side side, string label)
-    {
-        if (buildingPrefab == null || buildingPrefab == null) return;
-
-        var pos = point.position + Vector3.up * yOffset;
-
-        // Any Null references ?
-        // Check if something is being called on enable
-        // Some references are not yet initialized
-
-        var mainBuilding = Instantiate(buildingPrefab, pos, Quaternion.identity, point);
-        mainBuilding.GetComponent<BuildingStats>().Initialize();
-
-        // Debug.Log($"[Spawner] Spawned {label} for {side}: {buildingPrefab.name}");
-
-        // // If this is the main building, mark the tile as occupied
-        // if (label == "MainBuilding")
-        // {
-        //     // Find the tile at the spawn point
-        //     if (CubeGridManager.Instance != null)
-        //     {
-        //         Vector2Int coord = CubeGridManager.Instance.WorldToGrid(point.position);
-        //         var tile = CubeGridManager.Instance.GetCube(coord);
-        //         if (tile != null)
-        //         {
-        //             // tile.SetBuildingPlaced();
-        //             // Debug.Log($"[Spawner] Tile at {coord} marked as building placed for {side}");
-        //         }
-        //     }
-        // }
-    }
+[Serializable]
+public struct NeutralBuildingsData
+{
+    public Tile tile;
+    [HideInInspector]
+    public Transform tileTransform => tile.transform;
+    public GameObject prefab;
+    public float yOffset;
 }

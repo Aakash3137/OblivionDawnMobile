@@ -29,7 +29,10 @@ public class UnitProgress : ProgressManager
             currentTime = 0f;
             progressAmount = currentTime / waitTime;
             UpdateFillAmount(progressAmount);
+
+            // if (spawner.side == Side.Player)
             canvasGroup.alpha = 0f;
+
             return;
         }
 

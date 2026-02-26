@@ -52,7 +52,18 @@ public class Stats : MonoBehaviour
         if (healthBar != null)
             healthBar.UpdateFillAmount(currentHealth / basicStats.maxHealth);
 
-        Renderer renderer = GetComponentInChildren<Renderer>();
+        ApplyMaterial();
+    }
+
+    private void ApplyMaterial()
+    {
+        BuildingSkeleton buildingSkeleton = GetComponent<BuildingSkeleton>();
+        Renderer renderer = null;
+
+        if (buildingSkeleton != null)
+            renderer = buildingSkeleton.graphicObject.GetComponentInChildren<Renderer>();
+        else
+            renderer = GetComponentInChildren<Renderer>();
 
         if (renderer != null)
         {
