@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         SpawnMainBuilding();
-        SpawnNeutralBuildings();
+        // SpawnNeutralBuildings();
     }
 
     private void SpawnMainBuilding()
@@ -85,7 +85,7 @@ public class GameManager : MonoBehaviour
         enemyFaction = name;
     }
 
-    GameObject GetMainBuilding(FactionName name)
+    public GameObject GetMainBuilding(FactionName name)
     {
         switch (name)
         {
