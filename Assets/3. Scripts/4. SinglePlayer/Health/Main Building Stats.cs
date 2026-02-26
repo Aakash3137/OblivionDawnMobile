@@ -29,10 +29,10 @@ public class MainBuildingStats : BuildingStats
         switch (side)
         {
             case Side.Player:
-                RTSGameStateManager.Instance.ChangeState(RTSGameState.DEFEAT);
+                GameStateManager.Instance.ChangeState(GameState.DEFEAT);
                 break;
             case Side.Enemy:
-                RTSGameStateManager.Instance.ChangeState(RTSGameState.VICTORY);
+                GameStateManager.Instance.ChangeState(GameState.VICTORY);
                 break;
         }
     }
