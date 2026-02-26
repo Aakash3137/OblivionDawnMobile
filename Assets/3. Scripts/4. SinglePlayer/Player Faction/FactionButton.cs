@@ -42,7 +42,7 @@ public class FactionButton : MonoBehaviour
             DeactivateFactionPanel();
         }
 
-        RTSGameStateManager.Instance.ChangeState(RTSGameState.PLAYING);
+        GameStateManager.Instance.ChangeState(GameState.PLAYING);
         AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
 

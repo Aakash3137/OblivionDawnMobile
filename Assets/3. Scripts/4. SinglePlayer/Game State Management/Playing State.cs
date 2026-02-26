@@ -1,12 +1,11 @@
 using UnityEngine;
 
-public class RTSMainMenuState : RTSState
+public class PlayingState : State
 {
     public override void OnStateEnter()
     {
-        AudioManager.TransitionAudio(GameAudioType.MenuMusic);
+        AudioManager.TransitionAudio(GameAudioType.GameMusic);
     }
-
     public override void OnStateExit()
     {
 
