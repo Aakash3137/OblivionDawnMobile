@@ -24,6 +24,7 @@ public class Tile : MonoBehaviour
     public void SetOccupant(BuildingStats occupant)
     {
         currentOccupant = occupant;
+        occupant.SetBuildingSide(ownerSide);
         hasBuilding = true;
     }
     public void ClearOccupant()
@@ -98,6 +99,9 @@ public class Tile : MonoBehaviour
     {
         // Always flip ownership to the entering unit’s side
         // occupant = unit;   // update occupant reference
+        if (ownerSide == Side.NeutralAlly || ownerSide == Side.NeutralEnemy)
+            return;
+
         SetOwner(unitSide);
     }
 

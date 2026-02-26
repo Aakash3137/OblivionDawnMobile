@@ -71,9 +71,10 @@ public class TileUIPanel : MonoBehaviour
 
         placedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
 
-        placedBuilding.Initialize();
+        // This will set current tile and owner side
+        placedBuilding.SetBuildingTile(currentTile);
 
-        // currentTile.SetBuildingPlaced();
+        placedBuilding.Initialize();
 
         // Fade out build panel
         if (buildPanel != null)

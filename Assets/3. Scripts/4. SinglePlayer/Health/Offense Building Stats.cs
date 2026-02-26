@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -17,7 +16,6 @@ public class OffenseBuildingStats : BuildingStats
     private Vector2Int currentGrid;
 
     private Tile nearestTile;
-    private WaitForSeconds waitTime;
     private float unitSpawnTime;
     private bool canMaintain => CanMaintain();
     [field: SerializeField, ReadOnly] public bool isProducingUnits { get; private set; }
@@ -37,7 +35,6 @@ public class OffenseBuildingStats : BuildingStats
             buildCost = offenseBuildingSO.buildingBuildCost;
 
             unitSpawnTime = offenseBuildingData.unitSpawnTime;
-            waitTime = new WaitForSeconds(unitSpawnTime);
 
             unit = offenseBuildingSO.unitPrefab;
 
@@ -62,7 +59,7 @@ public class OffenseBuildingStats : BuildingStats
     {
         isProducingUnits = false;
         await base.InitializeOnBuilt();
-        await ProduceUnits();
+        _ = ProduceUnits();
     }
 
     private async Awaitable ProduceUnits()
@@ -78,6 +75,7 @@ public class OffenseBuildingStats : BuildingStats
 
                 while (!FulFillSpawnConditions())
                     await Awaitable.WaitForSecondsAsync(0.5f, destroyCancellationToken);    // wait for 0.5 seconds till spawn conditions are met
+
                 continue;
             }
 
@@ -109,13 +107,13 @@ public class OffenseBuildingStats : BuildingStats
             Debug.Log("<color=red>[OffenseBuildingStats] No spawn position found</color>");
         }
     }
-    
+
     internal override void EnableFunctionality()
     {
         if (isProducingUnits && functionalityUI != null)
             functionalityUI.HideUI();
     }
-    
+
     internal override void DisableFunctionality()
     {
         if (!isProducingUnits && functionalityUI != null)

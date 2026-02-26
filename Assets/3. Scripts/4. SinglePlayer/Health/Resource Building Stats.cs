@@ -1,4 +1,3 @@
-using System.Collections;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -7,7 +6,6 @@ public class ResourceBuildingStats : BuildingStats
     [ReadOnly] public ScenarioResourceType resourceType { get; private set; }
     public ResourceBuildingUpgradeData resourceBuildingData { get; private set; }
     [field: SerializeField, ReadOnly] public bool isProducingResources { get; private set; }
-    private WaitForSeconds waitTime;
     private float productionTickSyncTime;
     private float generationTime;
 
@@ -50,6 +48,7 @@ public class ResourceBuildingStats : BuildingStats
     private void StartProducing()
     {
         bool canProduce = CanProduce();
+        bool syncComplete = Time.time - productionTickSyncTime >= rmInstance.globalTickTime;
 
         if (canProduce && !isProducingResources)
         {
@@ -62,51 +61,15 @@ public class ResourceBuildingStats : BuildingStats
             isProducingResources = false;
         }
 
-        if (Time.time - productionTickSyncTime >= rmInstance.globalTickTime)
+        if (syncComplete)
             Produce();
 
-        if (!canProduce && isProducingResources)
+        if (!CanProduce() && isProducingResources)
         {
             DecreaseGenerationRate();
             isProducingResources = false;
         }
     }
-
-    // private IEnumerator StartResourceGeneration()
-    // {
-    //     isProducing = false;
-    //     yield return buildingWaitTime;
-
-    //     IncreaseGlobalCapacity();
-    //     bool wasProducing = false;
-
-    //     while (currentHealth > 0)
-    //     {
-    //         bool canProduce = CanProduce();
-
-    //         if (canProduce && !wasProducing)
-    //         {
-    //             IncreaseGenerationRate();
-    //             isProducing = true;
-    //             wasProducing = true;
-    //         }
-
-    //         if (!canProduce && wasProducing)
-    //         {
-    //             DecreaseGenerationRate();
-    //             isProducing = false;
-    //             wasProducing = false;
-    //             yield return new WaitUntil(CanProduce);
-    //             continue;
-    //         }
-
-    //         yield return waitTime;
-
-    //         // if (canProduce)            
-    //         Produce();
-    //     }
-    // }
-
 
     private void Produce()
     {

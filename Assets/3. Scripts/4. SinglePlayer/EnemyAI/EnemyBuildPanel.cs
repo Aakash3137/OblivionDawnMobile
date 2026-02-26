@@ -74,9 +74,9 @@ public class EnemyBuildPanel : MonoBehaviour
 
         placedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
 
+        // This will set current tile and owner side
+        placedBuilding.SetBuildingTile(currentTile);
         placedBuilding.Initialize();
-
-        // currentTile.SetBuildingPlaced();
 
         PlaceWallsOnMainBuilding();
         PlaceWalls();
@@ -99,9 +99,10 @@ public class EnemyBuildPanel : MonoBehaviour
         }
 
         placedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
-        placedBuilding.Initialize();
 
-        // currentTile.SetBuildingPlaced();
+        // This will set current tile and owner side
+        placedBuilding.SetBuildingTile(currentTile);
+        placedBuilding.Initialize();
 
         PlaceWallsOnMainBuilding();
 

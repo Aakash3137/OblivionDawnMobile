@@ -18,12 +18,12 @@ public class BuildingProgress : ProgressManager
             gameObject.AddComponent<CanvasGroup>();
         }
 
-        CheckBuildingSide();
+        // CheckBuildingSide();
 
         StartCoroutine(BuildingInProgress());
     }
 
-    IEnumerator BuildingInProgress()
+    private IEnumerator BuildingInProgress()
     {
         while (currentTime <= waitTime)
         {
@@ -36,6 +36,7 @@ public class BuildingProgress : ProgressManager
         buildingSkeleton.OnBuildingCompleted();
         canvasGroup.alpha = 0f;
     }
+
     //Disable UI for enemy
     private void CheckBuildingSide()
     {

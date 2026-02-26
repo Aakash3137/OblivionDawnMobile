@@ -19,6 +19,7 @@ public class BuildingStats : Stats
     public ResourceManager rmInstance { get; private set; }
 
     private float upkeepTickSyncTime;
+    private bool decreasedGeneration;
 
 
     internal override void Initialize()
@@ -30,11 +31,6 @@ public class BuildingStats : Stats
 
         buildingType = buildingStatsSO.buildingType;
         visuals = buildingStatsSO.buildingVisuals;
-
-        currentTile = GetComponentInParent<Tile>();
-        currentTile.SetOccupant(this);
-
-        side = currentTile.ownerSide;
 
         buildingUpkeepCost = buildingStatsSO.upKeepCost;
 
@@ -67,34 +63,7 @@ public class BuildingStats : Stats
         _ = InitializeOnBuilt();
     }
 
-    private void SetParent()
-    {
-        switch (buildingType)
-        {
-            case ScenarioBuildingType.MainBuilding:
-                buildingPool = GameObject.FindWithTag("MainPool");
-                if (buildingPool == null)
-                    Debug.Log("<color=green>No GameObject with tag 'MainPool' found in scene!</color>");
-                break;
-            case ScenarioBuildingType.DefenseBuilding:
-                buildingPool = GameObject.FindWithTag("DefensePool");
-                if (buildingPool == null)
-                    Debug.Log("<color=green>No GameObject with tag 'DefensePool' found in scene!</color>");
-                break;
-            case ScenarioBuildingType.OffenseBuilding:
-                buildingPool = GameObject.FindWithTag("OffensePool");
-                if (buildingPool == null)
-                    Debug.Log("<color=green>No GameObject with tag 'OffensePool' found in scene!</color>");
-                break;
-            case ScenarioBuildingType.ResourceBuilding:
-                buildingPool = GameObject.FindWithTag("ResourcePool");
-                if (buildingPool == null)
-                    Debug.Log("<color=green>No GameObject with tag 'ResourcePool' found in scene!</color>");
-                break;
-        }
 
-        transform.parent = buildingPool?.transform;
-    }
 
     internal virtual async Awaitable InitializeOnBuilt()
     {
@@ -106,44 +75,52 @@ public class BuildingStats : Stats
         {
             upkeepTickSyncTime = Time.time;
             rmInstance.GlobalResourceTick += InitializeBuildingUpkeep;
-            DecreaseGenerationRate();
+            decreasedGeneration = false;
         }
     }
 
     private void InitializeBuildingUpkeep()
     {
-        if (CanMaintain())
+        bool canMaintain = CanMaintain();
+        bool syncComplete = Time.time - upkeepTickSyncTime >= rmInstance.globalTickTime;
+
+        if (canMaintain)
         {
             EnableFunctionality();
-            if (Time.time - upkeepTickSyncTime >= rmInstance.globalTickTime)
+
+            if (syncComplete)
+            {
+                if (!decreasedGeneration)
+                {
+                    DecreaseGenerationRate();
+                    decreasedGeneration = true;
+                }
+
                 rmInstance.SpendResources(buildingUpkeepCost);
+            }
         }
         else
         {
             DisableFunctionality();
+
+            if (decreasedGeneration)
+            {
+                IncreaseGenerationRate();
+                decreasedGeneration = false;
+            }
         }
     }
 
-    // private IEnumerator BuildingUpkeepHandler()
-    // {
-    //     yield return new WaitForSeconds(buildTime);
+    public void SetBuildingTile(Tile tile)
+    {
+        currentTile = tile;
+        currentTile.SetOccupant(this);
+    }
 
-    //     var upKeepTime = new WaitForSeconds(buildingStatsSO.upKeepTime);
-    //     DecreaseGenerationRate();
-
-    //     while (currentHealth > 0)
-    //     {
-    //         if (CanMaintain())
-    //         {
-    //             EnableFunctionality();
-    //             rmInstance.SpendResources(buildingUpkeepCost);
-    //         }
-    //         else
-    //             DisableFunctionality();
-
-    //         yield return upKeepTime;
-    //     }
-    // }
+    public void SetBuildingSide(Side side)
+    {
+        this.side = side;
+    }
 
     internal virtual void EnableFunctionality()
     {
@@ -176,9 +153,11 @@ public class BuildingStats : Stats
     {
         base.Die();
 
+        if (hasBuilt && hasUpkeep && decreasedGeneration)
+            IncreaseGenerationRate();
+
         if (hasBuilt && hasUpkeep)
         {
-            IncreaseGenerationRate();
             rmInstance.GlobalResourceTick -= InitializeBuildingUpkeep;
         }
 
@@ -189,5 +168,34 @@ public class BuildingStats : Stats
     {
         if (currentTile != null)
             currentTile.ClearOccupant();
+    }
+
+    private void SetParent()
+    {
+        switch (buildingType)
+        {
+            case ScenarioBuildingType.MainBuilding:
+                buildingPool = GameObject.FindWithTag("MainPool");
+                if (buildingPool == null)
+                    Debug.Log("<color=green>No GameObject with tag 'MainPool' found in scene!</color>");
+                break;
+            case ScenarioBuildingType.DefenseBuilding:
+                buildingPool = GameObject.FindWithTag("DefensePool");
+                if (buildingPool == null)
+                    Debug.Log("<color=green>No GameObject with tag 'DefensePool' found in scene!</color>");
+                break;
+            case ScenarioBuildingType.OffenseBuilding:
+                buildingPool = GameObject.FindWithTag("OffensePool");
+                if (buildingPool == null)
+                    Debug.Log("<color=green>No GameObject with tag 'OffensePool' found in scene!</color>");
+                break;
+            case ScenarioBuildingType.ResourceBuilding:
+                buildingPool = GameObject.FindWithTag("ResourcePool");
+                if (buildingPool == null)
+                    Debug.Log("<color=green>No GameObject with tag 'ResourcePool' found in scene!</color>");
+                break;
+        }
+
+        transform.parent = buildingPool?.transform;
     }
 }

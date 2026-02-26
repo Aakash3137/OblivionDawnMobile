@@ -5,6 +5,8 @@ public class SideManager : MonoBehaviour
     [Header("Materials")]
     public Material playerMaterial;
     public Material enemyMaterial;
+    public Material neutralAllyMaterial;
+    public Material neutralEnemyMaterial;
 
     // Assign side to a prefab
     public void SetSide(GameObject unitOrBuilding, Side side)
@@ -15,10 +17,20 @@ public class SideManager : MonoBehaviour
         switch (side)
         {
             case Side.Player:
-                renderer.material = playerMaterial;
+                if (playerMaterial != null)
+                    renderer.material = playerMaterial;
                 break;
             case Side.Enemy:
-                renderer.material = enemyMaterial;
+                if (enemyMaterial != null)
+                    renderer.material = enemyMaterial;
+                break;
+            case Side.NeutralAlly:
+                if (neutralAllyMaterial != null)
+                    renderer.material = neutralAllyMaterial;
+                break;
+            case Side.NeutralEnemy:
+                if (neutralEnemyMaterial != null)
+                    renderer.material = neutralEnemyMaterial;
                 break;
         }
     }

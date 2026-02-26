@@ -1,5 +1,7 @@
 public enum Side
 {
     Player,
-    Enemy
+    Enemy,
+    NeutralAlly,
+    NeutralEnemy
 }
