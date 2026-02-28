@@ -16,11 +16,12 @@ MonoBehaviour:
     name: Plasma Turrets
     spawnLevel: 0
     faction: 2
+    populationCost: 0
     priority: 2
   unitType: 3
   unitVisuals:
-    playerUnitMaterial: {fileID: 2100000, guid: 53d15e6ec992b174f9462edf9c14e15d, type: 2}
-    enemyUnitMaterial: {fileID: 2100000, guid: 6f3748f374bb8804a857b52332547ada, type: 2}
+    playerUnitMaterial: {fileID: 2100000, guid: 0e03f92939956ac4fb9b69082118eb9a, type: 2}
+    enemyUnitMaterial: {fileID: 2100000, guid: 0e03f92939956ac4fb9b69082118eb9a, type: 2}
   unitVisionAngles:
     narrowViewAngle: 10
     wideViewAngle: 45
@@ -53,7 +54,6 @@ MonoBehaviour:
     bankAngle: 0
     evadeRadius: 0
     attackAngleTolerance: 0
-  unitPopulationCost: 2
   UnitIcon: {fileID: 21300000, guid: 3164da4cb436c0a46ade5695ccd78142, type: 3}
   unitUpgradeData:
   - unitLevel: 0
@@ -68,5 +68,5 @@ MonoBehaviour:
     unitMobilityStats:
       moveSpeed: 1
     unitRangeStats:
-      detectionRange: 40
-      attackRange: 8
+      detectionRange: 10
+      attackRange: 6

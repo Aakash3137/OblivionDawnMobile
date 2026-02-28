@@ -324,7 +324,7 @@ public class GroundUnit : MonoBehaviour
             float distance = GetAdjustedDistance(candidate);
 
             //  FIRST PRIORITY: Units
-            if (candidate is UnitStats)
+            if (candidate is UnitStats )
             {
                 if (distance < closestUnitDist)
                 {

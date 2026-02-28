@@ -15,7 +15,10 @@ public class Userdata : ScriptableObject
     public int Level = 0;
     public int Coins = 0;
     public int Diamonds = 0;
-    
+
+    [Header("Daily Rewards")]
+    public int CurrentDay = 1;
+    public bool[] DayRewards = new bool[7];
 
     public void ResetData()
     {
@@ -27,6 +30,8 @@ public class Userdata : ScriptableObject
         Level = 0;
         Coins = 0;
         Diamonds = 0;
+        CurrentDay = 1;
+        
     }
     
 }

@@ -20,6 +20,7 @@ public class UiHomePanelScript : MonoBehaviour
     // [SerializeField] private TMP_Text CoinsTxt;
     [SerializeField] private TMP_Text DiamondsTxt;
     [SerializeField] private Image UserPic;
+    [SerializeField] Button RewardButton;
 
     // [Header("Selection Window")]
     // [SerializeField] internal GameObject SelectionWindown;
@@ -34,7 +35,6 @@ public class UiHomePanelScript : MonoBehaviour
 
     private void OnEnable()
     {
-        // UserNameTxt.text = PlayerData.UserName;
         if (PlayerData.ProfilePicture != null)
         {
             UserPic.sprite = PlayerData.ProfilePicture;
@@ -45,8 +45,14 @@ public class UiHomePanelScript : MonoBehaviour
         }
 
         LevelNotTxt.text = PlayerData.Level.ToString();
-        // CoinsTxt.text = PlayerData.Coins.ToString();
         DiamondsTxt.text = PlayerData.Diamonds.ToString();
+
+        RewardButton.onClick.AddListener(ShowRewardPanel);
+    }
+
+    private void ShowRewardPanel()
+    {
+        HomeUIManager.Instance.ShowPanel(PanelName.Rewards);
     }
 
     // void Start()

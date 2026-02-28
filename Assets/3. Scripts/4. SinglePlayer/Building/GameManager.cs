@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -53,6 +54,9 @@ public class GameManager : MonoBehaviour
 
         enemyMainBuildingStats.SetBuildingTile(enemyTile);
         enemyMainBuildingStats.Initialize();
+
+        PlayerMainBuilding = playerMainBuildingStats.side == Side.Player ? playerMainBuildingStats.GetComponent<Stats>() : PlayerMainBuilding;
+        EnemyMainBuilding = enemyMainBuildingStats.side == Side.Enemy ? enemyMainBuildingStats.GetComponent<Stats>() : EnemyMainBuilding;
     }
 
 
