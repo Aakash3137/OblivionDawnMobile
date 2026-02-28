@@ -19,7 +19,7 @@ public class StatBlock : MonoBehaviour
         IncreaseByText.text = increaseBy;
     }
 
-    public void EnableBlock()
+    public void EnableBlock(bool showIncreaseBy)
     {
         if (canvasGroup != null)
         {
@@ -27,6 +27,7 @@ public class StatBlock : MonoBehaviour
             canvasGroup.interactable = true;
             canvasGroup.blocksRaycasts = true;
         }
+        IncreaseByText.gameObject.SetActive(showIncreaseBy);
     }
 
     public void DisableBlock()
@@ -37,10 +38,13 @@ public class StatBlock : MonoBehaviour
             canvasGroup.interactable = false;
             canvasGroup.blocksRaycasts = false;
         }
+        IncreaseByText.gameObject.SetActive(false);
     }
     public void SetIcon(Sprite icon)
     {
-        if (icon == null) return;
+        if (IconImage == null || IconImage.sprite == icon)
+            return;
+
         IconImage.sprite = icon;
     }
 }

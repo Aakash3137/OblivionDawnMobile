@@ -10,6 +10,7 @@ public class UnitProduceStatsSO : ScriptableObject
     public Visuals unitVisuals;
     public VisionAngles unitVisionAngles;
     public AttackTargets unitAttackTargets;
+    public UnitCardDetails cardDetails;
 
     [Space(20)]
     public bool hasUpkeep;
@@ -24,7 +25,7 @@ public class UnitProduceStatsSO : ScriptableObject
     public bool canFly;
     [ShowIf(nameof(canFly))]
     public FlyStats unitFlyStats;
-    public int unitPopulationCost;
+
     public Sprite UnitIcon;
 
     [Space(20), Header("Unit Upgrade Data")]
@@ -32,7 +33,7 @@ public class UnitProduceStatsSO : ScriptableObject
 
     private void ValidateBase()
     {
-        if (unitUpgradeData.Length == 0)
+        if (unitUpgradeData == null || unitUpgradeData.Length == 0)
         {
             unitUpgradeData = new UnitUpgradeData[1];
             unitUpgradeData[0] = new UnitUpgradeData();
@@ -41,44 +42,41 @@ public class UnitProduceStatsSO : ScriptableObject
         for (int i = 0; i < unitUpgradeData.Length; i++)
         {
             unitUpgradeData[i].unitLevel = i;
-
-            if (unitType == ScenarioUnitType.Air)
-            {
-                canFly = true;
-            }
         }
+
+        canFly = unitType == ScenarioUnitType.Air;
 
         unitIdentity.spawnLevel = Mathf.Clamp(unitIdentity.spawnLevel, 0, unitUpgradeData.Length - 1);
 
+        if (!hasUpkeep)
+            return;
+
         var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
+        int targetLength = enumValues.Length;
 
-        if (upKeepCost == null || upKeepCost.Length != enumValues.Length)
-        {
-            upKeepCost = new BuildCost[enumValues.Length];
-        }
+        upKeepCost = BuildCostUtils.ResizePreservingData(upKeepCost, targetLength);
 
-        for (int j = 0; j < enumValues.Length; j++)
-        {
+        for (int j = 0; j < upKeepCost.Length; j++)
             upKeepCost[j].resourceType = (ScenarioResourceType)enumValues.GetValue(j);
-        }
-
     }
+
     private void OnValidate()
     {
         ValidateBase();
     }
+
     [ShowIf(nameof(hasUpkeep)), Button]
     public void SetUpKeepCost(float increasePercent)
     {
-        increasePercent = increasePercent / 100f;
-        float discount = 1f + increasePercent;
-        var baseCosts = upKeepCost;
+        float discount = 1f + (increasePercent / 100f);
+
         for (int i = 0; i < upKeepCost.Length; i++)
         {
-            var amt = Mathf.RoundToInt(baseCosts[i].resourceAmount * discount);
-
             if (upKeepCost[i].resourceAmount != 0)
+            {
+                var amt = Mathf.RoundToInt(upKeepCost[i].resourceAmount * discount);
                 upKeepCost[i].resourceAmount = Mathf.Max(amt, 1);
+            }
         }
     }
 }
@@ -104,6 +102,28 @@ public struct BuildCost
 {
     public ScenarioResourceType resourceType;
     public int resourceAmount;
+}
+
+public static class BuildCostUtils
+{
+    public static BuildCost[] ResizePreservingData(BuildCost[] existing, int targetLength)
+    {
+        if (existing != null && existing.Length == targetLength)
+            return existing;
+
+        var resized = new BuildCost[targetLength];
+
+        if (existing != null)
+        {
+            int copyLength = Mathf.Min(existing.Length, targetLength);
+            for (int i = 0; i < copyLength; i++)
+            {
+                resized[i] = existing[i];
+            }
+        }
+
+        return resized;
+    }
 }
 
 [Serializable]

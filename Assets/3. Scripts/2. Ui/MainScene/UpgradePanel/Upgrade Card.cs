@@ -1,8 +1,9 @@
 using Sirenix.OdinInspector;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CardUpgradeData : MonoBehaviour
+public class UpgradeCard : MonoBehaviour
 {
     [ReadOnly] public BuildingDataSO buildingUpgradeData;
     [ReadOnly] public UnitProduceStatsSO unitUpgradeData;
@@ -12,46 +13,63 @@ public class CardUpgradeData : MonoBehaviour
 
     [SerializeField] private Button cardButton;
 
-    private UpgradePanelManager upgradePanelManager;
-
-    private UpgradePopUpPanel upgradePopUpPanel;
+    [SerializeField] private TMP_Text populationCostText;
+    [SerializeField] private GameObject populationCostRoot;
 
     private void Start()
     {
-        InitializeCard();
-        upgradePanelManager = UpgradePanelManager.Instance;
-        upgradePopUpPanel = upgradePanelManager.upgradePopUpPanel;
+        SetCardSprite();
+        cardButton.onClick.AddListener(OnCardClick);
     }
 
-    private void InitializeCard()
+    private void SetCardSprite()
     {
         if (buildingUpgradeData != null)
         {
             cardImage.sprite = buildingUpgradeData.buildingIcon;
+
+            if (populationCostRoot == null && populationCostText == null)
+                return;
+
+            if (buildingUpgradeData is DefenseBuildingDataSO defenseBuildingData)
+            {
+                populationCostText.SetText($"{defenseBuildingData.buildingIdentity.populationCost}");
+            }
+            else
+            {
+                populationCostRoot.SetActive(false);
+            }
         }
         else if (unitUpgradeData != null)
         {
             cardImage.sprite = unitUpgradeData.UnitIcon;
+
+            if (populationCostRoot == null && populationCostText == null)
+                return;
+
+            populationCostText.SetText($"{unitUpgradeData.unitIdentity.populationCost}");
         }
     }
 
     private void OnCardClick()
     {
-        if (upgradePopUpPanel == null)
+        var panel = UpgradePopUpPanel.Instance;
+
+        if (panel == null)
         {
-            Debug.Log("<color=red>UpgradePopUpPanel is null</color>");
+            Debug.Log("<color=green>[UpgradeCard] UpgradePopUpPanel instance not found</color>");
             return;
         }
 
         if (buildingUpgradeData != null)
         {
             Debug.Log($"<color=green> Clicked on {buildingUpgradeData.name} card</color>");
-            upgradePopUpPanel.OpenPopUpPanel(buildingUpgradeData);
+            panel.OpenActionPanel(buildingUpgradeData);
         }
         else if (unitUpgradeData != null)
         {
             Debug.Log($"<color=green> Clicked on {unitUpgradeData.name} card</color>");
-            upgradePopUpPanel.OpenPopUpPanel(unitUpgradeData);
+            panel.OpenActionPanel(unitUpgradeData);
         }
         else
         {
@@ -59,11 +77,8 @@ public class CardUpgradeData : MonoBehaviour
         }
 
     }
-    private void OnEnable()
-    {
-        cardButton.onClick.AddListener(OnCardClick);
-    }
-    private void OnDisable()
+
+    private void OnDestroy()
     {
         cardButton.onClick.RemoveListener(OnCardClick);
     }

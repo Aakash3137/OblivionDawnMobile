@@ -94,6 +94,7 @@ public class ResourceManager : MonoBehaviour
         {
             currentResources[i].resourceAmount -= resources[i].resourceAmount;
         }
+
         ClampResources();
     }
 
@@ -106,7 +107,8 @@ public class ResourceManager : MonoBehaviour
             if (currentResources[i].resourceAmount - resources[i].resourceAmount < 0)
             {
                 if (debug)
-                    Debug.Log($"<color=#C6616B>Not enough {currentResources[i].resourceType}, Need {currentResources[i].resourceAmount - resources[i].resourceAmount} more {currentResources[i].resourceType}</color>");
+                    Debug.Log($"Not enough {currentResources[i].resourceType}, have {currentResources[i].resourceAmount}, need {resources[i].resourceAmount}");
+
                 hasAllResources = false;
             }
         }
@@ -128,7 +130,7 @@ public class ResourceManager : MonoBehaviour
     public void IncreaseResourceGenerationRate(ScenarioResourceType resourceType, float amount = 0)
     {
         currentGenerationRates[(int)resourceType].resourceAmount += (int)amount;
-        ClampResources();
+        OnResourcesChanged?.Invoke();
     }
 
     public void IncreaseResourceGenerationRate(BuildCost[] resources)
@@ -137,13 +139,14 @@ public class ResourceManager : MonoBehaviour
         {
             currentGenerationRates[i].resourceAmount += resources[i].resourceAmount;
         }
-        ClampResources();
+
+        OnResourcesChanged?.Invoke();
     }
 
     public void DecreaseResourceGenerationRate(ScenarioResourceType resourceType, float amount = 0)
     {
         currentGenerationRates[(int)resourceType].resourceAmount -= (int)amount;
-        ClampResources();
+        OnResourcesChanged?.Invoke();
     }
 
     public void DecreaseResourceGenerationRate(BuildCost[] resources)
@@ -152,7 +155,8 @@ public class ResourceManager : MonoBehaviour
         {
             currentGenerationRates[i].resourceAmount -= resources[i].resourceAmount;
         }
-        ClampResources();
+
+        OnResourcesChanged?.Invoke();
     }
     #endregion
 
@@ -160,21 +164,18 @@ public class ResourceManager : MonoBehaviour
     {
         return currentResources[(int)type].resourceAmount + amount <= maxResources[(int)type].resourceAmount;
     }
+
     void OnValidate()
     {
         var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
-        if (startingResources == null || startingResources.Length != enumValues.Length)
-        {
-            startingResources = new BuildCost[enumValues.Length];
-        }
+
+        startingResources = BuildCostUtils.ResizePreservingData(startingResources, enumValues.Length);
 
         for (int i = 0; i < startingResources.Length; i++)
-        {
             startingResources[i].resourceType = (ScenarioResourceType)enumValues.GetValue(i);
-        }
     }
 
-    [Button]
+    [Button("DEBUG: Add Resources")]
     public void AddResources(int amount)
     {
         for (int i = 0; i < currentResources.Length; i++)

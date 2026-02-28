@@ -1,102 +1,80 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class UpgradePanelNavigation : MonoBehaviour
 {
-    [Space(20)]
     [Header("Faction Buttons : 0 = Medieval ; 1 = Present ; 2 = Future ; 3 = Galvadore")]
-    [SerializeField] private List<Toggle> factionButtons;
-    [Header("Category Buttons : 0 = Units ; 1 = Buildings")]
-    [SerializeField] private List<Toggle> categoryButtons;
-
-    private UpgradePanelManager upgradePanelManager;
+    [SerializeField] private Toggle[] factionButtons;
+    [Header("cardPanels: 0 = CityCenter ; 1 = Units ; 2 = Buildings")]
+    [SerializeField] private Toggle[] typeButtons;
     private FactionName selectedFaction;
+    private int selectedCategoryIndex;
 
-    public bool isDefaultPanelCityCenter = true;
-
-    private void Start()
+    private void Awake()
     {
-        upgradePanelManager = UpgradePanelManager.Instance;
         AddListeners();
+    }
 
-        factionButtons[0].isOn = true;
+    private async Awaitable OnEnable()
+    {
+        await Awaitable.NextFrameAsync();
+        SetCardPanelToOpen(FactionName.Futuristic, 1);
+    }
+
+    private void SetCardPanelToOpen(FactionName faction, int categoryIndex)
+    {
+        selectedFaction = faction;
+        selectedCategoryIndex = categoryIndex;
+
+        factionButtons[(int)faction].isOn = true;
+        typeButtons[categoryIndex].isOn = true;
     }
 
     private void AddListeners()
     {
-        factionButtons[0].onValueChanged.AddListener((isOn) => OnClickMedieval());
-        factionButtons[1].onValueChanged.AddListener((isOn) => OnClickPresent());
-        factionButtons[2].onValueChanged.AddListener((isOn) => OnClickFuture());
-        factionButtons[3].onValueChanged.AddListener((isOn) => OnClickGalvadore());
-
-        categoryButtons[0].onValueChanged.AddListener((isOn) => OnClickCityCenter(selectedFaction));
-        categoryButtons[1].onValueChanged.AddListener((isOn) => OnClickUnits(selectedFaction));
-        categoryButtons[2].onValueChanged.AddListener((isOn) => OnClickBuildings(selectedFaction));
-
+        for (int i = 0; i < factionButtons.Length; i++)
+        {
+            FactionName faction = (FactionName)i;
+            factionButtons[i].onValueChanged.AddListener((isOn) => { if (isOn) OnClickFaction(faction); });
+        }
+        for (int j = 0; j < typeButtons.Length; j++)
+        {
+            int index = j;
+            typeButtons[index].onValueChanged.AddListener((isOn) => { if (isOn) OnClickCategory(index); });
+        }
     }
+
     private void RemoveListeners()
     {
         foreach (Toggle toggle in factionButtons)
-        {
             toggle.onValueChanged.RemoveAllListeners();
-        }
-        foreach (Toggle toggle in categoryButtons)
-        {
+
+        foreach (Toggle toggle in typeButtons)
             toggle.onValueChanged.RemoveAllListeners();
+    }
+
+    private void OnClickFaction(FactionName faction)
+    {
+        selectedFaction = faction;
+        OnClickCategory(selectedCategoryIndex);
+    }
+
+    private void OnClickCategory(int categoryIndex)
+    {
+        selectedCategoryIndex = categoryIndex;
+        ToggleTypePanel(UpgradePanelManager.Instance.factionCardPanel[(int)selectedFaction].cardPanels[categoryIndex]);
+        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
+    }
+
+    private void ToggleTypePanel(CardsPanel panel)
+    {
+        foreach (var factionPanel in UpgradePanelManager.Instance.factionCardPanel)
+        {
+            foreach (var cardPanel in factionPanel.cardPanels)
+                cardPanel.gameObject.SetActive(false);
         }
 
-    }
-
-    private void OnClickMedieval()
-    {
-        selectedFaction = FactionName.Medieval;
-        categoryButtons[0].isOn = isDefaultPanelCityCenter;
-        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
-    }
-    private void OnClickPresent()
-    {
-        selectedFaction = FactionName.Present;
-        categoryButtons[0].isOn = isDefaultPanelCityCenter;
-        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
-    }
-    private void OnClickFuture()
-    {
-        selectedFaction = FactionName.Futuristic;
-        categoryButtons[0].isOn = isDefaultPanelCityCenter;
-        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
-    }
-    private void OnClickGalvadore()
-    {
-        selectedFaction = FactionName.Galvadore;
-        categoryButtons[0].isOn = isDefaultPanelCityCenter;
-        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
-    }
-
-    private void OnClickCityCenter(FactionName factionName)
-    {
-        ToggleTypePanel(upgradePanelManager.cityCenterCardPanel.gameObject);
-        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
-    }
-
-    private void OnClickUnits(FactionName factionName)
-    {
-        ToggleTypePanel(upgradePanelManager.unitCardPanel.gameObject);
-        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
-    }
-    private void OnClickBuildings(FactionName factionName)
-    {
-        ToggleTypePanel(upgradePanelManager.buildingCardPanel.gameObject);
-        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
-    }
-
-    private void ToggleTypePanel(GameObject panel)
-    {
-        upgradePanelManager.buildingCardPanel.gameObject.SetActive(false);
-        upgradePanelManager.unitCardPanel.gameObject.SetActive(false);
-        upgradePanelManager.cityCenterCardPanel.gameObject.SetActive(false);
-
-        panel.SetActive(true);
+        panel.gameObject.SetActive(true);
     }
 
     private void OnDestroy()
