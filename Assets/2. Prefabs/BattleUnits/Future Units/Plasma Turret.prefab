@@ -401,7 +401,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -4753050394034502761, guid: bda992e95cf09d2429a3bd330e4544d8, type: 3}
+  - {fileID: 2100000, guid: 0e03f92939956ac4fb9b69082118eb9a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1237,7 +1237,7 @@ NavMeshAgent:
   m_Acceleration: 8
   avoidancePriority: 40
   m_AngularSpeed: 120
-  m_StoppingDistance: 4
+  m_StoppingDistance: 3
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -1299,6 +1299,7 @@ MonoBehaviour:
     bankAngle: 0
     evadeRadius: 0
     attackAngleTolerance: 0
+  unitUpkeepCost: []
 --- !u!114 &7235389321724902457
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1314,11 +1315,11 @@ MonoBehaviour:
   muzzlePoint: {fileID: 8072048961939860573}
   projectile:
     projectileType: 2
-    motion: 1
-    speed: 5
+    motion: 0
+    speed: 20
     maxRange: 10
     arcHeight: 3
-    lifeTime: 3
+    lifeTime: 2
     isAreaDamage: 0
     damageRadius: 1.5
     hasTrail: 1
@@ -1352,7 +1353,8 @@ MonoBehaviour:
   animator: {fileID: 1500747594756561863}
   target: {fileID: 0}
   primaryTarget: {fileID: 0}
-  secondaryTarget: {fileID: 0}
+  detectionTarget: {fileID: 0}
+  replyTarget: {fileID: 0}
 --- !u!114 &-3195223185349397768
 MonoBehaviour:
   m_ObjectHideFlags: 0

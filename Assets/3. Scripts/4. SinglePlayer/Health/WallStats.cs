@@ -39,7 +39,7 @@ public class WallStats : Stats
             wallHealthEvent?.Invoke(currentHealth, basicStats.maxHealth);
     }
 
-    public override void TakeDamage(float amount)
+    public override void TakeDamage(float amount, Stats stat)
     {
         if (amount <= currentHealth)
             wallParent.DamageWall(amount);

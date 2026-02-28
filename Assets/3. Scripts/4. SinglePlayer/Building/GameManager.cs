@@ -15,6 +15,9 @@ public class GameManager : MonoBehaviour
 
     internal FactionName EnemyFactionName;
 
+    internal Stats PlayerMainBuilding;
+    internal Stats EnemyMainBuilding;
+
     void Awake() => Instance = this;
 
     void Start()
@@ -91,6 +94,9 @@ public class GameManager : MonoBehaviour
 
         var mainBuilding = Instantiate(buildingPrefab, pos, Quaternion.identity, point);
         mainBuilding.GetComponent<BuildingStats>().Initialize();
+        
+        PlayerMainBuilding = side == Side.Player ? mainBuilding.GetComponent<Stats>() : PlayerMainBuilding;
+        EnemyMainBuilding = side == Side.Enemy ? mainBuilding.GetComponent<Stats>() : EnemyMainBuilding;
 
         // Debug.Log($"[Spawner] Spawned {label} for {side}: {buildingPrefab.name}");
 

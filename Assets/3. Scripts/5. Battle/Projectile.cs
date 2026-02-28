@@ -23,6 +23,7 @@ public class Projectile : MonoBehaviour
     private bool passedAimPoint;
 
     [ShowInInspector] private Side ShooterSide;
+    [ShowInInspector] private Stats shooterStats;
 
     [Header("Visuals")][SerializeField] private TrailRenderer[] trails;
 
@@ -116,10 +117,11 @@ public class Projectile : MonoBehaviour
         lastPosition = transform.position;
     }
 
-    public void Init(Stats target, float damage, ProjectileDefinition def, Material trailMaterial, Side shooterside)
+    public void Init(Stats target, float damage, ProjectileDefinition def, Material trailMaterial, Side shooterside, Stats shooter)
     {
         targetUnit = target;
         ShooterSide = shooterside;
+        shooterStats = shooter;
 
         targetCollider = target != null ? target.hitCollider : null;
 
@@ -434,15 +436,15 @@ public class Projectile : MonoBehaviour
             foreach (Collider hit in hits)
             {
                 Stats unit = hit.GetComponent<Stats>();
-                if (unit != null && !unit.CanFly && unit.side != ShooterSide)     // stop AOE on air units and sam side units
-                    unit.TakeDamage(damage);
+                if (unit != null && !unit.CanFly && unit.side != ShooterSide)
+                    unit.TakeDamage(damage, shooterStats);
             }
         }
 
         // DIRECT DAMAGE ONLY IF TARGET HIT
         else if (hitTarget && targetUnit != null)
         {
-            targetUnit.TakeDamage(damage);
+            targetUnit.TakeDamage(damage, shooterStats);
         }
 
         Disable();
