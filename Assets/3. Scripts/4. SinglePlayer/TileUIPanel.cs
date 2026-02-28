@@ -101,26 +101,12 @@ public class TileUIPanel : MonoBehaviour
 
     private bool CanPlaceBuilding(BuildingStats buildingPrefab)
     {
-        BuildCost[] buildingBuildCost = null;
+        var buildingBuildCost = buildingPrefab.buildingStatsSO.buildingBuildCost;
 
-        if (buildingPrefab.TryGetComponent<BuildingStats>(out var spawnBuildingStats))
-        {
-            //int spawnLevel = spawnBuildingStats.buildingStats.buildingSpawnLevel;
-            buildingBuildCost = spawnBuildingStats.buildingStatsSO.buildingBuildCost;
-        }
-        // else if (buildingPrefab.TryGetComponent<WallStats>(out var spawnWallStats))
-        // {
-        //     int spawnLevel = spawnWallStats.wallStats.wallSpawnLevel;
-        //     buildingBuildCost = spawnWallStats.wallStats.wallLevelData[spawnLevel].wallBuildCosts;
-        // }
         if (buildingBuildCost == null || !prmInstance.HasResources(buildingBuildCost))
-        {
-            //Debug.Log("<color=red>Insufficient Resources Building cannot be placed</color>");
             return false;
-        }
 
         prmInstance.SpendResources(buildingBuildCost);
-
         return true;
     }
 

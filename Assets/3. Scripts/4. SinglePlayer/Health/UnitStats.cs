@@ -44,7 +44,7 @@ public class UnitStats : Stats
         unitVisionAngles = unitProduceSO.unitVisionAngles;
         unitAttackTargets = unitProduceSO.unitAttackTargets;
 
-        unitPopulationCost = unitProduceSO.unitPopulationCost;
+        unitPopulationCost = unitProduceSO.unitIdentity.populationCost;
         unitType = unitProduceSO.unitType;
 
         if (canFly)

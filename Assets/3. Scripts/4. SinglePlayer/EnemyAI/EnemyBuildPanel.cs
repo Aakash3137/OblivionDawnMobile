@@ -113,18 +113,12 @@ public class EnemyBuildPanel : MonoBehaviour
 
     private bool CanPlaceBuilding(BuildingStats buildingPrefab)
     {
-        BuildCost[] buildingBuildCost = null;
-
-        buildingBuildCost = buildingPrefab.buildingStatsSO.buildingBuildCost;
+        var buildingBuildCost = buildingPrefab.buildingStatsSO.buildingBuildCost;
 
         if (buildingBuildCost == null || !EnemyResourceManager.Instance.HasResources(buildingBuildCost))
-        {
-            //Debug.Log("<color=red>Insufficient Resources Building cannot be placed</color>");
             return false;
-        }
 
         EnemyResourceManager.Instance.SpendResources(buildingBuildCost);
-
         return true;
     }
 

@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UpgradePanelManager : MonoBehaviour
 {
@@ -8,72 +10,88 @@ public class UpgradePanelManager : MonoBehaviour
     [SerializeField] private List<MainBuildingDataSO> cityCenterScriptables;
     [SerializeField] private List<UnitProduceStatsSO> unitScriptables;
     [SerializeField] private List<BuildingDataSO> buildingScriptables;
+    public FactionCardPanel[] factionCardPanel;
 
-    [SerializeField] public CardsPanel cityCenterCardPanel;
-    [SerializeField] public CardsPanel unitCardPanel;
-    [SerializeField] public CardsPanel buildingCardPanel;
-
-
-    [SerializeField] private CardUpgradeData cardPrefab;
-    [field: SerializeField] public UpgradePopUpPanel upgradePopUpPanel { get; private set; }
-
+    [Space(20)]
+    [SerializeField] private UpgradeCard cardPrefab;
 
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
     }
 
     private void Start()
     {
-        upgradePopUpPanel.gameObject.SetActive(false);
-
-        if (!buildingCardPanel.initializedBuildings)
-            CreateBuildingCards();
-
-        if (!unitCardPanel.initializedUnits)
-            CreateUnitCards();
-
-        if (!cityCenterCardPanel.initializedBuildings)
-            CreateCityCenterCards();
+        CreateBuildingCards();
+        CreateUnitCards();
+        CreateCityCenterCards();
     }
 
     public void CreateCityCenterCards()
     {
-        foreach (var cityCenterScriptable in cityCenterScriptables)
+        foreach (var scriptable in cityCenterScriptables)
         {
-            if (cityCenterScriptable == null)
-            {
-                Debug.Log("<color=Green> [Upgrade Panel Manager]Building Scriptable is null</color>");
-                continue;
-            }
+            if (scriptable == null) { LogNullScriptable("CityCenter"); continue; }
 
-            cityCenterCardPanel.AddCards(cardPrefab, cityCenterScriptable);
+            factionCardPanel[(int)scriptable.buildingIdentity.faction].cardPanels[0].AddCard(cardPrefab, scriptable);
         }
     }
 
     public void CreateBuildingCards()
     {
-        foreach (var buildingScriptable in buildingScriptables)
+        foreach (var scriptable in buildingScriptables)
         {
-            if (buildingScriptable == null)
-            {
-                Debug.Log("<color=Green> [Upgrade Panel Manager]Building Scriptable is null</color>");
-                continue;
-            }
-            buildingCardPanel.AddCards(cardPrefab, buildingScriptable);
+            if (scriptable == null) { LogNullScriptable("Building"); continue; }
+
+            factionCardPanel[(int)scriptable.buildingIdentity.faction].cardPanels[2].AddCard(cardPrefab, scriptable);
         }
     }
 
     public void CreateUnitCards()
     {
-        foreach (var unitScriptable in unitScriptables)
+        foreach (var scriptable in unitScriptables)
         {
-            if (unitScriptable == null)
-            {
-                Debug.Log("<color=Green> [Upgrade Panel Manager]Unit Scriptable is null</color>");
-                continue;
-            }
-            unitCardPanel.AddCards(cardPrefab, unitScriptable);
+            if (scriptable == null) { LogNullScriptable("Unit"); continue; }
+
+            factionCardPanel[(int)scriptable.unitIdentity.faction].cardPanels[1].AddCard(cardPrefab, scriptable);
         }
     }
+
+    private void LogNullScriptable(string context) =>
+        Debug.Log($"<color=green>[UpgradePanelManager] {context} scriptable is null</color>");
+
+    private void OnValidate()
+    {
+        var enumValues = Enum.GetValues(typeof(FactionName));
+
+        if (factionCardPanel == null || factionCardPanel.Length != enumValues.Length)
+        {
+            var resized = new FactionCardPanel[enumValues.Length];
+
+            if (factionCardPanel != null)
+            {
+                for (int i = 0; i < Mathf.Min(factionCardPanel.Length, resized.Length); i++)
+                    resized[i] = factionCardPanel[i];
+            }
+            factionCardPanel = resized;
+        }
+
+        for (int i = 0; i < enumValues.Length; i++)
+            factionCardPanel[i].factionName = (FactionName)enumValues.GetValue(i);
+    }
+}
+
+[Serializable]
+public class FactionCardPanel
+{
+    public FactionName factionName;
+
+    [Header("cardPanels: 0 = CityCenter ; 1 = Units ; 2 = Buildings")]
+    public CardsPanel[] cardPanels;
 }

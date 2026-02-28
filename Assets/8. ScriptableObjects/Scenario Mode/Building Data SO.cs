@@ -10,39 +10,32 @@ public class BuildingDataSO : ScriptableObject
     public Visuals buildingVisuals;
     public BuildCost[] buildingBuildCost;
     public Sprite buildingIcon;
+    public BuildingCardDetails cardDetails;
 
     [Space(20)]
     public bool hasUpkeep;
     [ShowIf(nameof(hasUpkeep))]
     public BuildCost[] upKeepCost;
-    [field: SerializeField, Space(10), ShowIf(nameof(hasUpkeep))] public float upKeepTime { get; private set; }
+    [field: SerializeField, Space(10), ShowIf(nameof(hasUpkeep))]
+    public float upKeepTime { get; private set; }
 
     internal virtual void ValidateBase()
     {
         var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
+        int targetLength = enumValues.Length;
 
-        if (buildingBuildCost == null || buildingBuildCost.Length != enumValues.Length)
-        {
-            buildingBuildCost = new BuildCost[enumValues.Length];
-        }
+        buildingBuildCost = BuildCostUtils.ResizePreservingData(buildingBuildCost, targetLength);
 
         for (int j = 0; j < buildingBuildCost.Length; j++)
-        {
             buildingBuildCost[j].resourceType = (ScenarioResourceType)enumValues.GetValue(j);
-        }
 
         if (!hasUpkeep)
             return;
 
-        if (upKeepCost == null || upKeepCost.Length != enumValues.Length)
-        {
-            upKeepCost = new BuildCost[enumValues.Length];
-        }
+        upKeepCost = BuildCostUtils.ResizePreservingData(upKeepCost, targetLength);
 
-        for (int j = 0; j < enumValues.Length; j++)
-        {
+        for (int j = 0; j < upKeepCost.Length; j++)
             upKeepCost[j].resourceType = (ScenarioResourceType)enumValues.GetValue(j);
-        }
     }
 
     internal virtual void OnValidate()
@@ -53,32 +46,30 @@ public class BuildingDataSO : ScriptableObject
     [Button]
     public void SetBuildingCost(float increasePercent)
     {
-        increasePercent = increasePercent / 100f;
-        float discount = 1f + increasePercent;
-
-        BuildCost[] baseCost = buildingBuildCost;
+        float discount = 1f + (increasePercent / 100f);
 
         for (int i = 0; i < buildingBuildCost.Length; i++)
         {
-            var amt = Mathf.RoundToInt(baseCost[i].resourceAmount * discount);
-
             if (buildingBuildCost[i].resourceAmount != 0)
+            {
+                var amt = Mathf.RoundToInt(buildingBuildCost[i].resourceAmount * discount);
                 buildingBuildCost[i].resourceAmount = Mathf.Max(amt, 1);
+            }
         }
     }
 
     [ShowIf(nameof(hasUpkeep)), Button]
     public void SetUpKeepCost(float increasePercent)
     {
-        increasePercent = increasePercent / 100f;
-        float discount = 1f + increasePercent;
-        var baseCosts = upKeepCost;
+        float discount = 1f + (increasePercent / 100f);
+
         for (int i = 0; i < upKeepCost.Length; i++)
         {
-            var amt = Mathf.RoundToInt(baseCosts[i].resourceAmount * discount);
-
             if (upKeepCost[i].resourceAmount != 0)
+            {
+                var amt = Mathf.RoundToInt(upKeepCost[i].resourceAmount * discount);
                 upKeepCost[i].resourceAmount = Mathf.Max(amt, 1);
+            }
         }
     }
 }
@@ -89,10 +80,31 @@ public struct Identity
     public string name;
     public int spawnLevel;
     public FactionName faction;
-    public bool isLocked;
+    public int populationCost;
     public int priority;
 }
 
+public class CardDetails
+{
+    public bool factionUnlocked;
+    public bool isUnlocked;
+
+    [ShowIf(nameof(isUnlocked))]
+    public bool purchased;
+    public int minCityCenterLevel;
+}
+
+[Serializable]
+public class BuildingCardDetails : CardDetails
+{
+
+}
+
+[Serializable]
+public class UnitCardDetails : CardDetails
+{
+    public int minOffenseBuildingLevel;
+}
 [Serializable]
 public class BuildingUpgradeData
 {
