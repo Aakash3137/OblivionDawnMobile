@@ -12,10 +12,12 @@ public class ProjectileShooter : MonoBehaviour
     public Material enemyTrailMaterial;
 
     private Side projectileSide;
+    private Stats shooterStats;
 
     void Start() 
     {
-        projectileSide = GetComponent<Stats>().side;
+        shooterStats = GetComponent<Stats>();
+        projectileSide = shooterStats.side;
     }
 
     public void Fire(Stats target)
@@ -42,7 +44,7 @@ public class ProjectileShooter : MonoBehaviour
         }
         proj.gameObject.SetActive(true);
         
-        proj.Init(target, damage, projectile, GetTrailMaterial(), projectileSide);
+        proj.Init(target, damage, projectile, GetTrailMaterial(), projectileSide, shooterStats);
     }
 
     Material GetTrailMaterial()

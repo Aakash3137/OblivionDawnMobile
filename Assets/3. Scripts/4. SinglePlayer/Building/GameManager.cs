@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -25,6 +24,9 @@ public class GameManager : MonoBehaviour
 
     public GameObject defaultObstacle;
     public NeutralBuildingsData[] neutralBuildingsData;
+
+    internal Stats PlayerMainBuilding;
+    internal Stats EnemyMainBuilding;
 
     void Awake() => Instance = this;
 

@@ -17,8 +17,6 @@ public class NetworkUnit : NetworkBehaviour
     public float aggroRadius = 3f;
     [SerializeField] internal NavMeshAgent agent;
     [Networked] public NetworkSide OwnerSide { get; set; }
-    
-    public UnitState unitState = UnitState.Moving;
 
     private Transform targetMainBuilding;
     private Transform currentTarget;

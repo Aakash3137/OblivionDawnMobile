@@ -151,27 +151,18 @@ public class BattleUnitSpawner : MonoBehaviour
     private Transform GetPlayerSpawnPoint()
     {
         if (!GroundUnit.AnyPlayerAlive())
-        {
             usedPlayerSpawnPoints.Clear();
-        }
 
-        bool anyTarget = GroundUnit.AnyPlayerHasTarget();
-
-        if (!anyTarget)
+        for (int i = 0; i < playerSpawnPoints.Count; i++)
         {
-            for (int i = 0; i < playerSpawnPoints.Count; i++)
+            if (!usedPlayerSpawnPoints.Contains(i))
             {
-                if (!usedPlayerSpawnPoints.Contains(i))
-                {
-                    usedPlayerSpawnPoints.Add(i);
-                    return playerSpawnPoints[i];
-                }
+                usedPlayerSpawnPoints.Add(i);
+                return playerSpawnPoints[i];
             }
-            return null;
         }
 
         usedPlayerSpawnPoints.Clear();
-
         Transform point = playerSpawnPoints[playerFastSpawnIndex];
         playerFastSpawnIndex = (playerFastSpawnIndex + 1) % playerSpawnPoints.Count;
         return point;
@@ -180,27 +171,18 @@ public class BattleUnitSpawner : MonoBehaviour
     private Transform GetEnemySpawnPoint()
     {
         if (!GroundUnit.AnyEnemyAlive())
-        {
             usedEnemySpawnPoints.Clear();
-        }
 
-        bool anyTarget = GroundUnit.AnyEnemyHasTarget();
-
-        if (!anyTarget)
+        for (int i = 0; i < enemySpawnPoints.Count; i++)
         {
-            for (int i = 0; i < enemySpawnPoints.Count; i++)
+            if (!usedEnemySpawnPoints.Contains(i))
             {
-                if (!usedEnemySpawnPoints.Contains(i))
-                {
-                    usedEnemySpawnPoints.Add(i);
-                    return enemySpawnPoints[i];
-                }
+                usedEnemySpawnPoints.Add(i);
+                return enemySpawnPoints[i];
             }
-            return null;
         }
 
         usedEnemySpawnPoints.Clear();
-
         Transform point = enemySpawnPoints[enemyFastSpawnIndex];
         enemyFastSpawnIndex = (enemyFastSpawnIndex + 1) % enemySpawnPoints.Count;
         return point;

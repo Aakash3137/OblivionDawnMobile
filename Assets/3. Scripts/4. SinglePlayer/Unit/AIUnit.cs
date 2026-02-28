@@ -2,7 +2,8 @@ using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
 
-public enum UnitState { Moving, Fighting, Dead }
+/*
+public enum UnitState { Moving, Fighting, Dead }*/
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class AIUnit : MonoBehaviour

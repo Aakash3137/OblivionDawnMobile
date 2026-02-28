@@ -92,13 +92,9 @@ public class Stats : MonoBehaviour
         }
     }
 
-    public virtual void TakeDamage(float amount)
+    public virtual void TakeDamage(float amount, Stats attacker = null)
     {
-        // if (canFly && airUnit != null && !airUnit.CanBeTargeted())
-        //     return;
-
         currentHealth -= amount;
-
         currentHealth = Mathf.Clamp(currentHealth, 0, basicStats.maxHealth);
 
         if (healthBar != null)
@@ -107,12 +103,22 @@ public class Stats : MonoBehaviour
             healthBar.isVisible = true;
             healthBar.UpdateFillAmount(currentHealth / basicStats.maxHealth);
         }
+        
         if (healthBarFade != null)
         {
             healthBarFade.ShowOnHit();
             healthBarFade.Isvisible = true;
         }
 
+        if (attacker != null)
+        {
+            GroundUnit groundUnit = GetComponent<GroundUnit>();
+            if (groundUnit != null)
+            {
+                groundUnit.SetReplyTarget(attacker);
+            }
+        }
+        
         if (currentHealth <= 0)
         {
             Die();
