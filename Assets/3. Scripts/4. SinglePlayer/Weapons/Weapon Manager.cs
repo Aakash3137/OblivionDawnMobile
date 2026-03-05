@@ -6,7 +6,7 @@ public class WeaponManager : MonoBehaviour
     public Transform muzzlePoint;
     public ProjectileDataSO projectileData;
 
-    public void Fire(Stats target, float damage, Side side)
+    public void Fire(Stats target, float unitdamage, float buildingDamage, Side side)
     {
         if (target == null)
             return;
@@ -17,7 +17,7 @@ public class WeaponManager : MonoBehaviour
         proj.transform.rotation = gameObject.transform.rotation;
         proj.gameObject.SetActive(true);
 
-        proj.Initialize(target, damage, projectileData, side);
+        proj.Initialize(target, unitdamage, buildingDamage, projectileData, side);
     }
 
 }

@@ -1090,7 +1090,7 @@ MonoBehaviour:
     name: 
     spawnLevel: 0
     faction: 0
-    isUnique: 0
+    populationCost: 0
     priority: 0
   <basicStats>k__BackingField:
     maxHealth: 0
@@ -1129,10 +1129,9 @@ MonoBehaviour:
     lifeTime: 2
     isAreaDamage: 0
     damageRadius: 2
-    hasTrail: 1
+    hasTrail: 0
     launchVFX: {fileID: 0}
     hitVFX: {fileID: 1447540632109744634, guid: c8153071efd10e04eb894c3973bae1f9, type: 3}
-  damage: 20
   playerTrailMaterial: {fileID: 2100000, guid: 82c3733d49fb2334b8ef2f0d90268a35, type: 2}
   enemyTrailMaterial: {fileID: 2100000, guid: 50dfd5dfaa2bc9f49835088eefefbf7a, type: 2}
 --- !u!114 &3178270743560080631
@@ -1161,6 +1160,10 @@ MonoBehaviour:
   invulnerableDuringTakeoff: 1
   separationRadius: 1.5
   separationStrength: 2
+  target: {fileID: 0}
+  primaryTarget: {fileID: 0}
+  detectionTarget: {fileID: 0}
+  replyTarget: {fileID: 0}
 --- !u!1 &7737019781438290032
 GameObject:
   m_ObjectHideFlags: 0

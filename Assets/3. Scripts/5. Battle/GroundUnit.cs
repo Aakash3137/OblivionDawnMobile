@@ -127,25 +127,29 @@ public class GroundUnit : MonoBehaviour
     
     private void ResolveFinalTarget()
     {
-        if (replyTarget != null)
+        // If reply target was destroyed (Missing), clear it
+        if (!replyTarget)
+            replyTarget = null;
+
+        if (!detectionTarget)
+            detectionTarget = null;
+        
+        
+        if (replyTarget != null && CanAttackTarget(replyTarget))
         {
             target = replyTarget.gameObject;
-           // GameDebug.Log($"[{name}] Target set to ReplyTarget: {target.name}");
         }
-        else if (detectionTarget != null)
+        else if (detectionTarget != null && CanAttackTarget(detectionTarget))
         {
             target = detectionTarget.gameObject;
-            //GameDebug.Log($"[{name}] Target set to DetectionTarget: {target.name}");
         }
-        else if (primaryTarget != null && CanAttackTarget(primaryTarget))
+        else if (primaryTarget != null)
         {
             target = primaryTarget.gameObject;
-           // GameDebug.Log($"[{name}] Target set to PrimaryTarget: {target.name}");
-        }
+        } 
         else
         {
             target = null;
-          //  GameDebug.Log($"[{name}] No valid target found");
         }
     }
     
@@ -153,7 +157,6 @@ public class GroundUnit : MonoBehaviour
     {
         if (target == null)
         {
-           // GameDebug.Log($"[{name}] Target is NULL - Going Idle");
             ChangeState(UnitState.Idle);
             return;
         }
@@ -173,7 +176,6 @@ public class GroundUnit : MonoBehaviour
         switch (currentState)
         {
             case UnitState.Idle:
-               // GameDebug.Log($"[{name}] Idle -> MovingToPrimary");
                 ChangeState(UnitState.MovingToPrimary);
                 break;
 
@@ -181,12 +183,10 @@ public class GroundUnit : MonoBehaviour
 
                 if (detectionTarget != null)
                 {
-                  //  GameDebug.Log($"[{name}] DetectionTarget found: {detectionTarget.name} - Switching to Chasing. Distance: {distance:F2}, EffectiveDist: {effectiveDistance:F2}");
-                    ChangeState(UnitState.Chasing);
+                   ChangeState(UnitState.Chasing);
                 }
                 else if (withinAttackRange)
                 {
-                   // GameDebug.Log($"[{name}] Reached AttackRange (EffectiveDist: {effectiveDistance:F2}, RemainingDist: {agent.remainingDistance:F2}) - Switching to Attacking");
                     ChangeState(UnitState.Attacking);
                     return;
                 }
@@ -199,13 +199,8 @@ public class GroundUnit : MonoBehaviour
 
                 if (withinAttackRange)
                 {
-                  //  GameDebug.Log($"[{name}] Chasing: Within range (EffectiveDist: {effectiveDistance:F2}, RemainingDist: {agent.remainingDistance:F2}) - Switching to Attacking");
-                    ChangeState(UnitState.Attacking);
+                   ChangeState(UnitState.Attacking);
                     return;
-                }
-                else
-                {
-                  //  GameDebug.Log($"[{name}] Chasing: Distance {distance:F2}, EffectiveDist {effectiveDistance:F2}, AttackRange {AttackRange:F2}");
                 }
 
                 MoveToTarget();
@@ -216,8 +211,7 @@ public class GroundUnit : MonoBehaviour
 
                 if (effectiveDistance > AttackRange + 0.5f)
                 {
-                  //  GameDebug.Log($"[{name}] Out of range (EffectiveDist: {effectiveDistance:F2}) - Switching to Chasing");
-                    ChangeState(UnitState.Chasing);
+                  ChangeState(UnitState.Chasing);
                     return;
                 }
 
@@ -304,10 +298,12 @@ public class GroundUnit : MonoBehaviour
 
         Stats closestUnit = null;
         Stats closestDefense = null;
+        Stats closestWall = null;
         Stats closestBuilding = null;
 
         float closestUnitDist = float.MaxValue;
         float closestDefenseDist = float.MaxValue;
+        float closestWallDist = float.MaxValue;
         float closestBuildingDist = float.MaxValue;
 
         for (int i = 0; i < count; i++)
@@ -317,9 +313,7 @@ public class GroundUnit : MonoBehaviour
 
             if (candidate == unitStats || candidate.side == unitSide)
                 continue;
-
-            if (!CanAttackTarget(candidate))
-                continue;
+            
 
             float distance = GetAdjustedDistance(candidate);
 
@@ -341,7 +335,16 @@ public class GroundUnit : MonoBehaviour
                     closestDefense = candidate;
                 }
             }
-            //  THIRD PRIORITY: Resource or main buildings
+            //  THIRD PRIORITY: Walls
+            else if (candidate is WallStats)
+            {
+                if (distance < closestWallDist)
+                {
+                    closestWallDist = distance;
+                    closestWall = candidate;
+                }
+            }
+            //  FOURTH PRIORITY: Resource or main buildings
             else if (candidate is BuildingStats || candidate is ResourceBuildingStats)
             {
                 if (distance < closestBuildingDist)
@@ -356,7 +359,9 @@ public class GroundUnit : MonoBehaviour
         if (closestUnit != null)
             detectionTarget = closestUnit;
         else if (closestDefense != null)
-            detectionTarget = closestDefense;
+            detectionTarget =  closestDefense;
+        else if (closestWall != null)
+            detectionTarget = closestWall;
         else
             detectionTarget = closestBuilding;
     }

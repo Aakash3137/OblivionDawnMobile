@@ -17,6 +17,9 @@ public class ProjectilePoolManager : MonoBehaviour
 
     private Dictionary<ProjectileType, List<Projectile>> runtimePools = new();
 
+    // ✅ Added pointer per projectile type (minimal addition)
+    private Dictionary<ProjectileType, int> nextIndex = new();
+
     void Awake()
     {
         Instance = this;
@@ -33,21 +36,37 @@ public class ProjectilePoolManager : MonoBehaviour
             }
 
             runtimePools.Add(pool.type, list);
+
+            // ✅ initialize round-robin pointer
+            nextIndex.Add(pool.type, 0);
         }
     }
 
     public Projectile Get(ProjectileType type)
     {
-        foreach (Projectile p in runtimePools[type])
+        List<Projectile> list = runtimePools[type];
+
+        int startIndex = nextIndex[type];
+
+        // ✅ Round-robin search instead of first-free
+        for (int i = 0; i < list.Count; i++)
         {
-            if (!p.gameObject.activeInHierarchy)
-                return p;
+            int index = (startIndex + i) % list.Count;
+
+            if (!list[index].gameObject.activeInHierarchy)
+            {
+                nextIndex[type] = (index + 1) % list.Count;
+                return list[index];
+            }
         }
 
-        // Expand pool if needed
-        Projectile extra = Instantiate(runtimePools[type][0], transform);
+        // Expand pool if needed (same behavior as before)
+        Projectile extra = Instantiate(list[0], transform);
         extra.gameObject.SetActive(false);
-        runtimePools[type].Add(extra);
+        list.Add(extra);
+
+        nextIndex[type] = list.Count % list.Count;
+
         return extra;
     }
 }

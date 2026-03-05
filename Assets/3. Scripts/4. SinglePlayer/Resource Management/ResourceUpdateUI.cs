@@ -17,6 +17,9 @@ public class ResourceUpdateUI : MonoBehaviour
     [SerializeField] private TMP_Text[] generationRateTexts;
     private CanvasGroup[] generationRateTextCanvasGroups;
 
+    [Header("Building Count Texts")]
+    [SerializeField] private TMP_Text[] buildingCountTexts;
+
     [Header("Resource Icon Images")]
     [SerializeField] private Image[] resourceIconImages;
 
@@ -70,6 +73,7 @@ public class ResourceUpdateUI : MonoBehaviour
 
         ResourceTextHandler();
         GenerationTextHandler();
+        BuildingCountTextHandler();
         UIStorageFillHandler();
     }
 
@@ -86,6 +90,14 @@ public class ResourceUpdateUI : MonoBehaviour
         for (int i = 0; i < generationRateTexts.Length; i++)
         {
             ToggleText(generationRateTexts[i], generationRateTextCanvasGroups[i], rmReference.currentGenerationRates[i].resourceAmount);
+        }
+    }
+
+    private void BuildingCountTextHandler()
+    {
+        for (int i = 0; i < buildingCountTexts.Length; i++)
+        {
+            buildingCountTexts[i].SetText("{0}", rmReference.resourceBuildingCounts[i]);
         }
     }
 

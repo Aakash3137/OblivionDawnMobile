@@ -25,6 +25,7 @@ public class MainBuildingStats : BuildingStats
     internal override void Die()
     {
         base.Die();
+        
 
         switch (side)
         {

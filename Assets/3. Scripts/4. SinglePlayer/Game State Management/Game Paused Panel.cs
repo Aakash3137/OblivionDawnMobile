@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -6,6 +7,7 @@ public class GamePausedPanel : MonoBehaviour
 {
     [SerializeField] private Button homeButton;
     [SerializeField] private Button restartButton;
+
     // [SerializeField] private Button resumeButton;
     private GameStateManager gmInstance;
 

@@ -122,7 +122,7 @@ MonoBehaviour:
     name: 
     spawnLevel: 0
     faction: 0
-    isUnique: 0
+    populationCost: 0
     priority: 0
   <basicStats>k__BackingField:
     maxHealth: 0
@@ -131,7 +131,7 @@ MonoBehaviour:
   <side>k__BackingField: 0
   <buildingStatsSO>k__BackingField: {fileID: 11400000, guid: 5e089743748f254459eb57d570d92239, type: 2}
   <currentTile>k__BackingField: {fileID: 0}
-  <isProducing>k__BackingField: 0
+  <isProducingResources>k__BackingField: 0
 --- !u!114 &8927000402532676705
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -454,6 +454,10 @@ PrefabInstance:
     - target: {fileID: 1911343588057572892, guid: 74ecb513f07c2124c8c5d43bf706458d, type: 3}
       propertyPath: m_Name
       value: Resource Building World Canvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 1911343588057572892, guid: 74ecb513f07c2124c8c5d43bf706458d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3828384782369519359, guid: 74ecb513f07c2124c8c5d43bf706458d, type: 3}
       propertyPath: m_Pivot.x

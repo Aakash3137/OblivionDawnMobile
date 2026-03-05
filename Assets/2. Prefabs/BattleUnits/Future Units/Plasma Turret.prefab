@@ -1221,8 +1221,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.5, y: 1.5, z: 2.5}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1.3130798, y: 1.5, z: 1.932923}
+  m_Center: {x: 0.011542767, y: 0, z: -0.080926955}
 --- !u!195 &4637335217204809781
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1232,7 +1232,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 8582016250964789232}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 1
+  m_Radius: 0.95
   m_Speed: 2
   m_Acceleration: 8
   avoidancePriority: 40
@@ -1283,7 +1283,7 @@ MonoBehaviour:
     name: 
     spawnLevel: 0
     faction: 0
-    isUnique: 0
+    populationCost: 0
     priority: 0
   <basicStats>k__BackingField:
     maxHealth: 0
@@ -1316,16 +1316,15 @@ MonoBehaviour:
   projectile:
     projectileType: 2
     motion: 0
-    speed: 20
+    speed: 15
     maxRange: 10
     arcHeight: 3
     lifeTime: 2
     isAreaDamage: 0
     damageRadius: 1.5
-    hasTrail: 1
+    hasTrail: 0
     launchVFX: {fileID: 0}
     hitVFX: {fileID: 1447540632109744634, guid: 9d301d5973fbf9349818b1638f122a78, type: 3}
-  damage: 60
   playerTrailMaterial: {fileID: 2100000, guid: 82c3733d49fb2334b8ef2f0d90268a35, type: 2}
   enemyTrailMaterial: {fileID: 2100000, guid: 50dfd5dfaa2bc9f49835088eefefbf7a, type: 2}
 --- !u!114 &7234458516524931379

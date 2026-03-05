@@ -31,7 +31,7 @@ public class AirUnit : MonoBehaviour
     [Header("Flight Settings")]
     private float flyHeight;
     private float climbAngle;
-    private float moveSpeed;
+    protected float moveSpeed;
     private float turnSpeed;
     private float bankAngle;
     private float evadeRadius;
@@ -110,6 +110,21 @@ public class AirUnit : MonoBehaviour
 
     protected virtual void Update()
     {
+        // Target Validation
+        if (target != null)
+        {
+            Stats s = target.GetComponent<Stats>();
+            if (s == null || !target.activeInHierarchy)
+            {
+                target = null;
+            }
+        }
+        
+        if (replyTarget != null && !replyTarget.gameObject.activeInHierarchy)
+        {
+            replyTarget = null;
+        }
+        
         // Separation
         separationTimer -= Time.deltaTime;
         if (separationTimer <= 0f)
@@ -189,11 +204,54 @@ public class AirUnit : MonoBehaviour
 
     private void ResolveFinalTarget()
     {
+        // 1️⃣ First priority: ANY detected air unit
+        if (detectionTarget != null)
+        {
+            bool detectedIsAir =
+                (unitSide == Side.Player && detectionTarget.gameObject.layer == LayerMask.NameToLayer("EnemyAir")) ||
+                (unitSide == Side.Enemy && detectionTarget.gameObject.layer == LayerMask.NameToLayer("PlayerAir"));
+
+            if (detectedIsAir)
+            {
+                target = detectionTarget.gameObject;
+                return;
+            }
+        }
+
+        // 2️⃣ If current target is air, keep it (never downgrade)
+        if (target != null)
+        {
+            bool currentIsAir =
+                (unitSide == Side.Player && target.layer == LayerMask.NameToLayer("EnemyAir")) ||
+                (unitSide == Side.Enemy && target.layer == LayerMask.NameToLayer("PlayerAir"));
+
+            if (currentIsAir)
+                return;
+        }
+
+        // 3️⃣ Reply target (only if it's air)
         if (replyTarget != null)
-            target = replyTarget.gameObject;
-        else if (detectionTarget != null)
+        {
+            bool replyIsAir =
+                (unitSide == Side.Player && replyTarget.gameObject.layer == LayerMask.NameToLayer("EnemyAir")) ||
+                (unitSide == Side.Enemy && replyTarget.gameObject.layer == LayerMask.NameToLayer("PlayerAir"));
+
+            if (replyIsAir)
+            {
+                target = replyTarget.gameObject;
+                return;
+            }
+        }
+
+        // 4️⃣ Normal detection
+        if (detectionTarget != null)
+        {
             target = detectionTarget.gameObject;
-        else if (primaryTarget != null)
+            return;
+        }
+
+        // 5️⃣ Fallback
+        if (primaryTarget != null)
             target = primaryTarget.gameObject;
         else
             target = null;
@@ -418,7 +476,7 @@ public class AirUnit : MonoBehaviour
         RotateAndMove(dir);
     }
     
-    protected void FlyTowards(Vector3 targetPosition)
+    protected virtual void FlyTowards(Vector3 targetPosition)
     {
         if (airState == AirState.Ascending || airState == AirState.Evading)
             return;
@@ -493,7 +551,7 @@ public class AirUnit : MonoBehaviour
 
     #region Separation
     
-    protected void ApplySeparation()
+    protected virtual void ApplySeparation()
     {
         if (airState != AirState.Airborne && airState != AirState.Attacking)
             return;

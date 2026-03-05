@@ -7,7 +7,8 @@ public class Projectile : MonoBehaviour
     private Collider targetCollider;
 
     private float speed;
-    private float damage;
+    private float unitDamage;
+    private float buildingDamage;
     private float lifeTime;
     private float timer;
 
@@ -53,14 +54,15 @@ public class Projectile : MonoBehaviour
         }
     }
 
-    public void Initialize(Stats target, float damage, ProjectileDataSO projectileData, Side side)
+    public void Initialize(Stats target, float unitDamage,float buildingDamage, ProjectileDataSO projectileData, Side side)
     {
         targetUnit = target;
         ShooterSide = side;
 
         targetCollider = target != null ? target.hitCollider : null;
 
-        this.damage = damage;
+        this.unitDamage = unitDamage;
+        this.buildingDamage = buildingDamage;
         speed = projectileData.projectileBasicStats.speed;
         lifeTime = projectileData.projectileBasicStats.lifeTime;
         projectileType = projectileData.projectileType;
@@ -117,7 +119,7 @@ public class Projectile : MonoBehaviour
         lastPosition = transform.position;
     }
 
-    public void Init(Stats target, float damage, ProjectileDefinition def, Material trailMaterial, Side shooterside, Stats shooter)
+    public void Init(Stats target, float unitDmg, float buildingDmg, ProjectileDefinition def, Material trailMaterial, Side shooterside, Stats shooter)
     {
         targetUnit = target;
         ShooterSide = shooterside;
@@ -125,7 +127,8 @@ public class Projectile : MonoBehaviour
 
         targetCollider = target != null ? target.hitCollider : null;
 
-        this.damage = damage;
+        this.unitDamage = unitDmg;
+        this.buildingDamage = buildingDmg;
         speed = def.speed;
         lifeTime = def.lifeTime;
         projectileType = def.projectileType;
@@ -343,10 +346,24 @@ public class Projectile : MonoBehaviour
             transform.position += Vector3.down * speed * Time.deltaTime;
         }
 
-        // CHECK COLLISIONS (ENEMY / WALL / GROUND)
+        // ---------- ROTATION BASED ON VELOCITY ----------
+        Vector3 velocity = transform.position - lastPosition;
+
+        if (velocity.sqrMagnitude > 0.0001f)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(velocity.normalized);
+
+            transform.rotation = Quaternion.RotateTowards(
+                transform.rotation,
+                targetRotation,
+                720f * Time.deltaTime // rotation speed (adjust if needed)
+            );
+        }
+
+        // ---------- HIT CHECK ----------
         CheckHit(hitPoint);
 
-        // DETECT PASSING AIM POINT (XZ)
+        // ---------- AIM POINT PASS CHECK ----------
         if (!passedAimPoint &&
             Vector3.Distance(
                 new Vector3(transform.position.x, 0f, transform.position.z),
@@ -355,7 +372,7 @@ public class Projectile : MonoBehaviour
             passedAimPoint = true;
         }
 
-        // FINAL GROUND HIT (FALLBACK)
+        // ---------- FINAL GROUND HIT ----------
         if (passedAimPoint)
         {
             if (Physics.Raycast(
@@ -437,14 +454,18 @@ public class Projectile : MonoBehaviour
             {
                 Stats unit = hit.GetComponent<Stats>();
                 if (unit != null && !unit.CanFly && unit.side != ShooterSide)
-                    unit.TakeDamage(damage, shooterStats);
+                {
+                    float dmg = (unit is UnitStats) ? unitDamage : buildingDamage;
+                    unit.TakeDamage(dmg, shooterStats);
+                }
             }
         }
 
         // DIRECT DAMAGE ONLY IF TARGET HIT
         else if (hitTarget && targetUnit != null)
         {
-            targetUnit.TakeDamage(damage, shooterStats);
+            float dmg = (targetUnit is UnitStats) ? unitDamage : buildingDamage;
+            targetUnit.TakeDamage(dmg, shooterStats);
         }
 
         Disable();

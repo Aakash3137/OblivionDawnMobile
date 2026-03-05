@@ -16,18 +16,19 @@ MonoBehaviour:
     name: Electricity
     spawnLevel: 0
     faction: 1
+    populationCost: 0
     priority: 0
   buildingType: 3
   buildingVisuals:
-    playerUnitMaterial: {fileID: 2100000, guid: d2812d6b67b6da543a7d020edd722da6, type: 2}
-    enemyUnitMaterial: {fileID: 2100000, guid: d2812d6b67b6da543a7d020edd722da6, type: 2}
+    playerUnitMaterial: {fileID: 0}
+    enemyUnitMaterial: {fileID: 0}
   buildingBuildCost:
   - resourceType: 0
-    resourceAmount: 10
+    resourceAmount: 15
   - resourceType: 1
-    resourceAmount: 10
+    resourceAmount: 30
   - resourceType: 2
-    resourceAmount: 10
+    resourceAmount: 35
   - resourceType: 3
     resourceAmount: 0
   buildingIcon: {fileID: 21300000, guid: e4457571f125c0f428ee9f91f92835e3, type: 3}
@@ -54,7 +55,7 @@ MonoBehaviour:
       maxHealth: 1500
       armor: 0
     buildingBuildTime: 5
-    resourceAmountPerBatch: 3
+    resourceAmountPerBatch: 5
     <resourceTimeToProduce>k__BackingField: 5
     resourceAmountCapacity: 50
-    resourceGenerationRate: 3
+    resourceGenerationRate: 5

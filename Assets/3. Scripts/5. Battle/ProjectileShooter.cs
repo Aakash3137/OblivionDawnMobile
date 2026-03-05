@@ -5,7 +5,8 @@ public class ProjectileShooter : MonoBehaviour
     [Header("Weapon")]
     public Transform muzzlePoint;
     public ProjectileDefinition projectile;
-    public float damage = 1f;
+    private float unitDamage;
+    private float buildingDamage;
 
     [Header("Trail Materials")]
     public Material playerTrailMaterial;
@@ -17,6 +18,8 @@ public class ProjectileShooter : MonoBehaviour
     void Start() 
     {
         shooterStats = GetComponent<Stats>();
+        unitDamage = GetComponent<UnitStats>().unitData.unitAttackStats.damage;
+        buildingDamage = GetComponent<UnitStats>().unitData.unitAttackStats.buildingDamage;
         projectileSide = shooterStats.side;
     }
 
@@ -44,7 +47,7 @@ public class ProjectileShooter : MonoBehaviour
         }
         proj.gameObject.SetActive(true);
         
-        proj.Init(target, damage, projectile, GetTrailMaterial(), projectileSide, shooterStats);
+        proj.Init(target, unitDamage, buildingDamage, projectile, GetTrailMaterial(), projectileSide, shooterStats);
     }
 
     Material GetTrailMaterial()

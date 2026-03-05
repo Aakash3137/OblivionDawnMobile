@@ -8,6 +8,7 @@ public class GameOverPanel : MonoBehaviour
     [SerializeField] private Button homeButton;
     [SerializeField] private Button restartButton;
     [SerializeField] private TMP_Text subTitleText;
+    [SerializeField] private TMP_Text XP_Text;
     private GameStateManager gmInstance;
 
 
@@ -17,6 +18,8 @@ public class GameOverPanel : MonoBehaviour
 
         homeButton.onClick.AddListener(HomeMenu);
         restartButton.onClick.AddListener(RestartGame);
+        //Calculate XP on gameover 
+        XPCalculator.Instance.UpdateXP(GameStateManager.Instance.GetCurrentState());
 
         if (GameStateManager.Instance.GetCurrentState() == GameState.DEFEAT)
         {
@@ -26,6 +29,7 @@ public class GameOverPanel : MonoBehaviour
         {
             subTitleText.text = "Victory";
         }
+        XP_Text.text = "XP + " + XPCalculator.Instance.total_XP;
     }
 
     private void RestartGame()

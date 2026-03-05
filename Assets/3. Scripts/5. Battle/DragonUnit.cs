@@ -1,21 +1,20 @@
-using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(ParticleDamageEmitter))]
 public class DragonUnit : AirUnit
 {
-    [Header("Dragon Attack")] [SerializeField]
-    private ParticleDamageEmitter particleDamageEmitter;
+    [Header("Dragon Fire Settings")]
+    [SerializeField] private ParticleDamageEmitter particleDamageEmitter;
+    [SerializeField] private float fireDuration = 1.5f;
 
-    private float attackDuration = 1f;
-    private float attackTimer = 0f;
+    private float fireTimer = 0f;
     private bool isFiring = false;
 
-    //dragon unit has no projectile it releases fire from mouth
     protected override void Start()
     {
         base.Start();
 
-        // Disable projectile weapon
+        // Disable projectile shooter completely
         if (projectileShooter != null)
             projectileShooter.enabled = false;
 
@@ -23,69 +22,122 @@ public class DragonUnit : AirUnit
             particleDamageEmitter = GetComponent<ParticleDamageEmitter>();
     }
 
-    //attack by firing particle system
+    protected override void Update()
+    {
+        base.Update();
+
+        // If currently firing, maintain fire logic
+        if (isFiring)
+        {
+            MaintainFire();
+        }
+    }
+
     protected override void Attack()
     {
         if (airState != AirState.Airborne && airState != AirState.Attacking)
             return;
 
         if (target == null)
-        {
-            StopAttack();
             return;
-        }
 
+        if (!IsFacingTarget(target))
+            return;
+
+        float dist = Vector3.Distance(transform.position, target.transform.position);
+        if (dist > AttackRange)
+            return;
+
+        // Start firing
         if (!isFiring)
         {
             isFiring = true;
-            attackTimer = 0f;
-            
-            //setting fire angle bfore start firing
+            fireTimer = 0f;
+
             bool targetIsAir = target.GetComponent<AirUnit>() != null;
             float xAngle = targetIsAir ? 0f : 15f;
-            particleDamageEmitter?.SetFireAngle(xAngle);
-            
-            particleDamageEmitter?.StartFiring();
+
+            particleDamageEmitter.SetFireAngle(xAngle);
+            particleDamageEmitter.StartFiring();
 
             if (animator != null)
                 animator.SetBool("Fire", true);
 
             airState = AirState.Attacking;
         }
+    }
 
-        attackTimer += Time.deltaTime;
-
-        if (attackTimer >= attackDuration)
+    private void MaintainFire()
+    {
+        if (target == null)
         {
-            StopAttack();
+            StopFire();
+            airState = AirState.Airborne;
+            return;
+        }
+
+        fireTimer += Time.deltaTime;
+
+        float dist = Vector3.Distance(transform.position, target.transform.position);
+
+        // Stop if target leaves range or facing lost
+        if (dist > AttackRange || !IsFacingTarget(target))
+        {
+            StopFire();
+            airState = AirState.Airborne;
+            return;
+        }
+
+        // Fire duration complete → Evade
+        if (fireTimer >= fireDuration)
+        {
+            StopFire();
+
             airState = AirState.Evading;
             evadeCenter = transform.position;
             evadeAngle = 0f;
         }
     }
 
-    private void StopAttack()
+    private void StopFire()
     {
-        if (isFiring)
-        {
-            isFiring = false;
-            particleDamageEmitter?.StopFiring();
+        if (!isFiring)
+            return;
 
-            if (animator != null)
-                animator.SetBool("Fire", false);
-        }
+        isFiring = false;
+        fireTimer = 0f;
+
+        particleDamageEmitter.StopFiring();
+
+        if (animator != null)
+            animator.SetBool("Fire", false);
     }
 
     protected override void PerformEvade()
     {
-        StopAttack();
+        StopFire();
         base.PerformEvade();
     }
 
     protected override void IdleCircle()
     {
-        StopAttack();
+        StopFire();
         base.IdleCircle();
     }
 
+    // Prevent forward movement while breathing fire
+    protected override void FlyTowards(Vector3 targetPosition)
+    {
+        if (isFiring)
+        {
+            // Move straight forward without rotating
+            Vector3 pos = transform.position + transform.forward * (moveSpeed * Time.deltaTime);
+            pos.y = transform.position.y; // maintain fly height
+            transform.position = pos;
+            return;
+        }
+
+        base.FlyTowards(targetPosition);
+    }
+    
 }
