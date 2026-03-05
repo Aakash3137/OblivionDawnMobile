@@ -38,7 +38,7 @@ public class DecManager : MonoBehaviour
 
     private void Start()
     {
-        backBtn.onClick.AddListener(OnclickCloseBtn);
+       // backBtn.onClick.AddListener(OnclickCloseBtn);
     }
 
     private void OnclickCloseBtn()
@@ -75,8 +75,8 @@ public class DecManager : MonoBehaviour
 
     private void SetInitialData()
     {
-        diamondtext.text = _Profile.Diamonds.ToString();
-        Coins.text = _Profile.Coins.ToString();
+        // diamondtext.text = _Profile.Diamonds.ToString();
+        // Coins.text = _Profile.Coins.ToString();
 
         OffenseBtn.onClick.RemoveAllListeners();
         DefenseBtn.onClick.RemoveAllListeners();
@@ -172,7 +172,7 @@ public class DecManager : MonoBehaviour
         }
 
         inventoryManager.ClearEquipped();
-
+ 
         switch (category)
         {
             case DecCategory.Offense:
@@ -187,7 +187,6 @@ public class DecManager : MonoBehaviour
                 StartCoroutine(BuildResourceEquippedDeck(CurrentDec));
                 break;
         }
-
 
         foreach (var _Data in deckList)
         {
@@ -250,17 +249,6 @@ public class DecManager : MonoBehaviour
         for (int i = 0; i < Mathf.Min(4, deck.ResourceCards.Count); i++)
         {
             var card = deck.ResourceCards[i];
-
-            inventoryManager.AddEquippedItem(
-                card.buildingIdentity.name,
-                "Resource",
-                _Canvas,
-                GetResourceStats(card),
-                selectionData.CurrentFaction,
-                true,
-                CurrentCategory,
-                deck
-            );
         }
     }
 

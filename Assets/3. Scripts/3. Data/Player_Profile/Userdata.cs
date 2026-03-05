@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 
@@ -12,13 +13,45 @@ public class Userdata : ScriptableObject
     public bool GuestUser = false;
 
     [Header ("Game Data")]
+    [SerializeField] private int coins = 0;
+    [SerializeField] private int diamonds = 0;
     public int Level = 0;
-    public int Coins = 0;
-    public int Diamonds = 0;
+    public int Coins
+    {
+        get => coins;
+        set
+        {
+            coins = value;
+            UpdateCurrencyUI();
+        }
+    }
+
+    public int Diamonds
+    {
+        get => diamonds;
+        set
+        {
+            diamonds = value;
+            UpdateCurrencyUI();
+        }
+    }
 
     [Header("Daily Rewards")]
     public int CurrentDay = 1;
     public bool[] DayRewards = new bool[7];
+
+    [Header("Home Ui")]
+    public TMP_Text CoinTxt;
+    public TMP_Text DiamondTxt;
+
+    void UpdateCurrencyUI()
+    {
+        if (CoinTxt != null)
+            CoinTxt.text = Coins.ToString();
+
+        if (DiamondTxt != null)
+            DiamondTxt.text = Diamonds.ToString();
+    }
 
     public void ResetData()
     {

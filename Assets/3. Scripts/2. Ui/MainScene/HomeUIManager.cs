@@ -134,27 +134,27 @@ public class HomeUIManager : MonoBehaviour
 
     private void SetupButtonListeners()
     {
-        //Login Panel Listeners
-        loginButton.onClick.AddListener(OnClickLoginButton);
-        signUpButton.onClick.AddListener(OnClickSignUpButton);
-        guestButton.onClick.AddListener(OnClickGuestLogin);
+        // //Login Panel Listeners
+        // loginButton.onClick.AddListener(OnClickLoginButton);
+        // signUpButton.onClick.AddListener(OnClickSignUpButton);
+        // guestButton.onClick.AddListener(OnClickGuestLogin);
 
-        // Main menu buttons
-        shopButton.onClick.AddListener(OnClickShopButton);
-        upgradeButton.onClick.AddListener(OnClickUpgradeButton);
-        ProfileButton.onClick.AddListener(OnClickProfileButton);
-        CampaignButton.onClick.AddListener(OnClickCampaignButton);
-        PrivateLobbyButton.onClick.AddListener(OnClickPrivateLobbyButton);
-        PVPButton.onClick.AddListener(OnClickPVPButton);
+        // // Main menu buttons
+        // shopButton.onClick.AddListener(OnClickShopButton);
+        // upgradeButton.onClick.AddListener(OnClickUpgradeButton);
+        // ProfileButton.onClick.AddListener(OnClickProfileButton);
+        // CampaignButton.onClick.AddListener(OnClickCampaignButton);
+        // PrivateLobbyButton.onClick.AddListener(OnClickPrivateLobbyButton);
+        // PVPButton.onClick.AddListener(OnClickPVPButton);
 
-        // Lobby buttons
-        CreateLobbyButton.onClick.AddListener(OnClickCreateLobbyButton);
-        OuterJoinLobbyButton.onClick.AddListener(OpenJoinLobbyPanel);
-        JoinLobbyButton.onClick.AddListener(OnJoinButtonClicked);
+        // // Lobby buttons
+        // CreateLobbyButton.onClick.AddListener(OnClickCreateLobbyButton);
+        // OuterJoinLobbyButton.onClick.AddListener(OpenJoinLobbyPanel);
+        // JoinLobbyButton.onClick.AddListener(OnJoinButtonClicked);
 
-        // Navigation buttons
-        PrivateLobbyBackButton.onClick.AddListener(OnPrivateLobbyBackButton);
-        JoinLobbyBackButton.onClick.AddListener(OnJoinLobbyBackButton);
+        // // Navigation buttons
+        // PrivateLobbyBackButton.onClick.AddListener(OnPrivateLobbyBackButton);
+        // JoinLobbyBackButton.onClick.AddListener(OnJoinLobbyBackButton);
     }
 
     #endregion
