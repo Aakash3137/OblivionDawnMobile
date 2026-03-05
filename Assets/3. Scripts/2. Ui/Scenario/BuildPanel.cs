@@ -12,15 +12,28 @@ public class BuildPanel : MonoBehaviour
     [SerializeField] private GameObject _resourceBG;
     [SerializeField] private CanvasGroup _resourceBuildPanel;
 
+    [Header("References")]
+    [SerializeField] private CanvasGroup canvasGroup;
+    [SerializeField] private RectTransform panel;
+
+    [Header("Animation Settings")]
+    [SerializeField] private float animationTime = 0.25f;
+    [SerializeField] private float hiddenYOffset = -800f;
+
+
+    private Vector2 visiblePosition;
+    private Vector2 hiddenPosition;
+    private Coroutine currentAnimation;
+
     // [Header("Option Images")]
     // [SerializeField] private GameObject[] _offenseOptionImages;
     // [SerializeField] private GameObject[] _defenseOptionImages;
     // [SerializeField] private GameObject[] _resourceOptionImages;
 
-    [Header("Buttons")]
-    [SerializeField] private Button _offenseButton;
-    [SerializeField] private Button _defenseButton;
-    [SerializeField] private Button _resourceButton;
+    // [Header("Buttons")]
+    // [SerializeField] private Button _offenseButton;
+    // [SerializeField] private Button _defenseButton;
+    // [SerializeField] private Button _resourceButton;
 
     [Header("Fade Settings")]
     [SerializeField] private float fadeDuration = 0.3f;
@@ -29,14 +42,25 @@ public class BuildPanel : MonoBehaviour
 
     void Start()
     {
-        OnClickOffense();
-        AddListeners();
+
+        visiblePosition = panel.anchoredPosition;
+        hiddenPosition = visiblePosition + new Vector2(0, hiddenYOffset);
+
+        //OnClickOffense();
+        // ActivatePanels(_offenseBG, _offenseBuildPanel);
+        // ActivatePanels(_defenseBG, _defenseBuildPanel);
+        // ActivatePanels(_resourceBG, _resourceBuildPanel);
+        //AddListeners();
     }
 
     public void ShowBuildPanel(CanvasGroup canvasGroup)
     {
         if (canvasGroup != null)
         {
+            if (currentAnimation != null)
+                StopCoroutine(currentAnimation);
+            currentAnimation = StartCoroutine(AnimatePanel(hiddenPosition, visiblePosition, 0, 1));
+
             canvasGroup.alpha = 1f;
             canvasGroup.interactable = true;
             canvasGroup.blocksRaycasts = true;
@@ -52,34 +76,67 @@ public class BuildPanel : MonoBehaviour
             canvasGroup.blocksRaycasts = false;
         }
     }
-    void AddListeners()
+
+    IEnumerator AnimatePanel(Vector2 startPos, Vector2 endPos, float startAlpha, float endAlpha)
     {
-        _offenseButton.onClick.AddListener(OnClickOffense);
-        _defenseButton.onClick.AddListener(OnClickDefense);
-        _resourceButton.onClick.AddListener(OnClickResource);
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+
+        float time = 0;
+
+        while (time < animationTime)
+        {
+            time += Time.deltaTime;
+            float t = time / animationTime;
+
+            // smooth easing
+            t = 1 - Mathf.Pow(1 - t, 3);
+
+            panel.anchoredPosition = Vector2.Lerp(startPos, endPos, t);
+            canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, t);
+
+            yield return null;
+        }
+
+        panel.anchoredPosition = endPos;
+        canvasGroup.alpha = endAlpha;
+
+        if (endAlpha == 1)
+        {
+            canvasGroup.interactable = true;
+            canvasGroup.blocksRaycasts = true;
+        }
     }
 
-    private void OnClickOffense()
-    {
-        ActivatePanels(_offenseBG, _offenseBuildPanel);
-    }
+    // void AddListeners()
+    // {
+    //     _offenseButton.onClick.AddListener(OnClickOffense);
+    //     _defenseButton.onClick.AddListener(OnClickDefense);
+    //     _resourceButton.onClick.AddListener(OnClickResource);
+    // }
 
-    private void OnClickDefense()
-    {
-        ActivatePanels(_defenseBG, _defenseBuildPanel);
-    }
+    // private void OnClickOffense()
+    // {
+    //     ActivatePanels(_offenseBG, _offenseBuildPanel);
+    // }
 
-    private void OnClickResource()
-    {
-        ActivatePanels(_resourceBG, _resourceBuildPanel);
-    }
+    // private void OnClickDefense()
+    // {
+    //     ActivatePanels(_defenseBG, _defenseBuildPanel);
+    // }
+
+    // private void OnClickResource()
+    // {
+    //     ActivatePanels(_resourceBG, _resourceBuildPanel);
+    // }
 
     private void ActivatePanels(GameObject Panel1, CanvasGroup Panel2)
     {
-        DisableAllPanels();
+        //DisableAllPanels();
         Panel1.SetActive(true);
         ShowBuildPanel(Panel2);
     }
+
     private void DisableAllPanels()
     {
         _offenseBG.SetActive(false);
@@ -89,6 +146,7 @@ public class BuildPanel : MonoBehaviour
         _resourceBG.SetActive(false);
         HideBuildPanel(_resourceBuildPanel);
     }
+    
     // // --- Fade Methods ---
     // private void FadeOut()
     // {
@@ -128,4 +186,6 @@ public class BuildPanel : MonoBehaviour
 
     //     fadeRoutine = null;
     // }
+
+
 }
