@@ -32,6 +32,8 @@ public class EnemyAIHandler : MonoBehaviour
 
     private int totalBuildingsSpawned = 0;
     private float spawnTimer = 0f;
+    
+    private float currentSpawnInterval;
 
     private int resourceBuildingIndex = 0;
     private bool allResourcesCovered = false;
@@ -58,6 +60,9 @@ public class EnemyAIHandler : MonoBehaviour
             AIPersonalityEnum chosen = MenuManager.Instance.SelectedPersonalityFromMenu();
             currentPersonality = AIPersonalities.Find(p => p.personalityName == chosen);
         }
+        
+        //Setting spawn interval
+        currentSpawnInterval = currentPersonality.spawnInterval;
 
         enemyMainBuildingTransform = GameManager.Instance.enemySpawnPoint;
         playerMainBuildingTransform = GameManager.Instance.playerSpawnPoint;
@@ -78,7 +83,7 @@ public class EnemyAIHandler : MonoBehaviour
         timeSinceLastAnalysis += Time.deltaTime;
 
         spawnTimer += Time.deltaTime;
-        if (spawnTimer >= currentPersonality.spawnInterval)
+        if (spawnTimer >= currentSpawnInterval)
         {
             spawnTimer = 0f;
             TrySpawnBuilding();
@@ -141,6 +146,11 @@ public class EnemyAIHandler : MonoBehaviour
         if (totalBuildingsSpawned >= currentPersonality.maxEnemyBuildings)
             return;
 
+        if (unitBuilt >= currentPersonality.maxOffenseBuilding)
+        {
+            currentSpawnInterval = currentPersonality.reduceSpawnTime;
+        }
+        
         if (spawnableTiles.Count == 0)
             return;
 
@@ -467,8 +477,7 @@ public class EnemyAIHandler : MonoBehaviour
                 resourceNeedPercentages[i] = 25f;
         }
 
-        Debug.Log(
-            $"[EnemyAI] Resource Needs: Gold={resourceNeedPercentages[0]:F1}%, Wood={resourceNeedPercentages[1]:F1}%, Stone={resourceNeedPercentages[2]:F1}%, Food={resourceNeedPercentages[3]:F1}%");
+       // Debug.Log($"[EnemyAI] Resource Needs: Gold={resourceNeedPercentages[0]:F1}%, Wood={resourceNeedPercentages[1]:F1}%, Stone={resourceNeedPercentages[2]:F1}%, Food={resourceNeedPercentages[3]:F1}%");
     }
 
     #endregion

@@ -16,6 +16,7 @@ MonoBehaviour:
     name: Galvadore Turret
     spawnLevel: 0
     faction: 3
+    populationCost: 0
     priority: 1
   buildingType: 1
   buildingVisuals:
@@ -23,13 +24,13 @@ MonoBehaviour:
     enemyUnitMaterial: {fileID: 2100000, guid: 98763a407c9a29f48b12a8392352956e, type: 2}
   buildingBuildCost:
   - resourceType: 0
-    resourceAmount: 6
+    resourceAmount: 20
   - resourceType: 1
-    resourceAmount: 14
+    resourceAmount: 28
   - resourceType: 2
-    resourceAmount: 27
+    resourceAmount: 54
   - resourceType: 3
-    resourceAmount: 18
+    resourceAmount: 30
   buildingIcon: {fileID: 21300000, guid: d78ca55dcbeb9e040a56f208d9b48024, type: 3}
   cardDetails:
     factionUnlocked: 0
@@ -59,13 +60,13 @@ MonoBehaviour:
   defenseBuildingUpgradeData:
   - buildingLevel: 0
     buildingBasicStats:
-      maxHealth: 1000
-      armor: 0
+      maxHealth: 2500
+      armor: 15
     buildingBuildTime: 6
     defenseAttackStats:
-      damage: 10
+      damage: 20
       buildingDamage: 0
-      fireRate: 0.3
+      fireRate: 0.5
     defenseRangeStats:
-      detectionRange: 10
-      attackRange: 10
+      detectionRange: 12
+      attackRange: 8

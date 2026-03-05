@@ -24,6 +24,10 @@ public class EnemyPersonality : ScriptableObject
     [Range(0, 1)] public float tacticalPrecision = 0.8f;
 
     [Header("Limits")]
+    public bool reduceSpawningTime = false;
+    public int maxOffenseBuilding = 5;
+    public float reduceSpawnTime = 10f;
+    
     public int maxEnemyBuildings = 150;
     
     [Header("Resource Type Weights (Food, Gold, Metal, Power)")]

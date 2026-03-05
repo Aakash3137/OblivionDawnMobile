@@ -9,7 +9,14 @@ public class KillCounterManager : MonoBehaviour
 
     [Header("Total Kills")]
     public int playerTotalBuildingKills;
+    public int playerTotalDefenseKills;
+    public int playerTotalOffenseKills;
+    public int playerTotalResourceKills;
+    
     public int enemyTotalBuildingKills;
+    public int enemyTotalDefenseKills;
+    public int enemyTotalOffenseKills;
+    public int enemyTotalResourceKills;
 
     public int playerTotalUnitKills;
     public int enemyTotalUnitKills;
@@ -82,12 +89,15 @@ public class KillCounterManager : MonoBehaviour
                         break;
                     case ScenarioBuildingType.DefenseBuilding:
                         enemyKills.buildingDestroyed.defenseBuildingDestroyed++;
+                        enemyTotalDefenseKills++;
                         break;
                     case ScenarioBuildingType.OffenseBuilding:
                         enemyKills.buildingDestroyed.offenseBuildingDestroyed++;
+                        enemyTotalOffenseKills++;
                         break;
                     case ScenarioBuildingType.ResourceBuilding:
                         enemyKills.buildingDestroyed.resourceBuildingDestroyed++;
+                        enemyTotalResourceKills++;
                         break;
                 }
                 enemyTotalBuildingKills++;
@@ -100,12 +110,15 @@ public class KillCounterManager : MonoBehaviour
                         break;
                     case ScenarioBuildingType.DefenseBuilding:
                         playerKills.buildingDestroyed.defenseBuildingDestroyed++;
+                        playerTotalDefenseKills++;
                         break;
                     case ScenarioBuildingType.OffenseBuilding:
                         playerKills.buildingDestroyed.offenseBuildingDestroyed++;
+                        playerTotalOffenseKills++;
                         break;
                     case ScenarioBuildingType.ResourceBuilding:
                         playerKills.buildingDestroyed.resourceBuildingDestroyed++;
+                        playerTotalResourceKills++;
                         break;
                 }
                 playerTotalBuildingKills++;

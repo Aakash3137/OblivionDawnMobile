@@ -41,6 +41,7 @@ public class ResourceBuildingStats : BuildingStats
         await base.InitializeOnBuilt();
 
         IncreaseGlobalCapacity();
+        rmInstance.IncrementResourceBuildingCount(resourceType);
         productionTickSyncTime = Time.time;
         rmInstance.GlobalResourceTick += StartProducing;
     }
@@ -107,7 +108,10 @@ public class ResourceBuildingStats : BuildingStats
         base.Die();
 
         if (hasBuilt)
+        {
             DecreaseGlobalCapacity();
+            rmInstance.DecrementResourceBuildingCount(resourceType);
+        }
         if (hasBuilt && isProducingResources)
             DecreaseGenerationRate();
 

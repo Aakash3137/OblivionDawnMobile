@@ -76,7 +76,7 @@ public class DefenseUnit : MonoBehaviour
             if (attackTimer >= defenseData.defenseAttackStats.fireRate)
             {
                 attackTimer = 0f;
-                weaponManager.Fire(target, defenseData.defenseAttackStats.damage, defenseStats.side);
+                weaponManager.Fire(target, defenseData.defenseAttackStats.damage,defenseData.defenseAttackStats.buildingDamage, defenseStats.side);
             }
         }
 

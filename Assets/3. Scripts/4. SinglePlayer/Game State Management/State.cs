@@ -19,6 +19,7 @@ public enum GameState
     PAUSED,
     VICTORY,
     DEFEAT,
+    DRAW,
     CUTSCENE
 }
 

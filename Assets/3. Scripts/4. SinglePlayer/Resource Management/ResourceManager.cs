@@ -20,6 +20,9 @@ public class ResourceManager : MonoBehaviour
     [Header("Generation Rates"), ReadOnly]
     public BuildCost[] currentGenerationRates;
 
+    [Header("Resource Building Counts"), ReadOnly]
+    public int[] resourceBuildingCounts;
+
     public Action OnResourcesChanged;
     public Action GlobalResourceTick;
 
@@ -46,6 +49,7 @@ public class ResourceManager : MonoBehaviour
         currentResources = new BuildCost[resources.Length];
         maxResources = new BuildCost[resources.Length];
         currentGenerationRates = new BuildCost[resources.Length];
+        resourceBuildingCounts = new int[resources.Length];
 
         for (int i = 0; i < resources.Length; i++)
         {
@@ -163,6 +167,18 @@ public class ResourceManager : MonoBehaviour
     public bool CanAddResource(ScenarioResourceType type, int amount)
     {
         return currentResources[(int)type].resourceAmount + amount <= maxResources[(int)type].resourceAmount;
+    }
+
+    public void IncrementResourceBuildingCount(ScenarioResourceType resourceType)
+    {
+        resourceBuildingCounts[(int)resourceType]++;
+        OnResourcesChanged?.Invoke();
+    }
+
+    public void DecrementResourceBuildingCount(ScenarioResourceType resourceType)
+    {
+        resourceBuildingCounts[(int)resourceType]--;
+        OnResourcesChanged?.Invoke();
     }
 
     void OnValidate()

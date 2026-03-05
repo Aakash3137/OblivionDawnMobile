@@ -16,6 +16,7 @@ MonoBehaviour:
     name: Present AntiTank
     spawnLevel: 0
     faction: 1
+    populationCost: 0
     priority: 1
   buildingType: 1
   buildingVisuals:
@@ -23,13 +24,13 @@ MonoBehaviour:
     enemyUnitMaterial: {fileID: 2100000, guid: 5f45ddf4f71ebd64081d0a545cd4a5f5, type: 2}
   buildingBuildCost:
   - resourceType: 0
-    resourceAmount: 20
+    resourceAmount: 8
   - resourceType: 1
-    resourceAmount: 28
+    resourceAmount: 18
   - resourceType: 2
-    resourceAmount: 54
+    resourceAmount: 36
   - resourceType: 3
-    resourceAmount: 30
+    resourceAmount: 24
   buildingIcon: {fileID: 21300000, guid: 29f0175d653cd564d9d6028329b77c88, type: 3}
   cardDetails:
     factionUnlocked: 0
@@ -59,13 +60,13 @@ MonoBehaviour:
   defenseBuildingUpgradeData:
   - buildingLevel: 0
     buildingBasicStats:
-      maxHealth: 1000
-      armor: 0
+      maxHealth: 2000
+      armor: 10
     buildingBuildTime: 6
     defenseAttackStats:
-      damage: 50
-      buildingDamage: 0
-      fireRate: 2
+      damage: 45
+      buildingDamage: 20
+      fireRate: 3
     defenseRangeStats:
-      detectionRange: 10
-      attackRange: 10
+      detectionRange: 12
+      attackRange: 8
