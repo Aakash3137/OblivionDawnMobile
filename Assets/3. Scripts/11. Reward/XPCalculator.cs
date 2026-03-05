@@ -9,7 +9,7 @@ public class XPCalculator : MonoBehaviour
     private float bonus_XP;
     private float duration_Multiplier = 1f;
     private float balance_Multiplier = 1f;
-    public float total_XP { get; private set; }
+    public int total_XP { get; private set; }
 
     private void Awake()
     {
@@ -81,6 +81,6 @@ public class XPCalculator : MonoBehaviour
     
     private void CalculateXP()
     {
-        total_XP = (base_XP + PerformanceXP() + BonusXP()) * duration_Multiplier * balance_Multiplier;
+        total_XP = (int)((base_XP + PerformanceXP() + BonusXP()) * duration_Multiplier * balance_Multiplier);
     }
 }

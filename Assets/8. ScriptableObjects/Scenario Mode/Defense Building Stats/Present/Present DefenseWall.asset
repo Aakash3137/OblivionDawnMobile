@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf8aeccd860d742458310b46b26661a2, type: 3}
+  m_Name: Present DefenseWall
+  m_EditorClassIdentifier: 
+  buildingIdentity:
+    name: Present DefenseWall
+    spawnLevel: 0
+    faction: 1
+    populationCost: 0
+    priority: 1
+  buildingType: 1
+  buildingVisuals:
+    playerUnitMaterial: {fileID: 0}
+    enemyUnitMaterial: {fileID: 0}
+  buildingBuildCost:
+  - resourceType: 0
+    resourceAmount: 4
+  - resourceType: 1
+    resourceAmount: 6
+  - resourceType: 2
+    resourceAmount: 8
+  - resourceType: 3
+    resourceAmount: 6
+  buildingIcon: {fileID: 21300000, guid: c879a0e3547895c4690280238b1dcbf2, type: 3}
+  cardDetails:
+    factionUnlocked: 0
+    isUnlocked: 1
+    purchased: 1
+    minCityCenterLevel: 0
+  hasUpkeep: 0
+  upKeepCost:
+  - resourceType: 0
+    resourceAmount: 1
+  - resourceType: 1
+    resourceAmount: 0
+  - resourceType: 2
+    resourceAmount: 1
+  - resourceType: 3
+    resourceAmount: 0
+  <upKeepTime>k__BackingField: 5
+  defenseType: 3
+  canAttackBuildings: 0
+  canAttackWalls: 0
+  defenseVisionAngles:
+    narrowViewAngle: 0
+    wideViewAngle: 270
+  defenseAttackTargets:
+    canAttackAir: 0
+    canAttackGround: 0
+  defenseBuildingUpgradeData:
+  - buildingLevel: 0
+    buildingBasicStats:
+      maxHealth: 2500
+      armor: 15
+    buildingBuildTime: 6
+    defenseAttackStats:
+      damage: 20
+      buildingDamage: 0
+      fireRate: 0
+    defenseRangeStats:
+      detectionRange: 12
+      attackRange: 10

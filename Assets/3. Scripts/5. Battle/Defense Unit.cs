@@ -58,7 +58,7 @@ public class DefenseUnit : MonoBehaviour
             {
                 target = null;
                 FindTarget();
-            }
+            }   
         }
 
         // find target
@@ -78,6 +78,10 @@ public class DefenseUnit : MonoBehaviour
                 attackTimer = 0f;
                 weaponManager.Fire(target, defenseData.defenseAttackStats.damage,defenseData.defenseAttackStats.buildingDamage, defenseStats.side);
             }
+        }
+        else
+        {
+            attackTimer = 0f;
         }
 
         LookTarget();
@@ -187,6 +191,7 @@ public class DefenseUnit : MonoBehaviour
         {
             // only assign if switching
             target = bestTarget;
+            attackTimer = defenseData.defenseAttackStats.fireRate; // Fire immediately on new target
 
             if (bestTarget is UnitStats)
                 primaryTarget = target.gameObject;

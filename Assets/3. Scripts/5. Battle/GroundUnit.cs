@@ -143,10 +143,10 @@ public class GroundUnit : MonoBehaviour
         {
             target = detectionTarget.gameObject;
         }
-        else if (primaryTarget != null && CanAttackTarget(primaryTarget))
+        else if (primaryTarget != null)
         {
             target = primaryTarget.gameObject;
-        }
+        } 
         else
         {
             target = null;
@@ -298,10 +298,12 @@ public class GroundUnit : MonoBehaviour
 
         Stats closestUnit = null;
         Stats closestDefense = null;
+        Stats closestWall = null;
         Stats closestBuilding = null;
 
         float closestUnitDist = float.MaxValue;
         float closestDefenseDist = float.MaxValue;
+        float closestWallDist = float.MaxValue;
         float closestBuildingDist = float.MaxValue;
 
         for (int i = 0; i < count; i++)
@@ -333,7 +335,16 @@ public class GroundUnit : MonoBehaviour
                     closestDefense = candidate;
                 }
             }
-            //  THIRD PRIORITY: Resource or main buildings
+            //  THIRD PRIORITY: Walls
+            else if (candidate is WallStats)
+            {
+                if (distance < closestWallDist)
+                {
+                    closestWallDist = distance;
+                    closestWall = candidate;
+                }
+            }
+            //  FOURTH PRIORITY: Resource or main buildings
             else if (candidate is BuildingStats || candidate is ResourceBuildingStats)
             {
                 if (distance < closestBuildingDist)
@@ -349,6 +360,8 @@ public class GroundUnit : MonoBehaviour
             detectionTarget = closestUnit;
         else if (closestDefense != null)
             detectionTarget =  closestDefense;
+        else if (closestWall != null)
+            detectionTarget = closestWall;
         else
             detectionTarget = closestBuilding;
     }
