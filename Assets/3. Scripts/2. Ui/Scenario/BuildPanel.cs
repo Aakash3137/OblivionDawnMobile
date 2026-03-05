@@ -29,7 +29,10 @@ public class BuildPanel : MonoBehaviour
 
     void Start()
     {
-        OnClickOffense();
+        //OnClickOffense();
+        ActivatePanels(_offenseBG, _offenseBuildPanel);
+        ActivatePanels(_defenseBG, _defenseBuildPanel);
+        ActivatePanels(_resourceBG, _resourceBuildPanel);
         AddListeners();
     }
 
@@ -76,10 +79,11 @@ public class BuildPanel : MonoBehaviour
 
     private void ActivatePanels(GameObject Panel1, CanvasGroup Panel2)
     {
-        DisableAllPanels();
+        //DisableAllPanels();
         Panel1.SetActive(true);
         ShowBuildPanel(Panel2);
     }
+    
     private void DisableAllPanels()
     {
         _offenseBG.SetActive(false);
@@ -89,6 +93,7 @@ public class BuildPanel : MonoBehaviour
         _resourceBG.SetActive(false);
         HideBuildPanel(_resourceBuildPanel);
     }
+    
     // // --- Fade Methods ---
     // private void FadeOut()
     // {
@@ -128,4 +133,6 @@ public class BuildPanel : MonoBehaviour
 
     //     fadeRoutine = null;
     // }
+
+
 }
