@@ -43,6 +43,19 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         }
         else
             Debug.Log($"<color=red> [BuildButton] No BuildingStats or found on {buildingPrefab.name}</color>");
+
+
+        //// BUILD BUTTON TESTING
+        prmInstance = PlayerResourceManager.Instance;
+
+        if (prmInstance != null)
+        {
+            prmInstance.OnResourcesChanged += UpdateButtonInteractivity;
+        }
+
+        UpdateButtonInteractivity();
+
+
     }
 
     private void UpdateButtonInteractivity()
@@ -50,10 +63,12 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         if (cachedCosts == null || !prmInstance.HasResources(cachedCosts))
         {
             button.interactable = false;
+            SetDesaturated(true);
         }
         else
         {
             button.interactable = true;
+            SetDesaturated(false);
         }
     }
 
@@ -85,5 +100,20 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     {
         button.onClick.RemoveListener(OnClick);
         //prmInstance.OnResourcesChanged -= UpdateButtonInteractivity;
+
+        button.onClick.RemoveListener(OnClick);
+
+        if (prmInstance != null)
+            prmInstance.OnResourcesChanged -= UpdateButtonInteractivity;
+
+
     }
+
+    private void SetDesaturated(bool state)
+    {
+        if (iconImage == null) return;
+
+        iconImage.color = state ? new Color(0.2f, 0.2f, 0.2f, 1f) : Color.white;
+    }
+
 }
