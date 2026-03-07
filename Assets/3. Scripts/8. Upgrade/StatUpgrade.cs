@@ -28,6 +28,10 @@ public static class StatUpgrade
     {
         return 10 * level * level + 10 * level + 20;
     }
+    public static int FragmentCost(int level)
+    {
+        return level * level + level + 2;
+    }
 
     public static float GetDiff(float BaseValue, float NextValue)
     {

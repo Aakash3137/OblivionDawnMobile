@@ -8,13 +8,18 @@ public class UpgradeCard : MonoBehaviour
     [ReadOnly] public BuildingDataSO buildingUpgradeData;
     [ReadOnly] public UnitProduceStatsSO unitUpgradeData;
 
+    [SerializeField] private Userdata userdata;
     [SerializeField] private Image cardImage;
     [SerializeField] private Image levelProgressBar;
+    [SerializeField] private TMP_Text levelProgressText;
 
     [SerializeField] private Button cardButton;
 
     [SerializeField] private TMP_Text populationCostText;
+    [SerializeField] private TMP_Text levelText;
     [SerializeField] private GameObject populationCostRoot;
+
+    [HideInInspector] public CardsPanel myPanel;
 
     private void Start()
     {
@@ -31,6 +36,8 @@ public class UpgradeCard : MonoBehaviour
             if (populationCostRoot == null && populationCostText == null)
                 return;
 
+            levelText.SetText($"Level {buildingUpgradeData.buildingIdentity.spawnLevel + 1}");
+
             if (buildingUpgradeData is DefenseBuildingDataSO defenseBuildingData)
             {
                 populationCostText.SetText($"{defenseBuildingData.buildingIdentity.populationCost}");
@@ -39,6 +46,11 @@ public class UpgradeCard : MonoBehaviour
             {
                 populationCostRoot.SetActive(false);
             }
+
+            float progress = (float)userdata.fragments[(int)buildingUpgradeData.buildingIdentity.faction] / StatUpgrade.FragmentCost(buildingUpgradeData.buildingIdentity.spawnLevel + 1);
+
+            levelProgressBar.fillAmount = progress;
+            levelProgressText.SetText($"{userdata.fragments[(int)buildingUpgradeData.buildingIdentity.faction]}/{StatUpgrade.FragmentCost(buildingUpgradeData.buildingIdentity.spawnLevel + 1)}");
         }
         else if (unitUpgradeData != null)
         {
@@ -48,7 +60,24 @@ public class UpgradeCard : MonoBehaviour
                 return;
 
             populationCostText.SetText($"{unitUpgradeData.unitIdentity.populationCost}");
+
+            levelText.SetText($"Level {unitUpgradeData.unitIdentity.spawnLevel + 1}");
+
+            float progress = (float)userdata.fragments[(int)unitUpgradeData.unitIdentity.faction] / StatUpgrade.FragmentCost(unitUpgradeData.unitIdentity.spawnLevel + 1);
+
+            levelProgressBar.fillAmount = progress;
+            levelProgressText.SetText($"{userdata.fragments[(int)unitUpgradeData.unitIdentity.faction]}/{StatUpgrade.FragmentCost(unitUpgradeData.unitIdentity.spawnLevel + 1)}");
         }
+    }
+    public void RefreshAllCards()
+    {
+        foreach (var card in myPanel.allCards)
+            card.SetCardSprite();
+    }
+
+    public void RefreshCards()
+    {
+        SetCardSprite();
     }
 
     private void OnCardClick()
@@ -60,6 +89,8 @@ public class UpgradeCard : MonoBehaviour
             Debug.Log("<color=green>[UpgradeCard] UpgradePopUpPanel instance not found</color>");
             return;
         }
+
+        panel.SetSelectedUpgradeCard(this);
 
         if (buildingUpgradeData != null)
         {
@@ -75,7 +106,6 @@ public class UpgradeCard : MonoBehaviour
         {
             Debug.Log("<color=green> [CardUpgradeData] Initialize failed Uint Stats and Building Stats are null</color>");
         }
-
     }
 
     private void OnDestroy()

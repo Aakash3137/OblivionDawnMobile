@@ -71,6 +71,7 @@ public class BuildingPlacementHelper : MonoBehaviour
             if (tile.proxyTiles.Count == 0 || tile.proxyTiles == null)
                 tile.SetOpen(false);
 
+            // if neighbor tile has a building then set current tile to open
             if (tile.hasBuilding)
                 ActivateSelf();
         }

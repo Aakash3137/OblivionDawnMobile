@@ -3,18 +3,20 @@ using UnityEngine;
 
 
 [CreateAssetMenu(fileName = "Userdata", menuName = "Userdata", order = 0)]
-public class Userdata : ScriptableObject 
+public class Userdata : ScriptableObject
 {
-    [Header ("Profile Information")]
+    [Header("Profile Information")]
     public string UserName = "";
     public string Birthday = "";
     public Sprite ProfilePicture;
     public Sprite defaultProfilePicture;
     public bool GuestUser = false;
 
-    [Header ("Game Data")]
+    [Header("Game Data")]
     [SerializeField] private int coins = 0;
     [SerializeField] private int diamonds = 0;
+    public int[] fragments = new int[4];
+
     public int Level = 0;
     public int Coins
     {
@@ -55,7 +57,7 @@ public class Userdata : ScriptableObject
 
     public void ResetData()
     {
-        UserName ="";
+        UserName = "";
         Birthday = "";
         ProfilePicture = null;
         GuestUser = false;
@@ -64,8 +66,9 @@ public class Userdata : ScriptableObject
         Coins = 0;
         Diamonds = 0;
         CurrentDay = 1;
-        
+        fragments = new int[4];
+
     }
-    
+
 }
 
