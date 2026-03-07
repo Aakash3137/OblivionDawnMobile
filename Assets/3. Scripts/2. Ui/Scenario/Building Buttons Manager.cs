@@ -45,6 +45,9 @@ public class BuildingButtonsManager : MonoBehaviour
             buttons.Add(Instantiate(buttonPrefab, offenseBuildingsRoot));
             buttons[i].buildingPrefab = characterDatabase.GetSpawnerBuilding(decSelectionData.AllFactionDecData[(int)selectedFaction].SelectedUnitDeck[i]);
 
+            buttons[i].iconImage.sprite =
+                decSelectionData.AllFactionDecData[(int)selectedFaction].SelectedUnitDeck[i].UnitIcon;
+            
             if (buttons[i].buildingPrefab is OffenseBuildingStats offenseBuildingPrefab)
                 offenseBuildingPrefab.SetUnitPrefab(characterDatabase.GetUnitPrefab(decSelectionData.AllFactionDecData[(int)selectedFaction].SelectedUnitDeck[i]));
 
@@ -55,12 +58,15 @@ public class BuildingButtonsManager : MonoBehaviour
         {
             buttons.Add(Instantiate(buttonPrefab, defenseBuildingsRoot));
             buttons[i].buildingPrefab = characterDatabase.GetDefenseBuildingPrefab(decSelectionData.AllFactionDecData[(int)selectedFaction].SelectedDefenseDec[i - offenseBuildingsCount]);
+            buttons[i].iconImage.sprite = decSelectionData.AllFactionDecData[(int)selectedFaction].SelectedDefenseDec[i - offenseBuildingsCount].buildingIcon;
+            
         }
 
         for (int i = defenseBuildingsCount + offenseBuildingsCount; i < totalBuildingsCount; i++)
         {
             buttons.Add(Instantiate(buttonPrefab, resourceBuildingsRoot));
             buttons[i].buildingPrefab = characterDatabase.GetResourceBuildingPrefab(decSelectionData.AllFactionDecData[(int)selectedFaction].SelectedResourceDeck[i - (defenseBuildingsCount + offenseBuildingsCount)]);
+            buttons[i].iconImage.sprite = decSelectionData.AllFactionDecData[(int)selectedFaction].SelectedResourceDeck[i - (defenseBuildingsCount + offenseBuildingsCount)].buildingIcon;
         }
 
         if (tileUIPanel == null || costPanelManager == null)

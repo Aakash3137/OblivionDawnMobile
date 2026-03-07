@@ -76,7 +76,9 @@ public class AirUnit : MonoBehaviour
     // Separation timer
     protected float separationTimer;
     protected const float separationInterval = 0.15f;
-
+    private bool targetLocked = false;
+    public Stats airTarget;
+    
     protected virtual void Start()
     {
         unitStats = GetComponent<UnitStats>();
@@ -154,6 +156,7 @@ public class AirUnit : MonoBehaviour
         if (targetCheckTimer >= targetCheckInterval + targetCheckOffset)
         {
             targetCheckTimer = 0f;
+            FindAirTarget();
             FindDetectionTarget();
             ResolveFinalTarget();
         }
@@ -188,148 +191,146 @@ public class AirUnit : MonoBehaviour
         else
             primaryTarget = GameManager.Instance.PlayerMainBuilding;
     }
-
-    public void SetReplyTarget(Stats attacker)
-    {
-        if (attacker != null && attacker.side != unitSide)
-        {
-            // Only reply to air units
-            if (attacker.gameObject.layer == LayerMask.NameToLayer("PlayerAir") || 
-                attacker.gameObject.layer == LayerMask.NameToLayer("EnemyAir"))
-            {
-                replyTarget = attacker;
-            }
-        }
-    }
-
-    private void ResolveFinalTarget()
-    {
-        // 1️⃣ First priority: ANY detected air unit
-        if (detectionTarget != null)
-        {
-            bool detectedIsAir =
-                (unitSide == Side.Player && detectionTarget.gameObject.layer == LayerMask.NameToLayer("EnemyAir")) ||
-                (unitSide == Side.Enemy && detectionTarget.gameObject.layer == LayerMask.NameToLayer("PlayerAir"));
-
-            if (detectedIsAir)
-            {
-                target = detectionTarget.gameObject;
-                return;
-            }
-        }
-
-        // 2️⃣ If current target is air, keep it (never downgrade)
-        if (target != null)
-        {
-            bool currentIsAir =
-                (unitSide == Side.Player && target.layer == LayerMask.NameToLayer("EnemyAir")) ||
-                (unitSide == Side.Enemy && target.layer == LayerMask.NameToLayer("PlayerAir"));
-
-            if (currentIsAir)
-                return;
-        }
-
-        // 3️⃣ Reply target (only if it's air)
-        if (replyTarget != null)
-        {
-            bool replyIsAir =
-                (unitSide == Side.Player && replyTarget.gameObject.layer == LayerMask.NameToLayer("EnemyAir")) ||
-                (unitSide == Side.Enemy && replyTarget.gameObject.layer == LayerMask.NameToLayer("PlayerAir"));
-
-            if (replyIsAir)
-            {
-                target = replyTarget.gameObject;
-                return;
-            }
-        }
-
-        // 4️⃣ Normal detection
-        if (detectionTarget != null)
-        {
-            target = detectionTarget.gameObject;
-            return;
-        }
-
-        // 5️⃣ Fallback
-        if (primaryTarget != null)
-            target = primaryTarget.gameObject;
-        else
-            target = null;
-    }
     
-    protected void FindDetectionTarget()
+    protected void FindAirTarget()
     {
         Collider[] hits = new Collider[20];
-        LayerMask enemyLayerMask = GetEnemyLayerMask();
-        
-        int count = Physics.OverlapSphereNonAlloc(transform.position, DetectionRange, hits, enemyLayerMask);
-        
-        Stats closestAirUnit = null;
-        Stats closestGroundUnit = null;
-        Stats closestDefense = null;
-        Stats closestBuilding = null;
 
-        float closestAirDist = float.MaxValue;
-        float closestGroundDist = float.MaxValue;
-        float closestDefenseDist = float.MaxValue;
-        float closestBuildingDist = float.MaxValue;
-        
+        LayerMask airMask;
+
+        if (unitSide == Side.Player)
+            airMask = LayerMask.GetMask("EnemyAir");
+        else
+            airMask = LayerMask.GetMask("PlayerAir");
+
+        int count = Physics.OverlapSphereNonAlloc(transform.position, DetectionRange, hits, airMask);
+
+        Stats closestAir = null;
+        float closestDist = float.MaxValue;
+
         for (int i = 0; i < count; i++)
         {
             if (!hits[i].TryGetComponent<Stats>(out var unit))
                 continue;
-            
-            if (unit == unitStats || unit.side == unitSide)
+
+            if (unit.side == unitSide)
                 continue;
-            
+
             float distance = Vector3.Distance(transform.position, unit.transform.position);
 
-            if (unit is UnitStats)
+            if (distance < closestDist)
             {
-                // Check if air unit
-                if (unit.gameObject.layer == LayerMask.NameToLayer("PlayerAir") || 
-                    unit.gameObject.layer == LayerMask.NameToLayer("EnemyAir"))
+                closestDist = distance;
+                closestAir = unit;
+            }
+        }
+
+        airTarget = closestAir;
+    }
+
+    private void ResolveFinalTarget()
+    {
+        // If reply target was destroyed (Missing), clear it
+        if (!replyTarget)
+            replyTarget = null;
+
+        if (!detectionTarget)
+            detectionTarget = null;
+        
+        if (!airTarget)
+            airTarget = null;
+        
+        // Priority: Air Target > Reply Target > Detection Target > Primary Target
+        if (airTarget != null && CanAttackTarget(airTarget))
+        {
+            target = airTarget.gameObject;
+        }
+        else if (detectionTarget != null && CanAttackTarget(detectionTarget))
+        {
+            target = detectionTarget.gameObject;
+        }
+        else if (primaryTarget != null)
+        {
+            target = primaryTarget.gameObject;
+        } 
+        else
+        {
+            target = null;
+        }
+    }
+    
+    protected void FindDetectionTarget()
+    {
+        Collider[] hits = new Collider[32];
+        LayerMask enemyLayerMask = GetEnemyLayerMask();
+        
+        int count = Physics.OverlapSphereNonAlloc(transform.position, DetectionRange, hits, enemyLayerMask);
+        
+        Stats closestGroundUnit = null;
+        Stats closestDefense = null;
+        //Stats closestWall = null;
+        Stats closestBuilding = null;
+
+        float closestGroundDist = float.MaxValue;
+        float closestDefenseDist = float.MaxValue;
+        //float closestWallDist = float.MaxValue;
+        float closestBuildingDist = float.MaxValue;
+        
+        for (int i = 0; i < count; i++)
+        {
+            if (!hits[i].TryGetComponent<Stats>(out var candidate))
+                continue;
+            
+            if (candidate == unitStats || candidate.side == unitSide)
+                continue;
+            
+            float distance = Vector3.Distance(transform.position, candidate.transform.position);
+
+            // FIRST PRIORITY: Ground Units (skip air units - they're handled by FindAirTarget)
+            if (candidate is UnitStats && !candidate.CanFly)
+            {
+                if (distance < closestGroundDist)
                 {
-                    if (distance < closestAirDist)
-                    {
-                        closestAirDist = distance;
-                        closestAirUnit = unit;
-                    }
-                }
-                else
-                {
-                    if (distance < closestGroundDist)
-                    {
-                        closestGroundDist = distance;
-                        closestGroundUnit = unit;
-                    }
+                    closestGroundDist = distance;
+                    closestGroundUnit = candidate;
                 }
             }
-            else if (unit is DefenseBuildingStats)
+            // SECOND PRIORITY: Defense buildings
+            else if (candidate is DefenseBuildingStats)
             {
                 if (distance < closestDefenseDist)
                 {
                     closestDefenseDist = distance;
-                    closestDefense = unit;
+                    closestDefense = candidate;
                 }
             }
-            else if (unit is BuildingStats || unit is ResourceBuildingStats)
+            /*// THIRD PRIORITY: Walls
+            else if (candidate is WallStats)
+            {
+                if (distance < closestWallDist)
+                {
+                    closestWallDist = distance;
+                    closestWall = candidate;
+                }
+            }*/
+            // FOURTH PRIORITY: Resource or main buildings
+            else if (candidate is BuildingStats || candidate is ResourceBuildingStats)
             {
                 if (distance < closestBuildingDist)
                 {
                     closestBuildingDist = distance;
-                    closestBuilding = unit;
+                    closestBuilding = candidate;
                 }
             }
         }
         
-        // Priority: Air Units > Ground Units > Defense > Buildings
-        if (closestAirUnit != null)
-            detectionTarget = closestAirUnit;
-        else if (closestGroundUnit != null)
+        // Apply hierarchy: Ground Units > Defense > Walls > Buildings
+        if (closestGroundUnit != null)
             detectionTarget = closestGroundUnit;
         else if (closestDefense != null)
             detectionTarget = closestDefense;
+        //else if (closestWall != null)
+          //  detectionTarget = closestWall;
         else
             detectionTarget = closestBuilding;
     }
@@ -360,6 +361,14 @@ public class AirUnit : MonoBehaviour
         return LayerMask.GetMask("PlayerAir", "PlayerGround", "EnemyAir", "EnemyGround");
     }
     
+    private bool CanAttackTarget(Stats target)
+    {
+        if (target.CanFly)
+            return attackTargets.canAttackAir;
+        else
+            return attackTargets.canAttackGround;
+    }
+
     protected bool IsTargetValid()
     {
         return target != null && target.activeInHierarchy;

@@ -93,8 +93,8 @@ public class WallParent : MonoBehaviour
 
     public void DisableWall(int index)
     {
-        if (wallStats[index] != null)
-            wallStats[index].gameObject.SetActive(false);
+        /*if (wallStats[index] != null)
+            wallStats[index].gameObject.SetActive(false);*/
     }
 
     private void OnDestroy()

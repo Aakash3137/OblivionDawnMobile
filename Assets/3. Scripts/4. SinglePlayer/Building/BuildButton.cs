@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public BuildingStats buildingPrefab;
-    [SerializeField] private Image iconImage;
+    [SerializeField] public Image iconImage;
 
     public ScenarioBuildingType buildingType;
     public PlayerResourceManager prmInstance;
@@ -19,8 +19,8 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         if (buildingPrefab == null)
             Debug.Log($"<color=red> [BuildButton] No BuildingStats or found on {buildingPrefab.name}</color>");
 
-        if (buildingPrefab.buildingStatsSO.buildingIcon != null)
-            iconImage.sprite = buildingPrefab.buildingStatsSO.buildingIcon;
+        // if (buildingPrefab.buildingStatsSO.buildingIcon != null)
+        //     iconImage.sprite = buildingPrefab.buildingStatsSO.buildingIcon;
 
         button = GetComponent<Button>();
 
