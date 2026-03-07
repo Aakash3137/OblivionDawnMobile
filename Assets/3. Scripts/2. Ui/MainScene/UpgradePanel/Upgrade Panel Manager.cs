@@ -24,10 +24,7 @@ public class UpgradePanelManager : MonoBehaviour
         }
 
         Instance = this;
-    }
 
-    private void Start()
-    {
         CreateBuildingCards();
         CreateUnitCards();
         CreateCityCenterCards();

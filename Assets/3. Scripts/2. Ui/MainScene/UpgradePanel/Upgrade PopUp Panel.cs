@@ -18,9 +18,9 @@ public class UpgradePopUpPanel : MonoBehaviour
     [SerializeField] protected Image buildingTypeIcon;
     [SerializeField] protected TMP_Text buildingTypeText;
 
-
     [SerializeField] protected TMP_Text cardLevel;
     [SerializeField] protected Image levelProgressFill;
+    [SerializeField] protected TMP_Text levelProgressText;
 
     [SerializeField] protected List<StatBlock> statBlocks;
     [SerializeField] protected int maxUpgradableStats;
@@ -45,6 +45,7 @@ public class UpgradePopUpPanel : MonoBehaviour
     [SerializeField] protected Sprite capacityIcon;
     protected CanvasGroup canvasGroup;
 
+    private UpgradeCard currentUpgradeCard;
 
     protected void Awake()
     {
@@ -57,6 +58,7 @@ public class UpgradePopUpPanel : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
     protected void Start()
     {
         if (canvasGroup == null)
@@ -71,6 +73,7 @@ public class UpgradePopUpPanel : MonoBehaviour
         closeButton.onClick.AddListener(OnClickClose);
         actionButton.onClick.AddListener(OnClickAction);
     }
+
     protected void OnDestroy()
     {
         closeButton.onClick.RemoveListener(OnClickClose);
@@ -114,15 +117,23 @@ public class UpgradePopUpPanel : MonoBehaviour
                 OnClickUpgrade(currentUnitData);
         }
     }
+
     protected void OnClickClose()
     {
         HidePanel();
+
+        if (currentUpgradeCard != null)
+            currentUpgradeCard.RefreshAllCards();
+
+        UpgradePanelNavigation.Instance.UpdateFragmentsCount();
+
+        currentUpgradeCard = null;
         currentBuildingData = null;
         currentUnitData = null;
     }
 
     #region Helper Functions
-    private void RefreshButtonState(CardDetails cardDetails, int spawnLevel)
+    private void RefreshButtonState(CardDetails cardDetails, int spawnLevel, FactionName faction)
     {
         if (!cardDetails.isUnlocked)
         {
@@ -131,31 +142,47 @@ public class UpgradePopUpPanel : MonoBehaviour
         else
         {
             int cost = StatUpgrade.UpgradeCost(spawnLevel);
+
             actionButton.gameObject.SetActive(true);
 
             if (cardDetails.purchased)
             {
                 cost = StatUpgrade.UpgradeCost(spawnLevel + 1);
+                int fragmentCost = StatUpgrade.FragmentCost(spawnLevel + 1);
+
                 UpdateCostDisplay(cost);
                 buttonLabel.SetText("Upgrade");
+
+                if (userdata.Diamonds < cost || userdata.fragments[(int)faction] < fragmentCost)
+                    actionButton.interactable = false;
+                else
+                    actionButton.interactable = true;
             }
             else
             {
                 UpdateCostDisplay(cost);
                 buttonLabel.SetText("Purchase");
-            }
 
-            if (userdata.Diamonds < cost)
-                actionButton.interactable = false;
-            else
-                actionButton.interactable = true;
+                if (userdata.Diamonds < cost)
+                    actionButton.interactable = false;
+                else
+                    actionButton.interactable = true;
+            }
         }
+    }
+
+    private void UpdateProgressBar(int spawnLevel, FactionName faction)
+    {
+        float progress = (float)userdata.fragments[(int)faction] / StatUpgrade.FragmentCost(spawnLevel + 1);
+        levelProgressFill.fillAmount = progress;
+        levelProgressText.SetText($"{userdata.fragments[(int)faction]}/{StatUpgrade.FragmentCost(spawnLevel + 1)}");
     }
     private void UpdateCostDisplay(int cost)
     {
         actionGemCostText.text = cost.ToString();
     }
     #endregion
+
     #region OnClickPurchase
     private void OnClickPurchase(BuildingDataSO data)
     {
@@ -168,7 +195,8 @@ public class UpgradePopUpPanel : MonoBehaviour
 
         data.cardDetails.purchased = true;
 
-        RefreshButtonState(data.cardDetails, data.buildingIdentity.spawnLevel);
+        RefreshButtonState(data.cardDetails, data.buildingIdentity.spawnLevel, data.buildingIdentity.faction);
+        UpdateProgressBar(data.buildingIdentity.spawnLevel, data.buildingIdentity.faction);
 
         InitializeStatBlocks(data);
     }
@@ -184,42 +212,51 @@ public class UpgradePopUpPanel : MonoBehaviour
 
         data.cardDetails.purchased = true;
 
-        RefreshButtonState(data.cardDetails, data.unitIdentity.spawnLevel);
+        RefreshButtonState(data.cardDetails, data.unitIdentity.spawnLevel, data.unitIdentity.faction);
+        UpdateProgressBar(data.unitIdentity.spawnLevel, data.unitIdentity.faction);
 
         InitializeStatBlocks(data);
     }
     #endregion
+
     #region OnClickUpgrade
     private void OnClickUpgrade(BuildingDataSO data)
     {
         int cost = StatUpgrade.UpgradeCost(data.buildingIdentity.spawnLevel + 1);
+        int fragmentCost = StatUpgrade.FragmentCost(data.buildingIdentity.spawnLevel + 1);
 
-        if (userdata.Diamonds < cost)
+        if (userdata.Diamonds < cost || userdata.fragments[(int)data.buildingIdentity.faction] < fragmentCost)
             return;
 
         userdata.Diamonds -= cost;
+        userdata.fragments[(int)data.buildingIdentity.faction] -= fragmentCost;
 
         new BuildingUpgrade().UpgradeNext(data);
         InitializeStatBlocks(data);
 
-        RefreshButtonState(data.cardDetails, data.buildingIdentity.spawnLevel);
+        RefreshButtonState(data.cardDetails, data.buildingIdentity.spawnLevel, data.buildingIdentity.faction);
+        UpdateProgressBar(data.buildingIdentity.spawnLevel, data.buildingIdentity.faction);
     }
     // using polymorphism
     private void OnClickUpgrade(UnitProduceStatsSO data)
     {
         int cost = StatUpgrade.UpgradeCost(data.unitIdentity.spawnLevel + 1);
+        int fragmentCost = StatUpgrade.FragmentCost(data.unitIdentity.spawnLevel + 1);
 
-        if (userdata.Diamonds < cost)
+        if (userdata.Diamonds < cost || userdata.fragments[(int)data.unitIdentity.faction] < fragmentCost)
             return;
 
         userdata.Diamonds -= cost;
+        userdata.fragments[(int)data.unitIdentity.faction] -= fragmentCost;
 
         new UnitProduceUpgrade().UpgradeNext(data);
         InitializeStatBlocks(data);
 
-        RefreshButtonState(data.cardDetails, data.unitIdentity.spawnLevel);
+        RefreshButtonState(data.cardDetails, data.unitIdentity.spawnLevel, data.unitIdentity.faction);
+        UpdateProgressBar(data.unitIdentity.spawnLevel, data.unitIdentity.faction);
     }
     #endregion
+
     #region OpenActionPanel
     public void OpenActionPanel(BuildingDataSO dataSO)
     {
@@ -242,7 +279,9 @@ public class UpgradePopUpPanel : MonoBehaviour
 
         ToggleTypeIcon(buildingTypeIcon.gameObject);
         InitializeStatBlocks(dataSO);
-        RefreshButtonState(dataSO.cardDetails, dataSO.buildingIdentity.spawnLevel);
+
+        RefreshButtonState(dataSO.cardDetails, dataSO.buildingIdentity.spawnLevel, dataSO.buildingIdentity.faction);
+        UpdateProgressBar(dataSO.buildingIdentity.spawnLevel, dataSO.buildingIdentity.faction);
     }
 
     public void OpenActionPanel(UnitProduceStatsSO dataSO)
@@ -266,9 +305,12 @@ public class UpgradePopUpPanel : MonoBehaviour
 
         ToggleTypeIcon(unitTypeIcon.gameObject);
         InitializeStatBlocks(dataSO);
-        RefreshButtonState(dataSO.cardDetails, dataSO.unitIdentity.spawnLevel);
+
+        RefreshButtonState(dataSO.cardDetails, dataSO.unitIdentity.spawnLevel, dataSO.unitIdentity.faction);
+        UpdateProgressBar(dataSO.unitIdentity.spawnLevel, dataSO.unitIdentity.faction);
     }
     #endregion
+
     #region InitializeStatBlocks
     internal void InitializeStatBlocks(BuildingDataSO buildingData)
     {
@@ -430,4 +472,8 @@ public class UpgradePopUpPanel : MonoBehaviour
         icon.SetActive(true);
     }
 
+    public void SetSelectedUpgradeCard(UpgradeCard card)
+    {
+        currentUpgradeCard = card;
+    }
 }

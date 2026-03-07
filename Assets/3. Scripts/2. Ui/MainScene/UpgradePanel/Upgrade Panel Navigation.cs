@@ -1,17 +1,35 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum PanelType { CityCenter = 0, Units = 1, Buildings = 2 }
+
 public class UpgradePanelNavigation : MonoBehaviour
 {
+    public static UpgradePanelNavigation Instance { get; private set; }
+
     [Header("Faction Buttons : 0 = Medieval ; 1 = Present ; 2 = Future ; 3 = Galvadore")]
     [SerializeField] private Toggle[] factionButtons;
     [Header("cardPanels: 0 = CityCenter ; 1 = Units ; 2 = Buildings")]
     [SerializeField] private Toggle[] typeButtons;
     private FactionName selectedFaction;
+    [SerializeField] private Userdata userdata;
+
+    [SerializeField] private TMP_Text fragmentsCountText;
     private int selectedCategoryIndex;
+    private CardsPanel currentCardPanel;
 
     private void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+
         AddListeners();
     }
 
@@ -57,12 +75,15 @@ public class UpgradePanelNavigation : MonoBehaviour
     {
         selectedFaction = faction;
         OnClickCategory(selectedCategoryIndex);
+        UpdateFragmentsCount();
     }
 
     private void OnClickCategory(int categoryIndex)
     {
         selectedCategoryIndex = categoryIndex;
-        ToggleTypePanel(UpgradePanelManager.Instance.factionCardPanel[(int)selectedFaction].cardPanels[categoryIndex]);
+        currentCardPanel = UpgradePanelManager.Instance.factionCardPanel[(int)selectedFaction].cardPanels[categoryIndex];
+        ToggleTypePanel(currentCardPanel);
+        UpdateFragmentsCount();
         AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
 
@@ -75,10 +96,15 @@ public class UpgradePanelNavigation : MonoBehaviour
         }
 
         panel.gameObject.SetActive(true);
+
+        foreach (var card in panel.allCards)
+            card.RefreshCards();
     }
 
     private void OnDestroy()
     {
         RemoveListeners();
     }
+    public void UpdateFragmentsCount() => fragmentsCountText.SetText($"{userdata.fragments[(int)selectedFaction]}");
+    public CardsPanel GetCurrentCardPanel() => currentCardPanel;
 }

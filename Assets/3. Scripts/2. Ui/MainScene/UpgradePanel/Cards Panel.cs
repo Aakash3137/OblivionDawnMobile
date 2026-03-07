@@ -9,13 +9,14 @@ public class CardsPanel : MonoBehaviour
     [field: SerializeField, ReadOnly, Space(20)] public List<UpgradeCard> unlockedCards { get; private set; }
     [field: SerializeField, ReadOnly] public List<UpgradeCard> lockedCards { get; private set; }
     [field: SerializeField, ReadOnly] public List<UpgradeCard> purchasedCards { get; private set; }
+    [field: SerializeField, ReadOnly] public List<UpgradeCard> allCards { get; private set; }
 
 
     public void AddCard(UpgradeCard card, BuildingDataSO dataSO)
     {
         card = Instantiate(card, cardsContainer);
         card.buildingUpgradeData = dataSO;
-
+        card.myPanel = this;
         ManageCardList(card, dataSO);
     }
     // Using polymorphism
@@ -23,7 +24,7 @@ public class CardsPanel : MonoBehaviour
     {
         card = Instantiate(card, cardsContainer);
         card.unitUpgradeData = dataSO;
-
+        card.myPanel = this;
         ManageCardList(card, dataSO);
     }
 
@@ -41,6 +42,8 @@ public class CardsPanel : MonoBehaviour
             lockedCards.Add(card);
             dataSO.cardDetails.purchased = false;
         }
+
+        allCards.Add(card);
     }
     // Using polymorphism
     public void ManageCardList(UpgradeCard card, BuildingDataSO dataSO)
@@ -57,5 +60,7 @@ public class CardsPanel : MonoBehaviour
             lockedCards.Add(card);
             dataSO.cardDetails.purchased = false;
         }
+
+        allCards.Add(card);
     }
 }

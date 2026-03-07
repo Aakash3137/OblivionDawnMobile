@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -20,6 +21,8 @@ public class Tile : MonoBehaviour
     [field: SerializeField, ReadOnly]
     public BuildingStats currentOccupant { get; private set; }
     private Side OldSide;
+
+    [ReadOnly] public List<Tile> proxyTiles = new List<Tile>();
 
     public void SetOccupant(BuildingStats occupant)
     {
@@ -69,11 +72,16 @@ public class Tile : MonoBehaviour
     {
         isOpen = open;
 
-        if (myPlusIcon != null)
-            myPlusIcon.SetActive(open);
+        if (myPlusIcon == null)
+            return;
 
-        // if (ownerSide == Side.Enemy)
-        //     myPlusIcon.SetActive(false);
+        if (ownerSide == Side.Enemy)
+        {
+            myPlusIcon.SetActive(false);
+            return;
+        }
+
+        myPlusIcon.SetActive(open);
     }
 
     // Apply correct material based on ownerSide
@@ -103,6 +111,8 @@ public class Tile : MonoBehaviour
             return;
 
         SetOwner(unitSide);
+
+        SetOpen(isOpen);
     }
 
     // Called when a unit leaves
