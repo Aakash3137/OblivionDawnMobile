@@ -49,7 +49,7 @@ MonoBehaviour:
   enemyBuildPanel: {fileID: 0}
   factionData: {fileID: 11400000, guid: b4c4f87a58a4fc841b315c31d4d53920, type: 2}
   enemyFactionName: 2
-  currentPersonality: {fileID: 11400000, guid: e50161e16bd2b4048a3d2f7b0d8a8911, type: 2}
+  currentPersonality: {fileID: 11400000, guid: 995be9e6cfa336b42966983cb6227bbd, type: 2}
   AIPersonalities:
   - {fileID: 11400000, guid: e50161e16bd2b4048a3d2f7b0d8a8911, type: 2}
   - {fileID: 11400000, guid: 8e708202ca0ace847baa327c64707c6e, type: 2}
@@ -61,6 +61,15 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0c8d3f5b1aa592d4cb3121ffdcc5d0e9, type: 2}
   - {fileID: 11400000, guid: f9426b8ff87055c43b1ad6606dc4a783, type: 2}
   AIDecSelectionData: {fileID: 11400000, guid: a42f0fe6058ec324285844e30eb959b5, type: 2}
+  minResourcePercent: 30
+  unitBuilt: 0
+  resourceBuilt: 0
+  defenseBuilt: 0
+  resourceNeedPercentages:
+  - 0
+  - 0
+  - 0
+  - 0
 --- !u!114 &4889353465733404802
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -76,13 +85,14 @@ MonoBehaviour:
   <globalTickTime>k__BackingField: 5
   startingResources:
   - resourceType: 0
-    resourceAmount: 100
+    resourceAmount: 350
   - resourceType: 1
-    resourceAmount: 100
+    resourceAmount: 350
   - resourceType: 2
-    resourceAmount: 100
+    resourceAmount: 350
   - resourceType: 3
-    resourceAmount: 100
+    resourceAmount: 350
   currentResources: []
   maxResources: []
   currentGenerationRates: []
+  resourceBuildingCounts: 

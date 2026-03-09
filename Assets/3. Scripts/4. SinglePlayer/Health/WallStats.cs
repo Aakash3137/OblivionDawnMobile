@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class WallStats : Stats
 {
-    public WallUpgradeDataSO wallStatsSO;
-    public WallBuildingUpgradeData wallData { get; private set; }
+    public DefenseBuildingDataSO wallStatsSO;
+    public DefenseBuildingUpgradeData wallData { get; private set; }
 
 
     public Action<float, float> wallHealthEvent;
@@ -22,7 +22,7 @@ public class WallStats : Stats
         identity = wallStatsSO.buildingIdentity;
         visuals = wallStatsSO.buildingVisuals;
 
-        wallData = wallStatsSO.wallBuildingUpgradeData[identity.spawnLevel];
+        wallData = wallStatsSO.defenseBuildingUpgradeData[identity.spawnLevel];
 
         basicStats = wallData.buildingBasicStats;
 
@@ -41,17 +41,28 @@ public class WallStats : Stats
 
     public override void TakeDamage(float amount, Stats stat)
     {
+        var damage = amount;
+
         if (amount <= currentHealth)
             wallParent.DamageWall(amount);
         else
-            wallParent.DamageWall(currentHealth);
+        {
+            damage = currentHealth;
+            wallParent.DamageWall(damage);
+        }
 
-        base.TakeDamage(amount);
+        base.TakeDamage(damage);
+    }
+
+    public override void ResetHealth()
+    {
+        base.ResetHealth();
+        wallHealthEvent?.Invoke(currentHealth, 0f);
     }
 
     private void OnDisable()
     {
-        if (currentHealth >= 0)
+        if (currentHealth > 0)
             wallHealthEvent?.Invoke(-currentHealth, -basicStats.maxHealth);
     }
 }

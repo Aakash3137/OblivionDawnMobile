@@ -14,6 +14,7 @@ public class EnemyBuildPanel : MonoBehaviour
 
     [SerializeField] private FactionName enemyFactionName;
     [SerializeField] private DecSelectionData AIDecSelectionData;
+    [SerializeField] private AllBuildingData allBuildingData;
 
     [SerializeField] private WallParent _wallPrefab;
     private bool _mainWallPlaced = false;
@@ -30,6 +31,8 @@ public class EnemyBuildPanel : MonoBehaviour
         enemyInfantryBuilding.onClick.AddListener(PlaceEnemyInfantryBuilding);
         enemyTankBuilding.onClick.AddListener(PlaceEnemyTankBuilding);
         enemyAOERangedBuilding.onClick.AddListener(PlaceEnemyAOERangedBuilding);
+
+        _wallPrefab = allBuildingData.wallBuildings[(int)GameManager.Instance.enemyFaction].wallParentBuilding;
         gameObject.SetActive(false);
     }
     public void PlaceEnemyAirBuilding()

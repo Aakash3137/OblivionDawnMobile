@@ -7,10 +7,14 @@ public class AllBuildingData : ScriptableObject
 {
     public List<ResourceBuilding> resourceBuildings;
     public List<DefenseBuilding> defenseBuildings;
+    public List<WallParentBuilding> wallBuildings;
 
     void OnValidate()
     {
         var enumValues = Enum.GetValues(typeof(FactionName));
+
+        if (resourceBuildings == null)
+            resourceBuildings = new List<ResourceBuilding>();
 
         while (resourceBuildings.Count < enumValues.Length)
             resourceBuildings.Add(new ResourceBuilding());
@@ -21,6 +25,9 @@ public class AllBuildingData : ScriptableObject
         for (int i = 0; i < enumValues.Length; i++)
             resourceBuildings[i].faction = (FactionName)enumValues.GetValue(i);
 
+        if (defenseBuildings == null)
+            defenseBuildings = new List<DefenseBuilding>();
+
         while (defenseBuildings.Count < enumValues.Length)
             defenseBuildings.Add(new DefenseBuilding());
 
@@ -29,6 +36,18 @@ public class AllBuildingData : ScriptableObject
 
         for (int i = 0; i < enumValues.Length; i++)
             defenseBuildings[i].faction = (FactionName)enumValues.GetValue(i);
+
+        if (wallBuildings == null)
+            wallBuildings = new List<WallParentBuilding>();
+
+        while (wallBuildings.Count < enumValues.Length)
+            wallBuildings.Add(new WallParentBuilding());
+
+        while (wallBuildings.Count > enumValues.Length)
+            wallBuildings.RemoveAt(wallBuildings.Count - 1);
+
+        for (int i = 0; i < enumValues.Length; i++)
+            wallBuildings[i].faction = (FactionName)enumValues.GetValue(i);
     }
 }
 
@@ -50,4 +69,10 @@ public class DefenseBuilding
     public List<DefenseBuildingDataSO> antiTankBuildings;
     public List<DefenseBuildingDataSO> turretBuildings;
     public List<DefenseBuildingDataSO> wallBuildings;
+}
+[Serializable]
+public class WallParentBuilding
+{
+    public FactionName faction;
+    public WallParent wallParentBuilding;
 }

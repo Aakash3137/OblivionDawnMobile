@@ -31,8 +31,9 @@ public class GameManager : MonoBehaviour
 
     void Awake() => Instance = this;
 
-    void Start()
+    private async Awaitable Start()
     {
+        await Awaitable.NextFrameAsync();
         SpawnMainBuilding();
         // SpawnNeutralBuildings();
     }

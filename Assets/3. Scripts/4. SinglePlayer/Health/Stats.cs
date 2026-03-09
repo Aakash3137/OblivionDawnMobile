@@ -103,7 +103,7 @@ public class Stats : MonoBehaviour
             healthBar.isVisible = true;
             healthBar.UpdateFillAmount(currentHealth / basicStats.maxHealth);
         }
-        
+
         if (healthBarFade != null)
         {
             healthBarFade.ShowOnHit();
@@ -118,7 +118,7 @@ public class Stats : MonoBehaviour
                 groundUnit.SetReplyTarget(attacker);
             }
         }
-        
+
         if (currentHealth <= 0)
         {
             Die();
@@ -137,6 +137,7 @@ public class Stats : MonoBehaviour
     public virtual void ResetHealth()
     {
         currentHealth = basicStats.maxHealth;
+
         if (healthBar != null)
             healthBar.UpdateFillAmount(currentHealth / basicStats.maxHealth);
     }
@@ -150,6 +151,6 @@ public class Stats : MonoBehaviour
     [Button]
     public virtual void Kill()
     {
-        Die();
+        TakeDamage(currentHealth);
     }
 }

@@ -10,9 +10,12 @@ public class WallParent : MonoBehaviour
     [ReadOnly]
     public float wallCurrentHealth;
     private HealthProgress healthBar;
+    DefenseBuildingStats defenseWall;
 
     private void OnEnable()
     {
+        defenseWall = GetComponentInParent<DefenseBuildingStats>();
+
         foreach (var wall in wallStats)
         {
             wall.wallHealthEvent += HandleWallHealth;
@@ -39,28 +42,15 @@ public class WallParent : MonoBehaviour
         healthBar = GetComponentInChildren<HealthProgress>();
     }
 
-    // private async Awaitable Start()
-    // {
-    //     await Awaitable.WaitForSecondsAsync(0.1f);
-
-    //     foreach (var wall in wallStats)
-    //     {
-    //         wallMaxHealth += wall.basicStats.maxHealth;
-    //     }
-
-    //     wallCurrentHealth = wallMaxHealth;
-
-    //     await Awaitable.WaitForSecondsAsync(1f);
-    //     if (wallMaxHealth <= 0)
-    //     {
-    //         Destroy(gameObject);
-    //     }
-    // }
-
     private void HandleWallHealth(float health, float maxHealth)
     {
         wallCurrentHealth += health;
         wallMaxHealth += maxHealth;
+
+        if (defenseWall != null && defenseWall.defenseType == ScenarioDefenseType.Wall)
+        {
+            defenseWall.SetCurrentHealth(wallCurrentHealth);
+        }
     }
 
     public void DamageWall(float amount)
@@ -68,6 +58,11 @@ public class WallParent : MonoBehaviour
         wallCurrentHealth -= amount;
 
         wallCurrentHealth = Mathf.Clamp(wallCurrentHealth, 0, wallMaxHealth);
+
+        if (defenseWall != null && defenseWall.defenseType == ScenarioDefenseType.Wall)
+        {
+            defenseWall.SetCurrentHealth(wallCurrentHealth);
+        }
 
         if (healthBar != null)
         {
@@ -82,6 +77,11 @@ public class WallParent : MonoBehaviour
         if (wallCurrentHealth <= 0)
         {
             Destroy(gameObject);
+
+            if (defenseWall != null && defenseWall.defenseType == ScenarioDefenseType.Wall)
+            {
+                defenseWall.Die();
+            }
         }
     }
 
@@ -93,17 +93,7 @@ public class WallParent : MonoBehaviour
 
     public void DisableWall(int index)
     {
-        /*if (wallStats[index] != null)
-            wallStats[index].gameObject.SetActive(false);*/
-    }
-
-    private void OnDestroy()
-    {
-        DefenseWallStats defenseWall = GetComponentInParent<DefenseWallStats>();
-
-        if (defenseWall != null)
-        {
-            Destroy(defenseWall.gameObject);
-        }
+        if (wallStats[index] != null)
+            wallStats[index].gameObject.SetActive(false);
     }
 }
