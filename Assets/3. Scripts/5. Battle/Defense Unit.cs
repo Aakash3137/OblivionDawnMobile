@@ -42,7 +42,10 @@ public class DefenseUnit : MonoBehaviour
         defenseBuildingSO = defenseStats.GetBuildingSO();
         defenseData = defenseStats.GetBuildingData();
         forward = transform.forward;
-        defenseBuilding = transform.GetChild(0).gameObject;
+        if (defenseBuilding == null)
+        {
+            defenseBuilding = transform.GetChild(0).gameObject;
+        }
     }
 
     private void Update()
