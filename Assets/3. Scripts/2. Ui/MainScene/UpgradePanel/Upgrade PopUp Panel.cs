@@ -378,6 +378,16 @@ public class UpgradePopUpPanel : MonoBehaviour
             statBlocks[2].SetValues("Build Time", $"{upgradeData.buildingBuildTime}", "-0.1");
             statBlocks[2].SetIcon(buildTimeIcon);
 
+            // if (defenseBuilding.defenseType == ScenarioDefenseType.Wall)
+            // {
+            //     statBlocks[3].DisableBlock();
+            //     statBlocks[4].DisableBlock();
+            //     statBlocks[5].DisableBlock();
+            //     statBlocks[6].DisableBlock();
+            //     statBlocks[7].DisableBlock();
+            //     return;
+            // }
+
             statBlocks[3].EnableBlock(purchased);
             statBlocks[3].SetValues("Damage", $"{upgradeData.defenseAttackStats.damage}", "+5");
             statBlocks[3].SetIcon(damageIcon);

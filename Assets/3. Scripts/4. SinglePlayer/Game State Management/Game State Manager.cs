@@ -18,24 +18,20 @@ public class GameStateManager : MonoBehaviour
     private Dictionary<GameState, UnityEvent> onEnterEvents = new();
     private Dictionary<GameState, UnityEvent> onExitEvents = new();
 
-    [SerializeField] private Button pauseButton;
 
     void Awake()
     {
-        if (Instance != null && Instance != this)
+        if (Instance == null)
         {
-            Destroy(Instance.gameObject);
+            Instance = this;
         }
-
-        Instance = this;
-
-        DontDestroyOnLoad(gameObject);
+        else
+        {
+            Destroy(gameObject);
+        }
 
         RegisterDictionary();
         InitializeCallbacks();
-
-        if (pauseButton != null)
-            pauseButton.onClick.AddListener(TogglePause);
     }
 
     private void Start()

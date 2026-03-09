@@ -56,4 +56,8 @@ public class DefenseBuildingStats : BuildingStats
     {
         return buildingStatsSO as DefenseBuildingDataSO;
     }
+    public void SetCurrentHealth(float health)
+    {
+        currentHealth = health;
+    }
 }

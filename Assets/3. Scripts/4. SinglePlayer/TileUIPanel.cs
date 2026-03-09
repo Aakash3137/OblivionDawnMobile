@@ -8,6 +8,8 @@ public class TileUIPanel : MonoBehaviour
 {
     [Header("Assign in Inspector")]
     [SerializeField] private BuildPanel buildPanel;
+    [SerializeField] private DecSelectionData decSelectionData;
+    [SerializeField] private AllBuildingData allBuildingData;
     [SerializeField] private WallParent _wallPrefab;
 
     [Header("Error UI")]
@@ -33,6 +35,8 @@ public class TileUIPanel : MonoBehaviour
         originalAnchoredPosition = errorText.rectTransform.anchoredPosition3D;
 
         errorText.color = new Color(errorText.color.r, errorText.color.g, errorText.color.b, 0f);
+
+        _wallPrefab = allBuildingData.wallBuildings[(int)decSelectionData.CurrentFaction].wallParentBuilding;
     }
 
     public void Open(Tile tile)
@@ -127,9 +131,9 @@ public class TileUIPanel : MonoBehaviour
         adjacentTiles[2] = cgmInstance.GetCube(adjacentTileCords[2]);
         adjacentTiles[3] = cgmInstance.GetCube(adjacentTileCords[3]);
 
-        WallParent currentWall = Instantiate(_wallPrefab,
-            new Vector3(_currentTileCords.x, _wallYOffset, _currentTileCords.z),
-            Quaternion.identity, placedBuilding.transform);
+        var spawnPos = new Vector3(_currentTileCords.x, _wallYOffset, _currentTileCords.z);
+
+        WallParent currentWall = Instantiate(_wallPrefab, spawnPos, Quaternion.identity, placedBuilding.transform);
 
         for (int i = 0; i < adjacentTiles.Length; i++)
         {
@@ -142,19 +146,19 @@ public class TileUIPanel : MonoBehaviour
                 {
                     case 0:
                         currentWall.DisableWall(0);
-                        adjacentTiles[i].GetOccupant().GetComponentInChildren<WallParent>()?.DisableWall(1);
+                        // adjacentTiles[i].GetOccupant().GetComponentInChildren<WallParent>()?.DisableWall(1);
                         break;
                     case 1:
                         currentWall.DisableWall(1);
-                        adjacentTiles[i].GetOccupant().GetComponentInChildren<WallParent>()?.DisableWall(0);
+                        // adjacentTiles[i].GetOccupant().GetComponentInChildren<WallParent>()?.DisableWall(0);
                         break;
                     case 2:
                         currentWall.DisableWall(2);
-                        adjacentTiles[i].GetOccupant().GetComponentInChildren<WallParent>()?.DisableWall(3);
+                        // adjacentTiles[i].GetOccupant().GetComponentInChildren<WallParent>()?.DisableWall(3);
                         break;
                     case 3:
                         currentWall.DisableWall(3);
-                        adjacentTiles[i].GetOccupant().GetComponentInChildren<WallParent>()?.DisableWall(2);
+                        // adjacentTiles[i].GetOccupant().GetComponentInChildren<WallParent>()?.DisableWall(2);
                         break;
                 }
             }
