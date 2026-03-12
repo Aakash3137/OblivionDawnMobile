@@ -30,19 +30,23 @@ public class RewardPanelScript : MonoBehaviour
 
     private Coroutine timerRoutine;
 
-    // ======================
+    // =============================
+    // PANEL OPEN
+    // =============================
 
     void OnEnable()
     {
+        userdata.CurrentDay = Mathf.Clamp(userdata.CurrentDay, 1, 7);
+
         rewardData.SelectedWeek(userdata.CurrentDay);
-        rewardData.UpdateRewardState();
+        rewardData.UpdateRewardState(userdata);
+        SetupTimer();
         ScrollToCurrentDay();
     }
 
     void Start()
     {
         closeBtn.onClick.AddListener(OnClickCloseBtn);
-
         rewardClaimBtn.onClick.AddListener(OnClaim);
 
         rewardPopup.SetActive(false);
@@ -50,8 +54,15 @@ public class RewardPanelScript : MonoBehaviour
         StartCoroutine(CreateDayBlocks());
     }
 
+    // =============================
+    // CREATE UI
+    // =============================
+
     IEnumerator CreateDayBlocks()
     {
+        dayBlocks.Clear();
+        dayItems.Clear();
+
         for (int i = 0; i < 7; i++)
         {
             DayBlock block = Instantiate(rewardItemPrefab, rewardItemParent);
@@ -68,23 +79,19 @@ public class RewardPanelScript : MonoBehaviour
 
         yield return null;
 
-        rewardData.UpdateRewardState();
-
         RefreshUI();
         ScrollToCurrentDay();
-
-        SetupTimer();
+        
     }
 
-    // ======================
-    // CLAIM
-    // ======================
+    // =============================
+    // CLAIM REWARD
+    // =============================
 
     void OnClaim()
     {
         if (!rewardData.RewardReady)
             return;
-
 
         DayRewardBlock reward = rewardData.GetReward(userdata.CurrentDay);
 
@@ -104,57 +111,61 @@ public class RewardPanelScript : MonoBehaviour
 
         int index = userdata.CurrentDay - 1;
 
-        userdata.DayRewards[index] = true;
-        
+        if (index >= 0 && index < userdata.DayRewards.Length)
+            userdata.DayRewards[index] = true;
 
         rewardData.SaveClaimTime();
-        rewardData.UpdateDay(userdata);
+        rewardData.NextDay(userdata);
 
         rewardPopup.SetActive(false);
 
         RefreshUI();
-        ScrollToCurrentDay();
+        StartCoroutine(ScrollAfterLayout());
         SetupTimer();
     }
 
-    // ======================
+    // =============================
     // TIMER
-    // ======================
+    // =============================
 
     void SetupTimer()
     {
         if (timerRoutine != null)
             StopCoroutine(timerRoutine);
 
-        timerRoutine = StartCoroutine(TimerCoroutine());
+        timerRoutine = StartCoroutine(Timer());
     }
 
-    IEnumerator TimerCoroutine()
+    IEnumerator Timer()
     {
         while (true)
         {
-            rewardData.UpdateRewardState();
+            rewardData.UpdateRewardState(userdata);
 
             TimeSpan remaining = rewardData.GetRemainingTime();
 
             if (remaining.TotalSeconds <= 0)
             {
                 countdownText.text = "REWARD READY!";
-                // userdata.CurrentDay += 1;
-                RefreshUI();
-                yield break;
+                rewardData.RewardReady = true;
+            }
+            else
+            {
+                rewardData.RewardReady = false;
+
+                countdownText.text =
+                    $"{remaining.Hours:D2}:{remaining.Minutes:D2}:{remaining.Seconds:D2}";
             }
 
-            countdownText.text =
-                $"Next Reward In => {remaining.Hours:D2}:{remaining.Minutes:D2}:{remaining.Seconds:D2}";
+            RefreshUI();
 
             yield return new WaitForSeconds(1);
         }
     }
 
-    // ======================
-    // UI
-    // ======================
+    // =============================
+    // UI REFRESH
+    // =============================
 
     void RefreshUI()
     {
@@ -174,6 +185,7 @@ public class RewardPanelScript : MonoBehaviour
                 {
                     dayBlocks[i].SetUnlocked();
                     dayBlocks[i].claimButton.onClick.AddListener(OpenPopup);
+                    StartCoroutine(ScrollAfterLayout());
                 }
                 else
                 {
@@ -187,81 +199,47 @@ public class RewardPanelScript : MonoBehaviour
         }
     }
 
+    // =============================
+    // SCROLL
+    // =============================
+
     void ScrollToCurrentDay()
     {
+        if (dayItems.Count == 0)
+            return;
+
+        int index = userdata.CurrentDay - 1;
+
+        if (index < 0 || index >= dayItems.Count)
+            return;
+
         Canvas.ForceUpdateCanvases();
 
-        int index = userdata.CurrentDay - 1;
-        Debug.Log("Index: " + index + " Day: " + userdata.CurrentDay + " Day Item["+index+"]: "+ dayItems[index]);
         RectTransform content = scrollRect.content;
         RectTransform viewport = scrollRect.viewport;
-        RectTransform item = dayItems[index];
+        RectTransform target = dayItems[index];
 
-        float contentHeight = content.rect.height;
-        float viewportHeight = viewport.rect.height;
+        float viewportCenter = viewport.rect.height * 0.5f;
+        float targetPos = Mathf.Abs(target.anchoredPosition.y);
 
-        float itemPos = Mathf.Abs(item.anchoredPosition.y);
+        float newY = targetPos - viewportCenter;
 
-        float target = (itemPos - viewportHeight * 0.5f) / (contentHeight - viewportHeight);
-        float normalized = 1f - Mathf.Clamp01(target);
+        newY = Mathf.Clamp(newY, 0, content.rect.height - viewport.rect.height);
 
-        StartCoroutine(SmoothScroll(normalized));
+        content.anchoredPosition = new Vector2(content.anchoredPosition.x, newY);
     }
 
-    IEnumerator SmoothScroll(float target)
+    IEnumerator ScrollAfterLayout()
     {
-        float start = scrollRect.verticalNormalizedPosition;
-        float time = 0;
+        yield return null; // wait 1 frame for layout
+        Canvas.ForceUpdateCanvases();
 
-        while (time < 0.35f)
-        {
-            time += Time.deltaTime;
-            scrollRect.verticalNormalizedPosition = Mathf.Lerp(start, target, time / 0.35f);
-
-            yield return null;
-        }
-
-        scrollRect.verticalNormalizedPosition = target;
-
-        PlayRewardHighlight();
+        ScrollToCurrentDay();
     }
 
-    void PlayRewardHighlight()
-    {
-        int index = userdata.CurrentDay - 1;
-
-        Transform reward = dayBlocks[index].transform;
-
-        StartCoroutine(BounceAnimation(reward));
-    }
-
-    IEnumerator BounceAnimation(Transform target)
-    {
-        Vector3 startScale = Vector3.one;
-        Vector3 bigScale = Vector3.one * 1.15f;
-
-        float time = 0;
-
-        while (time < 0.2f)
-        {
-            time += Time.deltaTime;
-            target.localScale = Vector3.Lerp(startScale, bigScale, time / 0.2f);
-            yield return null;
-        }
-
-        time = 0;
-
-        while (time < 0.2f)
-        {
-            time += Time.deltaTime;
-            target.localScale = Vector3.Lerp(bigScale, startScale, time / 0.2f);
-            yield return null;
-        }
-    }
-
-    // ======================
+    // =============================
     // UI BUTTONS
-    // ======================
+    // =============================
 
     void OnClickCloseBtn()
     {
@@ -272,14 +250,4 @@ public class RewardPanelScript : MonoBehaviour
     {
         rewardPopup.SetActive(true);
     }
-    // ======================
-    // Reset
-    // ======================
-
-    void ResetDay()
-    {
-        if(userdata.CurrentDay >= 7 && userdata.CheckDay())
-            rewardData.ResetWeek(userdata);
-    }
-
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "WeeklyReward", menuName = "Data/Weekly Reward")]
@@ -12,17 +13,16 @@ public class WeeklyRewardSO : ScriptableObject
     public List<WeekData> weeks = new List<WeekData>();
 
     [Header("Timer Settings")]
-    public bool UseTestTime = true;
+    public bool UseTestTime = false;
 
-    [Tooltip("Test time in hours (0.01 = 36 seconds)")]
-    public float TestHours = 0.1f;
+    [Tooltip("Test time in minutes")]
+    public float TestMinutes = 1f;
 
-    [Header("Runtime")]
-    public bool RewardReady;
+    [ShowInInspector] public bool RewardReady;
 
-    // ======================
-    // SELECT WEEK
-    // ======================
+    // ==========================
+    // SELECT RANDOM WEEK
+    // ==========================
 
     public void SelectedWeek(int currentDay)
     {
@@ -40,10 +40,10 @@ public class WeeklyRewardSO : ScriptableObject
         days.Clear();
         days.AddRange(weeks[weekIndex].days);
     }
-
-    // ======================
+ 
+    // ==========================
     // GET REWARD
-    // ======================
+    // ==========================
 
     public DayRewardBlock GetReward(int day)
     {
@@ -53,108 +53,110 @@ public class WeeklyRewardSO : ScriptableObject
         return days[day - 1];
     }
 
-    // ======================
-    // TIMER
-    // ======================
-
-    public DateTime GetNextUnlockTime()
-    {
-        string saved = PlayerPrefs.GetString(LastClaimKey, "");
-
-        if (string.IsNullOrEmpty(saved))
-            return DateTime.MaxValue;
-
-        DateTime lastClaim = DateTime.Parse(saved);
-
-        if (UseTestTime)
-            return lastClaim.AddHours(TestHours);
-
-        return lastClaim.AddDays(1);
-    }
-
-    public TimeSpan GetRemainingTime()
-    {
-        DateTime next = GetNextUnlockTime();
-
-        if (next == DateTime.MaxValue)
-            return TimeSpan.Zero;
-
-        return next - DateTime.UtcNow;
-    }
-
-    public void UpdateRewardState()
-    {
-        string saved = PlayerPrefs.GetString(LastClaimKey, "");
-
-        if (string.IsNullOrEmpty(saved))
-        {
-            RewardReady = true;
-            return;
-        }
-
-        RewardReady = GetRemainingTime().TotalSeconds <= 0;
-    }
-
+    // ==========================
+    // SAVE CLAIM TIME
+    // ==========================
     public void SaveClaimTime()
     {
         PlayerPrefs.SetString(LastClaimKey, DateTime.UtcNow.ToString());
         PlayerPrefs.Save();
-
-        RewardReady = false;
     }
 
-    // ======================
-    // DAY PROGRESSION
-    // ======================
-
-    public void UpdateDay(Userdata userdata)
+    // ==========================
+    // NEXT DAY
+    // ==========================
+    public void NextDay(Userdata data)
     {
-        if (!RewardReady)
-            return;
+        data.CurrentDay++;
 
-        userdata.CurrentDay++;
-
-        if (userdata.CurrentDay > 7)
+        // if reached after day 7
+        if (data.CurrentDay > 7)
         {
-            ResetWeek(userdata);
-            return;
+            data.CurrentDay = 8; // special state (week completed)
+        }
+    }
+
+    // ==========================
+    // RESET WEEK
+    // ==========================
+    public void ResetWeek(Userdata data)
+    {
+        data.CurrentDay = 1;
+
+        for (int i = 0; i < data.DayRewards.Length; i++)
+        {
+            data.DayRewards[i] = false;
+        }
+
+        SelectedWeek(1);
+    }
+
+    // ==========================
+    // TIMER CALCULATION
+    // ==========================
+    public DateTime GetNextUnlockTime()
+    {
+        string savedDate = PlayerPrefs.GetString(LastClaimKey, "");
+
+        if (string.IsNullOrEmpty(savedDate))
+        {
+            RewardReady = true;
+            return DateTime.UtcNow;
+        }
+
+        DateTime lastClaim = DateTime.Parse(savedDate);
+
+        if (UseTestTime)
+            return lastClaim.AddMinutes(TestMinutes);
+
+        return lastClaim.Date.AddDays(1);
+    }
+
+    public TimeSpan GetRemainingTime()
+    {
+        DateTime nextTime = GetNextUnlockTime();
+
+        TimeSpan remaining = nextTime - DateTime.UtcNow;
+
+        if (remaining.TotalSeconds <= 0)
+        {
+            RewardReady = true;
+            return TimeSpan.Zero;
         }
 
         RewardReady = false;
-    }   
 
-    public void ResetWeek(Userdata userdata)
+        return remaining;
+    }
+
+    // ==========================
+    // UPDATE STATE
+    // ==========================
+
+    public void UpdateRewardState(Userdata data)
     {
-        Debug.Log("Resetting Weekly Rewards");
+        TimeSpan remaining = GetRemainingTime();
 
-        userdata.CurrentDay = 1;
-
-        for (int i = 0; i < userdata.DayRewards.Length; i++)
+        if (remaining.TotalSeconds <= 0)
         {
-            userdata.DayRewards[i] = false;
+            RewardReady = true;
+
+            // if week completed → reset after timer
+            if (data.CurrentDay > 7)
+            {
+                ResetWeek(data);
+            }
         }
-
-        PlayerPrefs.DeleteKey(LastClaimKey);
-
-        SelectedWeek(userdata.CurrentDay);
-
-        RewardReady = true;
+        else
+        {
+            RewardReady = false;
+        }
     }
-
-
-    public void ResetDay(Userdata userdata)
-    {
-        if(userdata.CurrentDay >= 7 || userdata.CheckDay())
-            ResetWeek(userdata);
-    }
-    
-                
 }
 
 [Serializable]
 public class DayRewardBlock
 {
-    public int day;
     public int RewardAmount;
     public RewardItem RewardItemType;
 }
