@@ -21,17 +21,21 @@ public class LevelData : ScriptableObject
 
     public void SetLevel()
     {
+        int temp =0;
         foreach (var level in levels)
         {
             if(level.XP_Required <= PlayerXP)
             {
                 level.IsLocked = false;
+                temp += 1;
             }
             else
             {
                 level.IsLocked = true;
             }
         }
+
+        _Data.Level = temp;
     }
 
     public void SetXP(int Amount)

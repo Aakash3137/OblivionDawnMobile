@@ -13,6 +13,8 @@ public class UiHomePanelScript : MonoBehaviour
     #region Variable and References
     [Header("User Data")]
     [SerializeField] private Userdata PlayerData;
+    [SerializeField] private WeeklyRewardSO RewardSO;
+    [SerializeField] private LevelData _Data;
 
     [Header("UI")]
     // [SerializeField] private TMP_Text UserNameTxt;
@@ -21,6 +23,10 @@ public class UiHomePanelScript : MonoBehaviour
     [SerializeField] private TMP_Text DiamondsTxt;
     [SerializeField] private Image UserPic;
     [SerializeField] Button RewardButton;
+
+    private Vector3 startPos;
+     public float shakeAmount = 5f;   // vibration strength
+    public float speed = 25f;        // vibration speed
 
     // [Header("Selection Window")]
     // [SerializeField] internal GameObject SelectionWindown;
@@ -35,6 +41,8 @@ public class UiHomePanelScript : MonoBehaviour
 
     private void OnEnable()
     {
+        _Data.PlayerXP+=1;
+        _Data.PlayerXP-=1;
         if (PlayerData.ProfilePicture != null)
         {
             UserPic.sprite = PlayerData.ProfilePicture;
@@ -44,10 +52,26 @@ public class UiHomePanelScript : MonoBehaviour
             UserPic.sprite = PlayerData.defaultProfilePicture;
         }
 
-        LevelNotTxt.text = PlayerData.Level.ToString();
+        LevelNotTxt.text = PlayerData.Level.ToString("00");
         DiamondsTxt.text = PlayerData.Diamonds.ToString();
 
         RewardButton.onClick.AddListener(ShowRewardPanel);
+    }
+
+    void Start()
+    {
+        startPos = RewardButton.transform.localPosition;
+    }
+
+    void Update()
+    {
+        if(!RewardSO.RewardReady)
+            return;
+
+        float x = Mathf.Sin(Time.time * speed) * shakeAmount;
+        float y = Mathf.Cos(Time.time * speed) * shakeAmount * 0.3f;
+
+        RewardButton.transform.localPosition = startPos + new Vector3(x, y, 0);
     }
 
     private void ShowRewardPanel()
