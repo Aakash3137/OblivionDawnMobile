@@ -18,6 +18,8 @@ public class ProjectileDefinition
 
     [Header("Visuals")]
     public bool hasTrail = true;
+    public GameObject enemyLaunchVFX;
+    public GameObject playerLaunchVFX;
     public GameObject launchVFX;
     public GameObject hitVFX;
 }

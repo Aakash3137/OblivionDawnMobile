@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,6 +17,7 @@ public class JourneyManager : MonoBehaviour
     void OnEnable()
     {
         AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
+        StartCoroutine(InitJourney());
     }
 
     public void Start()
@@ -31,11 +33,26 @@ public class JourneyManager : MonoBehaviour
 
 #endregion
 
+
+#region Init
+
+    IEnumerator InitJourney()
+    {
+        yield return null; // wait one frame
+
+        // CreateLevelBox();
+
+        Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(LevelParent.GetComponent<RectTransform>());
+    }
+
+#endregion
+
 #region UI
     public void OnClickShowHomePage()
     {
         HomeUIManager.Instance.ShowPanel(PanelName.Home);
-        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
+        //AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
     
     private void CreateLevelBox()

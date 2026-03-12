@@ -1,261 +1,166 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using System;
 using System.Collections;
-using TMPro;
 using System.Collections.Generic;
 
 public class RewardPanelScript : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Userdata userdata;
-    [SerializeField] private Button closeBtn;
-    [SerializeField] private ScrollRect scrollRect;
-    [SerializeField] private RectTransform content;
-    [SerializeField] private RectTransform[] dayItems;
-    [SerializeField] private DayBlock[] dayBlocks;
-
-    [Header("Timer UI")]
-    [SerializeField] private TMP_Text countdownText;
-    [SerializeField] private TMP_Text dayText;
-    [SerializeField] private Image TimerFilledImage;
-    [SerializeField] private Transform HourHand;
-    [SerializeField] private Transform MinuteHand;
-    [Header ("Effects")]
-    [SerializeField] private RewardEffects _Gems;
-    [SerializeField] private RewardEffects _Chest;
-
-    [Header("Reward Data")]
     [SerializeField] private WeeklyRewardSO rewardData;
 
-    private const string RewardIndexKey = "WeeklyRewardIndex";
+    [SerializeField] private Button closeBtn;
+    [SerializeField] private ScrollRect scrollRect;
 
-    private int currentRewardIndex;
+    [SerializeField] private TMP_Text countdownText;
+    [SerializeField] private TMP_Text dayText;
 
-    private const string LastClaimKey = "LastClaimUTC";
+    [Header("Reward UI")]
+    [SerializeField] private DayBlock rewardItemPrefab;
+    [SerializeField] private Transform rewardItemParent;
 
-    // ==============================
-    // TEST SETTINGS
-    // ==============================
-    public static bool UseTestTime = true;   // TRUE = 1 hour test
-    public static int TestHours = 1;
+    [Header("Popup")]
+    [SerializeField] private GameObject rewardPopup;
+    [SerializeField] private Button rewardClaimBtn;
 
-    private DateTime nextUnlockTime;
+    private List<DayBlock> dayBlocks = new();
+    private List<RectTransform> dayItems = new();
+
     private Coroutine timerRoutine;
 
-    // ==============================
-    private void OnEnable()
+    // ======================
+
+    void OnEnable()
     {
-        closeBtn.onClick.RemoveAllListeners();
+        rewardData.SelectedWeek(userdata.CurrentDay);
+        rewardData.UpdateRewardState();
+        ScrollToCurrentDay();
+    }
+
+    void Start()
+    {
         closeBtn.onClick.AddListener(OnClickCloseBtn);
 
-        ValidateStreak();
+        rewardClaimBtn.onClick.AddListener(OnClaim);
+
+        rewardPopup.SetActive(false);
+
+        StartCoroutine(CreateDayBlocks());
+    }
+
+    IEnumerator CreateDayBlocks()
+    {
+        for (int i = 0; i < 7; i++)
+        {
+            DayBlock block = Instantiate(rewardItemPrefab, rewardItemParent);
+
+            block.name = "Day_" + (i + 1);
+            block.SetDayTxt(i);
+
+            dayBlocks.Add(block);
+            dayItems.Add(block.GetComponent<RectTransform>());
+
+            if (i == 6)
+                block.Connector.SetActive(false);
+        }
+
+        yield return null;
+
+        rewardData.UpdateRewardState();
+
         RefreshUI();
         ScrollToCurrentDay();
+
         SetupTimer();
-        LoadOrCreateRewardIndex();
-        rewardData.SelectedWeek(userdata.CurrentDay);
     }
 
-    private void OnDisable()
+    // ======================
+    // CLAIM
+    // ======================
+
+    void OnClaim()
     {
-        if (timerRoutine != null)
-            StopCoroutine(timerRoutine);
-    }
-
-    // ==============================
-    // STREAK VALIDATION
-    // ==============================
-    private void ValidateStreak()
-    {
-        string savedDate = PlayerPrefs.GetString(LastClaimKey, "");
-        if (userdata.CurrentDay > 7)
-        {
-            userdata.CurrentDay = 1;
-
-            ResetRewards();
-            ResetWeekRewardIndex();
-        }
-
-        if (string.IsNullOrEmpty(savedDate))
-        {
-            userdata.CurrentDay = 1;
+        if (!rewardData.RewardReady)
             return;
-        }
 
-        DateTime lastClaimDate = DateTime.Parse(savedDate);
-        DateTime now = DateTime.UtcNow;
 
-        if (!UseTestTime)
-        {
-            int difference = (now.Date - lastClaimDate.Date).Days;
+        DayRewardBlock reward = rewardData.GetReward(userdata.CurrentDay);
 
-            if (difference == 1)
-                userdata.CurrentDay++;
-            else if (difference > 1)
-            {
-                userdata.CurrentDay = 1;
-                ResetRewards();
-            }
-        }
-        // In test mode → do NOT auto increase day
-    }
-
-    private void ResetRewards()
-    {
-        for (int i = 0; i < userdata.DayRewards.Length; i++)
-            userdata.DayRewards[i] = false;
-    }
-
-    // ==============================
-    // CLAIM LOGIC
-    // ==============================
-    public void OnClaim()
-    {
-        DayRewardBlock reward = GetTodayReward();
-
-        userdata.Coins += reward.RewardAmount;
-        userdata.Diamonds += reward.RewardAmount;
+        if (reward == null)
+            return;
 
         switch (reward.RewardItemType)
         {
             case RewardItem.Gems:
-                userdata.Diamonds = reward.RewardAmount;
+                userdata.Diamonds += reward.RewardAmount;
                 break;
-            case RewardItem.giveChest:
-                // Implement Chest reward logic here
-                break;
-            case RewardItem.UnitCards:
-                // Implement Unit Card reward logic here
-                break;
-            case RewardItem.DefenseCards:
-                // Implement Defense Card reward logic here
-                break;
+
             case RewardItem.Fragments:
-                userdata.Coins = reward.RewardAmount;
-                break;
-                default:
-                Debug.LogWarning("Unhandled reward type: " + reward.RewardItemType);
+                userdata.Coins += reward.RewardAmount;
                 break;
         }
 
-
         int index = userdata.CurrentDay - 1;
-        userdata.DayRewards[index] = true;
 
-        PlayerPrefs.SetString(LastClaimKey, DateTime.UtcNow.ToString());
-        PlayerPrefs.Save();
+        userdata.DayRewards[index] = true;
+        
+
+        rewardData.SaveClaimTime();
+        rewardData.UpdateDay(userdata);
+
+        rewardPopup.SetActive(false);
 
         RefreshUI();
         ScrollToCurrentDay();
         SetupTimer();
     }
 
-    private bool IsRewardReady()
+    // ======================
+    // TIMER
+    // ======================
+
+    void SetupTimer()
     {
-        string savedDate = PlayerPrefs.GetString(LastClaimKey, "");
-
-        if (string.IsNullOrEmpty(savedDate))
-            return true;
-
-        DateTime lastClaimDate = DateTime.Parse(savedDate);
-        DateTime now = DateTime.UtcNow;
-
-        if (UseTestTime)
-            return (now - lastClaimDate).TotalHours >= TestHours;
-
-        return (now.Date - lastClaimDate.Date).Days >= 1;
-    }
-
-    // ==============================
-    // TIMER SYSTEM (Coroutine Based)
-    // ==============================
-    private void SetupTimer()
-    {
-        string savedDate = PlayerPrefs.GetString(LastClaimKey, "");
-
-        if (string.IsNullOrEmpty(savedDate))
-        {
-            countdownText.text = "Reward Ready!";
-            return;
-        }
-
-        DateTime lastClaimDate = DateTime.Parse(savedDate);
-
-        if (UseTestTime)
-            nextUnlockTime = lastClaimDate.AddHours(TestHours);
-        else
-            nextUnlockTime = lastClaimDate.Date.AddDays(1);
-
         if (timerRoutine != null)
             StopCoroutine(timerRoutine);
 
         timerRoutine = StartCoroutine(TimerCoroutine());
     }
 
-    private IEnumerator TimerCoroutine()
+    IEnumerator TimerCoroutine()
     {
         while (true)
         {
-            TimeSpan remaining = nextUnlockTime - DateTime.UtcNow;
+            rewardData.UpdateRewardState();
+
+            TimeSpan remaining = rewardData.GetRemainingTime();
 
             if (remaining.TotalSeconds <= 0)
             {
-                countdownText.text = "Reward Ready!";
+                countdownText.text = "REWARD READY!";
+                // userdata.CurrentDay += 1;
                 RefreshUI();
                 yield break;
             }
 
             countdownText.text =
-                $"Next Reward In\n{remaining.Hours:D2}:{remaining.Minutes:D2}:{remaining.Seconds:D2}";
-            
-            SetClock(remaining);
+                $"Next Reward In => {remaining.Hours:D2}:{remaining.Minutes:D2}:{remaining.Seconds:D2}";
 
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(1);
         }
     }
 
-    void SetClock(TimeSpan time)
-    {
-        float totalSeconds = (float)time.TotalSeconds;
-        float daySeconds = UseTestTime ? TestHours * 3600f : 24 * 3600f;
+    // ======================
+    // UI
+    // ======================
 
-        HourHand.gameObject.SetActive(!UseTestTime);
-            MinuteHand.gameObject.SetActive(!UseTestTime);
-
-        if(UseTestTime)
-        {
-            TimerFilledImage.fillAmount = totalSeconds / daySeconds;
-        }
-        else
-        {
-            float hourRotation =
-            (time.Hours * 15f) +
-            (time.Minutes * 0.25f) +
-            (time.Seconds * (0.25f / 60f));
-
-            float minuteRotation =
-            (time.Minutes * 6f) +
-            (time.Seconds * 0.1f);
-
-            // Get current Z rotation
-            float currentHourZ = HourHand.localEulerAngles.z;
-            float currentMinuteZ = MinuteHand.localEulerAngles.z;
-
-            // Add new rotation
-            HourHand.localRotation = Quaternion.Euler(0, 0, currentHourZ - hourRotation);
-            MinuteHand.localRotation = Quaternion.Euler(0, 0, currentMinuteZ - minuteRotation);
-        }        
-    }
-
-    // ==============================
-    // UI REFRESH
-    // ==============================
-    private void RefreshUI()
+    void RefreshUI()
     {
         dayText.text = "DAY " + userdata.CurrentDay;
 
-        for (int i = 0; i < dayBlocks.Length; i++)
+        for (int i = 0; i < dayBlocks.Count; i++)
         {
             dayBlocks[i].claimButton.onClick.RemoveAllListeners();
 
@@ -265,15 +170,10 @@ public class RewardPanelScript : MonoBehaviour
             }
             else if (i == userdata.CurrentDay - 1)
             {
-                if (userdata.CurrentDay == 1 && !PlayerPrefs.HasKey(LastClaimKey))
+                if (rewardData.RewardReady)
                 {
                     dayBlocks[i].SetUnlocked();
-                    dayBlocks[i].claimButton.onClick.AddListener(OnClaim);
-                }
-                else if (IsRewardReady())
-                {
-                    dayBlocks[i].SetUnlocked();
-                    dayBlocks[i].claimButton.onClick.AddListener(OnClaim);
+                    dayBlocks[i].claimButton.onClick.AddListener(OpenPopup);
                 }
                 else
                 {
@@ -287,54 +187,101 @@ public class RewardPanelScript : MonoBehaviour
         }
     }
 
-    private void ScrollToCurrentDay()
+    void ScrollToCurrentDay()
     {
         Canvas.ForceUpdateCanvases();
 
         int index = userdata.CurrentDay - 1;
+        Debug.Log("Index: " + index + " Day: " + userdata.CurrentDay + " Day Item["+index+"]: "+ dayItems[index]);
+        RectTransform content = scrollRect.content;
+        RectTransform viewport = scrollRect.viewport;
+        RectTransform item = dayItems[index];
 
-        float normalized =
-            1f - (float)index / (dayItems.Length - 1);
+        float contentHeight = content.rect.height;
+        float viewportHeight = viewport.rect.height;
 
-        scrollRect.verticalNormalizedPosition = Mathf.Clamp01(normalized);
-        dayText.text = "Streak: " + (userdata.CurrentDay-1).ToString();
+        float itemPos = Mathf.Abs(item.anchoredPosition.y);
+
+        float target = (itemPos - viewportHeight * 0.5f) / (contentHeight - viewportHeight);
+        float normalized = 1f - Mathf.Clamp01(target);
+
+        StartCoroutine(SmoothScroll(normalized));
     }
-    // ==============================
 
-    // ==============================
-    // Reward
-    // ==============================
-    private void LoadOrCreateRewardIndex()
+    IEnumerator SmoothScroll(float target)
     {
-        if (PlayerPrefs.HasKey(RewardIndexKey))
+        float start = scrollRect.verticalNormalizedPosition;
+        float time = 0;
+
+        while (time < 0.35f)
         {
-            currentRewardIndex = PlayerPrefs.GetInt(RewardIndexKey);
+            time += Time.deltaTime;
+
+            scrollRect.verticalNormalizedPosition =
+                Mathf.Lerp(start, target, time / 0.35f);
+
+            yield return null;
         }
-        else
+
+        scrollRect.verticalNormalizedPosition = target;
+
+        PlayRewardHighlight();
+    }
+
+    void PlayRewardHighlight()
+    {
+        int index = userdata.CurrentDay - 1;
+
+        Transform reward = dayBlocks[index].transform;
+
+        StartCoroutine(BounceAnimation(reward));
+    }
+
+    IEnumerator BounceAnimation(Transform target)
+    {
+        Vector3 startScale = Vector3.one;
+        Vector3 bigScale = Vector3.one * 1.15f;
+
+        float time = 0;
+
+        while (time < 0.2f)
         {
-            currentRewardIndex = UnityEngine.Random.Range(0, 4);
+            time += Time.deltaTime;
+            target.localScale = Vector3.Lerp(startScale, bigScale, time / 0.2f);
+            yield return null;
+        }
 
-            PlayerPrefs.SetInt(RewardIndexKey, currentRewardIndex);
-            PlayerPrefs.Save();
+        time = 0;
+
+        while (time < 0.2f)
+        {
+            time += Time.deltaTime;
+            target.localScale = Vector3.Lerp(bigScale, startScale, time / 0.2f);
+            yield return null;
         }
     }
 
-    private DayRewardBlock GetTodayReward()
-    {
-        return rewardData.GetReward(userdata.CurrentDay);
-    }
+    // ======================
+    // UI BUTTONS
+    // ======================
 
-    private void ResetWeekRewardIndex()
-    {
-        currentRewardIndex = UnityEngine.Random.Range(0, 4);
-
-        PlayerPrefs.SetInt(RewardIndexKey, currentRewardIndex);
-        PlayerPrefs.Save();
-    }
-    // ==============================
-
-    private void OnClickCloseBtn()
+    void OnClickCloseBtn()
     {
         HomeUIManager.Instance.ShowPanel(PanelName.Home);
     }
+
+    void OpenPopup()
+    {
+        rewardPopup.SetActive(true);
+    }
+    // ======================
+    // Reset
+    // ======================
+
+    void ResetDay()
+    {
+        if(userdata.CurrentDay >= 7 && userdata.CheckDay())
+            rewardData.ResetWeek(userdata);
+    }
+
 }

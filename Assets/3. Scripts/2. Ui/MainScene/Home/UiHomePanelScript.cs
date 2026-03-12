@@ -19,7 +19,6 @@ public class UiHomePanelScript : MonoBehaviour
     [SerializeField] private TMP_Text LevelNotTxt;
     // [SerializeField] private TMP_Text CoinsTxt;
     [SerializeField] private TMP_Text DiamondsTxt;
-    [SerializeField] private TMP_Text CoinTxt;
     [SerializeField] private Image UserPic;
     [SerializeField] Button RewardButton;
 
@@ -44,8 +43,7 @@ public class UiHomePanelScript : MonoBehaviour
         {
             UserPic.sprite = PlayerData.defaultProfilePicture;
         }
-        PlayerData.CoinTxt = CoinTxt;
-        PlayerData.DiamondTxt = DiamondsTxt;
+
         LevelNotTxt.text = PlayerData.Level.ToString();
         DiamondsTxt.text = PlayerData.Diamonds.ToString();
 

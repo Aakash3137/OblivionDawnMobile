@@ -9,13 +9,14 @@ public class LevelBox : MonoBehaviour
     [SerializeField] internal int RewardQuantity = 0;
     [SerializeField] internal Image FillImage;
     [SerializeField] internal TMP_Text LevelNoTxt;
+    [SerializeField] internal Image LockImage;
 
     public RewardBox SetReward(RewardData reward, Transform _Parent)
     {
         RewardBox R_Box = Instantiate(RewardBoxPrefab, _Parent);
         R_Box.RewardIcon.sprite = reward.RewardIcon;
         R_Box.RewardNameTxt.text = reward.RewardType.ToString();
-        R_Box.ClaimButton.interactable = reward.RewardStatus;
+        R_Box.ClaimButton.interactable = !reward.RewardStatus;
         return R_Box;
     }
 }

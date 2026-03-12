@@ -70,5 +70,23 @@ public class Userdata : ScriptableObject
 
     }
 
+    public bool CheckDay()
+    {
+        bool CheckBool = false;
+        foreach (bool day in DayRewards)
+        {
+            if (day)
+            {
+                CheckBool = true;
+            }
+            else
+            {
+                CheckBool = false;
+                return false;
+            }
+        }
+        return CheckBool;
+    }
+
 }
 

@@ -35,11 +35,22 @@ public class ProjectileShooter : MonoBehaviour
         
         Vector3 direction = (target.transform.position - muzzlePoint.position).normalized;
         proj.transform.rotation = Quaternion.LookRotation(direction);
-
-        //  LAUNCH VFX
+   
+        // SET LAUNCH VFX
+        if (shooterStats.side == Side.Player)
+        {
+            if (projectile.playerLaunchVFX != null)
+                projectile.launchVFX = projectile.playerLaunchVFX;
+        }
+        else
+        {
+            if (projectile.enemyLaunchVFX != null) 
+                projectile.launchVFX = projectile.enemyLaunchVFX;
+        }
+        
         if (projectile.launchVFX != null && muzzlePoint != null)
         {
-            GameObject vfx = Instantiate(projectile.launchVFX, muzzlePoint.position, proj.transform.rotation, gameObject.transform);
+            GameObject vfx = Instantiate(projectile.launchVFX, muzzlePoint.position, proj.transform.rotation);
             ParticleSystem ps = vfx.GetComponent<ParticleSystem>();
             var main = ps.main;
             main.loop = false;
