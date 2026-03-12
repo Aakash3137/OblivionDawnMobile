@@ -6,30 +6,23 @@ public enum PanelType { CityCenter = 0, Units = 1, Buildings = 2 }
 
 public class UpgradePanelNavigation : MonoBehaviour
 {
-    public static UpgradePanelNavigation Instance { get; private set; }
 
     [Header("Faction Buttons : 0 = Medieval ; 1 = Present ; 2 = Future ; 3 = Galvadore")]
     [SerializeField] private Toggle[] factionButtons;
     [Header("cardPanels: 0 = CityCenter ; 1 = Units ; 2 = Buildings")]
     [SerializeField] private Toggle[] typeButtons;
     private FactionName selectedFaction;
-    [SerializeField] private Userdata userdata;
+    [SerializeField] private Userdata userData;
 
+    [Space(10)]
+    [Header("UI References")]
     [SerializeField] private TMP_Text fragmentsCountText;
+
     private int selectedCategoryIndex;
     private CardsPanel currentCardPanel;
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-
         AddListeners();
     }
 
@@ -60,6 +53,8 @@ public class UpgradePanelNavigation : MonoBehaviour
             int index = j;
             typeButtons[index].onValueChanged.AddListener((isOn) => { if (isOn) OnClickCategory(index); });
         }
+
+        userData.OnFragmentsChanged += UpdateFragmentsCount;
     }
 
     private void RemoveListeners()
@@ -69,42 +64,65 @@ public class UpgradePanelNavigation : MonoBehaviour
 
         foreach (Toggle toggle in typeButtons)
             toggle.onValueChanged.RemoveAllListeners();
+
+        userData.OnFragmentsChanged -= UpdateFragmentsCount;
     }
 
     private void OnClickFaction(FactionName faction)
     {
         selectedFaction = faction;
+
+        ToggleFactionPanel(faction);
+
         OnClickCategory(selectedCategoryIndex);
-        UpdateFragmentsCount();
     }
 
     private void OnClickCategory(int categoryIndex)
     {
         selectedCategoryIndex = categoryIndex;
-        currentCardPanel = UpgradePanelManager.Instance.factionCardPanel[(int)selectedFaction].cardPanels[categoryIndex];
+
+        currentCardPanel = UpgradePanelManager.Instance.factionCardPanels[(int)selectedFaction].cardPanels[categoryIndex];
         ToggleTypePanel(currentCardPanel);
-        UpdateFragmentsCount();
+
+        UpdateFragmentsCount(selectedFaction);
+
         AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
+    }
+
+    private void ToggleFactionPanel(FactionName faction)
+    {
+        var factionPanels = UpgradePanelManager.Instance.factionCardPanels;
+
+        foreach (var factionPanel in factionPanels)
+        {
+            factionPanel.panelParent.SetActive(false);
+        }
+
+        factionPanels[(int)faction].panelParent.SetActive(true);
     }
 
     private void ToggleTypePanel(CardsPanel panel)
     {
-        foreach (var factionPanel in UpgradePanelManager.Instance.factionCardPanel)
-        {
-            foreach (var cardPanel in factionPanel.cardPanels)
-                cardPanel.gameObject.SetActive(false);
-        }
+        var factionPanel = UpgradePanelManager.Instance.factionCardPanels[(int)selectedFaction];
+
+        foreach (var cardPanel in factionPanel.cardPanels)
+            cardPanel.gameObject.SetActive(false);
 
         panel.gameObject.SetActive(true);
 
+        // can use set dirt pattern
         foreach (var card in panel.allCards)
-            card.RefreshCards();
+            card.RefreshCard();
     }
 
     private void OnDestroy()
     {
         RemoveListeners();
     }
-    public void UpdateFragmentsCount() => fragmentsCountText.SetText($"{userdata.fragments[(int)selectedFaction]}");
+    public void UpdateFragmentsCount(FactionName faction)
+    {
+        if (selectedFaction == faction)
+            fragmentsCountText.SetText($"{userData.fragments[(int)faction]}");
+    }
     public CardsPanel GetCurrentCardPanel() => currentCardPanel;
 }

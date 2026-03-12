@@ -8,6 +8,7 @@ public class OffenseBuildingDataSO : BuildingDataSO
     [Space(30)]
     public ScenarioOffenseType offenseType;
     public UnitStats unitPrefab;
+    [Space(20)]
     public List<OffenseBuildingUpgradeData> offenseBuildingUpgradeData;
 
 

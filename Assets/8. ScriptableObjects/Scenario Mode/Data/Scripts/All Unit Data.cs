@@ -1,29 +1,72 @@
 using System;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "All Unit Data", menuName = "Data/All Unit Data")]
 public class AllUnitData : ScriptableObject
 {
-    public List<Unit> allUnits;
+    public List<UnitProduceStatsSO> allUnitsSO;
 
-    private void OnValidate()
+    public List<Unit> allUnits { get; internal set; }
+
+    private void Awake()
     {
-        var enumValues = Enum.GetValues(typeof(FactionName));
+        Populate();
+    }
 
-        if (allUnits == null)
-            allUnits = new List<Unit>();
+    public void Populate()
+    {
+        // Clear Previous Data and repopulate
+        var enumValues = ScenarioDataTypes._factionEnumValues;
 
-        while (allUnits.Count < enumValues.Length)
-            allUnits.Add(new Unit());
+        allUnits = new List<Unit>();
 
-        while (allUnits.Count > enumValues.Length)
-            allUnits.RemoveAt(allUnits.Count - 1);
-
-        for (int i = 0; i < enumValues.Length; i++)
+        foreach (FactionName faction in enumValues)
         {
-            allUnits[i].faction = (FactionName)enumValues.GetValue(i);
+            allUnits.Add(new Unit { faction = faction });
         }
+
+        AddUnitsDataSO();
+    }
+
+    private void AddUnitsDataSO()
+    {
+        foreach (var unitSO in allUnitsSO)
+        {
+            var faction = unitSO.unitIdentity.faction;
+
+            switch (unitSO.unitType)
+            {
+                case ScenarioUnitType.Air:
+                    allUnits[(int)faction].airUnits.Add(unitSO);
+                    break;
+                case ScenarioUnitType.AOERanged:
+                    allUnits[(int)faction].aoeRangedUnits.Add(unitSO);
+                    break;
+                case ScenarioUnitType.Melee:
+                    allUnits[(int)faction].meleeUnits.Add(unitSO);
+                    break;
+                case ScenarioUnitType.Ranged:
+                    allUnits[(int)faction].rangedUnits.Add(unitSO);
+                    break;
+            }
+        }
+    }
+
+    public List<UnitProduceStatsSO> GetFactionUnitsSO(FactionName faction)
+    {
+        var unitScriptables = new List<UnitProduceStatsSO>();
+
+        foreach (var unitSO in allUnitsSO)
+        {
+            if (unitSO.unitIdentity.faction == faction)
+            {
+                unitScriptables.Add(unitSO);
+            }
+        }
+
+        return unitScriptables;
     }
 
 }
@@ -36,4 +79,12 @@ public class Unit
     public List<UnitProduceStatsSO> meleeUnits;
     public List<UnitProduceStatsSO> aoeRangedUnits;
     public List<UnitProduceStatsSO> rangedUnits;
+
+    public Unit()
+    {
+        airUnits = new List<UnitProduceStatsSO>();
+        meleeUnits = new List<UnitProduceStatsSO>();
+        aoeRangedUnits = new List<UnitProduceStatsSO>();
+        rangedUnits = new List<UnitProduceStatsSO>();
+    }
 }

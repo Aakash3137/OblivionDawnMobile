@@ -10,7 +10,7 @@ public class BuildingDataSO : ScriptableObject
     public Visuals buildingVisuals;
     public BuildCost[] buildingBuildCost;
     public Sprite buildingIcon;
-    public BuildingCardDetails cardDetails;
+    public CardDetails cardDetails;
 
     [Space(20)]
     public bool hasUpkeep;
@@ -21,7 +21,7 @@ public class BuildingDataSO : ScriptableObject
 
     internal virtual void ValidateBase()
     {
-        var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
+        var enumValues = ScenarioDataTypes._resourceEnumValues;
         int targetLength = enumValues.Length;
 
         buildingBuildCost = BuildCostUtils.ResizePreservingData(buildingBuildCost, targetLength);
@@ -80,10 +80,9 @@ public struct Identity
     public string name;
     public int spawnLevel;
     public FactionName faction;
-    public int populationCost;
     public int priority;
 }
-
+[Serializable]
 public class CardDetails
 {
     public bool factionUnlocked;
@@ -91,19 +90,7 @@ public class CardDetails
 
     [ShowIf(nameof(isUnlocked))]
     public bool purchased;
-    public int minCityCenterLevel;
-}
-
-[Serializable]
-public class BuildingCardDetails : CardDetails
-{
-
-}
-
-[Serializable]
-public class UnitCardDetails : CardDetails
-{
-    public int minOffenseBuildingLevel;
+    public int minBuildingLevel;
 }
 [Serializable]
 public class BuildingUpgradeData

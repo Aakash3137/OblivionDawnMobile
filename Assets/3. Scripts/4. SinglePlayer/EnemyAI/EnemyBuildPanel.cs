@@ -32,7 +32,7 @@ public class EnemyBuildPanel : MonoBehaviour
         enemyTankBuilding.onClick.AddListener(PlaceEnemyTankBuilding);
         enemyAOERangedBuilding.onClick.AddListener(PlaceEnemyAOERangedBuilding);
 
-        _wallPrefab = allBuildingData.wallBuildings[(int)GameManager.Instance.enemyFaction].wallParentBuilding;
+        _wallPrefab = allBuildingData.wallParentBuildings[(int)GameManager.Instance.enemyFaction].wallParentBuilding;
         gameObject.SetActive(false);
     }
     public void PlaceEnemyAirBuilding()

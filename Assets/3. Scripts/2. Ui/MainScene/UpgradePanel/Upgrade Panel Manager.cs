@@ -1,29 +1,41 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class UpgradePanelManager : MonoBehaviour
 {
     public static UpgradePanelManager Instance;
 
-    [SerializeField] private List<MainBuildingDataSO> cityCenterScriptables;
-    [SerializeField] private List<UnitProduceStatsSO> unitScriptables;
-    [SerializeField] private List<BuildingDataSO> buildingScriptables;
-    public FactionCardPanel[] factionCardPanel;
+    [SerializeField] private AllBuildingData allBuildingData;
+    [SerializeField] private AllUnitData allUnitData;
+    [Space(10)]
+    [SerializeField] private UpgradeCard upgradeCardPrefab;
+    [Space(10)]
+    public FactionCardPanel[] factionCardPanels;
 
-    [Space(20)]
-    [SerializeField] private UpgradeCard cardPrefab;
+    private List<MainBuildingDataSO> cityCenterScriptables;
+    private List<UnitProduceStatsSO> unitScriptables;
+    private List<BuildingDataSO> buildingScriptables;
+
+    public UpgradePanelNavigation upgradePanelNavigation { get; private set; }
+
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
         {
             Destroy(gameObject);
-            return;
         }
 
-        Instance = this;
+        upgradePanelNavigation = GetComponent<UpgradePanelNavigation>();
+
+        cityCenterScriptables = allBuildingData.cityCenterBuildingsSO;
+        buildingScriptables = allBuildingData.allBuildingsSO;
+        unitScriptables = allUnitData.allUnitsSO;
 
         CreateBuildingCards();
         CreateUnitCards();
@@ -36,7 +48,7 @@ public class UpgradePanelManager : MonoBehaviour
         {
             if (scriptable == null) { LogNullScriptable("CityCenter"); continue; }
 
-            factionCardPanel[(int)scriptable.buildingIdentity.faction].cardPanels[0].AddCard(cardPrefab, scriptable);
+            factionCardPanels[(int)scriptable.buildingIdentity.faction].cardPanels[0].AddCard(upgradeCardPrefab, scriptable);
         }
     }
 
@@ -46,7 +58,7 @@ public class UpgradePanelManager : MonoBehaviour
         {
             if (scriptable == null) { LogNullScriptable("Building"); continue; }
 
-            factionCardPanel[(int)scriptable.buildingIdentity.faction].cardPanels[2].AddCard(cardPrefab, scriptable);
+            factionCardPanels[(int)scriptable.buildingIdentity.faction].cardPanels[2].AddCard(upgradeCardPrefab, scriptable);
         }
     }
 
@@ -56,31 +68,39 @@ public class UpgradePanelManager : MonoBehaviour
         {
             if (scriptable == null) { LogNullScriptable("Unit"); continue; }
 
-            factionCardPanel[(int)scriptable.unitIdentity.faction].cardPanels[1].AddCard(cardPrefab, scriptable);
+            factionCardPanels[(int)scriptable.unitIdentity.faction].cardPanels[1].AddCard(upgradeCardPrefab, scriptable);
         }
     }
 
     private void LogNullScriptable(string context) =>
-        Debug.Log($"<color=green>[UpgradePanelManager] {context} scriptable is null</color>");
+        Debug.Log($"<color=green>[Upgrade Panel Manager] {context} scriptable is null</color>");
 
     private void OnValidate()
     {
-        var enumValues = Enum.GetValues(typeof(FactionName));
+        var enumValues = ScenarioDataTypes._factionEnumValues;
 
-        if (factionCardPanel == null || factionCardPanel.Length != enumValues.Length)
+        if (factionCardPanels == null || factionCardPanels.Length != enumValues.Length)
         {
             var resized = new FactionCardPanel[enumValues.Length];
 
-            if (factionCardPanel != null)
+            if (factionCardPanels != null)
             {
-                for (int i = 0; i < Mathf.Min(factionCardPanel.Length, resized.Length); i++)
-                    resized[i] = factionCardPanel[i];
+                for (int i = 0; i < Mathf.Min(factionCardPanels.Length, resized.Length); i++)
+                    resized[i] = factionCardPanels[i];
             }
-            factionCardPanel = resized;
+            factionCardPanels = resized;
         }
 
         for (int i = 0; i < enumValues.Length; i++)
-            factionCardPanel[i].factionName = (FactionName)enumValues.GetValue(i);
+        {
+            factionCardPanels[i].factionName = (FactionName)enumValues.GetValue(i);
+
+            if (factionCardPanels[i].panelParent != null)
+            {
+                factionCardPanels[i].cardPanels = factionCardPanels[i].panelParent.GetComponentsInChildren<CardsPanel>();
+            }
+        }
+
     }
 }
 
@@ -88,7 +108,7 @@ public class UpgradePanelManager : MonoBehaviour
 public class FactionCardPanel
 {
     public FactionName factionName;
-
-    [Header("cardPanels: 0 = CityCenter ; 1 = Units ; 2 = Buildings")]
+    public GameObject panelParent;
+    // [Header("cardPanels: 0 = CityCenter ; 1 = Units ; 2 = Buildings")]
     public CardsPanel[] cardPanels;
 }

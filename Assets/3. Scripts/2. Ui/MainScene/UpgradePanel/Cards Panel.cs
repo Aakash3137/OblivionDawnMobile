@@ -12,53 +12,41 @@ public class CardsPanel : MonoBehaviour
     [field: SerializeField, ReadOnly] public List<UpgradeCard> allCards { get; private set; }
 
 
-    public void AddCard(UpgradeCard card, BuildingDataSO dataSO)
+    public void AddCard(UpgradeCard cardPrefab, ScriptableObject dataSO)
     {
-        card = Instantiate(card, cardsContainer);
-        card.buildingUpgradeData = dataSO;
+        var card = Instantiate(cardPrefab, cardsContainer);
+        card.upgradeDataSO = dataSO;
         card.myPanel = this;
-        ManageCardList(card, dataSO);
-    }
-    // Using polymorphism
-    public void AddCard(UpgradeCard card, UnitProduceStatsSO dataSO)
-    {
-        card = Instantiate(card, cardsContainer);
-        card.unitUpgradeData = dataSO;
-        card.myPanel = this;
+        card.RefreshCard();
         ManageCardList(card, dataSO);
     }
 
-    public void ManageCardList(UpgradeCard card, UnitProduceStatsSO dataSO)
+    public void ManageCardList(UpgradeCard card, ScriptableObject dataSO)
     {
-        if (dataSO.cardDetails.isUnlocked)
+        CardDetails cardDetails = null;
+
+        if (dataSO is UnitProduceStatsSO unitProduceStatsSO)
+            cardDetails = unitProduceStatsSO.cardDetails;
+        else if (dataSO is BuildingDataSO buildingDataSO)
+            cardDetails = buildingDataSO.cardDetails;
+
+        if (cardDetails == null)
+        {
+            Debug.LogError("[CardsPanel] CardDetails is null");
+            return;
+        }
+
+        if (cardDetails.isUnlocked)
         {
             unlockedCards.Add(card);
 
-            if (dataSO.cardDetails.purchased)
+            if (cardDetails.purchased)
                 purchasedCards.Add(card);
         }
         else
         {
             lockedCards.Add(card);
-            dataSO.cardDetails.purchased = false;
-        }
-
-        allCards.Add(card);
-    }
-    // Using polymorphism
-    public void ManageCardList(UpgradeCard card, BuildingDataSO dataSO)
-    {
-        if (dataSO.cardDetails.isUnlocked)
-        {
-            unlockedCards.Add(card);
-
-            if (dataSO.cardDetails.purchased)
-                purchasedCards.Add(card);
-        }
-        else
-        {
-            lockedCards.Add(card);
-            dataSO.cardDetails.purchased = false;
+            cardDetails.purchased = false;
         }
 
         allCards.Add(card);

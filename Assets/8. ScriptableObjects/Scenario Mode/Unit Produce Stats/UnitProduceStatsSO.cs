@@ -10,7 +10,10 @@ public class UnitProduceStatsSO : ScriptableObject
     public Visuals unitVisuals;
     public VisionAngles unitVisionAngles;
     public AttackTargets unitAttackTargets;
-    public UnitCardDetails cardDetails;
+    public CardDetails cardDetails;
+
+    [Space(5)]
+    public Sprite unitIcon;
 
     [Space(20)]
     public bool hasUpkeep;
@@ -26,7 +29,7 @@ public class UnitProduceStatsSO : ScriptableObject
     [ShowIf(nameof(canFly))]
     public FlyStats unitFlyStats;
 
-    public Sprite UnitIcon;
+    public int populationCost;
 
     [Space(20), Header("Unit Upgrade Data")]
     public UnitUpgradeData[] unitUpgradeData;
@@ -51,7 +54,7 @@ public class UnitProduceStatsSO : ScriptableObject
         if (!hasUpkeep)
             return;
 
-        var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
+        var enumValues = ScenarioDataTypes._resourceEnumValues;
         int targetLength = enumValues.Length;
 
         upKeepCost = BuildCostUtils.ResizePreservingData(upKeepCost, targetLength);

@@ -11,6 +11,8 @@ public class DefenseBuildingDataSO : BuildingDataSO
     public bool canAttackWalls;
     public VisionAngles defenseVisionAngles;
     public AttackTargets defenseAttackTargets;
+    public int populationCost;
+    [Space(20)]
     public List<DefenseBuildingUpgradeData> defenseBuildingUpgradeData;
 
     internal override void ValidateBase()
