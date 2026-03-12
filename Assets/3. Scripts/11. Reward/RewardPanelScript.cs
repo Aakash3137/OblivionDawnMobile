@@ -216,9 +216,7 @@ public class RewardPanelScript : MonoBehaviour
         while (time < 0.35f)
         {
             time += Time.deltaTime;
-
-            scrollRect.verticalNormalizedPosition =
-                Mathf.Lerp(start, target, time / 0.35f);
+            scrollRect.verticalNormalizedPosition = Mathf.Lerp(start, target, time / 0.35f);
 
             yield return null;
         }
