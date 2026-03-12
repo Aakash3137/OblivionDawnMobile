@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public enum BuildingCategory
 {
@@ -40,12 +42,17 @@ public class EnemyAIHandler : MonoBehaviour
 
     [Header("READ ONLY")][SerializeField] private int unitBuilt = 0;
     [SerializeField] private int resourceBuilt = 0;
-    [SerializeField] private int defenseBuilt = 0;
+    [SerializeField] private int defenseBuilt = 0;   
 
     // Resource need tracking
     [SerializeField] private float[] resourceNeedPercentages = new float[4]; // % out of 100 for each resource
     private float timeSinceLastAnalysis = 0f;
     private const float RECHECK_INTERVAL = 10f;
+
+    private void Awake()
+    {
+        GameManager.Instance.SetEnemyFaction(enemyFactionName);
+    }
 
     void Start()
     {
@@ -67,7 +74,6 @@ public class EnemyAIHandler : MonoBehaviour
         enemyMainBuildingTransform = GameManager.Instance.enemySpawnPoint;
         playerMainBuildingTransform = GameManager.Instance.playerSpawnPoint;
 
-        GameManager.Instance.SetEnemyFaction(enemyFactionName);
 
         Invoke(nameof(AnalyzeResourceNeeds), 1.5f);
         Invoke(nameof(InitializeSpawnableTiles), 1f);

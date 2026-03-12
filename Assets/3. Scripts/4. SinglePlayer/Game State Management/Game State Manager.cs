@@ -28,6 +28,7 @@ public class GameStateManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+            return;
         }
 
         RegisterDictionary();
