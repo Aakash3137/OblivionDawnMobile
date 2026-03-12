@@ -5,7 +5,7 @@ using System.Collections.Generic;
 [CreateAssetMenu(fileName = "Building Data SO", menuName = "Scenario Stats/Main Building Data")]
 public class MainBuildingDataSO : BuildingDataSO
 {
-    [Space(30)]
+    [Space(20)]
     public List<MainBuildingUpgradeData> mainBuildingUpgradeData;
 
 
@@ -18,22 +18,23 @@ public class MainBuildingDataSO : BuildingDataSO
         {
             mainBuildingUpgradeData[i].buildingLevel = i;
 
-            var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
+            // var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
 
-            if (mainBuildingUpgradeData[i].starterResources == null || mainBuildingUpgradeData[i].starterResources.Length != enumValues.Length)
-            {
-                mainBuildingUpgradeData[i].starterResources = new BuildCost[enumValues.Length];
-            }
+            // if (mainBuildingUpgradeData[i].starterResources == null || mainBuildingUpgradeData[i].starterResources.Length != enumValues.Length)
+            // {
+            //     mainBuildingUpgradeData[i].starterResources = new BuildCost[enumValues.Length];
+            // }
 
-            for (int j = 0; j < mainBuildingUpgradeData[i].starterResources.Length; j++)
-            {
-                mainBuildingUpgradeData[i].starterResources[j].resourceType = (ScenarioResourceType)enumValues.GetValue(j);
-            }
+            // for (int j = 0; j < mainBuildingUpgradeData[i].starterResources.Length; j++)
+            // {
+            //     mainBuildingUpgradeData[i].starterResources[j].resourceType = (ScenarioResourceType)enumValues.GetValue(j);
+            // }
         }
 
         buildingIdentity.spawnLevel = Mathf.Clamp(buildingIdentity.spawnLevel, 0, mainBuildingUpgradeData.Count - 1);
 
         // buildingIdentity.name = buildingIdentity.faction.ToString() + " " + buildingType.ToString();
+
         base.ValidateBase();
     }
 }
@@ -41,17 +42,7 @@ public class MainBuildingDataSO : BuildingDataSO
 [Serializable]
 public class MainBuildingUpgradeData : BuildingUpgradeData
 {
-    public BuildCost[] starterResources;
-
-    public MainBuildingUpgradeData()
-    {
-        var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
-
-        starterResources = new BuildCost[enumValues.Length];
-
-        for (int i = 0; i < starterResources.Length; i++)
-        {
-            starterResources[i].resourceType = (ScenarioResourceType)enumValues.GetValue(i);
-        }
-    }
+    public int maxDeckEquipCount;
+    public int maxPopulation;
+    public int starterResources;
 }

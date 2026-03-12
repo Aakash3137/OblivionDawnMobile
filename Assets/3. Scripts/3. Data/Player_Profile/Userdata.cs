@@ -1,3 +1,5 @@
+using System;
+using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
 
@@ -15,7 +17,8 @@ public class Userdata : ScriptableObject
     [Header("Game Data")]
     [SerializeField] private int coins = 0;
     [SerializeField] private int diamonds = 0;
-    public int[] fragments = new int[4];
+    [field: SerializeField, ReadOnly] public int[] fragments { get; private set; } = new int[4];
+    public Action<FactionName> OnFragmentsChanged;
 
     public int Level = 0;
     public int Coins
@@ -54,6 +57,20 @@ public class Userdata : ScriptableObject
         if (DiamondTxt != null)
             DiamondTxt.text = Diamonds.ToString();
     }
+    [Button]
+    public void AddFragments(FactionName faction, int amount)
+    {
+        fragments[(int)faction] += amount;
+
+        OnFragmentsChanged?.Invoke(faction);
+    }
+    public void ConsumeFragments(FactionName faction, int amount)
+    {
+        fragments[(int)faction] -= amount;
+
+        OnFragmentsChanged?.Invoke(faction);
+    }
+
 
     public void ResetData()
     {

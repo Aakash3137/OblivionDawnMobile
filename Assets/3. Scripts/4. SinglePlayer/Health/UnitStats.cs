@@ -9,7 +9,6 @@ public class UnitStats : Stats
     public UnitProduceStatsSO unitProduceSO;
 
     public ScenarioUnitType unitType { get; private set; }
-    public int unitPopulationCost { get; private set; }
     private GameObject unitPool;
 
     public VisionAngles unitVisionAngles { get; private set; }
@@ -44,7 +43,6 @@ public class UnitStats : Stats
         unitVisionAngles = unitProduceSO.unitVisionAngles;
         unitAttackTargets = unitProduceSO.unitAttackTargets;
 
-        unitPopulationCost = unitProduceSO.unitIdentity.populationCost;
         unitType = unitProduceSO.unitType;
 
         if (canFly)

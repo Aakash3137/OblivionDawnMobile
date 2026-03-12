@@ -36,7 +36,7 @@ public class TileUIPanel : MonoBehaviour
 
         errorText.color = new Color(errorText.color.r, errorText.color.g, errorText.color.b, 0f);
 
-        _wallPrefab = allBuildingData.wallBuildings[(int)decSelectionData.CurrentFaction].wallParentBuilding;
+        _wallPrefab = allBuildingData.wallParentBuildings[(int)decSelectionData.CurrentFaction].wallParentBuilding;
     }
 
     public void Open(Tile tile)

@@ -133,10 +133,11 @@ public class BuildingUpgrade
         // Upgrading stats from StatUpgrades
         cur.buildingBasicStats.maxHealth = StatUpgrade.MaxHealth(last.buildingBasicStats.maxHealth, cur.buildingLevel, maxLevel);
         cur.buildingBasicStats.armor = StatUpgrade.Armour(last.buildingBasicStats.armor, cur.buildingLevel, maxLevel);
-        cur.buildingBuildTime = StatUpgrade.BuildTime(last.buildingBuildTime, cur.buildingLevel, maxLevel);
 
-        for (int i = 0; i < cur.starterResources.Length; i++)
-            cur.starterResources[i].resourceAmount = StatUpgrade.Resource(last.starterResources[i].resourceAmount, cur.buildingLevel, maxLevel);
+        // cur.buildingBuildTime = StatUpgrade.BuildTime(last.buildingBuildTime, cur.buildingLevel, maxLevel);
+
+        // for (int i = 0; i < cur.starterResources.Length; i++)
+        //     cur.starterResources[i].resourceAmount = StatUpgrade.Resource(last.starterResources[i].resourceAmount, cur.buildingLevel, maxLevel);
 
         building.mainBuildingUpgradeData.Add(cur);
 
