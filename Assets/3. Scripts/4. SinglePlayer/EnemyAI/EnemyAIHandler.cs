@@ -49,11 +49,7 @@ public class EnemyAIHandler : MonoBehaviour
     private float timeSinceLastAnalysis = 0f;
     private const float RECHECK_INTERVAL = 10f;
 
-    private void Awake()
-    {
-        GameManager.Instance.SetEnemyFaction(enemyFactionName);
-    }
-
+  
     void Start()
     {
         if (GameManager.Instance == null)
@@ -73,7 +69,8 @@ public class EnemyAIHandler : MonoBehaviour
 
         enemyMainBuildingTransform = GameManager.Instance.enemySpawnPoint;
         playerMainBuildingTransform = GameManager.Instance.playerSpawnPoint;
-
+        
+        GameManager.Instance.SetEnemyFaction(enemyFactionName);
 
         Invoke(nameof(AnalyzeResourceNeeds), 1.5f);
         Invoke(nameof(InitializeSpawnableTiles), 1f);
