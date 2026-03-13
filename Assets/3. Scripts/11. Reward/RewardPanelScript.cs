@@ -185,7 +185,6 @@ public class RewardPanelScript : MonoBehaviour
                 {
                     dayBlocks[i].SetUnlocked();
                     dayBlocks[i].claimButton.onClick.AddListener(OpenPopup);
-                    StartCoroutine(ScrollAfterLayout());
                 }
                 else
                 {
