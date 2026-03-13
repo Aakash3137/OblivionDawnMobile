@@ -88,6 +88,9 @@ public class WeeklyRewardSO : ScriptableObject
             data.DayRewards[i] = false;
         }
 
+        // DO NOT delete timer
+        // PlayerPrefs.DeleteKey(LastClaimKey); ❌ remove this
+
         SelectedWeek(1);
     }
 
