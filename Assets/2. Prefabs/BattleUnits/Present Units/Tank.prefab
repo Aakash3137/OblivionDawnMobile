@@ -1579,7 +1579,6 @@ MonoBehaviour:
     name: 
     spawnLevel: 0
     faction: 0
-    populationCost: 0
     priority: 0
   <basicStats>k__BackingField:
     maxHealth: 0
@@ -1608,7 +1607,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05a0242ed80d27840b56c0dcd66e0e3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  muzzlePoint: {fileID: 8072048961939860573}
+  muzzlePoints:
+  - {fileID: 8072048961939860573}
   projectile:
     projectileType: 2
     motion: 0
@@ -1619,6 +1619,8 @@ MonoBehaviour:
     isAreaDamage: 0
     damageRadius: 1.5
     hasTrail: 0
+    enemyLaunchVFX: {fileID: 0}
+    playerLaunchVFX: {fileID: 0}
     launchVFX: {fileID: 0}
     hitVFX: {fileID: 1447540632109744634, guid: 9d301d5973fbf9349818b1638f122a78, type: 3}
   playerTrailMaterial: {fileID: 2100000, guid: 82c3733d49fb2334b8ef2f0d90268a35, type: 2}

@@ -170,6 +170,7 @@ public struct RangeStats
 {
     public float detectionRange;
     public float attackRange;
+    public float minAttackRange;
 }
 
 [Serializable]

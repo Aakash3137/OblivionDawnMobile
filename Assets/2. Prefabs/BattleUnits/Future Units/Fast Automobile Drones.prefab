@@ -88,7 +88,7 @@ Transform:
   m_GameObject: {fileID: 1447431169575774331}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.676, y: -1.039, z: 0.42}
+  m_LocalPosition: {x: -0.676, y: -0.3690001, z: 0.18600002}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -644,7 +644,7 @@ Transform:
   m_GameObject: {fileID: 5679106455751932331}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.682, y: -1.058, z: 0.395}
+  m_LocalPosition: {x: 0.682, y: -0.38800004, z: 0.16100004}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -838,7 +838,7 @@ Transform:
   m_GameObject: {fileID: 7238367464969804556}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.168, z: 0}
   m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -1028,8 +1028,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2, y: 0.3, z: 2.5}
-  m_Center: {x: 0, y: -0.8, z: 0}
+  m_Size: {x: 2, y: 0.4, z: 2.5}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!95 &6949324974814974132
 Animator:
   serializedVersion: 7
@@ -1090,7 +1090,6 @@ MonoBehaviour:
     name: 
     spawnLevel: 0
     faction: 0
-    populationCost: 0
     priority: 0
   <basicStats>k__BackingField:
     maxHealth: 0
@@ -1119,7 +1118,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05a0242ed80d27840b56c0dcd66e0e3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  muzzlePoint: {fileID: 8410572282272590756}
+  muzzlePoints:
+  - {fileID: 8410572282272590756}
   projectile:
     projectileType: 0
     motion: 0
@@ -1130,10 +1130,10 @@ MonoBehaviour:
     isAreaDamage: 0
     damageRadius: 2
     hasTrail: 0
-    enemyLaunchVFX: {fileID: 1830508508936448, guid: 5d777067c17b96c43a3bd547d25cb893, type: 3}
-    playerLaunchVFX: {fileID: 1830508508936448, guid: 5d777067c17b96c43a3bd547d25cb893, type: 3}
+    enemyLaunchVFX: {fileID: 1657981230171060, guid: 6cf36a334a0e5754ea36fca06014b86a, type: 3}
+    playerLaunchVFX: {fileID: 1657981230171060, guid: 080168af0fb1a0f48bd653b0def3737e, type: 3}
     launchVFX: {fileID: 0}
-    hitVFX: {fileID: 1447540632109744634, guid: c8153071efd10e04eb894c3973bae1f9, type: 3}
+    hitVFX: {fileID: 0}
   playerTrailMaterial: {fileID: 2100000, guid: 82c3733d49fb2334b8ef2f0d90268a35, type: 2}
   enemyTrailMaterial: {fileID: 2100000, guid: 50dfd5dfaa2bc9f49835088eefefbf7a, type: 2}
 --- !u!114 &3178270743560080631
@@ -1192,7 +1192,7 @@ Transform:
   m_GameObject: {fileID: 7737019781438290032}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.023, y: -1.124, z: 1.211}
+  m_LocalPosition: {x: -0.023, y: -0.356, z: 0.607}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

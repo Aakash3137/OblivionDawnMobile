@@ -4,6 +4,8 @@ public enum ProjectileType
     Arrow,
     CannonBall,
     Missile,
+    Missile_Red,
+    Missile_Blue,
     Plasma
     
 }

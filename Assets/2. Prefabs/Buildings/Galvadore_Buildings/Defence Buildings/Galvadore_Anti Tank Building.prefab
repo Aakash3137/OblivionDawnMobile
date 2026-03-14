@@ -238,6 +238,7 @@ GameObject:
   - component: {fileID: 2135310751543429150}
   - component: {fileID: -8520561116181318086}
   - component: {fileID: 8230399155462689441}
+  - component: {fileID: -1016598358194715246}
   m_Layer: 0
   m_Name: Galvadore_Anti Tank Building
   m_TagString: Untagged
@@ -312,7 +313,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e2b48899215c0e438c75307d31cd01d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allNeighbors: 1
   neighborTiles: []
 --- !u!114 &-6912635013500140937
 MonoBehaviour:
@@ -346,7 +346,6 @@ MonoBehaviour:
     name: 
     spawnLevel: 0
     faction: 0
-    populationCost: 0
     priority: 0
   <basicStats>k__BackingField:
     maxHealth: 0
@@ -362,7 +361,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4320449579214391836}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 083e6e0b74dd1e14f9b242c67b11827b, type: 3}
   m_Name: 
@@ -403,6 +402,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd86b6216a32ed04a869483ef87f6485, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-1016598358194715246
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4320449579214391836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05a0242ed80d27840b56c0dcd66e0e3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  muzzlePoints:
+  - {fileID: 4265226392865734156}
+  projectile:
+    projectileType: 2
+    motion: 0
+    speed: 20
+    maxRange: 10
+    arcHeight: 4
+    lifeTime: 5
+    isAreaDamage: 0
+    damageRadius: 3
+    hasTrail: 0
+    enemyLaunchVFX: {fileID: 0}
+    playerLaunchVFX: {fileID: 0}
+    launchVFX: {fileID: 0}
+    hitVFX: {fileID: 0}
+  playerTrailMaterial: {fileID: 0}
+  enemyTrailMaterial: {fileID: 0}
 --- !u!1 &5232817751860096866
 GameObject:
   m_ObjectHideFlags: 0
