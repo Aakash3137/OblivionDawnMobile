@@ -93,7 +93,7 @@ public class UpgradePanelManager : MonoBehaviour
 
         for (int i = 0; i < enumValues.Length; i++)
         {
-            factionCardPanels[i].factionName = (FactionName)enumValues.GetValue(i);
+            factionCardPanels[i].factionName = enumValues[i];
 
             if (factionCardPanels[i].panelParent != null)
             {

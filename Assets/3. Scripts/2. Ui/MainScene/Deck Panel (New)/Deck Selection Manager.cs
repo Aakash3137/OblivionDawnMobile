@@ -9,17 +9,17 @@ public class DeckSelectionManager : MonoBehaviour
     public static DeckSelectionManager Instance { get; private set; }
 
     [Space(10)]
+    [SerializeField] private DecSelectionData decSelectionDataSO;
+
+    [Space(10)]
     [SerializeField] private SelectedCard selectedCardPrefab;
     [SerializeField] private Transform selectedCardsContainer;
     [SerializeField] private int maxCardCount;
 
     [Space(10)]
     [ReadOnly][SerializeField] private FactionDeckData[] allFactionsDeckData;
-    [ReadOnly][SerializeField] private List<SelectedCard> selectedCards;
-
     [Space(10)]
-    [Header("UI References")]
-    [SerializeField] private TMP_Text populationText;
+    [ReadOnly][SerializeField] private List<SelectedCard> selectedCards;
 
     [HideInInspector] public FactionName selectedFaction;
 
@@ -27,8 +27,17 @@ public class DeckSelectionManager : MonoBehaviour
     private int currentDeckIndex;
     private int maxPopulation;
     private int currentPopulation;
+    public int AvailablePopulation => maxPopulation - currentPopulation;
+
+    public bool canAddMoreCards => currentDeck.deckCardsSO.Count < maxEquipCount;
+    public bool HasPopulationFor(int cost) => currentPopulation + cost <= maxPopulation;
 
     private Deck currentDeck => allFactionsDeckData[(int)selectedFaction].decks[currentDeckIndex];
+    private FactionCardPanel[] factionCardPanels;
+
+    [Space(10)]
+    [Header("UI References")]
+    [SerializeField] private TMP_Text populationText;
 
     private void Awake()
     {
@@ -41,6 +50,9 @@ public class DeckSelectionManager : MonoBehaviour
         }
 
         GenerateCards();
+
+        // copy the reference for allFactionsDeckData to one in SO
+        allFactionsDeckData = decSelectionDataSO.allFactionsDeckData;
     }
 
     public void GenerateCards()
@@ -63,13 +75,14 @@ public class DeckSelectionManager : MonoBehaviour
         maxPopulation = cityCenterData.maxPopulation;
 
         currentPopulation = 0;
+
         foreach (var cardSO in currentDeck.deckCardsSO)
             currentPopulation += CalculatePopulation(cardSO);
 
         UpdatePopulationUI();
     }
 
-    public void RefreshCards()
+    public void RefreshSelectionCards()
     {
         // Hide all first
         foreach (var card in selectedCards)
@@ -100,6 +113,7 @@ public class DeckSelectionManager : MonoBehaviour
             return false;
 
         deck.deckCardsSO.Add(cardSO);
+
         currentPopulation += addedPop;
         UpdatePopulationUI();
 
@@ -120,8 +134,13 @@ public class DeckSelectionManager : MonoBehaviour
     {
         var deck = currentDeck;
 
-        if (!deck.deckCardsSO.Remove(cardSO))
+        if (!deck.deckCardsSO.Contains(cardSO))
+            return true;
+
+        if (deck.deckCardsSO.Count <= 1)
             return false;
+
+        deck.deckCardsSO.Remove(cardSO);
 
         currentPopulation -= CalculatePopulation(cardSO);
         UpdatePopulationUI();
@@ -137,7 +156,6 @@ public class DeckSelectionManager : MonoBehaviour
 
         return true;
     }
-
     private void UpdatePopulationUI()
     {
         populationText.SetText($"{currentPopulation}/{maxPopulation}");
@@ -145,36 +163,45 @@ public class DeckSelectionManager : MonoBehaviour
 
     private static int CalculatePopulation(ScriptableObject cardSO)
     {
-        if (cardSO is DefenseBuildingDataSO defense) return defense.populationCost;
-        if (cardSO is UnitProduceStatsSO unit) return unit.populationCost;
-        return 0;
+        int populationCost = cardSO switch
+        {
+            UnitProduceStatsSO unit => unit.populationCost,
+            DefenseBuildingDataSO building => building.populationCost,
+            _ => -1
+        };
+
+        return populationCost;
     }
 
-    private void OnValidate()
+    public void LoadDeckData()
     {
-        var enumValues = ScenarioDataTypes._factionEnumValues;
+        factionCardPanels = DeckPanelManager.Instance.factionCardPanels;
 
-        if (allFactionsDeckData == null || allFactionsDeckData.Length != enumValues.Length)
+        var factionIndex = (int)selectedFaction;
+
+        for (int j = 0; j < allFactionsDeckData[factionIndex].decks.Count; j++)
         {
-            var resized = new FactionDeckData[enumValues.Length];
-            if (allFactionsDeckData != null)
+            List<ScriptableObject> loadedDeckSO = allFactionsDeckData[factionIndex].decks[j].deckCardsSO;
+            var currentFactionCardPanel = factionCardPanels[factionIndex].cardPanels[0];
+            List<UpgradeCard> currentFactionCards = currentFactionCardPanel.allCards;
+
+            // Debug.Log($"<color=green>[Deck Selection Manager] currentFactionCards: {loadedDeckSO.Count}</color>");
+            // Debug.Log($"<color=green>[Deck Selection Manager] Selected Faction : {selectedFaction}</color>");
+
+            foreach (var card in currentFactionCards)
             {
-                int copyCount = Mathf.Min(allFactionsDeckData.Length, resized.Length);
-                for (int i = 0; i < copyCount; i++)
-                    resized[i] = allFactionsDeckData[i];
+                if (card == null) continue;
+                if (card is DeckCard deckCard)
+                {
+                    if (deckCard.upgradeDataSO != null && loadedDeckSO.Contains(deckCard.upgradeDataSO))
+                        deckCard.EnableSelectionPanel(true);
+                    else if (deckCard.upgradeDataSO == null)
+                        Debug.Log($"<color=red>[Deck Selection Manager] Card upgradeDataSO not found in loaded deck</color>");
+                }
             }
-            allFactionsDeckData = resized;
-        }
 
-        for (int i = 0; i < enumValues.Length; i++)
-        {
-            ref var factionData = ref allFactionsDeckData[i];
-            factionData.faction = (FactionName)enumValues.GetValue(i);
-
-            factionData.decks ??= new List<Deck>();
-
-            if (factionData.decks.Count == 0)
-                factionData.decks.Add(new Deck());
+            if (currentFactionCards[0] is DeckCard deckCards)
+                deckCards.UpdateButtonInteractivity();
         }
     }
 }
@@ -183,11 +210,12 @@ public class DeckSelectionManager : MonoBehaviour
 public class FactionDeckData
 {
     public FactionName faction;
-    public List<Deck> decks;
+    public List<Deck> decks = new();
 }
 
 [Serializable]
 public class Deck
 {
     public List<ScriptableObject> deckCardsSO = new();
+    // public List<ResourceBuildingDataSO> resourceCardsSO = new();
 }
