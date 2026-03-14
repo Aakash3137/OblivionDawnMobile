@@ -22,11 +22,11 @@ public class GameOverPanel : MonoBehaviour
         //Calculate XP on gameover 
         XPCalculator.Instance.UpdateXP(GameStateManager.Instance.GetCurrentState());
 
-        if (GameStateManager.Instance.GetCurrentState() == GameState.DEFEAT)
+        if (GameStateManager.Instance.GetCurrentState() == GameStateEnum.DEFEAT)
         {
             subTitleText.text = "Defeat";
         }
-        else if (GameStateManager.Instance.GetCurrentState() == GameState.VICTORY)
+        else if (GameStateManager.Instance.GetCurrentState() == GameStateEnum.VICTORY)
         {
             subTitleText.text = "Victory";
         }
@@ -36,14 +36,14 @@ public class GameOverPanel : MonoBehaviour
 
     private void RestartGame()
     {
-        gmInstance.ChangeState(GameState.PLAYING);
+        gmInstance.ChangeState(GameStateEnum.PLAYING);
         int currentSceneName = SceneManager.GetActiveScene().buildIndex;
         SceneManager.LoadScene(currentSceneName);
     }
 
     private void HomeMenu()
     {
-        gmInstance.ChangeState(GameState.MAIN_MENU);
+        gmInstance.ChangeState(GameStateEnum.MAIN_MENU);
         SceneManager.LoadScene("MainScene");
     }
 }

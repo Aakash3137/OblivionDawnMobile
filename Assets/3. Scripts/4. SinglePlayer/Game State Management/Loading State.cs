@@ -1,24 +1,21 @@
 using UnityEngine;
 
-public class VictoryState : GameState
+public class LoadingState : GameState
 {
-    [SerializeField] private Canvas gameOverCanvas;
+    [SerializeField] private Canvas loadingPanelCanvas;
     private Canvas instantiatedCanvas;
 
     public override void OnStateEnter()
     {
-        Time.timeScale = 0f;
-
         if (instantiatedCanvas != null)
             instantiatedCanvas.gameObject.SetActive(true);
         else
-            instantiatedCanvas = Instantiate(gameOverCanvas, Vector3.zero, Quaternion.identity);
+            instantiatedCanvas = Instantiate(loadingPanelCanvas, Vector3.zero, Quaternion.identity, transform);
+
     }
 
     public override void OnStateExit()
     {
-        Time.timeScale = 1f;
-
         if (instantiatedCanvas != null)
             instantiatedCanvas.gameObject.SetActive(false);
     }

@@ -25,15 +25,15 @@ public class MainBuildingStats : BuildingStats
     internal override void Die()
     {
         base.Die();
-        
+
 
         switch (side)
         {
             case Side.Player:
-                GameStateManager.Instance.ChangeState(GameState.DEFEAT);
+                GameStateManager.Instance.ChangeState(GameStateEnum.DEFEAT);
                 break;
             case Side.Enemy:
-                GameStateManager.Instance.ChangeState(GameState.VICTORY);
+                GameStateManager.Instance.ChangeState(GameStateEnum.VICTORY);
                 break;
         }
     }

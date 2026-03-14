@@ -135,6 +135,21 @@ public class UpgradePanelNavigation : MonoBehaviour
     {
         if (selectedFaction == faction)
             fragmentsCountText.SetText($"{userData.fragments[(int)faction]}");
+
+        var cardsInCurrentPanel = currentCardPanel.allCards;
+
+        foreach (var card in cardsInCurrentPanel)
+        {
+            Identity identity = card.upgradeDataSO switch
+            {
+                BuildingDataSO buildingSO => buildingSO.buildingIdentity,
+                UnitProduceStatsSO unitSO => unitSO.unitIdentity,
+                _ => new Identity { }
+            };
+
+            if (identity.name != null || !identity.name.Equals(""))
+                card.UpdateProgressBar(identity);
+        }
     }
     public CardsPanel GetCurrentCardPanel() => currentCardPanel;
 }

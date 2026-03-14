@@ -127,6 +127,7 @@ public class DeckSelectionManager : MonoBehaviour
             }
         }
 
+        SortSelectedCards();
         return true;
     }
 
@@ -154,6 +155,7 @@ public class DeckSelectionManager : MonoBehaviour
             }
         }
 
+        SortSelectedCards();
         return true;
     }
     private void UpdatePopulationUI()
@@ -167,7 +169,7 @@ public class DeckSelectionManager : MonoBehaviour
         {
             UnitProduceStatsSO unit => unit.populationCost,
             DefenseBuildingDataSO building => building.populationCost,
-            _ => -1
+            _ => 99
         };
 
         return populationCost;
@@ -202,6 +204,21 @@ public class DeckSelectionManager : MonoBehaviour
 
             if (currentFactionCards[0] is DeckCard deckCards)
                 deckCards.UpdateButtonInteractivity();
+        }
+    }
+
+    private void SortSelectedCards()
+    {
+        var factionIndex = (int)selectedFaction;
+        List<ScriptableObject> loadedDeckSO = allFactionsDeckData[factionIndex].decks[currentDeckIndex].deckCardsSO;
+
+        // Sort the selected cards by the population cost in ascending order
+        selectedCards.Sort((a, b) => CalculatePopulation(a.upgradeDataSO).CompareTo(CalculatePopulation(b.upgradeDataSO)));
+        loadedDeckSO.Sort((a, b) => CalculatePopulation(a).CompareTo(CalculatePopulation(b)));
+
+        for (int i = 0; i < selectedCards.Count; i++)
+        {
+            selectedCards[i].transform.SetSiblingIndex(i);
         }
     }
 }
