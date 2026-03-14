@@ -275,6 +275,9 @@ GameObject:
   - component: {fileID: 2934036097191778806}
   - component: {fileID: 1104293407760248124}
   - component: {fileID: 1592648188086742848}
+  - component: {fileID: 5312565973896905925}
+  - component: {fileID: 981053873593601855}
+  - component: {fileID: 8000163122769997938}
   m_Layer: 0
   m_Name: Cube_Mesh
   m_TagString: Untagged
@@ -328,7 +331,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -7791486788655378091, guid: cca3fdc141e8c254b9fca50e9792f57c, type: 3}
+  - {fileID: 2100000, guid: ff3d84bdf11904546b1965b3df195021, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -371,6 +374,49 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.01, y: 0.01, z: 0.01}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5312565973896905925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1464726994363436265}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c2755d1d007b0649966e3268b057423, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  atlasSize: 3
+--- !u!114 &981053873593601855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1464726994363436265}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6b2629ebcb02c549b6d89b9e536bf62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  atlasSize: 4
+--- !u!114 &8000163122769997938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1464726994363436265}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e929e13e9168ca41951ca02dd4b2f69, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  detailPrefabs:
+  - {fileID: 2344958104696193750, guid: adf7552b2f0e43b459f0a37c7131118e, type: 3}
+  maxDetailsPerTile: 1
+  spawnChance: 0.4
+  tileSize: 1
 --- !u!1 &4517590336350411406
 GameObject:
   m_ObjectHideFlags: 0

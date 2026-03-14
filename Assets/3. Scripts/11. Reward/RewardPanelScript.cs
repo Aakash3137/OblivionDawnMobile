@@ -38,7 +38,7 @@ public class RewardPanelScript : MonoBehaviour
     // TEST SETTINGS
     // ==============================
     public static bool UseTestTime = true;   // TRUE = 1 hour test
-    public static int TestHours = 1;
+    public static float TestHours = 0.01f;     // 0.01 hours = 36 seconds
 
     private DateTime nextUnlockTime;
     private Coroutine timerRoutine;
