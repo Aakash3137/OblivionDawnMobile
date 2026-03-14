@@ -42,7 +42,7 @@ public class MainBuildingDataSO : BuildingDataSO
 [Serializable]
 public class MainBuildingUpgradeData : BuildingUpgradeData
 {
-    public int maxDeckEquipCount;
-    public int maxPopulation;
-    public int starterResources;
+    [Range(4, 8)] public int maxDeckEquipCount;
+    [Range(10, 50)] public int maxPopulation;
+    [Range(500, 1000)] public int starterResources;
 }

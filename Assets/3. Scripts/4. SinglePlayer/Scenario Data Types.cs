@@ -9,10 +9,10 @@ public enum ScenarioDefenseType { AntiAir = 0, AntiTank = 1, Turret = 2, Wall = 
 
 public static class ScenarioDataTypes
 {
-    public static readonly Array _factionEnumValues = Enum.GetValues(typeof(FactionName));
-    public static readonly Array _resourceEnumValues = Enum.GetValues(typeof(ScenarioResourceType));
-    public static readonly Array _unitEnumValues = Enum.GetValues(typeof(ScenarioUnitType));
-    public static readonly Array _offenseEnumValues = Enum.GetValues(typeof(ScenarioOffenseType));
-    public static readonly Array _defenseEnumValues = Enum.GetValues(typeof(ScenarioDefenseType));
+    public static readonly FactionName[] _factionEnumValues = (FactionName[])Enum.GetValues(typeof(FactionName));
+    public static readonly ScenarioResourceType[] _resourceEnumValues = (ScenarioResourceType[])Enum.GetValues(typeof(ScenarioResourceType));
+    public static readonly ScenarioUnitType[] _unitEnumValues = (ScenarioUnitType[])Enum.GetValues(typeof(ScenarioUnitType));
+    public static readonly ScenarioOffenseType[] _offenseEnumValues = (ScenarioOffenseType[])Enum.GetValues(typeof(ScenarioOffenseType));
+    public static readonly ScenarioDefenseType[] _defenseEnumValues = (ScenarioDefenseType[])Enum.GetValues(typeof(ScenarioDefenseType));
 
 }

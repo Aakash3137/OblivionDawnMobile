@@ -5,6 +5,7 @@ public class DeckPanelNavigation : MonoBehaviour
 {
     [Header("Faction Buttons : 0 = Medieval ; 1 = Present ; 2 = Future ; 3 = Galvadore")]
     [SerializeField] private Toggle[] factionButtons;
+    private bool[] isDeckDataLoaded = new bool[4];
 
     private void Awake()
     {
@@ -15,10 +16,16 @@ public class DeckPanelNavigation : MonoBehaviour
         await Awaitable.NextFrameAsync();
         SetDeckCardPanelToOpen(FactionName.Present);
     }
+    private async Awaitable Start()
+    {
+        await Awaitable.NextFrameAsync();
+        factionButtons[0].group.allowSwitchOff = false;
+    }
 
     private void SetDeckCardPanelToOpen(FactionName faction)
     {
-        factionButtons[(int)faction].isOn = true;
+        factionButtons[(int)faction].SetIsOnWithoutNotify(true);
+        OnClickFaction(faction);
     }
 
     private void AddListeners()
@@ -40,7 +47,13 @@ public class DeckPanelNavigation : MonoBehaviour
 
         dsmInstance.SetVariables();
 
-        dsmInstance.RefreshCards();
+        if (!isDeckDataLoaded[(int)faction])
+        {
+            dsmInstance.LoadDeckData();
+            isDeckDataLoaded[(int)faction] = true;
+        }
+
+        dsmInstance.RefreshSelectionCards();
     }
 
     private void ToggleFactionPanel(FactionName faction)

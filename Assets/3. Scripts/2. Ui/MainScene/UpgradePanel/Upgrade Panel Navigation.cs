@@ -31,14 +31,24 @@ public class UpgradePanelNavigation : MonoBehaviour
         await Awaitable.NextFrameAsync();
         SetCardPanelToOpen(FactionName.Futuristic, 1);
     }
+    private async Awaitable Start()
+    {
+        await Awaitable.NextFrameAsync();
+        typeButtons[0].group.allowSwitchOff = false;
+        factionButtons[0].group.allowSwitchOff = false;
+    }
 
     private void SetCardPanelToOpen(FactionName faction, int categoryIndex)
     {
         selectedFaction = faction;
         selectedCategoryIndex = categoryIndex;
 
-        factionButtons[(int)faction].isOn = true;
-        typeButtons[categoryIndex].isOn = true;
+        factionButtons[(int)faction].SetIsOnWithoutNotify(true);
+        typeButtons[categoryIndex].SetIsOnWithoutNotify(true);
+
+        // Debug.Log($"<color=green>[UpgradePanelNavigation] Activating {factionButtons[(int)faction].name} with category {typeButtons[categoryIndex].name} panel</color>");
+
+        OnClickFaction(faction);
     }
 
     private void AddListeners()
@@ -72,6 +82,8 @@ public class UpgradePanelNavigation : MonoBehaviour
     {
         selectedFaction = faction;
 
+        // Debug.Log($"<color=green>[UpgradePanelNavigation] Faction set in UpgradePanelNavigation : {selectedFaction} clicked faction is {faction}</color>");
+
         ToggleFactionPanel(faction);
 
         OnClickCategory(selectedCategoryIndex);
@@ -79,6 +91,8 @@ public class UpgradePanelNavigation : MonoBehaviour
 
     private void OnClickCategory(int categoryIndex)
     {
+        // Debug.Log($"<color=green>[UpgradePanelNavigation] calling OnClickCategory with index {categoryIndex}</color>");
+
         selectedCategoryIndex = categoryIndex;
 
         currentCardPanel = UpgradePanelManager.Instance.factionCardPanels[(int)selectedFaction].cardPanels[categoryIndex];
@@ -110,9 +124,7 @@ public class UpgradePanelNavigation : MonoBehaviour
 
         panel.gameObject.SetActive(true);
 
-        // can use set dirt pattern
-        foreach (var card in panel.allCards)
-            card.RefreshCard();
+        panel.allCards[0].RefreshAllCards();
     }
 
     private void OnDestroy()

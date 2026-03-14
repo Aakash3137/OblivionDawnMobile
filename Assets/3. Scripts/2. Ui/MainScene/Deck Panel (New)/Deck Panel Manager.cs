@@ -8,7 +8,7 @@ public class DeckPanelManager : MonoBehaviour
 
     [SerializeField] private AllBuildingData allBuildingData;
     [SerializeField] private AllUnitData allUnitData; [Space(10)]
-    [SerializeField] private UpgradeCard deckCardPrefab;
+    [SerializeField] private DeckCard deckCardPrefab;
     [Space(10)]
     public FactionCardPanel[] factionCardPanels;
 
@@ -78,7 +78,7 @@ public class DeckPanelManager : MonoBehaviour
 
         for (int i = 0; i < enumValues.Length; i++)
         {
-            factionCardPanels[i].factionName = (FactionName)enumValues.GetValue(i);
+            factionCardPanels[i].factionName = enumValues[i];
 
             if (factionCardPanels[i].panelParent != null)
             {
