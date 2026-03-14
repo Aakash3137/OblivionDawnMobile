@@ -12,6 +12,11 @@ public class Tile : MonoBehaviour
     [field: SerializeField, ReadOnly]
     public GameObject myPlusIcon { get; private set; }
 
+    [SerializeField] GameObject borderNorth;
+    [SerializeField] GameObject borderSouth;
+    [SerializeField] GameObject borderEast;
+    [SerializeField] GameObject borderWest;
+
     private SideManager sideManager;
     [ReadOnly] public bool isOpen = false; // set true when PlusIcon is activated
     [field: SerializeField, ReadOnly] public bool hasBuilding { get; private set; }
@@ -44,6 +49,7 @@ public class Tile : MonoBehaviour
         if (myPlusIcon == null)
             myPlusIcon = transform.Find("Cube/Plus_Icon")?.gameObject;
     }
+    
 
     void Start()
     {
@@ -66,7 +72,36 @@ public class Tile : MonoBehaviour
 
         OldSide = ownerSide;
         ApplyOwnerMaterial();
+
+        UpdateBorders();
+        UpdateNeighborBorders();
     }
+
+
+public void UpdateBorders()
+{
+    var grid = CubeGridManager.Instance;
+    var coord = grid.WorldToGrid(transform.position);
+
+    Tile north = grid.GetCube(coord + new Vector2Int(0,1));
+    Tile south = grid.GetCube(coord + new Vector2Int(0,-1));
+    Tile east = grid.GetCube(coord + new Vector2Int(1,0));
+    Tile west = grid.GetCube(coord + new Vector2Int(-1,0));
+
+    if(ownerSide != Side.Enemy)
+    {
+        borderNorth.SetActive(false);
+        borderSouth.SetActive(false);
+        borderEast.SetActive(false);
+        borderWest.SetActive(false);
+        return;
+    }
+
+    borderNorth.SetActive(north == null || north.ownerSide != Side.Enemy);
+    borderSouth.SetActive(south == null || south.ownerSide != Side.Enemy);
+    borderEast.SetActive(east == null || east.ownerSide != Side.Enemy);
+    borderWest.SetActive(west == null || west.ownerSide != Side.Enemy);
+}
 
     public void SetOpen(bool open)
     {
@@ -100,8 +135,32 @@ public class Tile : MonoBehaviour
         // GameDebug.Log($"Occupy called on tile at {OldSide}, new owner: {ownerSide} ");
         TileCounterUI.Instance.UpdateTileOwnerCount(OldSide, ownerSide);
         ApplyOwnerMaterial();
+
+        UpdateBorders();
+        UpdateNeighborBorders();
+
     }
 
+
+    void UpdateNeighborBorders()
+    {
+        var grid = CubeGridManager.Instance;
+        var coord = grid.WorldToGrid(transform.position);
+
+        Tile[] neighbors =
+        {
+            grid.GetCube(coord + new Vector2Int(0,1)),
+            grid.GetCube(coord + new Vector2Int(0,-1)),
+            grid.GetCube(coord + new Vector2Int(1,0)),
+            grid.GetCube(coord + new Vector2Int(-1,0))
+        };
+
+        foreach(var n in neighbors)
+        {
+            if(n != null)
+                n.UpdateBorders();
+        }
+    }
     // Called when a unit steps onto this tile
     public void Occupy(Side unitSide)
     {
