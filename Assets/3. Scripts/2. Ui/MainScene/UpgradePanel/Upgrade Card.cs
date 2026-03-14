@@ -79,7 +79,7 @@ public class UpgradeCard : MonoBehaviour
         }
     }
 
-    private void UpdateProgressBar(Identity identity)
+    internal void UpdateProgressBar(Identity identity)
     {
         int spawnLevel = identity.spawnLevel;
         FactionName faction = identity.faction;

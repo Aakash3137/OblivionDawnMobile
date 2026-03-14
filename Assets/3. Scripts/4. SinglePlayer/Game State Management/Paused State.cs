@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PausedState : State
+public class PausedState : GameState
 {
     [SerializeField] private Canvas gamePausedCanvas;
     private Canvas _gamePausedObject;
@@ -18,6 +18,8 @@ public class PausedState : State
     public override void OnStateExit()
     {
         Time.timeScale = 1f;
-        _gamePausedObject.gameObject.SetActive(false);
+
+        if (_gamePausedObject != null)
+            _gamePausedObject.gameObject.SetActive(false);
     }
 }

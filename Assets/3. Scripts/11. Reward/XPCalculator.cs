@@ -4,7 +4,7 @@ public class XPCalculator : MonoBehaviour
 {
     public static XPCalculator Instance;
 
-    private float base_XP;           
+    private float base_XP;
     private float performance_XP;
     private float bonus_XP;
     private float duration_Multiplier = 1f;
@@ -23,13 +23,13 @@ public class XPCalculator : MonoBehaviour
     public void SetDurationMultiplier(float value) => duration_Multiplier = value;
     public void SetBalanceMultiplier(float value) => balance_Multiplier = value;
 
-    public void UpdateXP(GameState state)
+    public void UpdateXP(GameStateEnum state)
     {
         switch (state)
         {
-            case GameState.VICTORY: base_XP = 100; break;
-            case GameState.DEFEAT:  base_XP = 35;  break;
-            case GameState.DRAW:    base_XP = 60;  break;
+            case GameStateEnum.VICTORY: base_XP = 100; break;
+            case GameStateEnum.DEFEAT: base_XP = 35; break;
+            case GameStateEnum.DRAW: base_XP = 60; break;
             default: base_XP = 0; break;
         }
 
@@ -49,7 +49,7 @@ public class XPCalculator : MonoBehaviour
                           offenseKills * 1.2f);
         return performance_XP;
     }
-    
+
     private float BonusXP()
     {
         /*
@@ -75,10 +75,10 @@ public class XPCalculator : MonoBehaviour
 
         bonus_XP = difficultyMultiplier * winStreakBonus;
         */
-        
+
         return bonus_XP;
     }
-    
+
     private void CalculateXP()
     {
         total_XP = (int)((base_XP + PerformanceXP() + BonusXP()) * duration_Multiplier * balance_Multiplier);

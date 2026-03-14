@@ -2,18 +2,18 @@ using System;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class State : MonoBehaviour
+public class GameState : MonoBehaviour
 {
     public virtual void OnStateEnter() { }
     public virtual void OnStateExit() { }
 }
 
 [Serializable]
-public enum GameState
+public enum GameStateEnum
 {
     BOOTING,
     MAIN_MENU,
-    LOADING_MAP,
+    LOADING,
     LOBBY,
     PLAYING,
     PAUSED,
@@ -26,7 +26,7 @@ public enum GameState
 [Serializable]
 public class GameStateCallbacks
 {
-    public GameState state;
+    public GameStateEnum state;
     public UnityEvent onEnter;
     public UnityEvent onExit;
 }

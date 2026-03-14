@@ -18,21 +18,21 @@ public class SelectedCard : MonoBehaviour
     {
         upgradeDataSO = dataSO;
 
-        Sprite icon = dataSO switch
+        RefreshSelectedCardVisuals();
+
+        cardImage.gameObject.SetActive(true);
+    }
+
+    public void RefreshSelectedCardVisuals()
+    {
+        Sprite icon = upgradeDataSO switch
         {
             UnitProduceStatsSO unit => unit.unitIcon,
             BuildingDataSO building => building.buildingIcon,
             _ => null
         };
-
-        if (icon == null)
-        {
-            Debug.LogWarning($"[SelectedCard] No icon found for SO type: {dataSO.GetType().Name}");
-            return;
-        }
-
-        cardImage.sprite = icon;
-        cardImage.gameObject.SetActive(true);
+        if (icon != null)
+            cardImage.sprite = icon;
     }
 
     public void UnsetSelectedCard()

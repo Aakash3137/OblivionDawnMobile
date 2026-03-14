@@ -17,7 +17,7 @@ public class DeckCard : UpgradeCard
         {
             UnitProduceStatsSO unit => unit.populationCost,
             DefenseBuildingDataSO building => building.populationCost,
-            _ => -1
+            _ => 99
         };
     }
 

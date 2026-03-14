@@ -23,19 +23,19 @@ public class GamePausedPanel : MonoBehaviour
 
     private void ResumeGame()
     {
-        gmInstance.ChangeState(GameState.PLAYING);
+        gmInstance.ChangeState(GameStateEnum.PLAYING);
     }
 
     private void RestartGame()
     {
-        gmInstance.ChangeState(GameState.PLAYING);
+        gmInstance.ChangeState(GameStateEnum.PLAYING);
         int currentSceneName = SceneManager.GetActiveScene().buildIndex;
         SceneManager.LoadScene(currentSceneName);
     }
 
     private void HomeMenu()
     {
-        gmInstance.ChangeState(GameState.MAIN_MENU);
+        gmInstance.ChangeState(GameStateEnum.MAIN_MENU);
         SceneManager.LoadScene("MainScene");
     }
 }
