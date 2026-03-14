@@ -5,6 +5,11 @@ public class GroundTile : MonoBehaviour
 {
     public int atlasSize = 4;
 
+    // void Start()
+    // {
+    //     ApplyRandomTile();
+    // }
+
     void Awake()
     {
         ApplyRandomTile();
