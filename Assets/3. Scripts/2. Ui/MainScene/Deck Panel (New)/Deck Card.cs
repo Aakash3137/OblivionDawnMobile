@@ -1,43 +1,82 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DeckCard : MonoBehaviour
+public class DeckCard : UpgradeCard
 {
     [SerializeField] private Button deckSelectButton;
     [SerializeField] private Button deckDeSelectButton;
     [SerializeField] private GameObject selectionPanel;
-
-    private UpgradeCard upgradeCard;
-    private ScriptableObject upgradeDataSO => upgradeCard.upgradeDataSO;
-
-    private void Awake()
-    {
-        upgradeCard = GetComponent<UpgradeCard>();
-    }
+    private bool isSelected = false;
+    private int cardPopulation;
 
     private void Start()
     {
-        selectionPanel.SetActive(false);
+        // selectionPanel.SetActive(false);
 
-        deckSelectButton.onClick.AddListener(OnClickDeckCard);
-        deckDeSelectButton.onClick.AddListener(OnClickDeSelectCard);
+        cardPopulation = upgradeDataSO switch
+        {
+            UnitProduceStatsSO unit => unit.populationCost,
+            DefenseBuildingDataSO building => building.populationCost,
+            _ => 99
+        };
     }
 
-    private void OnClickDeckCard()
+    public void OnSelectDeckCard()
     {
         bool selected = DeckSelectionManager.Instance.TrySelectCard(upgradeDataSO);
         selectionPanel.SetActive(selected);
+        isSelected = selected;
+
+        UpdateButtonInteractivity();
     }
 
-    private void OnClickDeSelectCard()
+    public void OnDeSelectCard()
     {
         bool deselected = DeckSelectionManager.Instance.TryDeSelectCard(upgradeDataSO);
         selectionPanel.SetActive(!deselected);
+        isSelected = !deselected;
+
+        UpdateButtonInteractivity();
     }
 
-    private void OnDestroy()
+    public void UpdateButtonInteractivity()
     {
-        deckSelectButton.onClick.RemoveListener(OnClickDeckCard);
-        deckDeSelectButton.onClick.RemoveListener(OnClickDeSelectCard);
+        foreach (var upgradeCard in myPanel.allCards)
+        {
+            if (upgradeCard is DeckCard deckCard)
+            {
+                deckCard.deckSelectButton.interactable = deckCard.CanAddCard();
+            }
+        }
+    }
+
+    private bool CanAddCard()
+    {
+        if (isSelected) return false;
+
+        var dsmInstance = DeckSelectionManager.Instance;
+
+        if (!dsmInstance.canAddMoreCards) return false;
+        if (!dsmInstance.HasPopulationFor(cardPopulation)) return false;
+        return true;
+    }
+
+    internal override void AddListeners()
+    {
+        base.AddListeners();
+        deckSelectButton.onClick.AddListener(OnSelectDeckCard);
+        deckDeSelectButton.onClick.AddListener(OnDeSelectCard);
+    }
+
+    internal override void RemoveListeners()
+    {
+        base.RemoveListeners();
+        deckSelectButton.onClick.RemoveListener(OnSelectDeckCard);
+        deckDeSelectButton.onClick.RemoveListener(OnDeSelectCard);
+    }
+
+    public void EnableSelectionPanel(bool flag)
+    {
+        selectionPanel.SetActive(flag);
     }
 }

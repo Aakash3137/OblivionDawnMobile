@@ -238,6 +238,7 @@ GameObject:
   - component: {fileID: 2135310751543429150}
   - component: {fileID: -8520561116181318086}
   - component: {fileID: 8230399155462689441}
+  - component: {fileID: 6423198104074993641}
   m_Layer: 0
   m_Name: Future_Anti Tank Building
   m_TagString: Untagged
@@ -283,8 +284,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.57978654, y: 0.7734579, z: 0.61171114}
-  m_Center: {x: 0.0038597584, y: -0.6, z: -0.012131348}
+  m_Size: {x: 1.265671, y: 1.0805209, z: 1.2634649}
+  m_Center: {x: -0.011596948, y: -0.45976138, z: 0.31374556}
 --- !u!208 &6093498460584951295
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -346,7 +347,6 @@ MonoBehaviour:
     name: 
     spawnLevel: 0
     faction: 0
-    populationCost: 0
     priority: 0
   <basicStats>k__BackingField:
     maxHealth: 0
@@ -362,7 +362,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4320449579214391836}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 083e6e0b74dd1e14f9b242c67b11827b, type: 3}
   m_Name: 
@@ -403,6 +403,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd86b6216a32ed04a869483ef87f6485, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6423198104074993641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4320449579214391836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05a0242ed80d27840b56c0dcd66e0e3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  muzzlePoints:
+  - {fileID: 638016724282704468}
+  projectile:
+    projectileType: 2
+    motion: 0
+    speed: 20
+    maxRange: 10
+    arcHeight: 4
+    lifeTime: 5
+    isAreaDamage: 0
+    damageRadius: 3
+    hasTrail: 0
+    enemyLaunchVFX: {fileID: 1657981230171060, guid: 6cf36a334a0e5754ea36fca06014b86a, type: 3}
+    playerLaunchVFX: {fileID: 1657981230171060, guid: 080168af0fb1a0f48bd653b0def3737e, type: 3}
+    launchVFX: {fileID: 0}
+    hitVFX: {fileID: 0}
+  playerTrailMaterial: {fileID: 0}
+  enemyTrailMaterial: {fileID: 0}
 --- !u!1 &4772523727306046246
 GameObject:
   m_ObjectHideFlags: 0

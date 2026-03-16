@@ -35,7 +35,7 @@ public class BuildingDataSO : ScriptableObject
         upKeepCost = BuildCostUtils.ResizePreservingData(upKeepCost, targetLength);
 
         for (int j = 0; j < upKeepCost.Length; j++)
-            upKeepCost[j].resourceType = (ScenarioResourceType)enumValues.GetValue(j);
+            upKeepCost[j].resourceType = enumValues[j];
     }
 
     internal virtual void OnValidate()

@@ -28,6 +28,7 @@ public class GroundUnit : MonoBehaviour
 
     private float DetectionRange;
     private float AttackRange;
+    private float MinAttackRange;
     private float moveSpeed;
     private float attackTimer;
 
@@ -80,6 +81,7 @@ public class GroundUnit : MonoBehaviour
         moveSpeed = unitData.unitMobilityStats.moveSpeed;
         AttackRange = unitData.unitRangeStats.attackRange;
         DetectionRange = unitData.unitRangeStats.detectionRange;
+        MinAttackRange = unitData.unitRangeStats.minAttackRange;
 
         unitSide = unitStats.side;
 
@@ -135,18 +137,18 @@ public class GroundUnit : MonoBehaviour
             detectionTarget = null;
         
         
-        if (replyTarget != null && CanAttackTarget(replyTarget))
+        if (replyTarget != null && CanAttackTarget(replyTarget) && !IsInsideMinRange(replyTarget))
         {
             target = replyTarget.gameObject;
         }
-        else if (detectionTarget != null && CanAttackTarget(detectionTarget))
+        else if (detectionTarget != null && CanAttackTarget(detectionTarget) && !IsInsideMinRange(detectionTarget))
         {
             target = detectionTarget.gameObject;
         }
         else if (primaryTarget != null)
         {
             target = primaryTarget.gameObject;
-        } 
+        }
         else
         {
             target = null;
@@ -257,6 +259,13 @@ public class GroundUnit : MonoBehaviour
             animator.SetFloat("Move", agent.velocity.magnitude);
     }
 
+    private bool IsInsideMinRange(Stats target)
+    {
+        if (target == null) return false;
+
+        float dist = Vector3.Distance(transform.position, target.transform.position);
+        return dist < MinAttackRange;
+    }
 
     private void ArrangeRotation()
     {
@@ -288,7 +297,7 @@ public class GroundUnit : MonoBehaviour
     {
         Collider[] hits = new Collider[32];
         LayerMask enemyLayerMask = GetEnemyLayerMask();
-
+        
         int count = Physics.OverlapSphereNonAlloc(
             transform.position,
             DetectionRange,
@@ -317,6 +326,11 @@ public class GroundUnit : MonoBehaviour
 
             float distance = GetAdjustedDistance(candidate);
 
+            //  Ignore targets inside min range
+            if (distance < MinAttackRange)
+                continue;
+
+            
             //  FIRST PRIORITY: Units
             if (candidate is UnitStats )
             {
@@ -483,7 +497,7 @@ public class GroundUnit : MonoBehaviour
         float myRadius = hitCollider != null ? hitCollider.bounds.extents.magnitude : 0f;
         float effectiveDistance = distance - targetRadius - myRadius;
         
-        if (effectiveDistance > AttackRange + 0.5f)
+        if (effectiveDistance > AttackRange + 0.5f|| effectiveDistance < MinAttackRange)    // added min attack range functionality
         {
           //  GameDebug.Log($"[{name}] Attack: Out of range (EffectiveDist: {effectiveDistance:F2} > {AttackRange + 0.5f:F2})");
             attackTimer = 0f;
@@ -575,6 +589,12 @@ public class GroundUnit : MonoBehaviour
 
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, DetectionRange);
+
+        if (MinAttackRange > 0)
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireSphere(transform.position, MinAttackRange);
+        }
     }
 
     #endregion

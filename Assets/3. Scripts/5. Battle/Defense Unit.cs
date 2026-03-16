@@ -14,7 +14,8 @@ public class DefenseUnit : MonoBehaviour
     public float peripheralAngleBonus = 10f;
     public float checkRadiusOffset = 2.5f;
 
-    private WeaponManager weaponManager;
+    //private WeaponManager weaponManager;
+    private ProjectileShooter _projectileShooter;
     private DefenseBuildingStats defenseStats;
     private DefenseBuildingDataSO defenseBuildingSO;
     private DefenseBuildingUpgradeData defenseData;
@@ -37,7 +38,8 @@ public class DefenseUnit : MonoBehaviour
 
     private void Start()
     {
-        weaponManager = GetComponent<WeaponManager>();
+       // weaponManager = GetComponent<WeaponManager>();
+        _projectileShooter = GetComponent<ProjectileShooter>();
         defenseStats = GetComponent<DefenseBuildingStats>();
         defenseBuildingSO = defenseStats.GetBuildingSO();
         defenseData = defenseStats.GetBuildingData();
@@ -79,7 +81,8 @@ public class DefenseUnit : MonoBehaviour
             if (attackTimer >= defenseData.defenseAttackStats.fireRate)
             {
                 attackTimer = 0f;
-                weaponManager.Fire(target, defenseData.defenseAttackStats.damage,defenseData.defenseAttackStats.buildingDamage, defenseStats.side);
+               // weaponManager.Fire(target, defenseData.defenseAttackStats.damage,defenseData.defenseAttackStats.buildingDamage, defenseStats.side);
+                _projectileShooter.Fire(target);
             }
         }
         else

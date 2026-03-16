@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 1244704137639097703}
   - component: {fileID: 5740930550629430901}
   - component: {fileID: 3494167082014232910}
+  - component: {fileID: 2019696170105855680}
   m_Layer: 0
   m_Name: Game State manager
   m_TagString: Untagged
@@ -109,10 +110,34 @@ MonoBehaviour:
   - state: 2
     onEnter:
       m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 2019696170105855680}
+          m_TargetAssemblyTypeName: LoadingState, Assembly-CSharp
+          m_MethodName: OnStateEnter
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
     onExit:
       m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 2019696170105855680}
+          m_TargetAssemblyTypeName: LoadingState, Assembly-CSharp
+          m_MethodName: OnStateExit
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
   - state: 3
     onEnter:
       m_PersistentCalls:
@@ -326,3 +351,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8ed83367c4555642a61b072595e1e8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2019696170105855680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4075326501364963983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bcdcd7dce9c2764eb287edcdfc08ad8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  loadingPanelCanvas: {fileID: 288928632458549551, guid: bf7be899540d82a41a27c4e08cd7472c, type: 3}

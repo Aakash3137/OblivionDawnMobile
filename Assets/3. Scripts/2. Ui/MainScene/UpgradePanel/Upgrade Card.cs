@@ -5,8 +5,9 @@ using UnityEngine.UI;
 
 public class UpgradeCard : MonoBehaviour
 {
+    [Space(10)]
     [ReadOnly] public ScriptableObject upgradeDataSO;
-
+    [Space(10)]
     [SerializeField] private Userdata userData;
     [SerializeField] private Image cardImage;
     [SerializeField] private Image levelProgressBar;
@@ -22,15 +23,39 @@ public class UpgradeCard : MonoBehaviour
 
     private void Awake()
     {
-        cardButton.onClick.AddListener(OnCardClick);
+        AddListeners();
+    }
+    public virtual void RefreshAllCards()
+    {
+        foreach (var upgradeCard in myPanel.allCards)
+        {
+            upgradeCard.UpdateLevelUI();
+        }
+    }
+
+    public virtual void RefreshCard()
+    {
+        SetCardSprite();
+        UpdateLevelUI();
     }
 
     private void SetCardSprite()
     {
+        Sprite icon = upgradeDataSO switch
+        {
+            UnitProduceStatsSO unit => unit.unitIcon,
+            BuildingDataSO building => building.buildingIcon,
+            _ => null
+        };
+
+        if (icon != null)
+            cardImage.sprite = icon;
+    }
+
+    private void UpdateLevelUI()
+    {
         if (upgradeDataSO is BuildingDataSO buildingDataSO)
         {
-            cardImage.sprite = buildingDataSO.buildingIcon;
-
             levelText.SetText($"Level {buildingDataSO.buildingIdentity.spawnLevel + 1}");
 
             if (buildingDataSO is DefenseBuildingDataSO defenseBuildingData)
@@ -42,33 +67,26 @@ public class UpgradeCard : MonoBehaviour
                 populationCostRoot.SetActive(false);
             }
 
-            UpdateProgressBar(buildingDataSO.buildingIdentity.spawnLevel, buildingDataSO.buildingIdentity.faction);
+            UpdateProgressBar(buildingDataSO.buildingIdentity);
         }
         else if (upgradeDataSO is UnitProduceStatsSO unitDataSO)
         {
-            cardImage.sprite = unitDataSO.unitIcon;
-
             populationCostText.SetText($"{unitDataSO.populationCost}");
 
             levelText.SetText($"Level {unitDataSO.unitIdentity.spawnLevel + 1}");
 
-            UpdateProgressBar(unitDataSO.unitIdentity.spawnLevel, unitDataSO.unitIdentity.faction);
+            UpdateProgressBar(unitDataSO.unitIdentity);
         }
     }
-    public void RefreshAllCards()
-    {
-        foreach (var card in myPanel.allCards)
-            card.SetCardSprite();
-    }
 
-    public void RefreshCard()
+    internal void UpdateProgressBar(Identity identity)
     {
-        SetCardSprite();
-    }
-    private void UpdateProgressBar(int spawnLevel, FactionName faction)
-    {
+        int spawnLevel = identity.spawnLevel;
+        FactionName faction = identity.faction;
+
         int fragmentCost = StatUpgrade.FragmentCost(spawnLevel + 1);
         int currentFragments = userData.fragments[(int)faction];
+
         levelProgressBar.fillAmount = (float)currentFragments / fragmentCost;
         levelProgressText.SetText($"{currentFragments}/{fragmentCost}");
     }
@@ -101,8 +119,17 @@ public class UpgradeCard : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
+    internal virtual void AddListeners()
+    {
+        cardButton.onClick.AddListener(OnCardClick);
+    }
+    internal virtual void RemoveListeners()
     {
         cardButton.onClick.RemoveListener(OnCardClick);
+    }
+
+    private void OnDestroy()
+    {
+        RemoveListeners();
     }
 }

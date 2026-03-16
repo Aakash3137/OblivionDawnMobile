@@ -129,8 +129,8 @@ public class Stats : MonoBehaviour
     {
         Destroy(gameObject);
         onDieEvent?.Invoke();
-        if (TryGetComponent<GemSpawner>(out var gemSpawner) && side == Side.Enemy)
-            gemSpawner.SpawnGem();
+        /*if (TryGetComponent<GemSpawner>(out var gemSpawner) && side == Side.Enemy)
+            gemSpawner.SpawnGem();*/
     }
 
     [Button]

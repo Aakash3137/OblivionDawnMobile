@@ -347,16 +347,16 @@ public class Projectile : MonoBehaviour
         }
 
         // ---------- ROTATION BASED ON VELOCITY ----------
-        Vector3 velocity = transform.position - lastPosition;
+        Vector3 moveDir = transform.position - lastPosition;
 
-        if (velocity.sqrMagnitude > 0.0001f)
+        if (moveDir.magnitude > 0.01f) // ignore tiny movement
         {
-            Quaternion targetRotation = Quaternion.LookRotation(velocity.normalized);
+            Quaternion targetRot = Quaternion.LookRotation(moveDir.normalized);
 
-            transform.rotation = Quaternion.RotateTowards(
+            transform.rotation = Quaternion.Slerp(
                 transform.rotation,
-                targetRotation,
-                720f * Time.deltaTime // rotation speed (adjust if needed)
+                targetRot,
+                10f * Time.deltaTime
             );
         }
 

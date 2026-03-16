@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class MainMenuState : State
+public class MainMenuState : GameState
 {
     public override void OnStateEnter()
     {

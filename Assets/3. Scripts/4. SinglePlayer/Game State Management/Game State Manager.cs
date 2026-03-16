@@ -1,34 +1,33 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
 
 public class GameStateManager : MonoBehaviour
 {
     public static GameStateManager Instance { get; private set; }
 
     [Header("Current State")]
-    [SerializeField] private GameState currentState = GameState.BOOTING;
-    [SerializeField] private GameState previousState;
+    [SerializeField] private GameStateEnum currentState = GameStateEnum.BOOTING;
+    [SerializeField] private GameStateEnum previousState;
 
     [Header("Callbacks (assign in Inspector or code)")]
-    public UnityEvent<GameState> onStateChanged;  // Fired every change
-    public GameStateCallbacks[] stateCallbacks;        // Per-state enter/exit
+    public UnityEvent<GameStateEnum> onStateChanged;  // Fired every change
+    public GameStateCallbacks[] stateCallbacks;
 
-    private Dictionary<GameState, UnityEvent> onEnterEvents = new();
-    private Dictionary<GameState, UnityEvent> onExitEvents = new();
+    private Dictionary<GameStateEnum, UnityEvent> onEnterEvents = new();
+    private Dictionary<GameStateEnum, UnityEvent> onExitEvents = new();
 
 
-    void Awake()
+    private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
             Destroy(gameObject);
-            return;
         }
 
         RegisterDictionary();
@@ -70,7 +69,7 @@ public class GameStateManager : MonoBehaviour
         }
     }
 
-    public void ChangeState(GameState newState)
+    public void ChangeState(GameStateEnum newState)
     {
         if (newState == currentState) return;
 
@@ -89,17 +88,17 @@ public class GameStateManager : MonoBehaviour
         Debug.Log($"[State] {previousState} → {currentState}");
     }
 
-    public bool Is(GameState state) => currentState == state;
-    public bool Was(GameState state) => previousState == state;
-    public bool InGameplay => currentState == GameState.PLAYING || currentState == GameState.PAUSED;
+    public bool Is(GameStateEnum state) => currentState == state;
+    public bool Was(GameStateEnum state) => previousState == state;
+    public bool InGameplay => currentState == GameStateEnum.PLAYING || currentState == GameStateEnum.PAUSED;
 
     public void TogglePause()
     {
-        if (Is(GameState.PLAYING)) ChangeState(GameState.PAUSED);
-        else if (Is(GameState.PAUSED)) ChangeState(GameState.PLAYING);
+        if (Is(GameStateEnum.PLAYING)) ChangeState(GameStateEnum.PAUSED);
+        else if (Is(GameStateEnum.PAUSED)) ChangeState(GameStateEnum.PLAYING);
     }
 
-    public GameState GetCurrentState()
+    public GameStateEnum GetCurrentState()
     {
         return currentState;
     }

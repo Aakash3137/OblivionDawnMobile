@@ -297,6 +297,7 @@ GameObject:
   - component: {fileID: 2135310751543429150}
   - component: {fileID: -6127424536117602062}
   - component: {fileID: 3639190546871709370}
+  - component: {fileID: -4941825733439817564}
   m_Layer: 0
   m_Name: Future_Anti Air Building
   m_TagString: Untagged
@@ -342,8 +343,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1.4302075, z: 0.8915097}
-  m_Center: {x: 0, y: -0.27915967, z: -0.1224691}
+  m_Size: {x: 1, y: 1.0943236, z: 1.185206}
+  m_Center: {x: 0, y: -0.4471016, z: 0.024379075}
 --- !u!208 &6093498460584951295
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -405,7 +406,6 @@ MonoBehaviour:
     name: 
     spawnLevel: 0
     faction: 0
-    populationCost: 0
     priority: 0
   <basicStats>k__BackingField:
     maxHealth: 0
@@ -421,7 +421,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4320449579214391836}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 083e6e0b74dd1e14f9b242c67b11827b, type: 3}
   m_Name: 
@@ -462,6 +462,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd86b6216a32ed04a869483ef87f6485, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-4941825733439817564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4320449579214391836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05a0242ed80d27840b56c0dcd66e0e3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  muzzlePoints:
+  - {fileID: 7714002118071360728}
+  projectile:
+    projectileType: 0
+    motion: 0
+    speed: 20
+    maxRange: 10
+    arcHeight: 4
+    lifeTime: 5
+    isAreaDamage: 0
+    damageRadius: 3
+    hasTrail: 0
+    enemyLaunchVFX: {fileID: 1657981230171060, guid: 6cf36a334a0e5754ea36fca06014b86a, type: 3}
+    playerLaunchVFX: {fileID: 1657981230171060, guid: 080168af0fb1a0f48bd653b0def3737e, type: 3}
+    launchVFX: {fileID: 0}
+    hitVFX: {fileID: 0}
+  playerTrailMaterial: {fileID: 0}
+  enemyTrailMaterial: {fileID: 0}
 --- !u!1 &5391345539565492373
 GameObject:
   m_ObjectHideFlags: 0

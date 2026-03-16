@@ -20,6 +20,9 @@ using UnityEngine;
 
 public class ProjectileMoveScript : MonoBehaviour {
 
+    [HideInInspector]
+    public Side shooterSide = Side.Player;
+    
     public bool rotate = false;
     public float rotateAmount = 45;
     public bool bounce = false;
@@ -42,6 +45,12 @@ public class ProjectileMoveScript : MonoBehaviour {
 	void Start () {
         startPos = transform.position;
         rb = GetComponent <Rigidbody> ();
+        
+        if (rb != null)
+        {
+            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+            rb.constraints = RigidbodyConstraints.FreezeRotation;
+        }
 
 		//used to create a radius for the accuracy and have a very unique randomness
 		if (accuracy != 100) {
@@ -89,6 +98,9 @@ public class ProjectileMoveScript : MonoBehaviour {
         {
             if (co.gameObject.tag != "Bullet" && !collided)
             {
+                if (!IsValidTarget(co.gameObject))
+                    return;
+                    
                 collided = true;
 
                 if (trails.Count > 0)
@@ -159,6 +171,18 @@ public class ProjectileMoveScript : MonoBehaviour {
 		
 		yield return new WaitForSeconds (waitTime);
 		Destroy (gameObject);
+	}
+	
+	bool IsValidTarget(GameObject target) {
+		int targetLayer = target.layer;
+		
+		if (shooterSide == Side.Player) {
+			return targetLayer == LayerMask.NameToLayer("EnemyGround") || 
+			       targetLayer == LayerMask.NameToLayer("EnemyAir");
+		} else {
+			return targetLayer == LayerMask.NameToLayer("PlayerGround") || 
+			       targetLayer == LayerMask.NameToLayer("PlayerAir");
+		}
 	}
 
 }
