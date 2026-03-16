@@ -17,6 +17,7 @@ public class Userdata : ScriptableObject
     [Header("Game Data")]
     [SerializeField] private int coins = 0;
     [SerializeField] private int diamonds = 0;
+    [SerializeField] private int MapShards = 0;
     [field: SerializeField, ReadOnly] public int[] fragments { get; private set; } = new int[4];
     public Action<FactionName> OnFragmentsChanged;
 
@@ -71,7 +72,7 @@ public class Userdata : ScriptableObject
         OnFragmentsChanged?.Invoke(faction);
     }
 
-
+    [Button]
     public void ResetData()
     {
         UserName = "";
@@ -85,25 +86,13 @@ public class Userdata : ScriptableObject
         CurrentDay = 1;
         fragments = new int[4];
 
-    }
-
-    public bool CheckDay()
-    {
-        bool CheckBool = false;
-        foreach (bool day in DayRewards)
+        for(int i = 0; i < DayRewards.Length; i++) 
         {
-            if (day)
-            {
-                CheckBool = true;
-            }
-            else
-            {
-                CheckBool = false;
-                return false;
-            }
+            DayRewards[i] = false;
         }
-        return CheckBool;
+        
+        PlayerPrefs.DeleteAll();
+        PlayerPrefs.Save();
     }
-
 }
 

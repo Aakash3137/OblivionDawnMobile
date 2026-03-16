@@ -11,6 +11,7 @@ public class GameOverPanel : MonoBehaviour
     [SerializeField] private TMP_Text XP_Text;
     private GameStateManager gmInstance;
     [SerializeField] private LevelData LevelsData;
+    [SerializeField] private GameObject LoadingPanel;
 
 
     private void Start()
@@ -44,6 +45,7 @@ public class GameOverPanel : MonoBehaviour
     private void HomeMenu()
     {
         gmInstance.ChangeState(GameState.MAIN_MENU);
-        SceneManager.LoadScene("MainScene");
+        _= Instantiate(LoadingPanel);
+        // SceneManager.LoadScene("MainScene");
     }
 }

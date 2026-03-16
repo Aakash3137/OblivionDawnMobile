@@ -11,6 +11,8 @@ public class GamePausedPanel : MonoBehaviour
     // [SerializeField] private Button resumeButton;
     private GameStateManager gmInstance;
 
+    [SerializeField] private GameObject LoadingPanel;
+
 
     private void Start()
     {
@@ -36,6 +38,7 @@ public class GamePausedPanel : MonoBehaviour
     private void HomeMenu()
     {
         gmInstance.ChangeState(GameState.MAIN_MENU);
-        SceneManager.LoadScene("MainScene");
+        _= Instantiate(LoadingPanel);
+        // SceneManager.LoadScene("MainScene");
     }
 }

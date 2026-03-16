@@ -65,6 +65,7 @@ public class LevelData : ScriptableObject
             {
                 RewardBox R_Box = _Box.SetReward(item, _Box.transform);
                 R_Box.ClaimButton.interactable = !levels[i].IsLocked;
+                item.RewardStatus = levels[i].IsLocked ? false : true;
                 item._Box = R_Box;
                 R_Box.ClaimButton.onClick.AddListener(() => 
                 {
@@ -78,6 +79,8 @@ public class LevelData : ScriptableObject
     {
         if(reward.RewardStatus)
             return;
+
+        Debug.Log("Claiming Reward");
 
         reward.RewardStatus = true;
         reward._Box.ClaimButton.interactable = false;
