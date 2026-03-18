@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
     {
         await Awaitable.NextFrameAsync();
         SpawnMainBuilding();
-        // SpawnNeutralBuildings();
+        //SpawnNeutralBuildings();
     }
 
     private void SpawnMainBuilding()

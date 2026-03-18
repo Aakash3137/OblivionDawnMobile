@@ -88,7 +88,7 @@ public void UpdateBorders()
     Tile east = grid.GetCube(coord + new Vector2Int(1,0));
     Tile west = grid.GetCube(coord + new Vector2Int(-1,0));
 
-    if(ownerSide != Side.Enemy)
+    if(ownerSide == Side.Enemy)
     {
         borderNorth.SetActive(false);
         borderSouth.SetActive(false);
@@ -97,10 +97,10 @@ public void UpdateBorders()
         return;
     }
 
-    borderNorth.SetActive(north == null || north.ownerSide != Side.Enemy);
-    borderSouth.SetActive(south == null || south.ownerSide != Side.Enemy);
-    borderEast.SetActive(east == null || east.ownerSide != Side.Enemy);
-    borderWest.SetActive(west == null || west.ownerSide != Side.Enemy);
+    borderNorth.SetActive(north == null || north.ownerSide == Side.Enemy);
+    borderSouth.SetActive(south == null || south.ownerSide == Side.Enemy);
+    borderEast.SetActive(east == null || east.ownerSide == Side.Enemy);
+    borderWest.SetActive(west == null || west.ownerSide == Side.Enemy);
 }
 
     public void SetOpen(bool open)
@@ -115,8 +115,8 @@ public void UpdateBorders()
             myPlusIcon.SetActive(false);
             return;
         }
-
-        myPlusIcon.SetActive(open);
+        if (ownerSide == Side.Player)
+            myPlusIcon.SetActive(open);
     }
 
     // Apply correct material based on ownerSide
