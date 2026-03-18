@@ -46,62 +46,61 @@ public class TileVariationGenerator : MonoBehaviour
         }
     }
 
-    // 🔥 WATER / BIG CLUSTER
-    void GenerateSingleCluster(VariationData variation, Vector2Int playerCity, Vector2Int enemyCity)
+void GenerateSingleCluster(VariationData variation, Vector2Int playerCity, Vector2Int enemyCity)
+{
+    int width = Mathf.Clamp(variation.tileCount / 3, 3, 8);
+    int height = Mathf.Clamp(variation.tileCount / width, 2, 6);
+
+    int safety = 0;
+
+    while (safety < 300)
     {
-        int width = Mathf.Clamp(variation.tileCount / 3, 3, 8);
-        int height = Mathf.Clamp(variation.tileCount / width, 2, 6);
+        safety++;
 
-        int safety = 0;
+        int startX = Random.Range(0, GRID_SIZE);
+        int startY = Random.Range(0, GRID_SIZE);
 
-        while (safety < 200)
+        int placed = 0;
+
+        for (int x = 0; x < width; x++)
         {
-            safety++;
-
-            int startX = Random.Range(0, GRID_SIZE - width);
-            int startY = Random.Range(0, GRID_SIZE - height);
-
-            List<Vector2Int> cluster = new List<Vector2Int>();
-
-            for (int x = 0; x < width; x++)
-            {
-                for (int y = 0; y < height; y++)
-                {
-                    var coord = new Vector2Int(startX + x, startY + y);
-
-                    if (!IsValid(coord, playerCity, enemyCity))
-                        continue;
-
-                    cluster.Add(coord);
-                }
-            }
-
-            if (cluster.Count < variation.tileCount * 0.7f)
-                continue; // retry if too many invalid tiles
-
-            int placed = 0;
-
-            foreach (var coord in cluster)
+            for (int y = 0; y < height; y++)
             {
                 if (placed >= variation.tileCount)
                     break;
 
+                int px = startX + x;
+                int py = startY + y;
+
+                // 🔥 Allow clipping at edges instead of rejecting
+                if (px < 0 || py < 0 || px >= GRID_SIZE || py >= GRID_SIZE)
+                    continue;
+
+                var coord = new Vector2Int(px, py);
+
                 if (usedTiles.Contains(coord))
+                    continue;
+
+                if (!IsValid(coord, playerCity, enemyCity))
                     continue;
 
                 ApplyVariation(coord, variation);
                 placed++;
             }
-
-            break; // only ONE cluster
         }
+
+        if (placed > variation.tileCount * 0.6f)
+            break; // accept even partial clusters near edges
     }
+}
 
     // 🔹 LAVA / SMALL PATCHES
     void GenerateMultiCluster(VariationData variation, Vector2Int playerCity, Vector2Int enemyCity)
     {
         int placed = 0;
         int safety = 0;
+
+
 
         while (placed < variation.tileCount && safety < 500)
         {
@@ -110,8 +109,11 @@ public class TileVariationGenerator : MonoBehaviour
             int width = Random.Range(2, 4);
             int height = Random.Range(2, 3);
 
-            int startX = Random.Range(0, GRID_SIZE - width);
-            int startY = Random.Range(0, GRID_SIZE - height);
+            // int startX = Random.Range(0, GRID_SIZE - width);
+            // int startY = Random.Range(0, GRID_SIZE - height);
+
+            int startX = Random.Range(0, GRID_SIZE);
+            int startY = Random.Range(0, GRID_SIZE);
 
             for (int x = 0; x < width; x++)
             {
@@ -121,6 +123,12 @@ public class TileVariationGenerator : MonoBehaviour
                         return;
 
                     var coord = new Vector2Int(startX + x, startY + y);
+
+                    int px = startX + x;
+                    int py = startY + y;
+
+                    if (px < 0 || py < 0 || px >= GRID_SIZE || py >= GRID_SIZE)
+                        continue;
 
                     if (usedTiles.Contains(coord))
                         continue;
@@ -140,9 +148,11 @@ public class TileVariationGenerator : MonoBehaviour
         Tile tile = CubeGridManager.Instance.GetCube(coord);
         if (tile == null) return;
 
+        tile.transform.position += Vector3.down * 0.5f; // sink the tile slightly for better visuals
+
         tile.tileRenderer.material = variation.material;
         tile.ownerSide = Side.NeutralEnemy; // for water/lava
-        
+
         usedTiles.Add(coord);
 
         // 🔥 ENABLE EXISTING NAVMESH OBSTACLE
@@ -177,6 +187,8 @@ public class TileVariationGenerator : MonoBehaviour
 
     bool FarFromCity(Vector2Int a, Vector2Int b)
     {
-        return Mathf.Abs(a.x - b.x) > 2 && Mathf.Abs(a.y - b.y) > 2;
+        int dist = Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
+        return dist > 3;
+        // return Mathf.Abs(a.x - b.x) > 2 && Mathf.Abs(a.y - b.y) > 2;
     }
 }

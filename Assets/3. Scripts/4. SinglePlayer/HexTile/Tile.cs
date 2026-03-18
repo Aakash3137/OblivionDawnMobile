@@ -97,10 +97,13 @@ public void UpdateBorders()
         return;
     }
 
-    borderNorth.SetActive(north == null || north.ownerSide == Side.Enemy);
-    borderSouth.SetActive(south == null || south.ownerSide == Side.Enemy);
-    borderEast.SetActive(east == null || east.ownerSide == Side.Enemy);
-    borderWest.SetActive(west == null || west.ownerSide == Side.Enemy);
+    if(ownerSide == Side.Player)
+    {
+        borderNorth.SetActive(north == null || north.ownerSide == Side.Enemy);
+        borderSouth.SetActive(south == null || south.ownerSide == Side.Enemy);
+        borderEast.SetActive(east == null || east.ownerSide == Side.Enemy);
+        borderWest.SetActive(west == null || west.ownerSide == Side.Enemy);
+    }
 }
 
     public void SetOpen(bool open)
