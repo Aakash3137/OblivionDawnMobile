@@ -119,16 +119,18 @@ void GenerateSingleCluster(VariationData variation, Vector2Int playerCity, Vecto
             {
                 for (int y = 0; y < height; y++)
                 {
-                    if (placed >= variation.tileCount)
-                        return;
-
-                    var coord = new Vector2Int(startX + x, startY + y);
-
                     int px = startX + x;
                     int py = startY + y;
 
                     if (px < 0 || py < 0 || px >= GRID_SIZE || py >= GRID_SIZE)
                         continue;
+
+                    if (placed >= variation.tileCount)
+                        return;
+
+                    var coord = new Vector2Int(startX + x, startY + y);
+
+
 
                     if (usedTiles.Contains(coord))
                         continue;
