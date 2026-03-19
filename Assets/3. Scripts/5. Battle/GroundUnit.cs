@@ -10,6 +10,7 @@ public enum UnitState
     MovingToPrimary,
     Chasing,
     Attacking,
+    Defending,
     Idle
 }
 
@@ -59,7 +60,7 @@ public class GroundUnit : MonoBehaviour
     internal float peripheralAngleBonus = 1f;
 
     private UnitState currentState;
-    
+
     private AttackTargets attackTargets;
     private Side unitSide;
 
@@ -106,13 +107,13 @@ public class GroundUnit : MonoBehaviour
         FindDetectionTarget();
         ArrangeRotation();
     }
-    
+
     private void Update()
     {
         HandleTargetDetection();
         HandleState();
     }
-    
+
     private void HandleTargetDetection()
     {
         targetCheckTimer += Time.deltaTime;
@@ -126,7 +127,7 @@ public class GroundUnit : MonoBehaviour
             ResolveFinalTarget();
         }
     }
-    
+
     private void ResolveFinalTarget()
     {
         // If reply target was destroyed (Missing), clear it
@@ -135,8 +136,8 @@ public class GroundUnit : MonoBehaviour
 
         if (!detectionTarget)
             detectionTarget = null;
-        
-        
+
+
         if (replyTarget != null && CanAttackTarget(replyTarget) && !IsInsideMinRange(replyTarget))
         {
             target = replyTarget.gameObject;
@@ -154,7 +155,7 @@ public class GroundUnit : MonoBehaviour
             target = null;
         }
     }
-    
+
     private void HandleState()
     {
         if (target == null)
@@ -164,28 +165,46 @@ public class GroundUnit : MonoBehaviour
         }
 
         float distance = Vector3.Distance(transform.position, target.transform.position);
-        
+
         // Account for collider sizes
         float targetRadius = 0f;
         if (target.TryGetComponent<Collider>(out var targetCollider))
             targetRadius = targetCollider.bounds.extents.magnitude;
-        
+
         float myRadius = hitCollider != null ? hitCollider.bounds.extents.magnitude : 0f;
         float effectiveDistance = distance - targetRadius - myRadius;
-        
+
         bool withinAttackRange = effectiveDistance <= AttackRange || (agent.hasPath && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance);
 
         switch (currentState)
         {
             case UnitState.Idle:
-                ChangeState(UnitState.MovingToPrimary);
+                switch (GameManager.Instance.unitStance)
+                {
+                    case UnitStance.Attacking:
+                        ChangeState(UnitState.MovingToPrimary);
+                        break;
+                    case UnitStance.Defending:
+                        if (unitSide != Side.Enemy)
+                            ChangeState(UnitState.Defending);
+                        else
+                            ChangeState(UnitState.MovingToPrimary);
+                        break;
+                }
                 break;
 
             case UnitState.MovingToPrimary:
-
+                if (GameManager.Instance.unitStance == UnitStance.Defending)
+                {
+                    if (unitSide != Side.Enemy)
+                    {
+                        ChangeState(UnitState.Defending);
+                        return;
+                    }
+                }
                 if (detectionTarget != null)
                 {
-                   ChangeState(UnitState.Chasing);
+                    ChangeState(UnitState.Chasing);
                 }
                 else if (withinAttackRange)
                 {
@@ -194,34 +213,59 @@ public class GroundUnit : MonoBehaviour
                 }
 
                 MoveToTarget();
-                ApplySeparation();   
+                ApplySeparation();
                 break;
 
             case UnitState.Chasing:
-
+                if (GameManager.Instance.unitStance == UnitStance.Defending)
+                {
+                    if (unitSide != Side.Enemy)
+                    {
+                        ChangeState(UnitState.Defending);
+                        return;
+                    }
+                }
                 if (withinAttackRange)
                 {
-                   ChangeState(UnitState.Attacking);
+                    ChangeState(UnitState.Attacking);
                     return;
                 }
 
                 MoveToTarget();
-                ApplySeparation();  
+                ApplySeparation();
+                break;
+
+            case UnitState.Defending:
+                if (GameManager.Instance.unitStance == UnitStance.Attacking)
+                {
+                    ChangeState(UnitState.MovingToPrimary);
+                    return;
+                }
+                if (withinAttackRange)
+                    Attack();
+
+                ApplySeparation();
                 break;
 
             case UnitState.Attacking:
-
+                if (GameManager.Instance.unitStance == UnitStance.Defending)
+                {
+                    if (unitSide != Side.Enemy)
+                    {
+                        ChangeState(UnitState.Defending);
+                        return;
+                    }
+                }
                 if (effectiveDistance > AttackRange + 0.5f)
                 {
-                  ChangeState(UnitState.Chasing);
+                    ChangeState(UnitState.Chasing);
                     return;
                 }
-
                 Attack();
                 break;
         }
     }
-    
+
     private void ChangeState(UnitState newState)
     {
         if (currentState == newState)
@@ -232,6 +276,10 @@ public class GroundUnit : MonoBehaviour
         switch (newState)
         {
             case UnitState.Idle:
+                agent.isStopped = true;
+                animator?.SetFloat("Move", 0f);
+                break;
+            case UnitState.Defending:
                 agent.isStopped = true;
                 animator?.SetFloat("Move", 0f);
                 break;
@@ -248,7 +296,7 @@ public class GroundUnit : MonoBehaviour
                 break;
         }
     }
-    
+
     private void MoveToTarget()
     {
         if (target == null) return;
@@ -282,7 +330,7 @@ public class GroundUnit : MonoBehaviour
     }
 
     #region UTDS (Unit Target Detection System)
-    
+
 
     private void SetPrimaryTarget()
     {
@@ -292,12 +340,12 @@ public class GroundUnit : MonoBehaviour
             primaryTarget = GameManager.Instance.PlayerMainBuilding;
     }
 
-    
+
     private void FindDetectionTarget()
     {
         Collider[] hits = new Collider[32];
         LayerMask enemyLayerMask = GetEnemyLayerMask();
-        
+
         int count = Physics.OverlapSphereNonAlloc(
             transform.position,
             DetectionRange,
@@ -322,7 +370,7 @@ public class GroundUnit : MonoBehaviour
 
             if (candidate == unitStats || candidate.side == unitSide)
                 continue;
-            
+
 
             float distance = GetAdjustedDistance(candidate);
 
@@ -330,9 +378,9 @@ public class GroundUnit : MonoBehaviour
             if (distance < MinAttackRange)
                 continue;
 
-            
+
             //  FIRST PRIORITY: Units
-            if (candidate is UnitStats )
+            if (candidate is UnitStats)
             {
                 if (distance < closestUnitDist)
                 {
@@ -373,13 +421,13 @@ public class GroundUnit : MonoBehaviour
         if (closestUnit != null)
             detectionTarget = closestUnit;
         else if (closestDefense != null)
-            detectionTarget =  closestDefense;
+            detectionTarget = closestDefense;
         else if (closestWall != null)
             detectionTarget = closestWall;
         else
             detectionTarget = closestBuilding;
     }
-    
+
     private float GetAdjustedDistance(Stats target)
     {
         float distance = Vector3.Distance(transform.position, target.transform.position);
@@ -399,7 +447,7 @@ public class GroundUnit : MonoBehaviour
         else
             return attackTargets.canAttackGround;
     }
-    
+
     #endregion
 
 
@@ -480,26 +528,26 @@ public class GroundUnit : MonoBehaviour
     {
         if (target == null)
         {
-          //  GameDebug.Log($"[{name}] Attack: Target is NULL");
+            //  GameDebug.Log($"[{name}] Attack: Target is NULL");
             attackTimer = 0f;
             return;
         }
-        
+
         FaceTarget();
-        
+
         float distance = Vector3.Distance(transform.position, target.transform.position);
-        
+
         // Account for collider sizes
         float targetRadius = 0f;
         if (target.TryGetComponent<Collider>(out var targetCollider))
             targetRadius = targetCollider.bounds.extents.magnitude;
-        
+
         float myRadius = hitCollider != null ? hitCollider.bounds.extents.magnitude : 0f;
         float effectiveDistance = distance - targetRadius - myRadius;
-        
-        if (effectiveDistance > AttackRange + 0.5f|| effectiveDistance < MinAttackRange)    // added min attack range functionality
+
+        if (effectiveDistance > AttackRange + 0.5f || effectiveDistance < MinAttackRange)    // added min attack range functionality
         {
-          //  GameDebug.Log($"[{name}] Attack: Out of range (EffectiveDist: {effectiveDistance:F2} > {AttackRange + 0.5f:F2})");
+            //  GameDebug.Log($"[{name}] Attack: Out of range (EffectiveDist: {effectiveDistance:F2} > {AttackRange + 0.5f:F2})");
             attackTimer = 0f;
             return;
         }
@@ -513,11 +561,11 @@ public class GroundUnit : MonoBehaviour
             Stats enemy = target.GetComponent<Stats>();
             if (enemy == null)
             {
-              //  GameDebug.Log($"[{name}] Attack: Target has no Stats component");
+                //  GameDebug.Log($"[{name}] Attack: Target has no Stats component");
                 return;
             }
 
-          //  GameDebug.Log($"[{name}] FIRING at {target.name}");
+            //  GameDebug.Log($"[{name}] FIRING at {target.name}");
             projectileShooter.Fire(enemy);
 
             if (animator != null)

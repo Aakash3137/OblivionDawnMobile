@@ -1,6 +1,11 @@
 using System;
 using UnityEngine;
 
+public enum UnitStance
+{
+    Attacking,
+    Defending
+}
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
@@ -8,6 +13,8 @@ public class GameManager : MonoBehaviour
     [Header("Data")]
     public AllFactionsData data;
     public DecSelectionData decSelectionData;
+
+    public UnitStance unitStance;
 
     [Header("Spawn points")]
     public Tile playerTile;

@@ -14,7 +14,7 @@ public class DeckSelectionManager : MonoBehaviour
     [Space(10)]
     [SerializeField] private SelectedCard selectedCardPrefab;
     [SerializeField] private Transform selectedCardsContainer;
-    [SerializeField] private int maxCardCount;
+    [SerializeField] private int maxCardCount = 8;
 
     [Space(10)]
     [ReadOnly][SerializeField] private FactionDeckData[] allFactionsDeckData;
