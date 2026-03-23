@@ -134,7 +134,7 @@ public class UpgradePanelNavigation : MonoBehaviour
     public void UpdateFragmentsCount(FactionName faction)
     {
         if (selectedFaction == faction)
-            fragmentsCountText.SetText($"{userData.fragments[(int)faction]}");
+            fragmentsCountText.SetText($"{userData.GetFragment((int)faction)}");
 
         var cardsInCurrentPanel = currentCardPanel.allCards;
 

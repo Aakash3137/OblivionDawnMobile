@@ -85,7 +85,7 @@ public class UpgradeCard : MonoBehaviour
         FactionName faction = identity.faction;
 
         int fragmentCost = StatUpgrade.FragmentCost(spawnLevel + 1);
-        int currentFragments = userData.fragments[(int)faction];
+        int currentFragments = userData.GetFragment((int)faction);
 
         levelProgressBar.fillAmount = (float)currentFragments / fragmentCost;
         levelProgressText.SetText($"{currentFragments}/{fragmentCost}");

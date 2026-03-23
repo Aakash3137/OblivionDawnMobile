@@ -17,7 +17,7 @@ public class Userdata : ScriptableObject
     [Header("Game Data")]
     [SerializeField] private int coins = 0;
     [SerializeField] private int diamonds = 0;
-    [field: SerializeField, ReadOnly] public int[] fragments { get; private set; } = new int[4];
+    [SerializeField, ReadOnly] private int[] fragments = new int[4];
     public Action<FactionName> OnFragmentsChanged;
 
     public int Level = 0;
@@ -70,7 +70,7 @@ public class Userdata : ScriptableObject
 
         OnFragmentsChanged?.Invoke(faction);
     }
-
+    public int GetFragment(int index) => fragments[index];
 
     public void ResetData()
     {
