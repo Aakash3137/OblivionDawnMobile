@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class OpenShopPanel : MonoBehaviour
+public class OpenPanel : MonoBehaviour
 {
     [SerializeField] private GameObject panel;
     private Button button;
@@ -9,16 +9,16 @@ public class OpenShopPanel : MonoBehaviour
     private void Awake()
     {
         button = GetComponent<Button>();
-        button.onClick.AddListener(OpenPanel);
+        button.onClick.AddListener(OnClickOpenPanel);
     }
 
-    private void OpenPanel()
+    private void OnClickOpenPanel()
     {
         panel.SetActive(true);
     }
 
     private void OnDestroy()
     {
-        button.onClick.RemoveListener(OpenPanel);
+        button.onClick.RemoveListener(OnClickOpenPanel);
     }
 }
