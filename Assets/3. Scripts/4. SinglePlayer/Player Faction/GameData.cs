@@ -26,6 +26,8 @@ public static class GameData
     // Reference to the single ScriptableObject asset that holds all factions
     public static AllFactionsData AllFactionsData;
 
+    public static Mode gameMode = Mode.None;
+
     // Which faction the player picked (Past, Present, Future, Monster)
     public static FactionName SelectedFaction = FactionName.Present;
 

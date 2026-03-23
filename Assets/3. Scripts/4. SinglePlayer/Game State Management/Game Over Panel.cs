@@ -43,7 +43,8 @@ public class GameOverPanel : MonoBehaviour
 
     private void HomeMenu()
     {
-        gmInstance.ChangeState(GameStateEnum.MAIN_MENU);
+        GameData.gameMode = Mode.None;
+        gmInstance.ChangeState(GameStateEnum.LOADING);
         SceneManager.LoadScene("MainScene");
     }
 }

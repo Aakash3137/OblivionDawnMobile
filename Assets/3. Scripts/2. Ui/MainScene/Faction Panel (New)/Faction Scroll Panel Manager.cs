@@ -1,37 +1,37 @@
-using System;
 using System.Collections.Generic;
-using Sirenix.OdinInspector;
 using UnityEngine;
 
 public class FactionScrollPanelManager : MonoBehaviour
 {
-    private float mainCardScrollSpeed = 50f;
-    private float cardScrollSpeed;
-    [SerializeField] private float cardWidth;
+    [Space(10)]
+    [SerializeField] private float mainCardScrollSpeed = 50f;
+    [SerializeField] private float cardScrollSpeed = 3.2f;
+    [SerializeField] private float cardWidth = 700f;
     [SerializeField] private float cardOffset = 100f;
     [SerializeField] private float lastCardOffset = 30f;
-    [Space(10)]
+    [SerializeField] private RectTransform scrollArea;
 
     private bool isDragging;
     private float totalDrag;
-    [SerializeField] private bool wasDraggingLeft;
-
-    Transform movingCard => transform.GetChild(movingCardIndex);
+    private bool wasDraggingLeft;
+    private bool wasDraggingRight;
 
     private int totalCards;
+
     private int movingCardIndex;
+    Transform movingCard => transform.GetChild(movingCardIndex);
 
-
-    [SerializeField, ReadOnly] private List<Transform> previousOrder = new List<Transform>();
+    private List<Transform> previousOrder = new List<Transform>();
 
 
     private void Awake()
     {
-        var factionCards = new List<FactionDisplayCard>(GetComponentsInChildren<FactionDisplayCard>());
+        var factionCards = GetComponentsInChildren<FactionDisplayCard>();
 
         int factionCount = ScenarioDataTypes._factionEnumValues.Length;
 
-        totalCards = factionCards.Count;
+        totalCards = factionCards.Length;
+
         movingCardIndex = totalCards - 1;
 
         for (int i = 0; i < totalCards; i++)
@@ -40,22 +40,39 @@ public class FactionScrollPanelManager : MonoBehaviour
             factionCards[i].faction = ScenarioDataTypes._factionEnumValues[i % factionCount];
         }
 
-        cardWidth = factionCards[0].GetComponent<RectTransform>().rect.width;
+        // Reverse order to get medieval first
+        for (int i = 0; i < totalCards; i++)
+        {
+            transform.GetChild(0).SetSiblingIndex(totalCards - 1 - i);
+        }
 
-        cardScrollSpeed = mainCardScrollSpeed * 0.05f;
+        cardWidth = factionCards[0].GetComponent<RectTransform>().rect.width;
 
         SnapCards();
     }
 
     private void Update()
     {
-        // ScrollHandler();
+        HorizontalScrollHandler();
     }
 
-    private void ScrollHandler()
+    private void HorizontalScrollHandler()
     {
         if (Input.GetMouseButtonDown(0))
         {
+
+            Vector2 mousePosWRTScrollArea;
+
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                scrollArea,
+                Input.mousePosition,
+                null,
+                out mousePosWRTScrollArea
+            );
+
+            if (!scrollArea.rect.Contains(mousePosWRTScrollArea))
+                return;
+
             isDragging = true;
             totalDrag = 0f;
         }
@@ -70,14 +87,20 @@ public class FactionScrollPanelManager : MonoBehaviour
             totalDrag += dragDeltaX;
 
             var mainScroll = dragDeltaX * mainCardScrollSpeed;
-            var cardScroll = dragDeltaX * cardScrollSpeed;
 
             movingCard.localPosition += new Vector3(mainScroll, 0, 0);
 
+            for (int i = 0; i < movingCardIndex; i++)
+            {
+                var cardScroll = dragDeltaX * cardScrollSpeed * i;
+
+                transform.GetChild(i).localPosition += new Vector3(cardScroll, 0, 0);
+            }
+
             if (isDragLeft)
             {
-                // Dragging left
-                if (movingCard.localPosition.x < -cardWidth * 0.95f)
+                // Auto Snap card when the position of the card near to the left side card
+                if (Mathf.Abs(movingCard.localPosition.x) > cardWidth + lastCardOffset * 0.95f)
                 {
                     movingCard.SetAsFirstSibling();
                     SnapCards();
@@ -85,29 +108,34 @@ public class FactionScrollPanelManager : MonoBehaviour
             }
             else if (isDragRight)
             {
-                // Dragging right
+                // this is to change moving card(which is always last child) when slide to the right
                 if (movingCard.localPosition.x > 0.1f)
                 {
                     transform.GetChild(0).SetAsLastSibling();
                 }
+                // if the user dragged enough to right set last visible card (which is always first child) to the left
                 if (Mathf.Abs(movingCard.localPosition.x) < cardWidth * 0.2f)
                 {
                     transform.GetChild(0).localPosition = new Vector3(-(cardWidth + lastCardOffset), 0, 0);
                 }
-                if (Mathf.Abs(movingCard.localPosition.x) < cardWidth * 0.1f)
+
+                // Auto snap the cards when nearly close to the default position(0,0,0)
+                if (Mathf.Abs(movingCard.localPosition.x) < cardWidth * 0.05f)
                 {
                     SnapCards();
                 }
             }
 
             wasDraggingLeft = totalDrag < 0;
+            wasDraggingRight = totalDrag > 0;
         }
 
         if (Input.GetMouseButtonUp(0))
         {
             isDragging = false;
 
-            if (!wasDraggingLeft && Mathf.Abs(movingCard.localPosition.x) < cardWidth * 0.6f)
+            // Only snap if enough card position is dragged on mouse release
+            if (wasDraggingRight && Mathf.Abs(movingCard.localPosition.x) < cardWidth * 0.6f)
             {
                 SnapCards();
             }
@@ -117,10 +145,12 @@ public class FactionScrollPanelManager : MonoBehaviour
                 SnapCards();
             }
             else
+            {
+                // if enough card position is not dragged on mouse release reset the order
                 ResetOrder();
+            }
         }
     }
-
     private void SnapCards()
     {
         previousOrder.Clear();
@@ -151,5 +181,10 @@ public class FactionScrollPanelManager : MonoBehaviour
         }
 
         SnapCards();
+    }
+
+    public FactionName GetCurrentFaction()
+    {
+        return movingCard.GetComponent<FactionDisplayCard>().faction;
     }
 }
