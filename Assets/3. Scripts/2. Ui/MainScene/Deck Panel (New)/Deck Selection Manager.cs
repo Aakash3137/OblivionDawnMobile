@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
@@ -158,6 +159,78 @@ public class DeckSelectionManager : MonoBehaviour
         SortSelectedCards();
         return true;
     }
+
+    public void LoadDeckData()
+    {
+        factionCardPanels = DeckPanelManager.Instance.factionCardPanels;
+
+        var factionIndex = (int)selectedFaction;
+
+        List<ScriptableObject> loadedDeckSO = currentDeck.deckCardsSO;
+
+        if (loadedDeckSO.Count == 0)
+        {
+            var deckSO = allFactionsDeckData[(int)selectedFaction].decks[currentDeckIndex].deckCardsSO;
+            loadedDeckSO = DeckPanelManager.Instance.GetDefaultDeckCards(selectedFaction);
+
+            foreach (var loadedCard in loadedDeckSO)
+                deckSO.Add(loadedCard);
+        }
+
+        var currentFactionCardPanel = factionCardPanels[factionIndex].cardPanels[0];
+
+        List<UpgradeCard> currentFactionCards = currentFactionCardPanel.allCards;
+
+        // Debug.Log($"<color=green>[Deck Selection Manager] currentFactionCards: {loadedDeckSO.Count}</color>");
+        // Debug.Log($"<color=green>[Deck Selection Manager] Selected Faction : {selectedFaction}</color>");
+
+        foreach (var card in currentFactionCards)
+        {
+            if (card == null) continue;
+            if (card is DeckCard deckCard)
+            {
+                if (deckCard.upgradeDataSO != null && loadedDeckSO.Contains(deckCard.upgradeDataSO))
+                    deckCard.EnableSelectionPanel(true);
+                else if (deckCard.upgradeDataSO == null)
+                    Debug.Log($"<color=red>[Deck Selection Manager] Card upgradeDataSO not found in loaded deck</color>");
+            }
+        }
+
+        if (currentFactionCards[0] is DeckCard deckCards)
+            deckCards.UpdateButtonInteractivity();
+
+    }
+
+    private void SortSelectedCards()
+    {
+        List<ScriptableObject> loadedDeckSO = currentDeck.deckCardsSO;
+
+        loadedDeckSO.Sort(CompareBySO);
+        selectedCards.Sort(CompareByCard);
+
+        for (int i = 0; i < selectedCards.Count; i++)
+            selectedCards[i].transform.SetSiblingIndex(i);
+    }
+
+    private static int GetTypeOrder(ScriptableObject so) =>
+        so is UnitProduceStatsSO ? 0 : 1;
+
+    private static int CompareBySO(ScriptableObject a, ScriptableObject b)
+    {
+        /// <summary>
+        /// Returns -1 → if a should come before b
+        // Returns 0 → if equal
+        // Returns 1 → if a should come after b
+        /// </summary>
+
+        int order = GetTypeOrder(a).CompareTo(GetTypeOrder(b));
+        return order != 0 ? order : CalculatePopulation(a).CompareTo(CalculatePopulation(b));
+    }
+
+    private static int CompareByCard(SelectedCard a, SelectedCard b) =>
+        CompareBySO(a.upgradeDataSO, b.upgradeDataSO);
+
+
     private void UpdatePopulationUI()
     {
         populationText.SetText($"{currentPopulation}/{maxPopulation}");
@@ -173,53 +246,6 @@ public class DeckSelectionManager : MonoBehaviour
         };
 
         return populationCost;
-    }
-
-    public void LoadDeckData()
-    {
-        factionCardPanels = DeckPanelManager.Instance.factionCardPanels;
-
-        var factionIndex = (int)selectedFaction;
-
-        for (int j = 0; j < allFactionsDeckData[factionIndex].decks.Count; j++)
-        {
-            List<ScriptableObject> loadedDeckSO = allFactionsDeckData[factionIndex].decks[j].deckCardsSO;
-            var currentFactionCardPanel = factionCardPanels[factionIndex].cardPanels[0];
-            List<UpgradeCard> currentFactionCards = currentFactionCardPanel.allCards;
-
-            // Debug.Log($"<color=green>[Deck Selection Manager] currentFactionCards: {loadedDeckSO.Count}</color>");
-            // Debug.Log($"<color=green>[Deck Selection Manager] Selected Faction : {selectedFaction}</color>");
-
-            foreach (var card in currentFactionCards)
-            {
-                if (card == null) continue;
-                if (card is DeckCard deckCard)
-                {
-                    if (deckCard.upgradeDataSO != null && loadedDeckSO.Contains(deckCard.upgradeDataSO))
-                        deckCard.EnableSelectionPanel(true);
-                    else if (deckCard.upgradeDataSO == null)
-                        Debug.Log($"<color=red>[Deck Selection Manager] Card upgradeDataSO not found in loaded deck</color>");
-                }
-            }
-
-            if (currentFactionCards[0] is DeckCard deckCards)
-                deckCards.UpdateButtonInteractivity();
-        }
-    }
-
-    private void SortSelectedCards()
-    {
-        var factionIndex = (int)selectedFaction;
-        List<ScriptableObject> loadedDeckSO = allFactionsDeckData[factionIndex].decks[currentDeckIndex].deckCardsSO;
-
-        // Sort the selected cards by the population cost in ascending order
-        selectedCards.Sort((a, b) => CalculatePopulation(a.upgradeDataSO).CompareTo(CalculatePopulation(b.upgradeDataSO)));
-        loadedDeckSO.Sort((a, b) => CalculatePopulation(a).CompareTo(CalculatePopulation(b)));
-
-        for (int i = 0; i < selectedCards.Count; i++)
-        {
-            selectedCards[i].transform.SetSiblingIndex(i);
-        }
     }
 }
 

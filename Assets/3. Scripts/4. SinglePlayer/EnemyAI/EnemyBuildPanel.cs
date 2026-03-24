@@ -32,8 +32,8 @@ public class EnemyBuildPanel : MonoBehaviour
         enemyTankBuilding.onClick.AddListener(PlaceEnemyTankBuilding);
         enemyAOERangedBuilding.onClick.AddListener(PlaceEnemyAOERangedBuilding);
 
-       Generic.Delay(SetWall,0.1f);
-        
+        Generic.Delay(SetWall, 0.1f);
+
         gameObject.SetActive(false);
     }
 
@@ -66,8 +66,12 @@ public class EnemyBuildPanel : MonoBehaviour
     // updated code with enemy faction selection from inspector.
     private BuildingStats GetBuildingByType(int k)
     {
-        return CharacterDatabase.Instance.GetSpawnerBuilding(AIDecSelectionData.AllFactionDecData[(int)enemyFactionName]
-            .SelectedUnitDeck[k]);
+        var unitsSO = AIDecSelectionData.GetUnitsSOInDeck(enemyFactionName);
+
+        if (unitsSO == null)
+            return null;
+        else
+            return CharacterDatabase.Instance.GetSpawnerBuilding(unitsSO[k]);
     }
 
     private void PlaceBuilding(BuildingStats buildingPrefab)

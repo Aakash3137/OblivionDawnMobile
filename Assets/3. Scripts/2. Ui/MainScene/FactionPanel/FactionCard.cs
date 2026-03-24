@@ -34,7 +34,7 @@ public class FactionCard : MonoBehaviour
     void OnEnable()
     {
         GenerateBlocks();
-        if(NoData)
+        if (NoData)
         {
             NodataMessage.gameObject.SetActive(true);
             startButton.gameObject.SetActive(false);
@@ -56,7 +56,7 @@ public class FactionCard : MonoBehaviour
             NodataMessage.gameObject.SetActive(false);
             blocksGenerated = true;
         }
-        else if(NoData)
+        else if (NoData)
         {
             NodataMessage.gameObject.SetActive(true);
             startButton.gameObject.SetActive(false);
@@ -65,36 +65,36 @@ public class FactionCard : MonoBehaviour
 
     private void GenerateBlocks()
     {
-        if (SelectedFactionData == null) return;
+        // if (SelectedFactionData == null) return;
 
-        ClearParents();
-        foreach (DeckData faction in SelectedFactionData.AllFactionDecData)
-        {
-            if (faction.FactionType != CardOf)
-                continue;
+        // ClearParents();
+        // foreach (DeckData faction in SelectedFactionData.AllFactionDecData)
+        // {
+        //     if (faction.FactionType != CardOf)
+        //         continue;
 
-            bool noData =
-                (faction.SelectedUnitDeck?.Count ?? 0) == 0 &&
-                (faction.SelectedDefenseDec?.Count ?? 0) == 0 &&
-                (faction.SelectedResourceDeck?.Count ?? 0) == 0;
+        //     bool noData =
+        //         (faction.SelectedUnitDeck?.Count ?? 0) == 0 &&
+        //         (faction.SelectedDefenseDec?.Count ?? 0) == 0 &&
+        //         (faction.SelectedResourceDeck?.Count ?? 0) == 0;
 
-            NoData = noData;
-            NodataMessage.text = noData ? "Not Selected this Faction.....!" : "";
+        //     NoData = noData;
+        //     NodataMessage.text = noData ? "Not Selected this Faction.....!" : "";
 
-            if (noData)
-                break;
+        //     if (noData)
+        //         break;
 
-            foreach (var unit in faction.SelectedUnitDeck)
-                Instantiate(BlockPrefab, Offense_Parent).SetData(unit);
+        //     foreach (var unit in faction.SelectedUnitDeck)
+        //         Instantiate(BlockPrefab, Offense_Parent).SetData(unit);
 
-            foreach (var def in faction.SelectedDefenseDec)
-                Instantiate(BlockPrefab, Defense_Parent).SetData(def);
+        //     foreach (var def in faction.SelectedDefenseDec)
+        //         Instantiate(BlockPrefab, Defense_Parent).SetData(def);
 
-            foreach (var res in faction.SelectedResourceDeck)
-                Instantiate(BlockPrefab, Resource_Parent).SetData(res);
+        //     foreach (var res in faction.SelectedResourceDeck)
+        //         Instantiate(BlockPrefab, Resource_Parent).SetData(res);
 
-            break; // 👈 IMPORTANT: only one faction should be processed
-        }
+        //     break; // 👈 IMPORTANT: only one faction should be processed
+        // }
     }
 
     private void ClearParents()

@@ -38,7 +38,7 @@ public class DecManager : MonoBehaviour
 
     private void Start()
     {
-       // backBtn.onClick.AddListener(OnclickCloseBtn);
+        // backBtn.onClick.AddListener(OnclickCloseBtn);
     }
 
     private void OnclickCloseBtn()
@@ -52,20 +52,20 @@ public class DecManager : MonoBehaviour
     // =========================
     public void InitializeAllFactionDecks()
     {
-        selectionData.AllFactionDecData.Clear();
+        // selectionData.AllFactionDecData.Clear();
 
-        foreach (var dec in deckList)
-        {
-            DeckData deckData = new DeckData
-            {
-                FactionType = dec._FactionName,
-                SelectedUnitDeck = GetFirst4(dec.UnitCards),
-                SelectedDefenseDec = GetFirst4(dec.DefenseCards),
-                SelectedResourceDeck = GetFirst4(dec.ResourceCards)
-            };
+        // foreach (var dec in deckList)
+        // {
+        //     DeckData deckData = new DeckData
+        //     {
+        //         FactionType = dec._FactionName,
+        //         SelectedUnitDeck = GetFirst4(dec.UnitCards),
+        //         SelectedDefenseDec = GetFirst4(dec.DefenseCards),
+        //         SelectedResourceDeck = GetFirst4(dec.ResourceCards)
+        //     };
 
-            selectionData.AddDeckData(deckData);
-        }
+        //     selectionData.AddDeckData(deckData);
+        // }
     }
 
     private List<T> GetFirst4<T>(List<T> list)
@@ -91,24 +91,24 @@ public class DecManager : MonoBehaviour
 
     void ShowFaction()
     {
-        int index = (int)selectionData.CurrentFaction;
-        Debug.Log($"Faction Name" + index);
-        CurrentCategory = selectionData.CurrentCategory;
-        // Safety check
-        if (index < 0 || index >= deckList.Count ||
-            index >= selectionData.AllFactionDecData.Count)
-        {
-            Debug.LogError("Invalid faction index!");
-            return;
-        }
+        // int index = (int)selectionData.CurrentFaction;
+        // Debug.Log($"Faction Name" + index);
+        // CurrentCategory = selectionData.CurrentCategory;
+        // // Safety check
+        // if (index < 0 || index >= deckList.Count ||
+        //     index >= selectionData.AllFactionDecData.Count)
+        // {
+        //     Debug.LogError("Invalid faction index!");
+        //     return;
+        // }
 
-        SelectDeck(deckList[index]);
+        // SelectDeck(deckList[index]);
 
-        var factionData = selectionData.AllFactionDecData[index];
+        // var factionData = selectionData.AllFactionDecData[index];
 
-        CurrentDec.UnitCards = factionData.SelectedUnitDeck;
-        CurrentDec.DefenseCards = factionData.SelectedDefenseDec;
-        CurrentDec.ResourceCards = factionData.SelectedResourceDeck;
+        // CurrentDec.UnitCards = factionData.SelectedUnitDeck;
+        // CurrentDec.DefenseCards = factionData.SelectedDefenseDec;
+        // CurrentDec.ResourceCards = factionData.SelectedResourceDeck;
     }
 
     // =========================
@@ -126,7 +126,7 @@ public class DecManager : MonoBehaviour
         if (selected == null)
             return;
 
-        selectionData.CurrentFaction = selected._FactionName;
+        // selectionData.CurrentFaction = selected._FactionName;
         ShowFaction();
     }
 
@@ -138,7 +138,7 @@ public class DecManager : MonoBehaviour
         if (selected.FactionSprite != null)
             selectedFactionIcon.sprite = selected.FactionSprite;
 
-        selectionData.CurrentFaction = selected._FactionName;
+        // selectionData.CurrentFaction = selected._FactionName;
         CurrentDec = selected;
 
         SelectCategory(CurrentCategory);
@@ -149,7 +149,7 @@ public class DecManager : MonoBehaviour
     // =========================
     private void OnCategorySelected(DecCategory category)
     {
-        selectionData.CurrentCategory = CurrentCategory = category;
+        // selectionData.CurrentCategory = CurrentCategory = category;
         SelectCategory(category);
         AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
@@ -172,7 +172,7 @@ public class DecManager : MonoBehaviour
         }
 
         inventoryManager.ClearEquipped();
- 
+
         switch (category)
         {
             case DecCategory.Offense:
@@ -208,16 +208,16 @@ public class DecManager : MonoBehaviour
         {
             var card = deck.UnitCards[i];
 
-            inventoryManager.AddEquippedItem(
-                card.unitIdentity.name,
-                card.unitType.ToString(),
-                _Canvas,
-                GetUnitStats(card),
-                selectionData.CurrentFaction,
-                true,
-                CurrentCategory,
-                deck
-            );
+            // inventoryManager.AddEquippedItem(
+            //     card.unitIdentity.name,
+            //     card.unitType.ToString(),
+            //     _Canvas,
+            //     GetUnitStats(card),
+            //     selectionData.CurrentFaction,
+            //     true,
+            //     CurrentCategory,
+            //     deck
+            // );
         }
     }
 
@@ -229,16 +229,16 @@ public class DecManager : MonoBehaviour
         {
             var card = deck.DefenseCards[i];
 
-            inventoryManager.AddEquippedItem(
-                card.buildingIdentity.name,
-                "Defense",
-                _Canvas,
-                GetBuildingStats(card),
-                selectionData.CurrentFaction,
-                true,
-                CurrentCategory,
-                deck
-            );
+            // inventoryManager.AddEquippedItem(
+            //     card.buildingIdentity.name,
+            //     "Defense",
+            //     _Canvas,
+            //     GetBuildingStats(card),
+            //     selectionData.CurrentFaction,
+            //     true,
+            //     CurrentCategory,
+            //     deck
+            // );
         }
     }
 
@@ -279,16 +279,16 @@ public class DecManager : MonoBehaviour
     {
         foreach (var card in _Dec.UnitCards)
         {
-            inventoryManager.AddUnequippedItem(
-                card.unitIdentity.name,
-                card.unitType.ToString(),
-                _Canvas,
-                GetUnitStats(card),
-                selectionData.CurrentFaction,
-                false,
-                CurrentCategory,
-                _Dec
-            );
+            // inventoryManager.AddUnequippedItem(
+            //     card.unitIdentity.name,
+            //     card.unitType.ToString(),
+            //     _Canvas,
+            //     GetUnitStats(card),
+            //     selectionData.CurrentFaction,
+            //     false,
+            //     CurrentCategory,
+            //     _Dec
+            // );
         }
     }
 
@@ -296,16 +296,16 @@ public class DecManager : MonoBehaviour
     {
         foreach (var card in dec.DefenseCards)
         {
-            inventoryManager.AddUnequippedItem(
-                card.buildingIdentity.name,
-                "Defense",
-                _Canvas,
-                GetBuildingStats(card),
-                selectionData.CurrentFaction,
-                false,
-                CurrentCategory,
-                dec
-            );
+            // inventoryManager.AddUnequippedItem(
+            //     card.buildingIdentity.name,
+            //     "Defense",
+            //     _Canvas,
+            //     GetBuildingStats(card),
+            //     selectionData.CurrentFaction,
+            //     false,
+            //     CurrentCategory,
+            //     dec
+            // );
         }
     }
 
@@ -313,16 +313,16 @@ public class DecManager : MonoBehaviour
     {
         foreach (var card in _Dec.ResourceCards)
         {
-            inventoryManager.AddUnequippedItem(
-                card.buildingIdentity.name,
-                "Resource",
-                _Canvas,
-                GetResourceStats(card),
-                selectionData.CurrentFaction,
-                false,
-                CurrentCategory,
-                _Dec
-            );
+            // inventoryManager.AddUnequippedItem(
+            //     card.buildingIdentity.name,
+            //     "Resource",
+            //     _Canvas,
+            //     GetResourceStats(card),
+            //     selectionData.CurrentFaction,
+            //     false,
+            //     CurrentCategory,
+            //     _Dec
+            // );
         }
     }
 
