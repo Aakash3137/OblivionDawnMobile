@@ -70,15 +70,21 @@ public class GroundUnit : MonoBehaviour
     private float separationTimer;
     private const float separationInterval = 0.15f;
     private float targetCheckOffset;
-
+    //Abilities
+    private float baseMoveSpeed;
+    private Dictionary<AbilityEffect, float> speedModifiers = new Dictionary<AbilityEffect, float>();
+    
     private void Start()
     {
         unitStats = GetComponent<UnitStats>();
         unitProduceSO = unitStats.unitProduceSO;
         unitData = unitProduceSO.unitUpgradeData[unitStats.identity.spawnLevel];
 
+        BattleUnitRegistry.Units.Add(unitStats);
+
         // Initialize stats
-        moveSpeed = unitData.unitMobilityStats.moveSpeed;
+        baseMoveSpeed = unitData.unitMobilityStats.moveSpeed;
+        RecalculateSpeed();
         AttackRange = unitData.unitRangeStats.attackRange;
         DetectionRange = unitData.unitRangeStats.detectionRange;
         MinAttackRange = unitData.unitRangeStats.minAttackRange;
@@ -165,7 +171,7 @@ public class GroundUnit : MonoBehaviour
 
         float distance = Vector3.Distance(transform.position, target.transform.position);
         
-        // Account for collider sizes
+        //Account for collider sizes
         float targetRadius = 0f;
         if (target.TryGetComponent<Collider>(out var targetCollider))
             targetRadius = targetCollider.bounds.extents.magnitude;
@@ -538,15 +544,52 @@ public class GroundUnit : MonoBehaviour
 
     private void OnDestroy()
     {
+        BattleUnitRegistry.Units.Remove(unitStats);
+
         foreach (var unit in BattleUnitRegistry.Units)
         {
-            if (unit.target == gameObject)
+            if (unit != null && unit.TryGetComponent<GroundUnit>(out var groundUnit) && groundUnit.target == gameObject)
             {
-                unit.target = null;
+                groundUnit.target = null;
             }
         }
     }
 
+    #region Abilities
+
+    public void AddSpeedModifier(AbilityEffect source, float amount)
+    {
+        speedModifiers[source] = amount;
+        RecalculateSpeed();
+    }
+
+    public void RemoveSpeedModifier(AbilityEffect source)
+    {
+        if (speedModifiers.ContainsKey(source))
+        {
+            speedModifiers.Remove(source);
+            RecalculateSpeed();
+        }
+    }
+
+    private void RecalculateSpeed()
+    {
+        float finalSpeed = baseMoveSpeed;
+
+        foreach (var mod in speedModifiers.Values)
+        {
+            finalSpeed += mod;
+        }
+
+        moveSpeed = finalSpeed;
+
+        if (agent != null)
+        {
+            agent.speed = finalSpeed;
+        }
+    }
+
+    #endregion
 
     #region Helper
 
@@ -554,7 +597,7 @@ public class GroundUnit : MonoBehaviour
     {
         foreach (var unit in BattleUnitRegistry.Units)
         {
-            if (unit.unitSide == Side.Player)
+            if (unit != null && unit.side == Side.Player)
                 return true;
         }
 
@@ -565,7 +608,7 @@ public class GroundUnit : MonoBehaviour
     {
         foreach (var unit in BattleUnitRegistry.Units)
         {
-            if (unit.unitSide == Side.Enemy)
+            if (unit != null && unit.side == Side.Enemy)
                 return true;
         }
 

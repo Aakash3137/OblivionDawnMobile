@@ -85,6 +85,8 @@ public class AirUnit : MonoBehaviour
         unitProduceSO = unitStats.unitProduceSO;
         unitData = unitProduceSO.unitUpgradeData[unitStats.identity.spawnLevel];
         
+        BattleUnitRegistry.Units.Add(unitStats);
+        
         // Initialize stats
         moveSpeed = unitData.unitMobilityStats.moveSpeed;
         AttackRange = unitData.unitRangeStats.attackRange;
@@ -611,6 +613,11 @@ public class AirUnit : MonoBehaviour
     }
     
     #endregion
+
+    private void OnDestroy()
+    {
+        BattleUnitRegistry.Units.Remove(unitStats);
+    }
 
     #region Gizmos
     

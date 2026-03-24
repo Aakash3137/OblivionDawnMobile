@@ -49,7 +49,14 @@ public class EnemyAIHandler : MonoBehaviour
     private float timeSinceLastAnalysis = 0f;
     private const float RECHECK_INTERVAL = 10f;
 
-  
+    // Resource building tracking
+    private int[] resourceBuildingCounts = new int[4];
+    private bool balancedPhaseComplete = false;
+    
+    //Resource build economical
+    [SerializeField] private int earlyResourceTarget = 2;
+    private bool earlyEconomyComplete = false;
+    
     void Start()
     {
         if (GameManager.Instance == null)
@@ -144,6 +151,17 @@ public class EnemyAIHandler : MonoBehaviour
 
     #endregion
 
+    bool IsEarlyEconomyComplete()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (resourceBuildingCounts[i] < earlyResourceTarget)
+                return false;
+        }
+
+        return true;
+    }
+    
     void TrySpawnBuilding()
     {
         if (totalBuildingsSpawned >= currentPersonality.maxEnemyBuildings)
@@ -191,6 +209,20 @@ public class EnemyAIHandler : MonoBehaviour
 
     BuildingStats DecideBuildingUsingPersonality(out BuildingCategory category)
     {
+        // ===== EARLY ECONOMY PHASE =====
+        if (!earlyEconomyComplete)
+        {
+            if (IsEarlyEconomyComplete())
+            {
+                earlyEconomyComplete = true;
+            }
+            else
+            {
+                category = BuildingCategory.Resource;
+                return GetLowestResourceBuilding();
+            }
+        }
+        
         float unit = currentPersonality.unitBuildingWeight;
         float resource = currentPersonality.resourceBuildingWeight;
         float defense = currentPersonality.defenseBuildingWeight;
@@ -265,6 +297,27 @@ public class EnemyAIHandler : MonoBehaviour
     #endregion
 
     #region Weighted Building Selection
+    
+    BuildingStats GetLowestResourceBuilding()
+    {
+        BuildingStats[] buildings = GetResourceBuildings();
+        if (buildings == null || buildings.Length == 0)
+            return null;
+
+        int lowestIndex = 0;
+        int lowestCount = resourceBuildingCounts[0];
+
+        for (int i = 1; i < Mathf.Min(4, buildings.Length); i++)
+        {
+            if (resourceBuildingCounts[i] < lowestCount)
+            {
+                lowestCount = resourceBuildingCounts[i];
+                lowestIndex = i;
+            }
+        }
+
+        return buildings[lowestIndex];
+    }
 
     BuildingStats GetWeightedUnitBuilding()
     {
@@ -331,7 +384,39 @@ public class EnemyAIHandler : MonoBehaviour
         BuildingStats[] buildings = GetResourceBuildings();
         if (buildings == null || buildings.Length == 0)
             return null;
+        
+        // ================= BALANCED START =================
+        if (currentPersonality.balancedResourceStart && !balancedPhaseComplete)
+        {
+            int target = currentPersonality.balancedResourceTarget;
+            
+            int minCount = int.MaxValue;
+            int targetIndex = 0;
 
+            for (int i = 0; i < Mathf.Min(4, buildings.Length); i++)
+            {
+                if (resourceBuildingCounts[i] < minCount)
+                {
+                    minCount = resourceBuildingCounts[i];
+                    targetIndex = i;
+                }
+            }
+
+            // Check if balanced phase is complete
+            balancedPhaseComplete = true;
+            for (int i = 0; i < 4; i++)
+            {
+                if (resourceBuildingCounts[i] < target)
+                {
+                    balancedPhaseComplete = false;
+                    break;
+                }
+            }
+
+            return buildings[targetIndex];
+        }
+
+        // ================= NORMAL AI =================
         // Recheck resource needs every 10 seconds
         if (timeSinceLastAnalysis >= RECHECK_INTERVAL)
         {
@@ -671,7 +756,7 @@ public class EnemyAIHandler : MonoBehaviour
             UpdateSpawnableTiles(tileGrid);
             totalBuildingsSpawned++;
 
-            // ✅ Increment only after success
+            // Increment only after success
             switch (category)
             {
                 case BuildingCategory.Unit:
@@ -679,6 +764,18 @@ public class EnemyAIHandler : MonoBehaviour
                     break;
                 case BuildingCategory.Resource:
                     resourceBuilt++;
+
+                    // Track which resource type
+                    var resourceBuildings = GetResourceBuildings();
+                    for (int i = 0; i < resourceBuildings.Length; i++)
+                    {
+                        if (resourceBuildings[i] == buildingPrefab)
+                        {
+                            resourceBuildingCounts[i]++;
+                            break;
+                        }
+                    }
+
                     break;
                 case BuildingCategory.Defense:
                     defenseBuilt++;

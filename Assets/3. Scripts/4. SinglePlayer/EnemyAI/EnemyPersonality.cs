@@ -30,6 +30,10 @@ public class EnemyPersonality : ScriptableObject
     
     public int maxEnemyBuildings = 150;
     
+    [Header("Economy")]
+    public bool balancedResourceStart = true;
+    public int balancedResourceTarget = 3;
+    
     [Header("Resource Type Weights (Food, Gold, Metal, Power)")]
     public float[] resourceTypeWeights = new float[4] { 0.25f, 0.25f, 0.25f, 0.25f };
 

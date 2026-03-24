@@ -12,9 +12,7 @@ public class DefenseUnit : MonoBehaviour
     public float narrowAngleBonus = 30f;
     public float wideAngleBonus = 20f;
     public float peripheralAngleBonus = 10f;
-    public float checkRadiusOffset = 2.5f;
 
-    //private WeaponManager weaponManager;
     private ProjectileShooter _projectileShooter;
     private DefenseBuildingStats defenseStats;
     private DefenseBuildingDataSO defenseBuildingSO;
@@ -32,56 +30,53 @@ public class DefenseUnit : MonoBehaviour
     [field: SerializeField, ReadOnly]
     public GameObject secondaryTarget { get; private set; }
 
+    // Reply target system
+    private Stats replyTarget;
+
     private float targetCheckTimer = 0f;
     private const float targetCheckInterval = 1f;
     private float attackTimer = 0f;
 
     private void Start()
     {
-       // weaponManager = GetComponent<WeaponManager>();
         _projectileShooter = GetComponent<ProjectileShooter>();
         defenseStats = GetComponent<DefenseBuildingStats>();
         defenseBuildingSO = defenseStats.GetBuildingSO();
         defenseData = defenseStats.GetBuildingData();
         forward = transform.forward;
+        
+        BattleUnitRegistry.DefenseUnits.Add(defenseStats);
+
         if (defenseBuilding == null)
-        {
             defenseBuilding = transform.GetChild(0).gameObject;
-        }
     }
 
     private void Update()
     {
-        // periodic target validation (works for units + buildings)
         targetCheckTimer += Time.deltaTime;
 
         if (targetCheckTimer >= targetCheckInterval)
         {
             targetCheckTimer = 0f;
 
-            if (!isTargetAlive())
+            if (!IsTargetAlive())
             {
                 target = null;
-                FindTarget();
-            }   
+                FindTargetInAttackRange();
+            }
         }
 
-        // find target
         if (target == null)
-        {
             return;
-        }
 
         float distance = Vector3.Distance(transform.position, target.transform.position);
 
         if (distance <= defenseData.defenseRangeStats.attackRange)
         {
             attackTimer += Time.deltaTime;
-
             if (attackTimer >= defenseData.defenseAttackStats.fireRate)
             {
                 attackTimer = 0f;
-               // weaponManager.Fire(target, defenseData.defenseAttackStats.damage,defenseData.defenseAttackStats.buildingDamage, defenseStats.side);
                 _projectileShooter.Fire(target);
             }
         }
@@ -95,169 +90,138 @@ public class DefenseUnit : MonoBehaviour
 
     private void LookTarget()
     {
+        if (target == null)
+            return;
+
         Vector3 dir = (target.transform.position - transform.position).normalized;
         dir.y = 0;
 
-        if (dir != Vector3.zero)
+        if (dir != Vector3.zero && defenseBuilding != null)
         {
-            if (defenseBuilding != null)
-            {
-                Quaternion lookRot = Quaternion.LookRotation(dir);
-                defenseBuilding.transform.rotation = Quaternion.Slerp(defenseBuilding.transform.rotation, lookRot, 10f * Time.deltaTime);
-            }
+            Quaternion lookRot = Quaternion.LookRotation(dir);
+            defenseBuilding.transform.rotation = Quaternion.Slerp(defenseBuilding.transform.rotation, lookRot, 10f * Time.deltaTime);
         }
     }
 
-    private bool isTargetAlive()
+    private bool IsTargetAlive()
     {
-        if (target == null)
-            return false;
-
-        if (!target.gameObject.activeInHierarchy)
-            return false;
-
-        return true;
+        return target != null && target.gameObject.activeInHierarchy;
     }
 
-    #region Find Target
-    private void FindTarget()
+    #region NEW Target System (DTDS)
+
+    public void SetReplyTarget(Stats attacker)
     {
-        Collider[] hits = new Collider[20];
+        if (attacker != null && attacker.side != defenseStats.side)
+            replyTarget = attacker;
+    }
 
-        LayerMask enemyLayerMask = LayerMask.GetMask("PlayerAir", "PlayerGround", "EnemyAir", "EnemyGround");
+    private void FindTargetInAttackRange()
+    {
+        Collider[] hits = new Collider[32];
+        LayerMask enemyLayerMask = GetEnemyLayerMask();
 
-        var attackTargets = defenseBuildingSO.defenseAttackTargets;
+        int count = Physics.OverlapSphereNonAlloc(transform.position, defenseData.defenseRangeStats.attackRange, hits, enemyLayerMask);
 
-        switch (defenseStats.side)
-        {
-            case Side.Player:
-                if (attackTargets.canAttackAir && attackTargets.canAttackGround)
-                    enemyLayerMask = LayerMask.GetMask("EnemyAir", "EnemyGround");
-                else if (attackTargets.canAttackAir)
-                    enemyLayerMask = LayerMask.GetMask("EnemyAir");
-                else if (attackTargets.canAttackGround)
-                    enemyLayerMask = LayerMask.GetMask("EnemyGround");
-                break;
-            case Side.Enemy:
-                if (attackTargets.canAttackAir && attackTargets.canAttackGround)
-                    enemyLayerMask = LayerMask.GetMask("PlayerAir", "PlayerGround");
-                else if (attackTargets.canAttackAir)
-                    enemyLayerMask = LayerMask.GetMask("PlayerAir");
-                else if (attackTargets.canAttackGround)
-                    enemyLayerMask = LayerMask.GetMask("PlayerGround");
-                break;
-        }
-
-        int count = Physics.OverlapSphereNonAlloc(transform.position, defenseData.defenseRangeStats.detectionRange, hits, enemyLayerMask);
-
-        Stats bestTarget = null;
-        float bestScore = 0f;
+        Stats bestUnit = null;
+        Stats bestBuilding = null;
+        float bestUnitScore = 0f;
+        float bestBuildingScore = 0f;
 
         for (int i = 0; i < count; i++)
         {
-            Stats unit;
-            float score;
-
-            if (hits[i].TryGetComponent<UnitStats>(out var unitStat))
-            {
-                unit = unitStat;
-                score = unitStat.identity.priority;
-            }
-            else if (defenseBuildingSO.canAttackBuildings && hits[i].TryGetComponent<BuildingStats>(out var buildingStats))
-            {
-                unit = buildingStats;
-                score = buildingStats.identity.priority;
-            }
-            else if (defenseBuildingSO.canAttackWalls && hits[i].TryGetComponent<WallStats>(out var wallStats))
-            {
-                unit = wallStats;
-                score = wallStats.identity.priority;
-            }
-            else
-            {
-                continue;
-            }
-
-            // Ignore self & same side
-            if (unit == this || unit.side == defenseStats.side)
+            if (!hits[i].TryGetComponent(out Stats candidate))
                 continue;
 
-            score = CalculateScore(unit, score);
+            if (candidate.side == defenseStats.side)
+                continue;
 
-            // Is this a better candidate?
-            if (score > bestScore && (target == null || ShouldSwitchTarget(target?.GetComponent<Stats>(), unit)))
+            float score = candidate.identity.priority;
+            score = CalculateScore(candidate, score);
+
+            if (candidate is UnitStats)
             {
-                bestScore = score;
-                bestTarget = unit;
+                if (score > bestUnitScore)
+                {
+                    bestUnitScore = score;
+                    bestUnit = candidate;
+                }
+            }
+            else if (candidate is BuildingStats || candidate is WallStats || candidate is DefenseBuildingStats)
+            {
+                if (score > bestBuildingScore)
+                {
+                    bestBuildingScore = score;
+                    bestBuilding = candidate;
+                }
             }
         }
 
-        // Assign target
-        if (bestTarget != null && (target == null || bestTarget != target.GetComponent<Stats>()))
+        // Assign based on hierarchy: replyTarget > unit > building
+        if (replyTarget != null && Vector3.Distance(transform.position, replyTarget.transform.position) <= defenseData.defenseRangeStats.attackRange)
         {
-            // only assign if switching
-            target = bestTarget;
-            attackTimer = defenseData.defenseAttackStats.fireRate; // Fire immediately on new target
+            target = replyTarget;
+        }
+        else if (bestUnit != null)
+        {
+            target = bestUnit;
+        }
+        else
+        {
+            target = bestBuilding;
+        }
 
-            if (bestTarget is UnitStats)
+        if (target != null)
+        {
+            if (target is UnitStats)
                 primaryTarget = target.gameObject;
             else
                 secondaryTarget = target.gameObject;
         }
     }
 
+    private LayerMask GetEnemyLayerMask()
+    {
+        var attackTargets = defenseBuildingSO.defenseAttackTargets;
+        switch (defenseStats.side)
+        {
+            case Side.Player:
+                if (attackTargets.canAttackAir && attackTargets.canAttackGround)
+                    return LayerMask.GetMask("EnemyAir", "EnemyGround");
+                else if (attackTargets.canAttackAir)
+                    return LayerMask.GetMask("EnemyAir");
+                else
+                    return LayerMask.GetMask("EnemyGround");
+            case Side.Enemy:
+                if (attackTargets.canAttackAir && attackTargets.canAttackGround)
+                    return LayerMask.GetMask("PlayerAir", "PlayerGround");
+                else if (attackTargets.canAttackAir)
+                    return LayerMask.GetMask("PlayerAir");
+                else
+                    return LayerMask.GetMask("PlayerGround");
+            default:
+                return 0;
+        }
+    }
+
     private float CalculateScore(Stats unit, float score)
     {
-        // Distance score
         float distance = Vector3.Distance(transform.position, unit.transform.position);
         score += distanceWeight / Mathf.Max(distance, 0.1f);
 
-        // Low health bonus
         float healthPercent = unit.currentHealth / unit.basicStats.maxHealth;
         if (healthPercent <= 0.3f) score += lowHealthBonus;
 
-        // View angle
         float angle = Vector3.Angle(forward, unit.transform.position - transform.position);
-
         if (angle <= defenseBuildingSO.defenseVisionAngles.narrowViewAngle)
             score += narrowAngleBonus;
         else if (angle <= defenseBuildingSO.defenseVisionAngles.wideViewAngle)
             score += wideAngleBonus;
         else
             score += peripheralAngleBonus;
+
         return score;
     }
 
-    bool ShouldSwitchTarget(Stats current, Stats candidate)
-    {
-        // no target, always switch
-        if (current == null)
-            return true;
-
-        // never switch from unit to building
-        if (current is UnitStats && (candidate is BuildingStats || candidate is WallStats))
-            return false;
-
-        if (current is BuildingStats || current is WallStats)
-        {
-            if (candidate == null)
-                return false;
-
-            // check if building is low health
-            float buildingHealthPercent = current.currentHealth / current.basicStats.maxHealth;
-            if (buildingHealthPercent < 0.3f)
-                return false; // stick with low-health building
-
-            // if candidate is unit, switch
-            if (candidate is UnitStats)
-            {
-                float dist = Vector3.Distance(transform.position, candidate.transform.position);
-                return dist <= defenseData.defenseRangeStats.attackRange + checkRadiusOffset;
-            }
-        }
-
-        return false; // default: do not switch 
-    }
-    #endregion    
-
+    #endregion
 }
