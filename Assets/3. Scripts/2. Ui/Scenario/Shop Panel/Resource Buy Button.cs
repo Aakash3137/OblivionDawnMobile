@@ -32,11 +32,9 @@ public class ResourceBuyButton : MonoBehaviour
             SetButtonInteractivity();
         }
 
-    }
-    private void OnEnable()
-    {
         if (userdata != null)
             userdata.OnDiamondsChanged += SetButtonInteractivity;
+
     }
 
     private void SetButtonInteractivity()
