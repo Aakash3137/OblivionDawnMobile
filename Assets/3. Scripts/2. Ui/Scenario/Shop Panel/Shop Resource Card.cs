@@ -11,7 +11,6 @@ public class ShopResourceCard : MonoBehaviour
     [ReadOnly] public int cost;
     [Space(15)]
     [SerializeField] private AllBuildingData allBuildingData;
-    [SerializeField] private DecSelectionData deckData;
     [SerializeField] private TMP_Text resourceName;
     [SerializeField] private TMP_Text amountText;
     [SerializeField] private Image resourceImage;
@@ -21,7 +20,7 @@ public class ShopResourceCard : MonoBehaviour
 
     private void Start()
     {
-        resourceSO = allBuildingData.GetResourceBuildingSO(deckData.CurrentFaction, resourceType);
+        resourceSO = allBuildingData.GetResourceBuildingSO(GameData.playerFaction, resourceType);
 
         resourceImage.sprite = resourceSO.buildingIcon;
         resourceName.SetText($"{resourceSO.buildingIdentity.name}");

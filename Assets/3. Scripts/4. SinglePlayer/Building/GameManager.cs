@@ -12,7 +12,6 @@ public class GameManager : MonoBehaviour
 
     [Header("Data")]
     public AllFactionsData data;
-    public DecSelectionData decSelectionData;
 
     public UnitStance unitStance;
 
@@ -47,7 +46,7 @@ public class GameManager : MonoBehaviour
 
     private void SpawnMainBuilding()
     {
-        var playerFaction = decSelectionData.CurrentFaction;
+        var playerFaction = GameData.playerFaction;
         var playerMainBuilding = GetMainBuilding(playerFaction);
         var enemyMainBuilding = GetMainBuilding(enemyFaction);
 

@@ -152,15 +152,20 @@ public class AllBuildingData : ScriptableObject
         return offenseSO;
     }
 
-    public List<BuildingDataSO> GetFactionResourceBuildingsSO(FactionName faction)
+    public List<ResourceBuildingDataSO> GetFactionResourceBuildingsSO(FactionName faction)
     {
-        var resourceSO = new List<BuildingDataSO>();
+        var resourceSO = new List<ResourceBuildingDataSO>();
 
         foreach (var buildingSO in allBuildingsSO)
         {
             if (buildingSO.buildingIdentity.faction == faction && buildingSO.buildingType == ScenarioBuildingType.ResourceBuilding)
-                resourceSO.Add(buildingSO);
+            {
+                if (buildingSO is ResourceBuildingDataSO resourceBuildingDataSO)
+                    resourceSO.Add(resourceBuildingDataSO);
+            }
         }
+
+        resourceSO.Sort(CompareResourceSO);
 
         return resourceSO;
     }
@@ -188,7 +193,12 @@ public class AllBuildingData : ScriptableObject
 
         return defenseBuildingSO;
     }
-
+    private static int CompareResourceSO(ScriptableObject x, ScriptableObject y)
+    {
+        var rx = (ResourceBuildingDataSO)x;
+        var ry = (ResourceBuildingDataSO)y;
+        return rx.resourceType.CompareTo(ry.resourceType);
+    }
     private void OnValidate()
     {
         var enumValues = Enum.GetValues(typeof(FactionName));

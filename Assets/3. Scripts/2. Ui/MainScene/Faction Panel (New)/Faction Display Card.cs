@@ -29,7 +29,7 @@ public class FactionDisplayCard : MonoBehaviour
 
     private void OnEnable()
     {
-        if (selectedSO != null)
+        if (selectedSO != null && selectedSO.Count > 0)
             RefreshCards();
     }
 
@@ -50,6 +50,7 @@ public class FactionDisplayCard : MonoBehaviour
             {
                 instantiatedCards[i].SetSelectedCard(selectedSO[i]);
                 instantiatedCards[i].EnablePopulationPanel();
+                instantiatedCards[i].ShowCard();
             }
             catch (System.ArgumentOutOfRangeException)
             {
