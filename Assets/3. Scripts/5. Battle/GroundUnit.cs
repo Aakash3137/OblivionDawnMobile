@@ -60,7 +60,7 @@ public class GroundUnit : MonoBehaviour
     internal float peripheralAngleBonus = 1f;
 
     private UnitState currentState;
-
+    
     private AttackTargets attackTargets;
     private Side unitSide;
 
@@ -71,15 +71,21 @@ public class GroundUnit : MonoBehaviour
     private float separationTimer;
     private const float separationInterval = 0.15f;
     private float targetCheckOffset;
-
+    //Abilities
+    private float baseMoveSpeed;
+    private Dictionary<AbilityEffect, float> speedModifiers = new Dictionary<AbilityEffect, float>();
+    
     private void Start()
     {
         unitStats = GetComponent<UnitStats>();
         unitProduceSO = unitStats.unitProduceSO;
         unitData = unitProduceSO.unitUpgradeData[unitStats.identity.spawnLevel];
 
+        BattleUnitRegistry.Units.Add(unitStats);
+
         // Initialize stats
-        moveSpeed = unitData.unitMobilityStats.moveSpeed;
+        baseMoveSpeed = unitData.unitMobilityStats.moveSpeed;
+        RecalculateSpeed();
         AttackRange = unitData.unitRangeStats.attackRange;
         DetectionRange = unitData.unitRangeStats.detectionRange;
         MinAttackRange = unitData.unitRangeStats.minAttackRange;
@@ -107,13 +113,13 @@ public class GroundUnit : MonoBehaviour
         FindDetectionTarget();
         ArrangeRotation();
     }
-
+    
     private void Update()
     {
         HandleTargetDetection();
         HandleState();
     }
-
+    
     private void HandleTargetDetection()
     {
         targetCheckTimer += Time.deltaTime;
@@ -127,7 +133,7 @@ public class GroundUnit : MonoBehaviour
             ResolveFinalTarget();
         }
     }
-
+    
     private void ResolveFinalTarget()
     {
         // If reply target was destroyed (Missing), clear it
@@ -136,8 +142,8 @@ public class GroundUnit : MonoBehaviour
 
         if (!detectionTarget)
             detectionTarget = null;
-
-
+        
+        
         if (replyTarget != null && CanAttackTarget(replyTarget) && !IsInsideMinRange(replyTarget))
         {
             target = replyTarget.gameObject;
@@ -155,7 +161,7 @@ public class GroundUnit : MonoBehaviour
             target = null;
         }
     }
-
+    
     private void HandleState()
     {
         if (target == null)
@@ -165,15 +171,15 @@ public class GroundUnit : MonoBehaviour
         }
 
         float distance = Vector3.Distance(transform.position, target.transform.position);
-
+        
         // Account for collider sizes
         float targetRadius = 0f;
         if (target.TryGetComponent<Collider>(out var targetCollider))
             targetRadius = targetCollider.bounds.extents.magnitude;
-
+        
         float myRadius = hitCollider != null ? hitCollider.bounds.extents.magnitude : 0f;
         float effectiveDistance = distance - targetRadius - myRadius;
-
+        
         bool withinAttackRange = effectiveDistance <= AttackRange || (agent.hasPath && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance);
 
         switch (currentState)
@@ -232,7 +238,7 @@ public class GroundUnit : MonoBehaviour
                 }
 
                 MoveToTarget();
-                ApplySeparation();
+                ApplySeparation();  
                 break;
 
             case UnitState.Defending:
@@ -261,6 +267,7 @@ public class GroundUnit : MonoBehaviour
                     ChangeState(UnitState.Chasing);
                     return;
                 }
+
                 Attack();
                 break;
         }
@@ -330,7 +337,7 @@ public class GroundUnit : MonoBehaviour
     }
 
     #region UTDS (Unit Target Detection System)
-
+    
 
     private void SetPrimaryTarget()
     {
@@ -340,12 +347,12 @@ public class GroundUnit : MonoBehaviour
             primaryTarget = GameManager.Instance.PlayerMainBuilding;
     }
 
-
+    
     private void FindDetectionTarget()
     {
         Collider[] hits = new Collider[32];
         LayerMask enemyLayerMask = GetEnemyLayerMask();
-
+        
         int count = Physics.OverlapSphereNonAlloc(
             transform.position,
             DetectionRange,
@@ -370,7 +377,7 @@ public class GroundUnit : MonoBehaviour
 
             if (candidate == unitStats || candidate.side == unitSide)
                 continue;
-
+            
 
             float distance = GetAdjustedDistance(candidate);
 
@@ -378,9 +385,9 @@ public class GroundUnit : MonoBehaviour
             if (distance < MinAttackRange)
                 continue;
 
-
+            
             //  FIRST PRIORITY: Units
-            if (candidate is UnitStats)
+            if (candidate is UnitStats )
             {
                 if (distance < closestUnitDist)
                 {
@@ -421,13 +428,13 @@ public class GroundUnit : MonoBehaviour
         if (closestUnit != null)
             detectionTarget = closestUnit;
         else if (closestDefense != null)
-            detectionTarget = closestDefense;
+            detectionTarget =  closestDefense;
         else if (closestWall != null)
             detectionTarget = closestWall;
         else
             detectionTarget = closestBuilding;
     }
-
+    
     private float GetAdjustedDistance(Stats target)
     {
         float distance = Vector3.Distance(transform.position, target.transform.position);
@@ -447,7 +454,7 @@ public class GroundUnit : MonoBehaviour
         else
             return attackTargets.canAttackGround;
     }
-
+    
     #endregion
 
 
@@ -528,7 +535,7 @@ public class GroundUnit : MonoBehaviour
     {
         if (target == null)
         {
-            //  GameDebug.Log($"[{name}] Attack: Target is NULL");
+          //  GameDebug.Log($"[{name}] Attack: Target is NULL");
             attackTimer = 0f;
             return;
         }
@@ -561,11 +568,11 @@ public class GroundUnit : MonoBehaviour
             Stats enemy = target.GetComponent<Stats>();
             if (enemy == null)
             {
-                //  GameDebug.Log($"[{name}] Attack: Target has no Stats component");
+              //  GameDebug.Log($"[{name}] Attack: Target has no Stats component");
                 return;
             }
 
-            //  GameDebug.Log($"[{name}] FIRING at {target.name}");
+          //  GameDebug.Log($"[{name}] FIRING at {target.name}");
             projectileShooter.Fire(enemy);
 
             if (animator != null)
@@ -586,15 +593,52 @@ public class GroundUnit : MonoBehaviour
 
     private void OnDestroy()
     {
+        BattleUnitRegistry.Units.Remove(unitStats);
+
         foreach (var unit in BattleUnitRegistry.Units)
         {
-            if (unit.target == gameObject)
+            if (unit != null && unit.TryGetComponent<GroundUnit>(out var groundUnit) && groundUnit.target == gameObject)
             {
-                unit.target = null;
+                groundUnit.target = null;
             }
         }
     }
 
+    #region Abilities
+
+    public void AddSpeedModifier(AbilityEffect source, float amount)
+    {
+        speedModifiers[source] = amount;
+        RecalculateSpeed();
+    }
+
+    public void RemoveSpeedModifier(AbilityEffect source)
+    {
+        if (speedModifiers.ContainsKey(source))
+        {
+            speedModifiers.Remove(source);
+            RecalculateSpeed();
+        }
+    }
+
+    private void RecalculateSpeed()
+    {
+        float finalSpeed = baseMoveSpeed;
+
+        foreach (var mod in speedModifiers.Values)
+        {
+            finalSpeed += mod;
+        }
+
+        moveSpeed = finalSpeed;
+
+        if (agent != null)
+        {
+            agent.speed = finalSpeed;
+        }
+    }
+
+    #endregion
 
     #region Helper
 
@@ -602,7 +646,7 @@ public class GroundUnit : MonoBehaviour
     {
         foreach (var unit in BattleUnitRegistry.Units)
         {
-            if (unit.unitSide == Side.Player)
+            if (unit != null && unit.side == Side.Player)
                 return true;
         }
 
@@ -613,7 +657,7 @@ public class GroundUnit : MonoBehaviour
     {
         foreach (var unit in BattleUnitRegistry.Units)
         {
-            if (unit.unitSide == Side.Enemy)
+            if (unit != null && unit.side == Side.Enemy)
                 return true;
         }
 

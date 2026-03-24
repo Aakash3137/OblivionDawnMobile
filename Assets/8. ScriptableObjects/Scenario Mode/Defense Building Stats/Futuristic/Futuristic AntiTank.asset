@@ -36,7 +36,7 @@ MonoBehaviour:
     isUnlocked: 1
     purchased: 1
     minBuildingLevel: 0
-  hasUpkeep: 1
+  hasUpkeep: 0
   upKeepCost:
   - resourceType: 0
     resourceAmount: 1
@@ -48,8 +48,8 @@ MonoBehaviour:
     resourceAmount: 0
   <upKeepTime>k__BackingField: 5
   defenseType: 1
-  canAttackBuildings: 0
-  canAttackWalls: 0
+  canAttackBuildings: 1
+  canAttackWalls: 1
   defenseVisionAngles:
     narrowViewAngle: 0
     wideViewAngle: 270
@@ -65,8 +65,9 @@ MonoBehaviour:
     buildingBuildTime: 6
     defenseAttackStats:
       damage: 85
-      buildingDamage: 20
+      buildingDamage: 30
       fireRate: 2
     defenseRangeStats:
       detectionRange: 14
       attackRange: 10
+      minAttackRange: 0

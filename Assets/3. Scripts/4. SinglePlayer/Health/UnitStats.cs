@@ -19,15 +19,24 @@ public class UnitStats : Stats
     [ShowIf(nameof(canFly)), ReadOnly]
     public FlyStats unitFlyStats;
     public override bool CanFly => canFly;
+    
+    private AbilityController abilityController;
+    [field: SerializeField, ReadOnly]
+    public GameUnitName gameUnitName { get; private set; }
+    
+    
     public BuildCost[] unitUpkeepCost;
     public OffenseBuildingStats spawnerBuilding { private get; set; }
     public UnitUpgradeData unitData { get; private set; }
 
     private ResourceManager rmInstance;
     private bool hasUpkeep;
+    
 
     internal override void Initialize()
     {
+        gameUnitName = unitProduceSO.gameUnitName;
+        
         identity = unitProduceSO.unitIdentity;
         unitData = unitProduceSO.unitUpgradeData[identity.spawnLevel];
         basicStats = unitData.unitBasicStats;
@@ -44,7 +53,17 @@ public class UnitStats : Stats
         unitAttackTargets = unitProduceSO.unitAttackTargets;
 
         unitType = unitProduceSO.unitType;
+        
+        abilityController = GetComponent<AbilityController>();
 
+        if (abilityController != null)
+        {
+            abilityController.Initialize(unitProduceSO.abilities);
+        }
+
+// assign name
+        gameUnitName = unitProduceSO.gameUnitName;
+        
         if (canFly)
             unitFlyStats = unitProduceSO.unitFlyStats;
 
