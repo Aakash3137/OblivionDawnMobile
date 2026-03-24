@@ -160,6 +160,24 @@ public class DeckSelectionManager : MonoBehaviour
         return true;
     }
 
+    public void LoadDefaultData()
+    {
+        var factionCount = ScenarioDataTypes._factionEnumValues.Length;
+
+        for (int i = 0; i < factionCount; i++)
+        {
+            List<ScriptableObject> defaultCards = allFactionsDeckData[i].decks[currentDeckIndex].deckCardsSO;
+
+            if (defaultCards.Count == 0)
+            {
+                defaultCards = DeckPanelManager.Instance.GetDefaultDeckCards((FactionName)i);
+
+                foreach (var card in defaultCards)
+                    allFactionsDeckData[i].decks[currentDeckIndex].deckCardsSO.Add(card);
+            }
+        }
+    }
+
     public void LoadDeckData()
     {
         factionCardPanels = DeckPanelManager.Instance.factionCardPanels;
@@ -168,15 +186,7 @@ public class DeckSelectionManager : MonoBehaviour
 
         List<ScriptableObject> loadedDeckSO = currentDeck.deckCardsSO;
 
-        if (loadedDeckSO.Count == 0)
-        {
-            var deckSO = allFactionsDeckData[(int)selectedFaction].decks[currentDeckIndex].deckCardsSO;
-            loadedDeckSO = DeckPanelManager.Instance.GetDefaultDeckCards(selectedFaction);
-
-            foreach (var loadedCard in loadedDeckSO)
-                deckSO.Add(loadedCard);
-        }
-
+        // card panel index is 0 since no division into unit and building and city Center like upgrade panel
         var currentFactionCardPanel = factionCardPanels[factionIndex].cardPanels[0];
 
         List<UpgradeCard> currentFactionCards = currentFactionCardPanel.allCards;

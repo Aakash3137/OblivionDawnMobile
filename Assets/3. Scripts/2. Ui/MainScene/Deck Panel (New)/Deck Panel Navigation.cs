@@ -6,6 +6,7 @@ public class DeckPanelNavigation : MonoBehaviour
     [Header("Faction Buttons : 0 = Medieval ; 1 = Present ; 2 = Future ; 3 = Galvadore")]
     [SerializeField] private Toggle[] factionButtons;
     private bool[] isDeckDataLoaded = new bool[4];
+    private bool isDefaultDataLoaded = false;
 
     private void Awake()
     {
@@ -45,7 +46,11 @@ public class DeckPanelNavigation : MonoBehaviour
 
         dsmInstance.selectedFaction = faction;
 
-        dsmInstance.SetVariables();
+        if (!isDefaultDataLoaded)
+        {
+            dsmInstance.LoadDefaultData();
+            isDefaultDataLoaded = true;
+        }
 
         if (!isDeckDataLoaded[(int)faction])
         {
@@ -53,6 +58,7 @@ public class DeckPanelNavigation : MonoBehaviour
             isDeckDataLoaded[(int)faction] = true;
         }
 
+        dsmInstance.SetVariables();
         dsmInstance.RefreshSelectionCards();
     }
 
