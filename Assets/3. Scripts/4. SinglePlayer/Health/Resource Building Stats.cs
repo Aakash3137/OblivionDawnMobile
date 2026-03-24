@@ -42,12 +42,14 @@ public class ResourceBuildingStats : BuildingStats
 
         IncreaseGlobalCapacity();
         rmInstance.IncrementResourceBuildingCount(resourceType);
-        productionTickSyncTime = Time.time;
         rmInstance.GlobalResourceTick += StartProducing;
     }
 
     private void StartProducing()
     {
+        if (!isProducingResources)
+            productionTickSyncTime = Time.time;
+
         bool canProduce = CanProduce();
         bool syncComplete = Time.time - productionTickSyncTime >= rmInstance.globalTickTime;
 
@@ -75,7 +77,6 @@ public class ResourceBuildingStats : BuildingStats
     private void Produce()
     {
         rmInstance.AddResources(resourceType, resourceBuildingData.resourceAmountPerBatch);
-
     }
 
     private bool CanProduce()

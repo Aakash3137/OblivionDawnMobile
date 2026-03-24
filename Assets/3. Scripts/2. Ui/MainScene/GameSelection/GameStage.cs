@@ -38,6 +38,8 @@ public class GameStage : MonoBehaviour
             return;
         }
         GameTypes.loadGameScene();
+        // important for loading panel
+        GameData.gameMode = GameTypes.CurrentType;
         gameObject.SetActive(false);
     }
 

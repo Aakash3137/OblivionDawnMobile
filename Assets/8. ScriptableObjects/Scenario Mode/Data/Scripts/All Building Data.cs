@@ -165,6 +165,17 @@ public class AllBuildingData : ScriptableObject
         return resourceSO;
     }
 
+    public ResourceBuildingDataSO GetResourceBuildingSO(FactionName faction, ScenarioResourceType resourceType)
+    {
+        foreach (var buildingSO in allBuildingsSO)
+        {
+            if (buildingSO.buildingIdentity.faction == faction && buildingSO.buildingType == ScenarioBuildingType.ResourceBuilding && ((ResourceBuildingDataSO)buildingSO).resourceType == resourceType)
+                return (ResourceBuildingDataSO)buildingSO;
+        }
+
+        return null;
+    }
+
     public List<BuildingDataSO> GetDefenseBuildingsSO()
     {
         var defenseBuildingSO = new List<BuildingDataSO>();

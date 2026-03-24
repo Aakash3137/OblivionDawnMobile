@@ -129,6 +129,45 @@ public class ResourceManager : MonoBehaviour
 
         OnResourcesChanged?.Invoke();
     }
+    public void BalanceResources()
+    {
+        int totalAmount = 0;
+        for (int i = 0; i < currentResources.Length; i++)
+            totalAmount += currentResources[i].resourceAmount;
+
+        int[] assigned = new int[currentResources.Length];
+        bool[] capped = new bool[currentResources.Length];
+
+        int slots = currentResources.Length;
+        int remaining = 0;
+
+        for (int i = 0; i < currentResources.Length; i++)
+        {
+            int share = totalAmount / slots + (i < totalAmount % slots ? 1 : 0);
+            int clamped = Mathf.Min(share, maxResources[i].resourceAmount);
+
+            assigned[i] = clamped;
+            capped[i] = clamped < share;
+            remaining += share - clamped;
+        }
+
+        // redistribute leftover into uncapped slots
+        for (int i = 0; i < currentResources.Length && remaining > 0; i++)
+        {
+            if (!capped[i])
+            {
+                int space = maxResources[i].resourceAmount - assigned[i];
+                int toAdd = Mathf.Min(space, remaining);
+                assigned[i] += toAdd;
+                remaining -= toAdd;
+            }
+        }
+
+        for (int i = 0; i < currentResources.Length; i++)
+            currentResources[i].resourceAmount = assigned[i];
+
+        OnResourcesChanged?.Invoke();
+    }
 
     #region Resource Generation
     public void IncreaseResourceGenerationRate(ScenarioResourceType resourceType, float amount = 0)
@@ -200,6 +239,12 @@ public class ResourceManager : MonoBehaviour
         }
 
         ClampResources();
+    }
+
+    [Button("DEBUG: Consume Resource")]
+    public void RemoveResources(ScenarioResourceType resourceType, int amount)
+    {
+        AddResources(resourceType, -amount);
     }
     #endregion
 }

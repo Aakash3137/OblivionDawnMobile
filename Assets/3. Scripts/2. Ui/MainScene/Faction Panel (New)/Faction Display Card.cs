@@ -17,14 +17,20 @@ public class FactionDisplayCard : MonoBehaviour
 
     private void Start()
     {
+        CreateCards();
         resourceCardsRoot.parent.gameObject.SetActive(false);
 
         var currentFactionDeckData = selectedDeckData.allFactionsDeckData[(int)faction];
-        var selectedDeck = currentFactionDeckData.decks[selectedDeckData.selectedDeckIndex];
+        var selectedDeck = currentFactionDeckData.decks[selectedDeckData.deckIndex];
         selectedSO = selectedDeck.deckCardsSO;
 
-        CreateCards();
         RefreshCards();
+    }
+
+    private void OnEnable()
+    {
+        if (selectedSO != null)
+            RefreshCards();
     }
 
     private void CreateCards()
@@ -38,15 +44,16 @@ public class FactionDisplayCard : MonoBehaviour
 
     private void RefreshCards()
     {
-        foreach (var card in instantiatedCards)
+        for (int i = 0; i < instantiatedCards.Count; i++)
         {
             try
             {
-                card.SetSelectedCard(selectedSO[instantiatedCards.IndexOf(card)]);
+                instantiatedCards[i].SetSelectedCard(selectedSO[i]);
+                instantiatedCards[i].EnablePopulationPanel();
             }
             catch (System.ArgumentOutOfRangeException)
             {
-                card.HideCard();
+                instantiatedCards[i].HideCard();
             }
         }
     }

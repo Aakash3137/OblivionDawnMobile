@@ -13,7 +13,7 @@ public class DecSelectionData : ScriptableObject
 
     [field: SerializeField, Space(30)]
     public FactionDeckData[] allFactionsDeckData { get; private set; }
-    public int selectedDeckIndex = 0;
+    public int deckIndex = 0;
 
     public void AddDeckData(DeckData deckData)
     {
