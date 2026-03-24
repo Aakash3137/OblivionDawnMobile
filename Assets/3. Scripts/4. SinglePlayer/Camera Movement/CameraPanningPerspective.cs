@@ -11,11 +11,11 @@ public class CameraPanningPerspective : MonoBehaviour
 
     [Header("Zoom")]
     public float mouseZoomSpeed = 1.2f;
-    public float touchZoomSpeed = 0.01f;
+    public float touchZoomSpeed = 0.02f;
 
     [Header("Clamp Bounds")]
-    public Vector3 cameraMinBounds = new Vector3(-12, 5, -12);
-    public Vector3 cameraMaxBounds = new Vector3(25, 20, 25);
+    public Vector3 cameraMinBounds = new Vector3(-8, 5, -8);
+    public Vector3 cameraMaxBounds = new Vector3(40, 25, 40);
 
     [Header("Idle Reset")]
     public float maxIdleDuration = 10f;
@@ -70,7 +70,6 @@ public class CameraPanningPerspective : MonoBehaviour
         // Mobile: one-finger pan
         if (Input.touchCount == 1 && !isZooming)
         {
-
             Touch touch = Input.GetTouch(0);
 
             if (touch.phase == TouchPhase.Began)
