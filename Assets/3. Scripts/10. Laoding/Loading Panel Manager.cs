@@ -32,8 +32,8 @@ public class LoadingPanelManager : MonoBehaviour
         string sceneName = mode switch
         {
             Mode.Death_Solo => "SinglePlayerScene",
-            Mode.MultiPlayer_Type => "SinglePlayerScene",
-            Mode.PVP_Type => "SinglePlayerScene",
+            Mode.MultiPlayer_Type => "GameScene",
+            Mode.PVP_Type => "GameScene",
             Mode.Scenario_Type => "SinglePlayerScene",
             _ => "MainScene"
         };
