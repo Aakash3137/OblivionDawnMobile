@@ -67,8 +67,12 @@ public class DeckPanelManager : MonoBehaviour
         {
             allUnitData.allUnits[(int)faction].meleeUnits[0],
             allUnitData.allUnits[(int)faction].rangedUnits[0],
+            allUnitData.allUnits[(int)faction].aoeRangedUnits[0],
+            allUnitData.allUnits[(int)faction].airUnits[0],
             allBuildingData.defenseBuildings[(int)faction].wallBuildings[0],
-            allBuildingData.defenseBuildings[(int)faction].turretBuildings[0]
+            allBuildingData.defenseBuildings[(int)faction].turretBuildings[0],
+            allBuildingData.defenseBuildings[(int)faction].antiTankBuildings[0],
+            allBuildingData.defenseBuildings[(int)faction].antiAirBuildings[0]
         };
 
         return defaultDeckCards;
