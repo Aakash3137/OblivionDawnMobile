@@ -113,7 +113,13 @@ public class DefenseUnit : MonoBehaviour
     public void SetReplyTarget(Stats attacker)
     {
         if (attacker != null && attacker.side != defenseStats.side)
-            replyTarget = attacker;
+        {
+            if ((attacker.CanFly && defenseBuildingSO.defenseAttackTargets.canAttackAir) ||
+                (!attacker.CanFly && defenseBuildingSO.defenseAttackTargets.canAttackGround))
+            {
+                replyTarget = attacker;
+            }
+        }
     }
 
     private void FindTargetInAttackRange()
