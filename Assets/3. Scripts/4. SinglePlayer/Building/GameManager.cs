@@ -1,13 +1,19 @@
 using System;
 using UnityEngine;
 
+public enum UnitStance
+{
+    Attacking,
+    Defending
+}
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
     [Header("Data")]
     public AllFactionsData data;
-    public DecSelectionData decSelectionData;
+
+    public UnitStance unitStance;
 
     [Header("Spawn points")]
     public Tile playerTile;
@@ -35,12 +41,12 @@ public class GameManager : MonoBehaviour
     {
         await Awaitable.NextFrameAsync();
         SpawnMainBuilding();
-        // SpawnNeutralBuildings();
+        //SpawnNeutralBuildings();
     }
 
     private void SpawnMainBuilding()
     {
-        var playerFaction = decSelectionData.CurrentFaction;
+        var playerFaction = GameData.playerFaction;
         var playerMainBuilding = GetMainBuilding(playerFaction);
         var enemyMainBuilding = GetMainBuilding(enemyFaction);
 

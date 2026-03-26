@@ -57,10 +57,10 @@ public class InventoryManager : MonoBehaviour
 
     private void Start()
     {
-        if (_SelectionData.AllFactionDecData.Count <= 0)
-        {
-            decManager.InitializeAllFactionDecks();
-        }
+        // if (_SelectionData.AllFactionDecData.Count <= 0)
+        // {
+        //     decManager.InitializeAllFactionDecks();
+        // }
 
         //RefreshUI();
     }
@@ -312,39 +312,39 @@ public class InventoryManager : MonoBehaviour
 
     public void ItemSave(DecCategory category, FactionName factionName)
     {
-        foreach (var fname in _SelectionData.AllFactionDecData)
-        {
-            if (fname.FactionType == factionName)
-            {
-                if (category == DecCategory.Offense)
-                {
-                    fname.SelectedUnitDeck.Clear();
-                    foreach (var item in equippedData)
-                    {
-                        fname.FactionType = item.factionType;
-                        fname.SelectedUnitDeck.Add(item.Units);
-                    }
-                }
-                else if (category == DecCategory.Defense)
-                {
-                    fname.SelectedDefenseDec.Clear();
-                    foreach (var item in equippedData)
-                    {
-                        fname.FactionType = item.factionType;
-                        fname.SelectedDefenseDec.Add(item.Defenses);
-                    }
-                }
-                else if (category == DecCategory.Resource)
-                {
-                    fname.SelectedResourceDeck.Clear();
-                    foreach (var item in equippedData)
-                    {
-                        fname.FactionType = item.factionType;
-                        fname.SelectedResourceDeck.Add(item.Resources);
-                    }
-                }
-            }
-        }
+        // foreach (var fname in _SelectionData.AllFactionDecData)
+        // {
+        //     if (fname.FactionType == factionName)
+        //     {
+        //         if (category == DecCategory.Offense)
+        //         {
+        //             fname.SelectedUnitDeck.Clear();
+        //             foreach (var item in equippedData)
+        //             {
+        //                 fname.FactionType = item.factionType;
+        //                 fname.SelectedUnitDeck.Add(item.Units);
+        //             }
+        //         }
+        //         else if (category == DecCategory.Defense)
+        //         {
+        //             fname.SelectedDefenseDec.Clear();
+        //             foreach (var item in equippedData)
+        //             {
+        //                 fname.FactionType = item.factionType;
+        //                 fname.SelectedDefenseDec.Add(item.Defenses);
+        //             }
+        //         }
+        //         else if (category == DecCategory.Resource)
+        //         {
+        //             fname.SelectedResourceDeck.Clear();
+        //             foreach (var item in equippedData)
+        //             {
+        //                 fname.FactionType = item.factionType;
+        //                 fname.SelectedResourceDeck.Add(item.Resources);
+        //             }
+        //         }
+        //     }
+        // }
     }
 }
 

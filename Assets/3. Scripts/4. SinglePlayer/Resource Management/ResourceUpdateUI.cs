@@ -8,7 +8,7 @@ public class ResourceUpdateUI : MonoBehaviour
 
     [Header("Assign PlayerResourceManager Reference")]
     [SerializeField] private ResourceManager rmReference;
-    [SerializeField] private DecSelectionData decSelectionData;
+    [SerializeField] private AllBuildingData allBuildingData;
 
     [Header("Resource Amount Texts")]
     [SerializeField] private TMP_Text[] resourceTexts;
@@ -34,7 +34,7 @@ public class ResourceUpdateUI : MonoBehaviour
         if (rmReference != null)
         {
             rmReference.OnResourcesChanged += UpdateUI;
-            Debug.Log("[ResourceUpdateUI] Subscribed to OnResourcesChanged event for " + gameObject.name);
+            // Debug.Log("[ResourceUpdateUI] Subscribed to OnResourcesChanged event for " + gameObject.name);
         }
     }
 
@@ -134,20 +134,13 @@ public class ResourceUpdateUI : MonoBehaviour
     #region  Resource Sprites
     private void GetResourceSprites()
     {
-        if (decSelectionData == null)
-        {
-            Debug.Log("<color=#000000>[ResourceUpdateUI] DecSelectionData is null</color>");
-            return;
-        }
-
-        var decFactionData = decSelectionData.AllFactionDecData[(int)decSelectionData.CurrentFaction];
-        var totalResources = decFactionData.SelectedResourceDeck.Count;
+        int totalResources = ScenarioDataTypes._resourceEnumValues.Length;
 
         resourceSprites = new Sprite[totalResources];
 
         for (int i = 0; i < totalResources; i++)
         {
-            resourceSprites[i] = decFactionData.SelectedResourceDeck[i].buildingIcon;
+            resourceSprites[i] = allBuildingData.GetResourceBuildingSO(GameData.playerFaction, (ScenarioResourceType)i).buildingIcon;
         }
     }
 

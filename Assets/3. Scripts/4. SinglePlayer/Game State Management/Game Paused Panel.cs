@@ -6,12 +6,10 @@ using UnityEngine.UI;
 public class GamePausedPanel : MonoBehaviour
 {
     [SerializeField] private Button homeButton;
-    [SerializeField] private Button restartButton;
+    /*[SerializeField] private Button restartButton;*/
 
-    // [SerializeField] private Button resumeButton;
+    [SerializeField] private Button resumeButton;
     private GameStateManager gmInstance;
-
-    [SerializeField] private GameObject LoadingPanel;
 
 
     private void Start()
@@ -19,8 +17,8 @@ public class GamePausedPanel : MonoBehaviour
         gmInstance = GameStateManager.Instance;
 
         homeButton.onClick.AddListener(HomeMenu);
-        restartButton.onClick.AddListener(RestartGame);
-        // resumeButton.onClick.AddListener(ResumeGame);
+       // restartButton.onClick.AddListener(RestartGame);
+        resumeButton.onClick.AddListener(ResumeGame);
     }
 
     private void ResumeGame()
@@ -37,8 +35,7 @@ public class GamePausedPanel : MonoBehaviour
 
     private void HomeMenu()
     {
-        gmInstance.ChangeState(GameStateEnum.MAIN_MENU);
-        _= Instantiate(LoadingPanel);
-        // SceneManager.LoadScene("MainScene");
+        GameData.gameMode = Mode.None;
+        gmInstance.ChangeState(GameStateEnum.LOADING);
     }
 }

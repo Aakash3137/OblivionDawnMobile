@@ -151,7 +151,7 @@ public class UpgradePopUpPanel : MonoBehaviour
         {
             int cost = StatUpgrade.UpgradeCost(spawnLevel + 1);
             int fragmentCost = StatUpgrade.FragmentCost(spawnLevel + 1);
-            int currentFragments = userData.fragments[(int)faction];
+            int currentFragments = userData.GetFragment((int)faction);
 
             UpdateCostDisplay(cost);
             buttonLabel.SetText("Upgrade");
@@ -172,7 +172,7 @@ public class UpgradePopUpPanel : MonoBehaviour
     private void UpdateProgressBar(int spawnLevel, FactionName faction)
     {
         int fragmentCost = StatUpgrade.FragmentCost(spawnLevel + 1);
-        int currentFragments = userData.fragments[(int)faction];
+        int currentFragments = userData.GetFragment((int)faction);
 
         levelProgressFill.fillAmount = (float)currentFragments / fragmentCost;
         levelProgressText.SetText($"{currentFragments}/{fragmentCost}");
@@ -225,7 +225,7 @@ public class UpgradePopUpPanel : MonoBehaviour
         int cost = StatUpgrade.UpgradeCost(identity.spawnLevel + 1);
         int fragmentCost = StatUpgrade.FragmentCost(identity.spawnLevel + 1);
 
-        if (userData.Diamonds < cost || userData.fragments[(int)identity.faction] < fragmentCost)
+        if (userData.Diamonds < cost || userData.GetFragment((int)identity.faction) < fragmentCost)
             return;
 
         userData.Diamonds -= cost;
@@ -244,7 +244,7 @@ public class UpgradePopUpPanel : MonoBehaviour
         int cost = StatUpgrade.UpgradeCost(identity.spawnLevel + 1);
         int fragmentCost = StatUpgrade.FragmentCost(identity.spawnLevel + 1);
 
-        if (userData.Diamonds < cost || userData.fragments[(int)identity.faction] < fragmentCost)
+        if (userData.Diamonds < cost || userData.GetFragment((int)identity.faction) < fragmentCost)
             return;
 
         userData.Diamonds -= cost;

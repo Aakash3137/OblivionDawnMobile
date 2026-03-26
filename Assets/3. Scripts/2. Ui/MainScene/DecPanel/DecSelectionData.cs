@@ -1,37 +1,50 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Dec Selection Data", menuName = "Dec Manager/Dec Selection Data")]
 public class DecSelectionData : ScriptableObject
 {
-    public List<DeckData> AllFactionDecData = new List<DeckData>();
-
-    public FactionName CurrentFaction;
-    public DecCategory CurrentCategory;
-
-    [field: SerializeField, Space(30)]
+    [field: SerializeField, Space(10)]
     public FactionDeckData[] allFactionsDeckData { get; private set; }
+    public int deckIndex = 0;
 
-    public void AddDeckData(DeckData deckData)
+    private List<ScriptableObject> GetAllCardsInDeck(FactionName faction) => allFactionsDeckData[(int)faction].decks[deckIndex].deckCardsSO;
+
+    public List<UnitProduceStatsSO> GetUnitsSOInDeck(FactionName faction)
     {
-        // if(AllFactionDecData.Count > 0)
-        // {
-        //     AllFactionDecData.Clear();
-        // }
+        var allCardsSO = GetAllCardsInDeck(faction);
+        var unitCardSO = new List<UnitProduceStatsSO>();
 
-        AllFactionDecData.Add(deckData);
+        foreach (var card in allCardsSO)
+        {
+            if (card is UnitProduceStatsSO unitSO)
+                unitCardSO.Add(unitSO);
+        }
+
+        return unitCardSO;
     }
 
-    public List<ScriptableObject> GetCurrentFactionDeckData(FactionName factionName, int deckIndex = 0)
+    public List<DefenseBuildingDataSO> GetDefensesSOInDeck(FactionName faction)
     {
-        var deckData = allFactionsDeckData[(int)factionName].decks[deckIndex];
+        var allCardsSO = GetAllCardsInDeck(faction);
+        var defenseCardSO = new List<DefenseBuildingDataSO>();
 
-        return deckData.deckCardsSO;
+        foreach (var card in allCardsSO)
+        {
+            if (card is DefenseBuildingDataSO defenseSO)
+                defenseCardSO.Add(defenseSO);
+        }
+
+        return defenseCardSO;
     }
 
     private void OnValidate()
+    {
+        ValidateBase();
+    }
+
+    private void ValidateBase()
     {
         var enumValues = ScenarioDataTypes._factionEnumValues;
 
@@ -62,13 +75,4 @@ public class DecSelectionData : ScriptableObject
                 allFactionsDeckData[i].decks.Add(new Deck());
         }
     }
-}
-
-[Serializable]
-public class DeckData
-{
-    public FactionName FactionType;
-    public List<UnitProduceStatsSO> SelectedUnitDeck = new List<UnitProduceStatsSO>();
-    public List<DefenseBuildingDataSO> SelectedDefenseDec = new List<DefenseBuildingDataSO>();
-    public List<ResourceBuildingDataSO> SelectedResourceDeck = new List<ResourceBuildingDataSO>();
 }

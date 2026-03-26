@@ -5,9 +5,10 @@ using UnityEngine;
 public class DeckPanelManager : MonoBehaviour
 {
     public static DeckPanelManager Instance { get; private set; }
-
+    [Space(10)]
     [SerializeField] private AllBuildingData allBuildingData;
-    [SerializeField] private AllUnitData allUnitData; [Space(10)]
+    [SerializeField] private AllUnitData allUnitData;
+    [Space(10)]
     [SerializeField] private DeckCard deckCardPrefab;
     [Space(10)]
     public FactionCardPanel[] factionCardPanels;
@@ -59,6 +60,19 @@ public class DeckPanelManager : MonoBehaviour
 
     private void LogNullScriptable(string context) =>
         Debug.Log($"<color=green>[Deck Panel Manager] {context} scriptable is null</color>");
+
+    public List<ScriptableObject> GetDefaultDeckCards(FactionName faction)
+    {
+        var defaultDeckCards = new List<ScriptableObject>
+        {
+            allUnitData.allUnits[(int)faction].meleeUnits[0],
+            allUnitData.allUnits[(int)faction].rangedUnits[0],
+            allBuildingData.defenseBuildings[(int)faction].wallBuildings[0],
+            allBuildingData.defenseBuildings[(int)faction].turretBuildings[0]
+        };
+
+        return defaultDeckCards;
+    }
 
     private void OnValidate()
     {

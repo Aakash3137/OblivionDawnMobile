@@ -8,7 +8,6 @@ public class TileUIPanel : MonoBehaviour
 {
     [Header("Assign in Inspector")]
     [SerializeField] private BuildPanel buildPanel;
-    [SerializeField] private DecSelectionData decSelectionData;
     [SerializeField] private AllBuildingData allBuildingData;
     [SerializeField] private WallParent _wallPrefab;
 
@@ -36,7 +35,7 @@ public class TileUIPanel : MonoBehaviour
 
         errorText.color = new Color(errorText.color.r, errorText.color.g, errorText.color.b, 0f);
 
-        _wallPrefab = allBuildingData.wallParentBuildings[(int)decSelectionData.CurrentFaction].wallParentBuilding;
+        _wallPrefab = allBuildingData.wallParentBuildings[(int)GameData.playerFaction].wallParentBuilding;
     }
 
     public void Open(Tile tile)

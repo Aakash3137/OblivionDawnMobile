@@ -73,30 +73,3 @@ public class BuildingDataSO : ScriptableObject
         }
     }
 }
-
-[Serializable]
-public struct Identity
-{
-    public string name;
-    public int spawnLevel;
-    public FactionName faction;
-    public int priority;
-}
-[Serializable]
-public class CardDetails
-{
-    public bool factionUnlocked;
-    public bool isUnlocked;
-
-    [ShowIf(nameof(isUnlocked))]
-    public bool purchased;
-    public int minBuildingLevel;
-}
-[Serializable]
-public class BuildingUpgradeData
-{
-    public int buildingLevel;
-    [Space(30)]
-    public BasicStats buildingBasicStats;
-    public float buildingBuildTime;
-}

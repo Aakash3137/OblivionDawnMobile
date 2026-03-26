@@ -4,58 +4,37 @@ using UnityEngine.EventSystems;
 
 public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    public BuildingStats buildingPrefab;
-    [SerializeField] public Image iconImage;
-
-    public ScenarioBuildingType buildingType;
-    public PlayerResourceManager prmInstance;
-    public TileUIPanel tileUIPanel;
-    public CostPanelManager costPanelManager;
     private Button button;
+
+    private BuildingStats buildingPrefab;
+    [SerializeField] private Image iconImage;
+
+    private PlayerResourceManager prmInstance;
+    private TileUIPanel tileUIPanel;
+    private CostPanelManager costPanelManager;
+
     private BuildCost[] cachedCosts;
 
-    private void Start()
+    private void Awake()
     {
-        if (buildingPrefab == null)
-            Debug.Log($"<color=red> [BuildButton] No BuildingStats or found on {buildingPrefab.name}</color>");
-
-        // if (buildingPrefab.buildingStatsSO.buildingIcon != null)
-        //     iconImage.sprite = buildingPrefab.buildingStatsSO.buildingIcon;
-
         button = GetComponent<Button>();
-
         button.onClick.AddListener(OnClick);
 
-        // buildingToSpawn = GetSlot(GameData.SelectedFaction, buildingType);
-
-        // if (buildingToSpawn.TryGetComponent<BuildingStats>(out var spawnBuildingStats))
-        // {
-        //     cachedCosts = spawnBuildingStats.buildingStats.buildingBuildCost;
-        // }
-        // else
-        // {
-        //     Debug.Log($"<color=red>No BuildingStats or WallStats found on {buildingToSpawn.name}</color>");
-        // }
-
-        if (buildingPrefab != null)
-        {
-            cachedCosts = buildingPrefab.buildingStatsSO.buildingBuildCost;
-        }
-        else
-            Debug.Log($"<color=red> [BuildButton] No BuildingStats or found on {buildingPrefab.name}</color>");
-
-
-        //// BUILD BUTTON TESTING
         prmInstance = PlayerResourceManager.Instance;
 
         if (prmInstance != null)
         {
             prmInstance.OnResourcesChanged += UpdateButtonInteractivity;
         }
+    }
 
+    public void Initialize(BuildingStats buildingPrefab, Sprite sprite)
+    {
+        this.buildingPrefab = buildingPrefab;
+        iconImage.sprite = sprite;
+
+        cachedCosts = buildingPrefab.buildingStatsSO.buildingBuildCost;
         UpdateButtonInteractivity();
-
-
     }
 
     private void UpdateButtonInteractivity()
@@ -105,8 +84,6 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
         if (prmInstance != null)
             prmInstance.OnResourcesChanged -= UpdateButtonInteractivity;
-
-
     }
 
     private void SetDesaturated(bool state)
@@ -114,6 +91,12 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         if (iconImage == null) return;
 
         iconImage.color = state ? new Color(0.2f, 0.2f, 0.2f, 1f) : Color.white;
+    }
+
+    public void SetManagers(TileUIPanel tileUIPanel, CostPanelManager costPanelManager)
+    {
+        this.tileUIPanel = tileUIPanel;
+        this.costPanelManager = costPanelManager;
     }
 
 }

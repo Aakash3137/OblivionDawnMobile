@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class CostPanelManager : MonoBehaviour
 {
-    [SerializeField] private DecSelectionData decSelectionData;
+    [SerializeField] private AllBuildingData allBuildingData;
 
     [Header("Texts")]
     [SerializeField] private TMP_Text foodText;
@@ -78,18 +78,12 @@ public class CostPanelManager : MonoBehaviour
     #region  Resource Sprites
     private void GetResourceSprites()
     {
-        if (decSelectionData == null)
-        {
-            Debug.Log("<color=#000000>[ResourceUpdateUI] DecSelectionData is null</color>");
-            return;
-        }
+        FactionName currentFaction = GameData.playerFaction;
 
-        FactionName currentFaction = decSelectionData.CurrentFaction;
-
-        foodSprite = decSelectionData.AllFactionDecData[(int)currentFaction].SelectedResourceDeck[0].buildingIcon;
-        goldSprite = decSelectionData.AllFactionDecData[(int)currentFaction].SelectedResourceDeck[1].buildingIcon;
-        metalSprite = decSelectionData.AllFactionDecData[(int)currentFaction].SelectedResourceDeck[2].buildingIcon;
-        powerSprite = decSelectionData.AllFactionDecData[(int)currentFaction].SelectedResourceDeck[3].buildingIcon;
+        foodSprite = allBuildingData.GetResourceBuildingSO(currentFaction, ScenarioResourceType.Food).buildingIcon;
+        goldSprite = allBuildingData.GetResourceBuildingSO(currentFaction, ScenarioResourceType.Gold).buildingIcon;
+        metalSprite = allBuildingData.GetResourceBuildingSO(currentFaction, ScenarioResourceType.Metal).buildingIcon;
+        powerSprite = allBuildingData.GetResourceBuildingSO(currentFaction, ScenarioResourceType.Power).buildingIcon;
     }
 
     private void SetResourceSprites()

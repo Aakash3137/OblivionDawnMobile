@@ -113,9 +113,14 @@ public class Stats : MonoBehaviour
         if (attacker != null)
         {
             GroundUnit groundUnit = GetComponent<GroundUnit>();
+            DefenseUnit defenseUnit = GetComponent<DefenseUnit>();
             if (groundUnit != null)
             {
                 groundUnit.SetReplyTarget(attacker);
+            }
+            if(defenseUnit != null)
+            {
+                defenseUnit.SetReplyTarget(attacker);
             }
         }
 

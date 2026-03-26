@@ -10,6 +10,7 @@ public enum UnitState
     MovingToPrimary,
     Chasing,
     Attacking,
+    Defending,
     Idle
 }
 
@@ -70,15 +71,21 @@ public class GroundUnit : MonoBehaviour
     private float separationTimer;
     private const float separationInterval = 0.15f;
     private float targetCheckOffset;
-
+    //Abilities
+    private float baseMoveSpeed;
+    private Dictionary<AbilityEffect, float> speedModifiers = new Dictionary<AbilityEffect, float>();
+    
     private void Start()
     {
         unitStats = GetComponent<UnitStats>();
         unitProduceSO = unitStats.unitProduceSO;
         unitData = unitProduceSO.unitUpgradeData[unitStats.identity.spawnLevel];
 
+        BattleUnitRegistry.Units.Add(unitStats);
+
         // Initialize stats
-        moveSpeed = unitData.unitMobilityStats.moveSpeed;
+        baseMoveSpeed = unitData.unitMobilityStats.moveSpeed;
+        RecalculateSpeed();
         AttackRange = unitData.unitRangeStats.attackRange;
         DetectionRange = unitData.unitRangeStats.detectionRange;
         MinAttackRange = unitData.unitRangeStats.minAttackRange;
@@ -178,14 +185,32 @@ public class GroundUnit : MonoBehaviour
         switch (currentState)
         {
             case UnitState.Idle:
-                ChangeState(UnitState.MovingToPrimary);
+                switch (GameManager.Instance.unitStance)
+                {
+                    case UnitStance.Attacking:
+                        ChangeState(UnitState.MovingToPrimary);
+                        break;
+                    case UnitStance.Defending:
+                        if (unitSide != Side.Enemy)
+                            ChangeState(UnitState.Defending);
+                        else
+                            ChangeState(UnitState.MovingToPrimary);
+                        break;
+                }
                 break;
 
             case UnitState.MovingToPrimary:
-
+                if (GameManager.Instance.unitStance == UnitStance.Defending)
+                {
+                    if (unitSide != Side.Enemy)
+                    {
+                        ChangeState(UnitState.Defending);
+                        return;
+                    }
+                }
                 if (detectionTarget != null)
                 {
-                   ChangeState(UnitState.Chasing);
+                    ChangeState(UnitState.Chasing);
                 }
                 else if (withinAttackRange)
                 {
@@ -194,14 +219,21 @@ public class GroundUnit : MonoBehaviour
                 }
 
                 MoveToTarget();
-                ApplySeparation();   
+                ApplySeparation();
                 break;
 
             case UnitState.Chasing:
-
+                if (GameManager.Instance.unitStance == UnitStance.Defending)
+                {
+                    if (unitSide != Side.Enemy)
+                    {
+                        ChangeState(UnitState.Defending);
+                        return;
+                    }
+                }
                 if (withinAttackRange)
                 {
-                   ChangeState(UnitState.Attacking);
+                    ChangeState(UnitState.Attacking);
                     return;
                 }
 
@@ -209,11 +241,30 @@ public class GroundUnit : MonoBehaviour
                 ApplySeparation();  
                 break;
 
-            case UnitState.Attacking:
+            case UnitState.Defending:
+                if (GameManager.Instance.unitStance == UnitStance.Attacking)
+                {
+                    ChangeState(UnitState.MovingToPrimary);
+                    return;
+                }
+                if (withinAttackRange)
+                    Attack();
 
+                ApplySeparation();
+                break;
+
+            case UnitState.Attacking:
+                if (GameManager.Instance.unitStance == UnitStance.Defending)
+                {
+                    if (unitSide != Side.Enemy)
+                    {
+                        ChangeState(UnitState.Defending);
+                        return;
+                    }
+                }
                 if (effectiveDistance > AttackRange + 0.5f)
                 {
-                  ChangeState(UnitState.Chasing);
+                    ChangeState(UnitState.Chasing);
                     return;
                 }
 
@@ -221,7 +272,7 @@ public class GroundUnit : MonoBehaviour
                 break;
         }
     }
-    
+
     private void ChangeState(UnitState newState)
     {
         if (currentState == newState)
@@ -232,6 +283,10 @@ public class GroundUnit : MonoBehaviour
         switch (newState)
         {
             case UnitState.Idle:
+                agent.isStopped = true;
+                animator?.SetFloat("Move", 0f);
+                break;
+            case UnitState.Defending:
                 agent.isStopped = true;
                 animator?.SetFloat("Move", 0f);
                 break;
@@ -248,7 +303,7 @@ public class GroundUnit : MonoBehaviour
                 break;
         }
     }
-    
+
     private void MoveToTarget()
     {
         if (target == null) return;
@@ -484,22 +539,22 @@ public class GroundUnit : MonoBehaviour
             attackTimer = 0f;
             return;
         }
-        
+
         FaceTarget();
-        
+
         float distance = Vector3.Distance(transform.position, target.transform.position);
-        
+
         // Account for collider sizes
         float targetRadius = 0f;
         if (target.TryGetComponent<Collider>(out var targetCollider))
             targetRadius = targetCollider.bounds.extents.magnitude;
-        
+
         float myRadius = hitCollider != null ? hitCollider.bounds.extents.magnitude : 0f;
         float effectiveDistance = distance - targetRadius - myRadius;
-        
-        if (effectiveDistance > AttackRange + 0.5f|| effectiveDistance < MinAttackRange)    // added min attack range functionality
+
+        if (effectiveDistance > AttackRange + 0.5f || effectiveDistance < MinAttackRange)    // added min attack range functionality
         {
-          //  GameDebug.Log($"[{name}] Attack: Out of range (EffectiveDist: {effectiveDistance:F2} > {AttackRange + 0.5f:F2})");
+            //  GameDebug.Log($"[{name}] Attack: Out of range (EffectiveDist: {effectiveDistance:F2} > {AttackRange + 0.5f:F2})");
             attackTimer = 0f;
             return;
         }
@@ -538,15 +593,52 @@ public class GroundUnit : MonoBehaviour
 
     private void OnDestroy()
     {
+        BattleUnitRegistry.Units.Remove(unitStats);
+
         foreach (var unit in BattleUnitRegistry.Units)
         {
-            if (unit.target == gameObject)
+            if (unit != null && unit.TryGetComponent<GroundUnit>(out var groundUnit) && groundUnit.target == gameObject)
             {
-                unit.target = null;
+                groundUnit.target = null;
             }
         }
     }
 
+    #region Abilities
+
+    public void AddSpeedModifier(AbilityEffect source, float amount)
+    {
+        speedModifiers[source] = amount;
+        RecalculateSpeed();
+    }
+
+    public void RemoveSpeedModifier(AbilityEffect source)
+    {
+        if (speedModifiers.ContainsKey(source))
+        {
+            speedModifiers.Remove(source);
+            RecalculateSpeed();
+        }
+    }
+
+    private void RecalculateSpeed()
+    {
+        float finalSpeed = baseMoveSpeed;
+
+        foreach (var mod in speedModifiers.Values)
+        {
+            finalSpeed += mod;
+        }
+
+        moveSpeed = finalSpeed;
+
+        if (agent != null)
+        {
+            agent.speed = finalSpeed;
+        }
+    }
+
+    #endregion
 
     #region Helper
 
@@ -554,7 +646,7 @@ public class GroundUnit : MonoBehaviour
     {
         foreach (var unit in BattleUnitRegistry.Units)
         {
-            if (unit.unitSide == Side.Player)
+            if (unit != null && unit.side == Side.Player)
                 return true;
         }
 
@@ -565,7 +657,7 @@ public class GroundUnit : MonoBehaviour
     {
         foreach (var unit in BattleUnitRegistry.Units)
         {
-            if (unit.unitSide == Side.Enemy)
+            if (unit != null && unit.side == Side.Enemy)
                 return true;
         }
 

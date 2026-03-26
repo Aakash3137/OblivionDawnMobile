@@ -24,7 +24,7 @@ public class EnemyAIHandler : MonoBehaviour
     [SerializeField] private EnemyPersonality currentPersonality;
 
     [SerializeField] private List<EnemyPersonality> AIPersonalities;
-    [SerializeField] private DecSelectionData AIDecSelectionData;
+    [SerializeField] private AllBuildingData allBuildingData;
 
     [SerializeField] private float minResourcePercent = 15f; // never drop below 15% of each resource
 
@@ -34,7 +34,7 @@ public class EnemyAIHandler : MonoBehaviour
 
     private int totalBuildingsSpawned = 0;
     private float spawnTimer = 0f;
-    
+
     private float currentSpawnInterval;
 
     private int resourceBuildingIndex = 0;
@@ -42,14 +42,21 @@ public class EnemyAIHandler : MonoBehaviour
 
     [Header("READ ONLY")][SerializeField] private int unitBuilt = 0;
     [SerializeField] private int resourceBuilt = 0;
-    [SerializeField] private int defenseBuilt = 0;   
+    [SerializeField] private int defenseBuilt = 0;
 
     // Resource need tracking
     [SerializeField] private float[] resourceNeedPercentages = new float[4]; // % out of 100 for each resource
     private float timeSinceLastAnalysis = 0f;
     private const float RECHECK_INTERVAL = 10f;
 
-  
+    // Resource building tracking
+    private int[] resourceBuildingCounts = new int[4];
+    private bool balancedPhaseComplete = false;
+    
+    //Resource build economical
+    [SerializeField] private int earlyResourceTarget = 2;
+    private bool earlyEconomyComplete = false;
+    
     void Start()
     {
         if (GameManager.Instance == null)
@@ -63,13 +70,13 @@ public class EnemyAIHandler : MonoBehaviour
             AIPersonalityEnum chosen = MenuManager.Instance.SelectedPersonalityFromMenu();
             currentPersonality = AIPersonalities.Find(p => p.personalityName == chosen);
         }
-        
+
         //Setting spawn interval
         currentSpawnInterval = currentPersonality.spawnInterval;
 
         enemyMainBuildingTransform = GameManager.Instance.enemySpawnPoint;
         playerMainBuildingTransform = GameManager.Instance.playerSpawnPoint;
-        
+
         GameManager.Instance.SetEnemyFaction(enemyFactionName);
 
         Invoke(nameof(AnalyzeResourceNeeds), 1.5f);
@@ -144,6 +151,17 @@ public class EnemyAIHandler : MonoBehaviour
 
     #endregion
 
+    bool IsEarlyEconomyComplete()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (resourceBuildingCounts[i] < earlyResourceTarget)
+                return false;
+        }
+
+        return true;
+    }
+    
     void TrySpawnBuilding()
     {
         if (totalBuildingsSpawned >= currentPersonality.maxEnemyBuildings)
@@ -153,7 +171,7 @@ public class EnemyAIHandler : MonoBehaviour
         {
             currentSpawnInterval = currentPersonality.reduceSpawnTime;
         }
-        
+
         if (spawnableTiles.Count == 0)
             return;
 
@@ -191,6 +209,20 @@ public class EnemyAIHandler : MonoBehaviour
 
     BuildingStats DecideBuildingUsingPersonality(out BuildingCategory category)
     {
+        // ===== EARLY ECONOMY PHASE =====
+        if (!earlyEconomyComplete)
+        {
+            if (IsEarlyEconomyComplete())
+            {
+                earlyEconomyComplete = true;
+            }
+            else
+            {
+                category = BuildingCategory.Resource;
+                return GetLowestResourceBuilding();
+            }
+        }
+        
         float unit = currentPersonality.unitBuildingWeight;
         float resource = currentPersonality.resourceBuildingWeight;
         float defense = currentPersonality.defenseBuildingWeight;
@@ -265,6 +297,27 @@ public class EnemyAIHandler : MonoBehaviour
     #endregion
 
     #region Weighted Building Selection
+    
+    BuildingStats GetLowestResourceBuilding()
+    {
+        BuildingStats[] buildings = GetResourceBuildings();
+        if (buildings == null || buildings.Length == 0)
+            return null;
+
+        int lowestIndex = 0;
+        int lowestCount = resourceBuildingCounts[0];
+
+        for (int i = 1; i < Mathf.Min(4, buildings.Length); i++)
+        {
+            if (resourceBuildingCounts[i] < lowestCount)
+            {
+                lowestCount = resourceBuildingCounts[i];
+                lowestIndex = i;
+            }
+        }
+
+        return buildings[lowestIndex];
+    }
 
     BuildingStats GetWeightedUnitBuilding()
     {
@@ -331,7 +384,39 @@ public class EnemyAIHandler : MonoBehaviour
         BuildingStats[] buildings = GetResourceBuildings();
         if (buildings == null || buildings.Length == 0)
             return null;
+        
+        // ================= BALANCED START =================
+        if (currentPersonality.balancedResourceStart && !balancedPhaseComplete)
+        {
+            int target = currentPersonality.balancedResourceTarget;
+            
+            int minCount = int.MaxValue;
+            int targetIndex = 0;
 
+            for (int i = 0; i < Mathf.Min(4, buildings.Length); i++)
+            {
+                if (resourceBuildingCounts[i] < minCount)
+                {
+                    minCount = resourceBuildingCounts[i];
+                    targetIndex = i;
+                }
+            }
+
+            // Check if balanced phase is complete
+            balancedPhaseComplete = true;
+            for (int i = 0; i < 4; i++)
+            {
+                if (resourceBuildingCounts[i] < target)
+                {
+                    balancedPhaseComplete = false;
+                    break;
+                }
+            }
+
+            return buildings[targetIndex];
+        }
+
+        // ================= NORMAL AI =================
         // Recheck resource needs every 10 seconds
         if (timeSinceLastAnalysis >= RECHECK_INTERVAL)
         {
@@ -480,7 +565,7 @@ public class EnemyAIHandler : MonoBehaviour
                 resourceNeedPercentages[i] = 25f;
         }
 
-       // Debug.Log($"[EnemyAI] Resource Needs: Gold={resourceNeedPercentages[0]:F1}%, Wood={resourceNeedPercentages[1]:F1}%, Stone={resourceNeedPercentages[2]:F1}%, Food={resourceNeedPercentages[3]:F1}%");
+        // Debug.Log($"[EnemyAI] Resource Needs: Gold={resourceNeedPercentages[0]:F1}%, Wood={resourceNeedPercentages[1]:F1}%, Stone={resourceNeedPercentages[2]:F1}%, Food={resourceNeedPercentages[3]:F1}%");
     }
 
     #endregion
@@ -516,22 +601,18 @@ public class EnemyAIHandler : MonoBehaviour
 
     BuildingStats[] GetResourceBuildings()
     {
-        var deck =
-            AIDecSelectionData
-                .AllFactionDecData[(int)enemyFactionName]
-                .SelectedResourceDeck;
+        if (allBuildingData == null)
+        {
+            Debug.Log("<color=red>[EnemyAIHandler] allBuildingData is null");
+            return null;
+        }
+        var deck = allBuildingData.GetFactionResourceBuildingsSO(enemyFactionName);
 
-        if (deck == null || deck.Count == 0)
-            return new BuildingStats[0];
-
-        BuildingStats[] buildings =
-            new BuildingStats[deck.Count];
+        var buildings = new BuildingStats[deck.Count];
 
         for (int i = 0; i < deck.Count; i++)
         {
-            buildings[i] =
-                CharacterDatabase.Instance
-                    .GetResourceBuildingPrefab(deck[i]);
+            buildings[i] = CharacterDatabase.Instance.GetResourceBuildingPrefab(deck[i]);
         }
 
         return buildings;
@@ -671,7 +752,7 @@ public class EnemyAIHandler : MonoBehaviour
             UpdateSpawnableTiles(tileGrid);
             totalBuildingsSpawned++;
 
-            // ✅ Increment only after success
+            // Increment only after success
             switch (category)
             {
                 case BuildingCategory.Unit:
@@ -679,6 +760,18 @@ public class EnemyAIHandler : MonoBehaviour
                     break;
                 case BuildingCategory.Resource:
                     resourceBuilt++;
+
+                    // Track which resource type
+                    var resourceBuildings = GetResourceBuildings();
+                    for (int i = 0; i < resourceBuildings.Length; i++)
+                    {
+                        if (resourceBuildings[i] == buildingPrefab)
+                        {
+                            resourceBuildingCounts[i]++;
+                            break;
+                        }
+                    }
+
                     break;
                 case BuildingCategory.Defense:
                     defenseBuilt++;
