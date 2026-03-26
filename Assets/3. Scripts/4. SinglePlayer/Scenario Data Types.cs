@@ -1,15 +1,47 @@
 
 using System;
 
-public enum FactionName { Medieval = 0, Present = 1, Futuristic = 2, Galvadore = 3 }
-public enum ScenarioResourceType { Food = 0, Gold = 1, Metal = 2, Power = 3 }
-public enum ScenarioUnitType { Air = 3, Melee = 0, AOERanged = 2, Ranged = 1 }
-public enum ScenarioOffenseType { AirBuilding = 3, MeleeBuilding = 0, AOERangedBuilding = 2, RangedBuilding = 1 }
-public enum ScenarioDefenseType { AntiAir = 3, AntiTank = 2, Turret = 1, Wall = 0 }
+public enum FactionName
+{
+    Medieval = 0,
+    Present = 1,
+    Futuristic = 2,
+    Galvadore = 3
+}
+public enum ScenarioResourceType
+{
+    Food = 0,
+    Gold = 1,
+    Metal = 2,
+    Power = 3
+}
+public enum ScenarioUnitType
+{
+    Melee = 0,
+    Ranged = 1,
+    AOERanged = 2,
+    Air = 3
+}
+
+public enum ScenarioOffenseType
+{
+    MeleeBuilding = 0,
+    RangedBuilding = 1,
+    AOERangedBuilding = 2,
+    AirBuilding = 3
+}
+public enum ScenarioDefenseType
+{
+    Wall = 0,
+    Turret = 1,
+    AntiTank = 2,
+    AntiAir = 3
+}
+
 public enum GameUnitName
 {
     // Medieval Faction Units
-    Sayuri = 0,
+    Sayuri,
     Veer,
     Griffin,
     Ballista,
@@ -72,6 +104,7 @@ public enum GameUnitName
     DarkTroll,
     SpectralArcher
 }
+
 public static class ScenarioDataTypes
 {
     public static readonly FactionName[] _factionEnumValues = (FactionName[])Enum.GetValues(typeof(FactionName));

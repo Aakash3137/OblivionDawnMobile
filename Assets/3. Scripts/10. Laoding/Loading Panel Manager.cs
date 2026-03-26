@@ -17,6 +17,12 @@ public class LoadingPanelManager : MonoBehaviour
     private float targetProgress;
     private static readonly string[] dots = { "", ".", "..", "..." };
 
+    private void OnEnable()
+    {
+        fillImage.fillAmount = 0f;
+        percentText.SetText($"{0}%");
+    }
+
 
     private void Update()
     {

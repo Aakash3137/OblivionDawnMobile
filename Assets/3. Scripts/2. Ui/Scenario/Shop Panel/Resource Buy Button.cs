@@ -29,11 +29,15 @@ public class ResourceBuyButton : MonoBehaviour
 
             cost = 5;
             buttonText.SetText($"{cost}");
-            button.interactable = userdata.Diamonds >= cost;
+            SetButtonInteractivity();
         }
+
+        if (userdata != null)
+            userdata.OnDiamondsChanged += SetButtonInteractivity;
+
     }
 
-    private void OnEnable()
+    private void SetButtonInteractivity()
     {
         button.interactable = userdata.Diamonds >= cost;
     }
@@ -47,14 +51,13 @@ public class ResourceBuyButton : MonoBehaviour
         buttonText.SetText($"{cost}");
         button.onClick.AddListener(OnClickBuy);
 
-        button.interactable = userdata.Diamonds >= cost;
+        SetButtonInteractivity();
     }
 
     private void OnClickBalanceResources()
     {
         PlayerResourceManager.Instance.BalanceResources();
-
-        button.interactable = userdata.Diamonds >= cost;
+        userdata.Diamonds -= cost;
     }
 
     private void OnClickBuy()
@@ -68,11 +71,13 @@ public class ResourceBuyButton : MonoBehaviour
             PlayerResourceManager.Instance.AddResources((ScenarioResourceType)resourceIndex, amount);
         }
         userdata.Diamonds -= cost;
-        button.interactable = userdata.Diamonds >= cost;
     }
     private void OnDestroy()
     {
         button.onClick.RemoveListener(OnClickBalanceResources);
         button.onClick.RemoveListener(OnClickBuy);
+
+        if (userdata != null)
+            userdata.OnDiamondsChanged -= SetButtonInteractivity;
     }
 }

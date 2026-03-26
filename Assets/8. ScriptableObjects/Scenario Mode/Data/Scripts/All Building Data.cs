@@ -16,9 +16,10 @@ public class AllBuildingData : ScriptableObject
     public List<ResourceBuilding> resourceBuildings { get; internal set; }
     public List<DefenseBuilding> defenseBuildings { get; internal set; }
 
-    private void Awake()
+    private void OnValidate()
     {
         Populate();
+        ValidateBase();
     }
 
     public void Populate()
@@ -199,7 +200,7 @@ public class AllBuildingData : ScriptableObject
         var ry = (ResourceBuildingDataSO)y;
         return rx.resourceType.CompareTo(ry.resourceType);
     }
-    private void OnValidate()
+    private void ValidateBase()
     {
         var enumValues = Enum.GetValues(typeof(FactionName));
 

@@ -19,6 +19,7 @@ public class Userdata : ScriptableObject
     [SerializeField] private int diamonds = 0;
     [SerializeField, ReadOnly] private int[] fragments = new int[4];
     public Action<FactionName> OnFragmentsChanged;
+    public Action OnDiamondsChanged;
 
     public int Level = 0;
     public int Coins
@@ -38,6 +39,7 @@ public class Userdata : ScriptableObject
         {
             diamonds = value;
             UpdateCurrencyUI();
+            OnDiamondsChanged?.Invoke();
         }
     }
 

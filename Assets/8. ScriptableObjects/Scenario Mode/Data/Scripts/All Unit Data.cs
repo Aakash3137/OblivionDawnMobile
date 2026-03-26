@@ -8,9 +8,9 @@ public class AllUnitData : ScriptableObject
 {
     public List<UnitProduceStatsSO> allUnitsSO;
 
-    public List<Unit> allUnits { get; internal set; }
+    [field: SerializeField] public List<Unit> allUnits { get; internal set; }
 
-    private void Awake()
+    private void OnValidate()
     {
         Populate();
     }
