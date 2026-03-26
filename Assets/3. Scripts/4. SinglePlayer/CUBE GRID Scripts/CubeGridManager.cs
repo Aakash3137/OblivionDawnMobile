@@ -1,47 +1,151 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.TextCore;
+using Sirenix.OdinInspector;
+using System;
 
 public class CubeGridManager : MonoBehaviour
 {
     public static CubeGridManager Instance;
 
+    [SerializeField] private Tile tilePrefab;
+
     [Header("Grid Settings")]
     [Tooltip("Size of each cube cell in world units")]
-    public float cellSize = 1f;
+    [SerializeField] private float cellSize = 2f;
+    [SerializeField] private Vector2Int gridSize = new Vector2Int(17, 17);
 
     [Tooltip("Offset every 2nd row (like staggered grid)")]
-    public bool useOffset = false;
+    [SerializeField] private bool useOffset = false;
 
     // Dictionary of all tiles keyed by (x,y)
     public Dictionary<Vector2Int, Tile> cubeTiles = new Dictionary<Vector2Int, Tile>();
+    private GameManager gmInstance => GameManager.Instance;
 
-    public int MinX { get; private set; } = int.MaxValue;
-    public int MinY { get; private set; } = int.MaxValue;
-    public int MaxX { get; private set; } = int.MinValue;
-    public int MaxY { get; private set; } = int.MinValue;
+    private int enemyTilesCount => enemyTiles.Count;
+    private int playerTilesCount => playerTiles.Count;
+    private HashSet<Tile> playerTiles = new();
+    private HashSet<Tile> enemyTiles = new();
+    private Tile[] allTiles;
 
-    private GameManager gmInstance;
+    public Action<int, int> onTileOccupied;
 
-    void Awake()
+    [Button]
+    public void GenerateTiles()
     {
-        Instance = this;
-        // Debug.Log("CubeGridManager initialized");
-        gmInstance = GameManager.Instance;
+#if UNITY_EDITOR
+        DestroyTiles();
+
+        int playerTileCount = 0;
+        int enemyTileCount = 0;
+
+        for (int x = 0; x < gridSize.x; x++)
+        {
+            for (int y = 0; y < gridSize.y; y++)
+            {
+                float rowOffset = (useOffset && (y & 1) != 0) ? cellSize * 0.5f : 0f;
+                var spawnPosition = new Vector3(x * cellSize + rowOffset, 0f, y * cellSize);
+
+                var spawnedTile = Instantiate(tilePrefab, spawnPosition, Quaternion.identity, transform);
+                spawnedTile.name = $"Tile ({x}, {y})";
+
+                Side side;
+                int diagSum = x + y;
+                int midSum = gridSize.x - 1;
+
+                if (diagSum < midSum)
+                    side = Side.Player;
+                else if (diagSum > midSum)
+                    side = Side.Enemy;
+                else
+                {
+                    side = (x % 2 == 0) ? Side.Player : Side.Enemy;
+                }
+
+                spawnedTile.InitializeSide(side);
+
+                if (side == Side.Player) playerTileCount++;
+                else enemyTileCount++;
+            }
+        }
+
+        Debug.Log($"Generated {playerTileCount} player tiles and {enemyTileCount} enemy tiles.");
+#endif
+    }
+
+    [Button]
+    public void DestroyTiles()
+    {
+        if (transform.childCount > 0)
+        {
+            for (int i = transform.childCount - 1; i >= 0; i--)
+            {
+                DestroyImmediate(transform.GetChild(i).gameObject);
+            }
+        }
+
+        cubeTiles.Clear();
+    }
+
+    private void Awake()
+    {
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
+
+        allTiles = GetComponentsInChildren<Tile>();
+
+        for (int i = 0; i < allTiles.Length; i++)
+        {
+            var coords = WorldToGrid(allTiles[i].transform.position);
+            allTiles[i].Initialize(coords);
+            RegisterTile(coords, allTiles[i]);
+        }
+    }
+
+    private async Awaitable Start()
+    {
+        // Count tiles after all obstacles special tile water and Lava tile have been placed
+        await Awaitable.NextFrameAsync();
+
+        foreach (var tile in allTiles)
+        {
+            if (tile.ownerSide == Side.Player)
+            {
+                playerTiles.Add(tile);
+            }
+            else if (tile.ownerSide == Side.Enemy)
+            {
+                enemyTiles.Add(tile);
+            }
+        }
+        onTileOccupied?.Invoke(playerTilesCount, enemyTilesCount);
+    }
+
+    public void TileOccupied(Side side, Tile tile)
+    {
+        if (side == Side.Player)
+        {
+            enemyTiles.Remove(tile);
+            playerTiles.Add(tile);
+        }
+        else if (side == Side.Enemy)
+        {
+            playerTiles.Remove(tile);
+            enemyTiles.Add(tile);
+        }
+
+        onTileOccupied?.Invoke(playerTilesCount, enemyTilesCount);
     }
 
     // -----------------------------
     // TILE REGISTRATION
     // -----------------------------
-    public void RegisterCube(Vector2Int grid, Tile tile)
+
+    public void RegisterTile(Vector2Int grid, Tile tile)
     {
         if (!cubeTiles.ContainsKey(grid))
             cubeTiles.Add(grid, tile);
-
-        MinX = Mathf.Min(MinX, grid.x);
-        MinY = Mathf.Min(MinY, grid.y);
-        MaxX = Mathf.Max(MaxX, grid.x);
-        MaxY = Mathf.Max(MaxY, grid.y);
     }
 
     public void UnregisterCube(Vector2Int grid)
@@ -50,14 +154,14 @@ public class CubeGridManager : MonoBehaviour
             cubeTiles.Remove(grid);
     }
 
-    public Tile GetCube(Vector2Int grid)
+    public Tile GetTile(Vector2Int grid)
     {
         cubeTiles.TryGetValue(grid, out var tile);
         return tile;
     }
 
     // -----------------------------
-    // WORLD ↔ GRID CONVERSION
+    // WORLD <-> GRID CONVERSION
     // -----------------------------
     public Vector2Int WorldToGrid(Vector3 pos)
     {
@@ -88,9 +192,8 @@ public class CubeGridManager : MonoBehaviour
     // -----------------------------
     // NEIGHBORS
     // -----------------------------
-    /// <summary>
-    /// Get 4 cardinal neighbors (up, down, left, right).
-    /// </summary>
+
+    /// <summary>Returns the 4 cardinal neighbor coordinates (up, down, left, right).</summary>
     public List<Vector2Int> GetCardinalNeighbors(Vector2Int grid)
     {
         return new List<Vector2Int>
@@ -102,9 +205,7 @@ public class CubeGridManager : MonoBehaviour
         };
     }
 
-    /// <summary>
-    /// Get all 8 neighbors (cardinals + diagonals).
-    /// </summary>
+    /// <summary>Returns all 8 neighbor coordinates (cardinals + diagonals).</summary>
     public List<Vector2Int> GetAllNeighbors(Vector2Int grid)
     {
         return new List<Vector2Int>
@@ -121,6 +222,32 @@ public class CubeGridManager : MonoBehaviour
             new Vector2Int(grid.x + 1, grid.y - 1),
             new Vector2Int(grid.x - 1, grid.y - 1)
         };
+    }
+
+    public List<Tile> GetCardinalTiles(Vector2Int grid)
+    {
+        var neighbors = new List<Tile>();
+        var neighborCoords = GetCardinalNeighbors(grid);
+
+        foreach (var coord in neighborCoords)
+        {
+            neighbors.Add(GetTile(coord));
+        }
+
+        return neighbors;
+    }
+
+    public List<Tile> GetAllTiles(Vector2Int grid)
+    {
+        var neighbors = new List<Tile>();
+        var neighborCoords = GetAllNeighbors(grid);
+
+        foreach (var coord in neighborCoords)
+        {
+            neighbors.Add(GetTile(coord));
+        }
+
+        return neighbors;
     }
 
     // -----------------------------
@@ -162,7 +289,7 @@ public class CubeGridManager : MonoBehaviour
 
                     Vector2Int currentLayerGrid = new Vector2Int(currentGrid.x + i, currentGrid.y + j);
 
-                    var cube = GetCube(currentLayerGrid);
+                    var cube = GetTile(currentLayerGrid);
                     if (cube == null)
                         continue;
 
@@ -170,7 +297,6 @@ public class CubeGridManager : MonoBehaviour
                         continue;
 
                     Vector3 distance = cube.transform.position - currentPosition;
-
                     float dotProduct = Vector3.Dot(distance, enemyMainBuildingDirection);
 
                     if (dotProduct > temp)
@@ -178,10 +304,9 @@ public class CubeGridManager : MonoBehaviour
                         nearestOpenTile = cube;
                         temp = dotProduct;
                     }
-
-                    // Debug.Log($"adj tile {tile.name} distance: {distance.magnitude} dot: {dotProduct}");
                 }
             }
+
             if (nearestOpenTile != null)
                 return nearestOpenTile;
         }

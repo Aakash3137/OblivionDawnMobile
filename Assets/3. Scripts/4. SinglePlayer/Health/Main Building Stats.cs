@@ -37,5 +37,9 @@ public class MainBuildingStats : BuildingStats
                 break;
         }
     }
+    public MainBuildingDataSO GetBuildingSO()
+    {
+        return buildingStatsSO as MainBuildingDataSO;
+    }
 }
 

@@ -1,0 +1,123 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6441491945011999025
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2668502963775438460}
+  - component: {fileID: 6504506917090862996}
+  - component: {fileID: 5675060887131865333}
+  - component: {fileID: 6861852375960143637}
+  - component: {fileID: 842625913094700380}
+  m_Layer: 13
+  m_Name: CubeGridmanager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 2147483647
+  m_IsActive: 1
+--- !u!4 &2668502963775438460
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6441491945011999025}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6504506917090862996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6441491945011999025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SerializedVersion: 0
+  m_AgentTypeID: 0
+  m_CollectObjects: 0
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_UseGeometry: 0
+  m_DefaultArea: 0
+  m_GenerateLinks: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 0.16666667
+  m_MinRegionArea: 2
+  m_NavMeshData: {fileID: 23800000, guid: 862a05a8053e3c44787dd7865baca430, type: 2}
+  m_BuildHeightMesh: 0
+--- !u!114 &5675060887131865333
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6441491945011999025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3109e8e5f743714bb719c1ca010bd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tilePrefab: {fileID: 6736489346519201113, guid: 80b1a9e57c42ee44f8b84627a1098d63, type: 3}
+  cellSize: 2
+  gridSize: {x: 17, y: 17}
+  useOffset: 0
+--- !u!114 &6861852375960143637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6441491945011999025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa70e605184ee7b4ea92af1a72a20514, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  allBuildingData: {fileID: 11400000, guid: 46347f96dd2847b40a2a617ce6aaecbc, type: 2}
+  unitStance: 0
+  <playerSpawnCoord>k__BackingField: {x: 3, y: 3}
+  <enemySpawnCoord>k__BackingField: {x: 14, y: 14}
+  obstaclePool: {fileID: 0}
+  yOffset: 2
+  defaultObstacle: {fileID: 1152334100043379315, guid: 5d3464869a0287146919b75f975ae38b, type: 3}
+  neutralBuildingsData: []
+--- !u!114 &842625913094700380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6441491945011999025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9624e5f550100542ae8163eecbc2021, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  variations:
+  - name: Ocean
+    material: {fileID: 2100000, guid: d337fc5282607644ebb2f3575513265e, type: 2}
+    tileCount: 15
+    isSingleCluster: 0
+    addNavMeshObstacle: 1

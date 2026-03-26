@@ -39,7 +39,7 @@ public class EnemyBuildPanel : MonoBehaviour
 
     public void SetWall()
     {
-        _wallPrefab = allBuildingData.wallParentBuildings[(int)GameManager.Instance.enemyFaction].wallParentBuilding;
+        _wallPrefab = allBuildingData.wallParentBuildings[(int)GameData.enemyFaction].wallParentBuilding;
     }
     public void PlaceEnemyAirBuilding()
     {
@@ -160,10 +160,10 @@ public class EnemyBuildPanel : MonoBehaviour
         Tile[] adjacentTiles = new Tile[4]; // 0 : Right, 1 : Left, 2 : Up, 3 : Down;
 
         // Directions are fixed with index 0 : Right, 1 : Left, 2 : Up, 3 : Down
-        adjacentTiles[0] = cgmInstance.GetCube(adjacentTileCords[0]);
-        adjacentTiles[1] = cgmInstance.GetCube(adjacentTileCords[1]);
-        adjacentTiles[2] = cgmInstance.GetCube(adjacentTileCords[2]);
-        adjacentTiles[3] = cgmInstance.GetCube(adjacentTileCords[3]);
+        adjacentTiles[0] = cgmInstance.GetTile(adjacentTileCords[0]);
+        adjacentTiles[1] = cgmInstance.GetTile(adjacentTileCords[1]);
+        adjacentTiles[2] = cgmInstance.GetTile(adjacentTileCords[2]);
+        adjacentTiles[3] = cgmInstance.GetTile(adjacentTileCords[3]);
 
         WallParent currentWall = Instantiate(_wallPrefab,
             new Vector3(_currentTileCords.x, _wallYOffset, _currentTileCords.z),
@@ -181,19 +181,19 @@ public class EnemyBuildPanel : MonoBehaviour
                     case 0:
                         currentWall.DisableWall(0);
                         // Most common error here is null reference exception when tile.hasBuilding is not set to false after the building is destroyed
-                        adjacentTiles[i].GetOccupant().GetComponentInChildren<WallParent>()?.DisableWall(1);
+                        // adjacentTiles[i].GetCurrentBuilding().GetComponentInChildren<WallParent>()?.DisableWall(1);
                         break;
                     case 1:
                         currentWall.DisableWall(1);
-                        adjacentTiles[i].GetOccupant().GetComponentInChildren<WallParent>()?.DisableWall(0);
+                        // adjacentTiles[i].GetCurrentBuilding().GetComponentInChildren<WallParent>()?.DisableWall(0);
                         break;
                     case 2:
                         currentWall.DisableWall(2);
-                        adjacentTiles[i].GetOccupant().GetComponentInChildren<WallParent>()?.DisableWall(3);
+                        // adjacentTiles[i].GetCurrentBuilding().GetComponentInChildren<WallParent>()?.DisableWall(3);
                         break;
                     case 3:
                         currentWall.DisableWall(3);
-                        adjacentTiles[i].GetOccupant().GetComponentInChildren<WallParent>()?.DisableWall(2);
+                        // adjacentTiles[i].GetCurrentBuilding().GetComponentInChildren<WallParent>()?.DisableWall(2);
                         break;
                 }
             }

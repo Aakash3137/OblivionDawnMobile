@@ -1,51 +1,3 @@
-// using UnityEngine;
-// using TMPro;
-
-// public class TileCounterUI : MonoBehaviour
-// {
-//     [Header("UI Reference")]
-//     public TMP_Text sideText;   // Assign the TMP_Text in Inspector
-
-//     [Header("Side Settings")]
-//     public Side targetSide;     // Choose Player or Enemy in Inspector
-
-//     [Header("Update Settings")]
-//     public float updateInterval = 0.5f; // How often to refresh count
-
-//     private float timer;
-
-//     void Update()
-//     {
-//         timer += Time.deltaTime;
-//         if (timer >= updateInterval)
-//         {
-//             UpdateTileCount();
-//             timer = 0f;
-//         }
-//     }
-
-//     void UpdateTileCount()
-//     {
-//         if (CubeGridManager.Instance == null || sideText == null) return;
-
-//         int count = 0;
-//         foreach (var kvp in CubeGridManager.Instance.cubeTiles)
-//         {
-//             Tile tile = kvp.Value.GetComponent<Tile>();
-//             if (tile != null && tile.ownerSide == targetSide)
-//             {
-//                 count++;
-//             }
-//         }
-
-//         sideText.text = $"{targetSide} Tiles: {count}";
-//     }
-// }
-
-
-
-
-
 using UnityEngine;
 using TMPro;
 
@@ -55,59 +7,24 @@ public class TileCounterUI : MonoBehaviour
     public TMP_Text playerText;
     public TMP_Text enemyText;
 
-    private int playerCount = 0;
-    private int enemyCount = 0;
 
-    public static TileCounterUI Instance; // Singleton for easy access
-
-    void Awake()
+    private void Start()
     {
-        Instance = this;
+        CubeGridManager.Instance.onTileOccupied += UpdateUI;
     }
 
-    void Start()
-    {
-        InitializeCounts();
-    }
-
-    public void InitializeCounts()
-    {
-        playerCount = 0;
-        enemyCount = 0;
-
-        foreach (var kvp in CubeGridManager.Instance.cubeTiles)
-        {
-            Tile tile = kvp.Value.GetComponent<Tile>();
-            if (tile == null) continue;
-
-            if (tile.ownerSide == Side.Player) playerCount++;
-            else if (tile.ownerSide == Side.Enemy) enemyCount++;
-        }
-
-        UpdateUI();
-    }
-
-    public void UpdateTileOwnerCount(Side oldOwner, Side newOwner)
-    {
-        // GameDebug.Log($"UpdateTileOwnerCount Tile owner changed from {oldOwner} to {newOwner}");
-        if (oldOwner == Side.Player) playerCount--;
-        else if (oldOwner == Side.Enemy) enemyCount--;
-
-        if (newOwner == Side.Player) playerCount++;
-        else if (newOwner == Side.Enemy) enemyCount++;
-
-        UpdateUI();
-    }
-
-
-    private void UpdateUI()
+    private void UpdateUI(int playerCount, int enemyCount)
     {
         if (playerText != null)
-            playerText.text = $"{playerCount}";
+            playerText.SetText($"{playerCount}");
 
         if (enemyText != null)
-            enemyText.text = $"{enemyCount}";
+            enemyText.SetText($"{enemyCount}");
     }
 
-
+    private void OnDestroy()
+    {
+        if (CubeGridManager.Instance != null)
+            CubeGridManager.Instance.onTileOccupied -= UpdateUI;
+    }
 }

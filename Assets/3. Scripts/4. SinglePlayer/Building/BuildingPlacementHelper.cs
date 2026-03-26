@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using ExitGames.Client.Photon.StructWrapping;
 
 public class BuildingPlacementHelper : MonoBehaviour
 {
@@ -16,7 +17,7 @@ public class BuildingPlacementHelper : MonoBehaviour
     private void Start()
     {
         currentCoord = cgmInstance.WorldToGrid(transform.position);
-        currentTile = cgmInstance.GetCube(currentCoord);
+        currentTile = cgmInstance.GetTile(currentCoord);
 
         GetNeighbors();
         ActivateNeighbors();
@@ -34,7 +35,7 @@ public class BuildingPlacementHelper : MonoBehaviour
 
         foreach (var coord in neighborCoords)
         {
-            Tile tile = cgmInstance.GetCube(coord);
+            Tile tile = cgmInstance.GetTile(coord);
 
             if (tile != null)
                 neighborTiles.Add(tile);
@@ -53,7 +54,7 @@ public class BuildingPlacementHelper : MonoBehaviour
             if (tile.hasBuilding)
                 continue;
 
-            tile.SetOpen(true);
+            tile.OpenStatusHandler(true);
         }
     }
 
@@ -69,7 +70,7 @@ public class BuildingPlacementHelper : MonoBehaviour
             tile.proxyTiles.Remove(currentTile);
 
             if (tile.proxyTiles.Count == 0 || tile.proxyTiles == null)
-                tile.SetOpen(false);
+                tile.OpenStatusHandler(false);
 
             // if neighbor tile has a building then set current tile to open
             if (tile.hasBuilding)
@@ -79,11 +80,11 @@ public class BuildingPlacementHelper : MonoBehaviour
 
     private void DeactivateSelf()
     {
-        currentTile.SetOpen(false);
+        currentTile.OpenStatusHandler(false);
     }
 
     private void ActivateSelf()
     {
-        currentTile.SetOpen(true);
+        currentTile.OpenStatusHandler(true);
     }
 }

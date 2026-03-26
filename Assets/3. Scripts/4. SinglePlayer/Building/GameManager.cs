@@ -11,23 +11,18 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     [Header("Data")]
-    public AllFactionsData data;
+    public AllBuildingData allBuildingData;
 
     public UnitStance unitStance;
 
     [Header("Spawn points")]
-    public Tile playerTile;
-    public Tile enemyTile;
+    [field: SerializeField] public Vector2Int playerSpawnCoord { get; private set; }
+    [field: SerializeField] public Vector2Int enemySpawnCoord { get; private set; }
+
 
     public Transform obstaclePool;
 
-    [HideInInspector]
-    public Transform playerSpawnPoint => playerTile.transform;
-    [HideInInspector]
-    public Transform enemySpawnPoint => enemyTile.transform;
-
     public float yOffset = 2f;
-    internal FactionName enemyFaction;
 
     public GameObject defaultObstacle;
     public NeutralBuildingsData[] neutralBuildingsData;
@@ -35,11 +30,31 @@ public class GameManager : MonoBehaviour
     internal Stats PlayerMainBuilding;
     internal Stats EnemyMainBuilding;
 
-    void Awake() => Instance = this;
+    private CubeGridManager cgmInstance => CubeGridManager.Instance;
 
-    private async Awaitable Start()
+    // [Space(10)]
+    public Tile playerTile { get; private set; }
+    public Tile enemyTile { get; private set; }
+    public Transform playerSpawnPoint { get; private set; }
+    public Transform enemySpawnPoint { get; private set; }
+
+
+    void Awake()
     {
-        await Awaitable.NextFrameAsync();
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
+    }
+
+    private void Start()
+    {
+        playerTile = cgmInstance.GetTile(playerSpawnCoord);
+        enemyTile = cgmInstance.GetTile(enemySpawnCoord);
+
+        playerSpawnPoint = playerTile.transform;
+        enemySpawnPoint = enemyTile.transform;
+
         SpawnMainBuilding();
         //SpawnNeutralBuildings();
     }
@@ -47,23 +62,23 @@ public class GameManager : MonoBehaviour
     private void SpawnMainBuilding()
     {
         var playerFaction = GameData.playerFaction;
-        var playerMainBuilding = GetMainBuilding(playerFaction);
-        var enemyMainBuilding = GetMainBuilding(enemyFaction);
+        var enemyFaction = GameData.enemyFaction;
+        var charDb = CharacterDatabase.Instance;
+
+        var playerMainBuilding = charDb.mainBuildingPrefabs[(int)playerFaction];
+        var enemyMainBuilding = charDb.mainBuildingPrefabs[(int)enemyFaction];
 
         var playerBuilding = Instantiate(playerMainBuilding, playerSpawnPoint.position + Vector3.up * yOffset, Quaternion.identity);
         var enemyBuilding = Instantiate(enemyMainBuilding, enemySpawnPoint.position + Vector3.up * yOffset, Quaternion.identity);
 
-        var playerMainBuildingStats = playerBuilding.GetComponent<BuildingStats>();
-        var enemyMainBuildingStats = enemyBuilding.GetComponent<BuildingStats>();
+        playerBuilding.SetBuildingTile(playerTile);
+        playerBuilding.Initialize();
 
-        playerMainBuildingStats.SetBuildingTile(playerTile);
-        playerMainBuildingStats.Initialize();
+        enemyBuilding.SetBuildingTile(enemyTile);
+        enemyBuilding.Initialize();
 
-        enemyMainBuildingStats.SetBuildingTile(enemyTile);
-        enemyMainBuildingStats.Initialize();
-
-        PlayerMainBuilding = playerMainBuildingStats.side == Side.Player ? playerMainBuildingStats.GetComponent<Stats>() : PlayerMainBuilding;
-        EnemyMainBuilding = enemyMainBuildingStats.side == Side.Enemy ? enemyMainBuildingStats.GetComponent<Stats>() : EnemyMainBuilding;
+        PlayerMainBuilding = playerBuilding;
+        EnemyMainBuilding = enemyBuilding;
     }
 
 
@@ -86,31 +101,11 @@ public class GameManager : MonoBehaviour
 
             BuildingStats buildingStats = neutralBuilding.GetComponent<BuildingStats>();
 
-            building.tile.SetOwner(side);
+            building.tile.ChangeSide(side);
             buildingStats.SetBuildingTile(building.tile);
 
             //Initialize if scriptable object is not null
             // buildingStats.Initialize();
-        }
-    }
-    public void SetEnemyFaction(FactionName name)
-    {
-        enemyFaction = name;
-    }
-
-    public GameObject GetMainBuilding(FactionName name)
-    {
-        switch (name)
-        {
-            case FactionName.Medieval:
-                return data.medievalMainBuilding;
-            case FactionName.Present:
-                return data.presentMainBuilding;
-            case FactionName.Futuristic:
-                return data.futureMainBuilding;
-            case FactionName.Galvadore:
-                return data.galvadoreMainBuilding;
-            default: return null;
         }
     }
 }
@@ -118,8 +113,8 @@ public class GameManager : MonoBehaviour
 [Serializable]
 public struct NeutralBuildingsData
 {
-    public Tile tile;
-    [HideInInspector]
+    public Vector2Int neutralSpawnCoord;
+    public Tile tile => CubeGridManager.Instance.GetTile(neutralSpawnCoord);
     public Transform tileTransform => tile.transform;
     public GameObject prefab;
     public float yOffset;
