@@ -73,7 +73,7 @@ public class GroundUnit : MonoBehaviour
     private float targetCheckOffset;
     //Abilities
     private float baseMoveSpeed;
-    private Dictionary<AbilityEffect, float> speedModifiers = new Dictionary<AbilityEffect, float>();
+    private Dictionary<AbilityEffect, float> speedMultipliers = new Dictionary<AbilityEffect, float>();
     
     private void Start()
     {
@@ -606,17 +606,19 @@ public class GroundUnit : MonoBehaviour
 
     #region Abilities
 
-    public void AddSpeedModifier(AbilityEffect source, float amount)
+    public void AddSpeedMultiplier(AbilityEffect source, float multiplier)
     {
-        speedModifiers[source] = amount;
+        Debug.Log($"[GroundUnit] {gameObject.name} - Adding speed multiplier: {multiplier}x (Base: {baseMoveSpeed})");
+        speedMultipliers[source] = multiplier;
         RecalculateSpeed();
     }
 
     public void RemoveSpeedModifier(AbilityEffect source)
     {
-        if (speedModifiers.ContainsKey(source))
+        if (speedMultipliers.ContainsKey(source))
         {
-            speedModifiers.Remove(source);
+            Debug.Log($"[GroundUnit] {gameObject.name} - Removing speed multiplier");
+            speedMultipliers.Remove(source);
             RecalculateSpeed();
         }
     }
@@ -625,12 +627,15 @@ public class GroundUnit : MonoBehaviour
     {
         float finalSpeed = baseMoveSpeed;
 
-        foreach (var mod in speedModifiers.Values)
+        // Apply all multipliers
+        foreach (var multiplier in speedMultipliers.Values)
         {
-            finalSpeed += mod;
+            finalSpeed *= multiplier;
         }
 
         moveSpeed = finalSpeed;
+
+        Debug.Log($"[GroundUnit] {gameObject.name} - Speed recalculated: {finalSpeed:F2} (Base: {baseMoveSpeed}, Multipliers: {speedMultipliers.Count})");
 
         if (agent != null)
         {

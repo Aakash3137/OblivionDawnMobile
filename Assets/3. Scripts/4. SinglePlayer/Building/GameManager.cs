@@ -38,6 +38,10 @@ public class GameManager : MonoBehaviour
     public Transform playerSpawnPoint { get; private set; }
     public Transform enemySpawnPoint { get; private set; }
 
+    //Universal Abilities
+    public GameObject UniversalAbilityContainer;
+    public AbilitySO AllSpeedReduction;
+    public AbilitySO AllHealAbility;
 
     void Awake()
     {
@@ -57,6 +61,8 @@ public class GameManager : MonoBehaviour
 
         SpawnMainBuilding();
         //SpawnNeutralBuildings();
+        
+        Generic.Delay(ReduceAllUnitSpeed, 120f);
     }
 
     private void SpawnMainBuilding()
@@ -108,6 +114,25 @@ public class GameManager : MonoBehaviour
             // buildingStats.Initialize();
         }
     }
+    
+    //Abilities Section
+    void ReduceAllUnitSpeed()
+    {
+        if (AllSpeedReduction != null)
+        {
+            Debug.Log("Speed reduction ON for next 15sec for every unit in game");
+            AbilityManager.Instance.AddSpecialAbility(AllSpeedReduction);
+        }
+    }
+    
+    void HealAllUnits()
+    {
+        if (AllHealAbility != null)
+        {
+            AbilityManager.Instance.AddSpecialAbility(AllHealAbility);
+        }
+    }
+    
 }
 
 [Serializable]
