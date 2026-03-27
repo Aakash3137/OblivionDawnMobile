@@ -15,11 +15,20 @@ public class AbilityController : MonoBehaviour
     {
         abilities = abilityList;
 
+        if (abilities == null || abilities.Count == 0)
+        {
+            Debug.Log($"[AbilityController] {gameObject.name} has no abilities to initialize");
+            return;
+        }
+
+        Debug.Log($"[AbilityController] Initializing {abilities.Count} abilities for {gameObject.name}");
+
         // Apply passive abilities immediately
         foreach (var ability in abilities)
         {
             if (ability.abilityType == AbilityType.Passive)
             {
+                Debug.Log($"[AbilityController] Applying passive ability: {ability.abilityName}");
                 ApplyAbility(ability);
             }
         }
@@ -27,13 +36,29 @@ public class AbilityController : MonoBehaviour
     
     public void ActivateAbility(AbilitySO ability)
     {
+        Debug.Log($"[AbilityController] Activating ability {ability.abilityName} on {gameObject.name}");
         ApplyAbility(ability);
     }
 
     private void ApplyAbility(AbilitySO ability)
     {
+        if (ability.effects == null || ability.effects.Count == 0)
+        {
+            Debug.LogWarning($"[AbilityController] Ability {ability.abilityName} has no effects!");
+            return;
+        }
+
+        Debug.Log($"[AbilityController] Applying {ability.effects.Count} effects from {ability.abilityName}");
+
         foreach (var effect in ability.effects)
         {
+            if (effect == null)
+            {
+                Debug.LogWarning($"[AbilityController] Null effect in {ability.abilityName}");
+                continue;
+            }
+
+            Debug.Log($"[AbilityController] Applying effect: {effect.GetType().Name}");
             effect.Apply(owner);
         }
 
