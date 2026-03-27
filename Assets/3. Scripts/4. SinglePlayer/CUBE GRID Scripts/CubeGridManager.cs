@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
-using System;
 
 public class CubeGridManager : MonoBehaviour
 {
@@ -25,10 +24,13 @@ public class CubeGridManager : MonoBehaviour
     private int playerTilesCount => playerTiles.Count;
     private HashSet<Tile> playerTiles = new();
     private HashSet<Tile> enemyTiles = new();
+    private HashSet<Tile> tileEffectTiles = new();
     private Tile[] allTiles;
 
-    public Action<int, int> onTileOccupied;
+    public System.Action<int, int> onTileOccupied;
 
+
+    #region Tile Generation Editor only
     [Button]
     public void GenerateTiles()
     {
@@ -85,6 +87,7 @@ public class CubeGridManager : MonoBehaviour
 
         cubeTiles.Clear();
     }
+    #endregion
 
     private void Awake()
     {
@@ -101,12 +104,6 @@ public class CubeGridManager : MonoBehaviour
             allTiles[i].Initialize(coords);
             RegisterTile(coords, allTiles[i]);
         }
-    }
-
-    private async Awaitable Start()
-    {
-        // Count tiles after all obstacles special tile water and Lava tile have been placed
-        await Awaitable.NextFrameAsync();
 
         foreach (var tile in allTiles)
         {
@@ -119,9 +116,11 @@ public class CubeGridManager : MonoBehaviour
                 enemyTiles.Add(tile);
             }
         }
-        onTileOccupied?.Invoke(playerTilesCount, enemyTilesCount);
+
+        tileEffectTiles.Clear();
     }
 
+    // Only call when tile is getting occupied (changing sides)
     public void TileOccupied(Side side, Tile tile)
     {
         if (side == Side.Player)
@@ -135,9 +134,21 @@ public class CubeGridManager : MonoBehaviour
             enemyTiles.Add(tile);
         }
 
+        playerTiles.Remove(tile);
+        enemyTiles.Remove(tile);
+
         onTileOccupied?.Invoke(playerTilesCount, enemyTilesCount);
     }
 
+    private void RemoveRandomTileFromList(Tile tile)
+    {
+        playerTiles.Remove(tile);
+        enemyTiles.Remove(tile);
+
+        onTileOccupied?.Invoke(playerTilesCount, enemyTilesCount);
+    }
+
+    #region Tile Registration
     // -----------------------------
     // TILE REGISTRATION
     // -----------------------------
@@ -255,12 +266,190 @@ public class CubeGridManager : MonoBehaviour
     // -----------------------------
     public int CubeDistance(Vector2Int a, Vector2Int b)
     {
-        return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
+        return Mathf.Max(Mathf.Abs(a.x - b.x), Mathf.Abs(a.y - b.y));
     }
 
-    public bool AreAdjacent(Vector2Int a, Vector2Int b)
+    private int ManhattanDistance(Vector2Int a, Vector2Int b)
     {
-        return CubeDistance(a, b) == 1;
+        return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
+    }
+    #endregion
+
+    public Tile GetRandomTile(Side side, int minDistance)
+    {
+        var tiles = side == Side.Player ? playerTiles : enemyTiles;
+        Vector2Int spawnCoord = side == Side.Player ? gmInstance.playerSpawnCoord : gmInstance.enemySpawnCoord;
+
+        int eligibleCount = 0;
+        foreach (var tile in tiles)
+        {
+            if (CubeDistance(spawnCoord, tile.coord) > minDistance && !tileEffectTiles.Contains(tile))
+                eligibleCount++;
+        }
+
+        if (eligibleCount == 0)
+        {
+            Debug.LogWarning($"GetRandomTile: No eligible {side} tiles beyond minDistance {minDistance}.");
+            return null;
+        }
+
+        int randomIndex = UnityEngine.Random.Range(0, eligibleCount);
+        int current = 0;
+
+        foreach (var tile in tiles)
+        {
+            if (CubeDistance(spawnCoord, tile.coord) > minDistance && !tileEffectTiles.Contains(tile))
+            {
+                if (current == randomIndex)
+                {
+                    tileEffectTiles.Add(tile);
+                    RemoveRandomTileFromList(tile);
+                    return tile;
+                }
+                current++;
+            }
+        }
+
+        return null;
+    }
+
+    public List<Tile> GetGroupedTiles(int groupSize, int minDistance, int clusterGap = 2)
+    {
+        if (groupSize < 2)
+        {
+            Debug.LogWarning("GetGroupedTiles: groupSize must be at least 2.");
+            return null;
+        }
+
+        int playerCount = groupSize - (groupSize / 2);
+        int enemyCount = groupSize / 2;
+
+        int diagSum = gridSize.x - 1;
+
+        // ── Helper: is a tile too close to any reference set? ──────────────────
+        bool IsTooClose(Tile tile, IEnumerable<Tile> reference)
+        {
+            foreach (var used in reference)
+            {
+                if (ManhattanDistance(tile.coord, used.coord) <= clusterGap)
+                    return true;
+            }
+            return false;
+        }
+
+        // ── Base exclusion check shared by both pools ───────────────────────────
+        bool IsBaseExcluded(Tile tile)
+        {
+            if (tileEffectTiles.Contains(tile)) return true;
+            if (CubeDistance(gmInstance.playerSpawnCoord, tile.coord) <= minDistance) return true;
+            if (CubeDistance(gmInstance.enemySpawnCoord, tile.coord) <= minDistance) return true;
+            if (Mathf.Abs((tile.coord.x + tile.coord.y) - diagSum) == 0) return true;
+            if (IsTooClose(tile, tileEffectTiles)) return true;
+            return false;
+        }
+
+        // ── Step 1: build player eligible pool ─────────────────────────────────
+        var eligiblePlayer = new List<Tile>();
+
+        foreach (var tile in allTiles)
+        {
+            if (IsBaseExcluded(tile)) continue;
+            if (tile.ownerSide == Side.Player)
+                eligiblePlayer.Add(tile);
+        }
+
+        if (eligiblePlayer.Count < playerCount)
+        {
+            Debug.LogWarning($"GetGroupedTiles: Not enough eligible player tiles. " +
+                             $"Need {playerCount}, found {eligiblePlayer.Count}.");
+            return null;
+        }
+
+        // ── Step 2: pick player cluster from random seed ────────────────────────
+        Tile seed = eligiblePlayer[UnityEngine.Random.Range(0, eligiblePlayer.Count)];
+
+        eligiblePlayer.Sort((a, b) =>
+            ManhattanDistance(seed.coord, a.coord).CompareTo(ManhattanDistance(seed.coord, b.coord)));
+
+        var pickedPlayer = new List<Tile>();
+        for (int i = 0; i < playerCount; i++)
+            pickedPlayer.Add(eligiblePlayer[i]);
+
+        // ── Step 3: build enemy eligible pool AFTER player picks are known ──────
+        // This ensures the gap is correctly enforced against the actual picked
+        // player tiles, not just previously registered tileEffectTiles
+        var eligibleEnemy = new List<Tile>();
+
+        foreach (var tile in allTiles)
+        {
+            if (IsBaseExcluded(tile)) continue;
+            if (tile.ownerSide != Side.Enemy) continue;
+
+            // Gap check against the freshly picked player tiles specifically
+            if (IsTooClose(tile, pickedPlayer)) continue;
+
+            eligibleEnemy.Add(tile);
+        }
+
+        if (eligibleEnemy.Count < enemyCount)
+        {
+            Debug.LogWarning($"GetGroupedTiles: Not enough eligible enemy tiles after player placement. " +
+                             $"Need {enemyCount}, found {eligibleEnemy.Count}.");
+            return null;
+        }
+
+        // ── Step 4: find enemy tile nearest to any picked player tile ───────────
+        Tile enemySeed = null;
+        int bestDist = int.MaxValue;
+
+        foreach (var enemyTile in eligibleEnemy)
+        {
+            foreach (var playerTile in pickedPlayer)
+            {
+                int dist = ManhattanDistance(enemyTile.coord, playerTile.coord);
+                if (dist < bestDist)
+                {
+                    bestDist = dist;
+                    enemySeed = enemyTile;
+                }
+            }
+        }
+
+        if (enemySeed == null)
+        {
+            Debug.LogWarning("GetGroupedTiles: Could not find a valid enemy seed tile.");
+            return null;
+        }
+
+        // ── Step 5: grow enemy cluster from enemy seed ──────────────────────────
+        eligibleEnemy.Sort((a, b) =>
+            ManhattanDistance(enemySeed.coord, a.coord).CompareTo(ManhattanDistance(enemySeed.coord, b.coord)));
+
+        var pickedEnemy = new List<Tile>();
+        for (int i = 0; i < enemyCount; i++)
+            pickedEnemy.Add(eligibleEnemy[i]);
+
+        // ── Step 6: register everything ────────────────────────────────────────
+        var result = new List<Tile>();
+
+        foreach (var tile in pickedPlayer)
+        {
+            result.Add(tile);
+            tileEffectTiles.Add(tile);
+            playerTiles.Remove(tile);
+            enemyTiles.Remove(tile);
+        }
+
+        foreach (var tile in pickedEnemy)
+        {
+            result.Add(tile);
+            tileEffectTiles.Add(tile);
+            playerTiles.Remove(tile);
+            enemyTiles.Remove(tile);
+        }
+
+        onTileOccupied?.Invoke(playerTilesCount, enemyTilesCount);
+        return result;
     }
 
     public Tile GetNearestOpenTile(Vector2Int currentGrid, Side side, Vector3 currentPosition, int range = 10)

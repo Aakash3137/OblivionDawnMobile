@@ -266,7 +266,6 @@ GameObject:
   - component: {fileID: 6736489346519201113}
   - component: {fileID: 7511740855995815813}
   - component: {fileID: 4973969094889017036}
-  - component: {fileID: 8206381027934340478}
   m_Layer: 13
   m_Name: Tile Prefab
   m_TagString: Untagged
@@ -330,7 +329,7 @@ MonoBehaviour:
   <hasBuilding>k__BackingField: 0
   <currentBuilding>k__BackingField: {fileID: 0}
   proxyTiles: []
-  coord: {x: 0, y: 0}
+  <coord>k__BackingField: {x: 0, y: 0}
   meshObject: {fileID: 1104293407760248124}
   openTileVisual: {fileID: 8070178440667138203}
   borders:
@@ -343,6 +342,7 @@ MonoBehaviour:
   neutralMaterial: {fileID: 2100000, guid: ff3d84bdf11904546b1965b3df195021, type: 2}
   neutralAllyMaterial: {fileID: 2100000, guid: 97c4a623a70090544ad1dcb8270787ff, type: 2}
   neutralEnemyMaterial: {fileID: 2100000, guid: 97c4a623a70090544ad1dcb8270787ff, type: 2}
+  tileEffects: []
 --- !u!114 &7511740855995815813
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -382,22 +382,6 @@ MonoBehaviour:
   _OwnerInt: 0
   _IsOccupied: 0
   isOpen: 0
---- !u!208 &8206381027934340478
-NavMeshObstacle:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5965051179479958454}
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Shape: 1
-  m_Extents: {x: 0.5, y: 0.5, z: 0.5}
-  m_MoveThreshold: 0
-  m_Carve: 1
-  m_CarveOnlyStationary: 1
-  m_Center: {x: 0, y: 1.1, z: 0}
-  m_TimeToStationary: 0.5
 --- !u!1 &6519136075246314596
 GameObject:
   m_ObjectHideFlags: 0

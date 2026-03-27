@@ -10,8 +10,7 @@ public class Tile : MonoBehaviour
     [field: SerializeField, ReadOnly] public BuildingStats currentBuilding { get; private set; }
     [field: SerializeField, ReadOnly] public List<Tile> proxyTiles = new List<Tile>();
 
-    [Space(15)]
-    [SerializeField, ReadOnly] private Vector2Int coord;
+    [field: SerializeField, ReadOnly, Space(15)] public Vector2Int coord { get; private set; }
     [SerializeField, ReadOnly] private MeshRenderer meshObject;
     [SerializeField, ReadOnly] private GameObject openTileVisual;
 
@@ -29,6 +28,8 @@ public class Tile : MonoBehaviour
     private Side previousSide = Side.Neutral;
 
     private CubeGridManager cgmInstance => CubeGridManager.Instance;
+
+    public List<TileEffect> tileEffects = new();
 
     private void Start()
     {
@@ -78,6 +79,11 @@ public class Tile : MonoBehaviour
         {
             meshObject.sharedMaterial = material;
         }
+    }
+
+    public void OverrideMaterial(Material material)
+    {
+        meshObject.sharedMaterial = material;
     }
 
     public void OpenStatusHandler(bool flag)

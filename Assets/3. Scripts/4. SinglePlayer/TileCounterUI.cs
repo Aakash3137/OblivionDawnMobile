@@ -8,7 +8,7 @@ public class TileCounterUI : MonoBehaviour
     public TMP_Text enemyText;
 
 
-    private void Start()
+    private void OnEnable()
     {
         CubeGridManager.Instance.onTileOccupied += UpdateUI;
     }
@@ -22,7 +22,7 @@ public class TileCounterUI : MonoBehaviour
             enemyText.SetText($"{enemyCount}");
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         if (CubeGridManager.Instance != null)
             CubeGridManager.Instance.onTileOccupied -= UpdateUI;
