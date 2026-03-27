@@ -174,6 +174,14 @@ public class TileModifyManager : MonoBehaviour
             }
         }
     }
+
+    private void OnValidate()
+    {
+        for (int i = 0; i < tileModificationData.Length; i++)
+        {
+            tileModificationData[i].clusterSize = (int)(tileModificationData[i].tileCount * 0.5f);
+        }
+    }
 }
 
 [Serializable]
@@ -181,6 +189,7 @@ public class TileModificationData
 {
     public TileEffectType tileEffectType;
     public int tileCount;
+    [ReadOnly]public int clusterSize;
     public int minDistanceFromMainBuilding;
     public bool isGrouped;
     public bool isObstacle;
