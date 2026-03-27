@@ -18,10 +18,13 @@ public class CharacterDatabase : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
         else
             Destroy(gameObject);
+        
+        RegisterUnits();
+        RegisterDefenseBuildings();
+        RegisterResourceBuildings();
     }
 
     private void RegisterUnits()
@@ -132,12 +135,5 @@ public class CharacterDatabase : MonoBehaviour
 
         Debug.LogError("No prefab found for: " + resourceBuildingData.name);
         return null;
-    }
-
-    private void OnValidate()
-    {
-        RegisterUnits();
-        RegisterDefenseBuildings();
-        RegisterResourceBuildings();
     }
 }
