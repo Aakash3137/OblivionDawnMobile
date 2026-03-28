@@ -4,6 +4,8 @@ public class DefenseBuildingStats : BuildingStats
 {
     public ScenarioDefenseType defenseType { get; private set; }
     public DefenseBuildingUpgradeData defenseBuildingData { get; private set; }
+    public AttackStats attackStats { get; private set; }
+    public override TileEffectType compatibleTileEffectType => TileEffectType.DefenseTile;
     DefenseUnit defenseUnit;
 
     internal override void Initialize()
@@ -15,7 +17,7 @@ public class DefenseBuildingStats : BuildingStats
             defenseType = defenseWallSO.defenseType;
             defenseBuildingData = defenseWallSO.defenseBuildingUpgradeData[identity.spawnLevel];
             basicStats = defenseBuildingData.buildingBasicStats;
-
+            attackStats = defenseBuildingData.defenseAttackStats;
             buildTime = defenseBuildingData.buildingBuildTime;
         }
         else

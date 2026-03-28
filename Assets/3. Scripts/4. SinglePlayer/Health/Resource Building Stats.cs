@@ -6,8 +6,10 @@ public class ResourceBuildingStats : BuildingStats
     [ReadOnly] public ScenarioResourceType resourceType { get; private set; }
     public ResourceBuildingUpgradeData resourceBuildingData { get; private set; }
     [field: SerializeField, ReadOnly] public bool isProducingResources { get; private set; }
+    public override TileEffectType compatibleTileEffectType => TileEffectType.ResourceTile;
     private float productionTickSyncTime;
-    private float generationTime;
+    private int generationAmount;
+    private float generationRate;
 
     internal override void Initialize()
     {
@@ -32,7 +34,8 @@ public class ResourceBuildingStats : BuildingStats
 
         base.Initialize();
 
-        generationTime = resourceBuildingData.resourceAmountPerBatch; // rmInstance.globalTickTime;
+        generationAmount = resourceBuildingData.resourceAmountPerBatch;
+        generationRate = generationAmount;
     }
 
     internal override async Awaitable InitializeOnBuilt()
@@ -67,6 +70,7 @@ public class ResourceBuildingStats : BuildingStats
         if (syncComplete)
             Produce();
 
+        // calling CanProduce method instead of cached value to refresh it
         if (!CanProduce() && isProducingResources)
         {
             DecreaseGenerationRate();
@@ -76,7 +80,7 @@ public class ResourceBuildingStats : BuildingStats
 
     private void Produce()
     {
-        rmInstance.AddResources(resourceType, resourceBuildingData.resourceAmountPerBatch);
+        rmInstance.AddResources(resourceType, generationAmount);
     }
 
     private bool CanProduce()
@@ -86,12 +90,12 @@ public class ResourceBuildingStats : BuildingStats
 
     private void IncreaseGenerationRate()
     {
-        rmInstance.IncreaseResourceGenerationRate(resourceType, generationTime);
+        rmInstance.IncreaseResourceGenerationRate(resourceType, generationRate);
     }
 
     private void DecreaseGenerationRate()
     {
-        rmInstance.DecreaseResourceGenerationRate(resourceType, generationTime);
+        rmInstance.DecreaseResourceGenerationRate(resourceType, generationRate);
     }
 
     private void IncreaseGlobalCapacity()
@@ -102,6 +106,11 @@ public class ResourceBuildingStats : BuildingStats
     private void DecreaseGlobalCapacity()
     {
         rmInstance.DecreaseResourcesCap(resourceType, resourceBuildingData.resourceAmountCapacity);
+    }
+    public void BuffResourceProduction(float buffPercent)
+    {
+        generationAmount += Mathf.FloorToInt(generationAmount * buffPercent * 0.01f);
+        generationRate = generationAmount;
     }
 
     internal override void Die()

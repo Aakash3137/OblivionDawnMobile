@@ -6,6 +6,7 @@ public class OffenseBuildingStats : BuildingStats
 {
     public ScenarioOffenseType offenseType { get; private set; }
     public OffenseBuildingUpgradeData offenseBuildingData { get; private set; }
+    public override TileEffectType compatibleTileEffectType => TileEffectType.OffenseTile;
     private CubeGridManager cgmInstance;
 
     // private CharacterDatabase characterDatabase => CharacterDatabase.Instance;

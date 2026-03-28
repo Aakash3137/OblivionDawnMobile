@@ -29,7 +29,10 @@ public class Tile : MonoBehaviour
 
     private CubeGridManager cgmInstance => CubeGridManager.Instance;
 
-    public List<TileEffect> tileEffects = new();
+    [ReadOnly] public List<TileEffect> tileEffects = new();
+    [ReadOnly] public TileEffectType tileEffectType;
+    [ReadOnly] public GameObject tileEffectPrefab;
+
 
     private void Start()
     {
@@ -60,6 +63,21 @@ public class Tile : MonoBehaviour
         foreach (var neighbor in cgmInstance.GetCardinalTiles(coord))
         {
             neighbor?.RefreshBorders();
+        }
+    }
+
+    public void InitializeTileBuffs()
+    {
+        if (currentBuilding.compatibleTileEffectType != tileEffectType)
+        {
+            if (tileEffectPrefab != null)
+                tileEffectPrefab.SetActive(false);
+            return;
+        }
+
+        for (int i = 0; i < tileEffects.Count; i++)
+        {
+            tileEffects[i].ApplyEffect(this);
         }
     }
 
@@ -118,14 +136,17 @@ public class Tile : MonoBehaviour
 
     public void Occupy(Side side)
     {
-        if (ownerSide != Side.Player && ownerSide != Side.Enemy)
+        if(ownerSide != Side.Player && ownerSide != Side.Enemy)
             return;
-
+        
+        if (ownerSide == side)
+            return;
+        
+        ChangeSide(side);
+        cgmInstance.TileOccupied(side, this);
         // Change previous side only when occupying
         previousSide = ownerSide;
-        ChangeSide(side);
         OpenStatusHandler(isOpen);
-        cgmInstance.TileOccupied(side, this);
     }
 
     public void RefreshBorders()
@@ -156,6 +177,8 @@ public class Tile : MonoBehaviour
     {
         currentBuilding = null;
         hasBuilding = false;
+        if (tileEffectPrefab != null)
+            tileEffectPrefab.SetActive(true);
     }
 
     private void OnValidate()
