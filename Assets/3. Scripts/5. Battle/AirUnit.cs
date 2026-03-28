@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum AirState
@@ -618,6 +619,49 @@ public class AirUnit : MonoBehaviour
     {
         BattleUnitRegistry.Units.Remove(unitStats);
     }
+    
+    #region Abilities
+    
+    private Dictionary<AbilityEffect, (float amount, bool isUnitDamage)> damageModifiers = new Dictionary<AbilityEffect, (float, bool)>();
+    
+    public void AddDamageModifier(AbilityEffect source, float amount, bool isUnitDamage)
+    {
+        damageModifiers[source] = (amount, isUnitDamage);
+        Debug.Log($"[AirUnit] {gameObject.name} - Added {(isUnitDamage ? "unit" : "building")} damage modifier: +{amount}");
+    }
+    
+    public void RemoveDamageModifier(AbilityEffect source)
+    {
+        if (damageModifiers.ContainsKey(source))
+        {
+            damageModifiers.Remove(source);
+            Debug.Log($"[AirUnit] {gameObject.name} - Removed damage modifier");
+        }
+    }
+    
+    public float GetModifiedUnitDamage()
+    {
+        float baseDamage = unitData.unitAttackStats.damage;
+        foreach (var mod in damageModifiers.Values)
+        {
+            if (mod.isUnitDamage)
+                baseDamage += mod.amount;
+        }
+        return baseDamage;
+    }
+    
+    public float GetModifiedBuildingDamage()
+    {
+        float baseDamage = unitData.unitAttackStats.buildingDamage;
+        foreach (var mod in damageModifiers.Values)
+        {
+            if (!mod.isUnitDamage)
+                baseDamage += mod.amount;
+        }
+        return baseDamage;
+    }
+    
+    #endregion
 
     #region Gizmos
     

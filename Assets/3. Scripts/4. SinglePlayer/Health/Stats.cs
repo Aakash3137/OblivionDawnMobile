@@ -21,6 +21,8 @@ public class Stats : MonoBehaviour
 
     public Collider hitCollider { get; protected set; }
     public BuildCost[] buildCost { get; protected set; }
+    
+    private bool isDamageImmune = false;
 
     [Header("Fade Health Bar is OLD UI in world space. Health Progress is NEW UI on world Canvas")]
     private FadeHealthBar healthBarFade;
@@ -94,6 +96,12 @@ public class Stats : MonoBehaviour
 
     public virtual void TakeDamage(float amount, Stats attacker = null)
     {
+        if (isDamageImmune)
+        {
+            Debug.Log($"[Stats] {gameObject.name} is immune to damage");
+            return;
+        }
+        
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, basicStats.maxHealth);
 
@@ -157,5 +165,10 @@ public class Stats : MonoBehaviour
     public virtual void Kill()
     {
         TakeDamage(currentHealth);
+    }
+    
+    public void SetDamageImmunity(bool immune)
+    {
+        isDamageImmune = immune;
     }
 }
