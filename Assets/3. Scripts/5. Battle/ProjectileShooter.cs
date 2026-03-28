@@ -20,16 +20,6 @@ public class ProjectileShooter : MonoBehaviour
     void Start() 
     {
         shooterStats = GetComponent<Stats>();
-        if (TryGetComponent<UnitStats>(out var unitStats))
-        {
-            unitDamage = unitStats.unitData.unitAttackStats.damage;
-            buildingDamage = unitStats.unitData.unitAttackStats.buildingDamage;
-        }
-        else if(TryGetComponent<DefenseBuildingStats>(out var buildingStats))
-        {
-            unitDamage = buildingStats.defenseBuildingData.defenseAttackStats.damage;
-            buildingDamage = buildingStats.defenseBuildingData.defenseAttackStats.buildingDamage;
-        }
         projectileSide = shooterStats.side;
     }
 
@@ -37,6 +27,31 @@ public class ProjectileShooter : MonoBehaviour
     {
         if (target == null || projectile == null || muzzlePoints.Count == 0)
             return;
+        
+        // Get current damage values (with modifiers)
+        if (TryGetComponent<UnitStats>(out var unitStats))
+        {
+            if (TryGetComponent<GroundUnit>(out var groundUnit))
+            {
+                unitDamage = groundUnit.GetModifiedUnitDamage();
+                buildingDamage = groundUnit.GetModifiedBuildingDamage();
+            }
+            else if (TryGetComponent<AirUnit>(out var airUnit))
+            {
+                unitDamage = airUnit.GetModifiedUnitDamage();
+                buildingDamage = airUnit.GetModifiedBuildingDamage();
+            }
+            else
+            {
+                unitDamage = unitStats.unitData.unitAttackStats.damage;
+                buildingDamage = unitStats.unitData.unitAttackStats.buildingDamage;
+            }
+        }
+        else if(TryGetComponent<DefenseBuildingStats>(out var buildingStats))
+        {
+            unitDamage = buildingStats.defenseBuildingData.defenseAttackStats.damage;
+            buildingDamage = buildingStats.defenseBuildingData.defenseAttackStats.buildingDamage;
+        }
         
         int muzzleCount = muzzlePoints.Count;
         
