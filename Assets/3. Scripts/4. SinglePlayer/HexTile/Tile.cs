@@ -136,14 +136,17 @@ public class Tile : MonoBehaviour
 
     public void Occupy(Side side)
     {
+        if(ownerSide != Side.Player && ownerSide != Side.Enemy)
+            return;
+        
         if (ownerSide == side)
             return;
-
+        
+        ChangeSide(side);
+        cgmInstance.TileOccupied(side, this);
         // Change previous side only when occupying
         previousSide = ownerSide;
-        ChangeSide(side);
         OpenStatusHandler(isOpen);
-        cgmInstance.TileOccupied(side, this);
     }
 
     public void RefreshBorders()

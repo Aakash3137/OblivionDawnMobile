@@ -10,7 +10,8 @@ public class LavaEffect : TileEffect
         if (tile == null)
             return;
 
-        tile.Occupy(Side.Neutral);
+        tile.ChangeSide(Side.Neutral);
+        CubeGridManager.Instance.TileOccupied(Side.Neutral, tile);        
         tile.OverrideMaterial(lavaMaterial);
         tile.transform.localPosition += Vector3.down * yOffset;
     }
