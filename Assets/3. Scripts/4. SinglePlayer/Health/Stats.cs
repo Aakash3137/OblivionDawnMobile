@@ -70,7 +70,6 @@ public class Stats : MonoBehaviour
             switch (side)
             {
                 case Side.Player:
-
                     if (CanFly)
                         gameObject.layer = LayerMask.NameToLayer("PlayerAir");
                     else
@@ -79,7 +78,6 @@ public class Stats : MonoBehaviour
                         renderer.sharedMaterial = visuals.playerUnitMaterial;
                     break;
                 case Side.Enemy:
-
                     if (CanFly)
                         gameObject.layer = LayerMask.NameToLayer("EnemyAir");
                     else
@@ -118,7 +116,7 @@ public class Stats : MonoBehaviour
             {
                 groundUnit.SetReplyTarget(attacker);
             }
-            if(defenseUnit != null)
+            if (defenseUnit != null)
             {
                 defenseUnit.SetReplyTarget(attacker);
             }
@@ -136,6 +134,17 @@ public class Stats : MonoBehaviour
         onDieEvent?.Invoke();
         /*if (TryGetComponent<GemSpawner>(out var gemSpawner) && side == Side.Enemy)
             gemSpawner.SpawnGem();*/
+    }
+
+    public void BuffBasicStats(float buffPercent)
+    {
+        Debug.Log($"Applying Health Buff currentMaxHealth: {currentHealth}, maxHealth: {basicStats.maxHealth}, buffPercent: {buffPercent}");
+        var tempBasicStats = basicStats;
+        tempBasicStats.maxHealth += basicStats.maxHealth * buffPercent * 0.01f;
+        tempBasicStats.armor += basicStats.armor * buffPercent * 0.01f;
+        currentHealth = tempBasicStats.maxHealth;
+        basicStats = tempBasicStats;
+        Debug.Log($"Applied Health Buff currentMaxHealth: {currentHealth}, maxHealth: {basicStats.maxHealth}");
     }
 
     [Button]
@@ -158,4 +167,5 @@ public class Stats : MonoBehaviour
     {
         TakeDamage(currentHealth);
     }
+
 }

@@ -10,7 +10,7 @@ public class WaterEffect : TileEffect
         if (tile == null)
             return;
 
-        tile.ChangeSide(Side.Neutral);
+        tile.Occupy(Side.Neutral);
         tile.OverrideMaterial(waterMaterial);
         tile.transform.localPosition += Vector3.down * yOffset;
     }

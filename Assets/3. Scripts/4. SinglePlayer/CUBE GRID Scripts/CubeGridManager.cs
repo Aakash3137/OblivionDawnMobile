@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
+using System.Threading.Tasks;
 
 public class CubeGridManager : MonoBehaviour
 {
@@ -89,7 +90,7 @@ public class CubeGridManager : MonoBehaviour
     }
     #endregion
 
-    private void Awake()
+    private async Awaitable Awake()
     {
         if (Instance == null)
             Instance = this;
@@ -118,6 +119,9 @@ public class CubeGridManager : MonoBehaviour
         }
 
         tileEffectTiles.Clear();
+
+        await Awaitable.WaitForSecondsAsync(0.1f, destroyCancellationToken);
+        onTileOccupied?.Invoke(playerTilesCount, enemyTilesCount);
     }
 
     // Only call when tile is getting occupied (changing sides)
@@ -133,14 +137,11 @@ public class CubeGridManager : MonoBehaviour
             playerTiles.Remove(tile);
             enemyTiles.Add(tile);
         }
-
-        onTileOccupied?.Invoke(playerTilesCount, enemyTilesCount);
-    }
-
-    private void RemoveRandomTileFromList(Tile tile)
-    {
-        playerTiles.Remove(tile);
-        enemyTiles.Remove(tile);
+        else
+        {
+            playerTiles.Remove(tile);
+            enemyTiles.Remove(tile);
+        }
 
         onTileOccupied?.Invoke(playerTilesCount, enemyTilesCount);
     }
@@ -287,9 +288,6 @@ public class CubeGridManager : MonoBehaviour
 
         var picked = eligible[UnityEngine.Random.Range(0, eligible.Count)];
         tileEffectTiles.Add(picked);
-        playerTiles.Remove(picked);
-        enemyTiles.Remove(picked);
-        onTileOccupied?.Invoke(playerTilesCount, enemyTilesCount);
         return picked;
     }
 
@@ -399,19 +397,14 @@ public class CubeGridManager : MonoBehaviour
         {
             result.Add(tile);
             tileEffectTiles.Add(tile);
-            playerTiles.Remove(tile);
-            enemyTiles.Remove(tile);
         }
 
         foreach (var tile in pickedEnemy)
         {
             result.Add(tile);
             tileEffectTiles.Add(tile);
-            playerTiles.Remove(tile);
-            enemyTiles.Remove(tile);
         }
 
-        onTileOccupied?.Invoke(playerTilesCount, enemyTilesCount);
         return result;
     }
 
