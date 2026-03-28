@@ -114,12 +114,8 @@ public class BuildingStats : Stats
     public void SetBuildingTile(Tile tile)
     {
         currentTile = tile;
-        currentTile.SetOccupant(this);
-    }
-
-    public void SetBuildingSide(Side side)
-    {
-        this.side = side;
+        currentTile.SetCurrentBuilding(this);
+        side = tile.ownerSide;
     }
 
     internal virtual void EnableFunctionality()
@@ -167,7 +163,7 @@ public class BuildingStats : Stats
     internal virtual void OnDestroy()
     {
         if (currentTile != null)
-            currentTile.ClearOccupant();
+            currentTile.ClearCurrentBuilding();
     }
 
     private void SetParent()

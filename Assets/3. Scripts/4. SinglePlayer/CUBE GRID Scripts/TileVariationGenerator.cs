@@ -20,18 +20,15 @@ public class TileVariationGenerator : MonoBehaviour
 
     private HashSet<Vector2Int> usedTiles = new HashSet<Vector2Int>();
 
-    async void Start()
+    private void Start()
     {
-        await Awaitable.NextFrameAsync();
-        await Awaitable.NextFrameAsync();
-
         Generate();
     }
 
     void Generate()
     {
-        Vector2Int playerCity = GetCoord(GameManager.Instance.playerTile);
-        Vector2Int enemyCity = GetCoord(GameManager.Instance.enemyTile);
+        Vector2Int playerCity = GameManager.Instance.playerSpawnCoord;
+        Vector2Int enemyCity = GameManager.Instance.enemySpawnCoord;
 
         foreach (var variation in variations)
         {
@@ -46,53 +43,53 @@ public class TileVariationGenerator : MonoBehaviour
         }
     }
 
-void GenerateSingleCluster(VariationData variation, Vector2Int playerCity, Vector2Int enemyCity)
-{
-    int width = Mathf.Clamp(variation.tileCount / 3, 3, 8);
-    int height = Mathf.Clamp(variation.tileCount / width, 2, 6);
-
-    int safety = 0;
-
-    while (safety < 300)
+    void GenerateSingleCluster(VariationData variation, Vector2Int playerCity, Vector2Int enemyCity)
     {
-        safety++;
+        int width = Mathf.Clamp(variation.tileCount / 3, 3, 8);
+        int height = Mathf.Clamp(variation.tileCount / width, 2, 6);
 
-        int startX = Random.Range(0, GRID_SIZE);
-        int startY = Random.Range(0, GRID_SIZE);
+        int safety = 0;
 
-        int placed = 0;
-
-        for (int x = 0; x < width; x++)
+        while (safety < 300)
         {
-            for (int y = 0; y < height; y++)
+            safety++;
+
+            int startX = Random.Range(0, GRID_SIZE);
+            int startY = Random.Range(0, GRID_SIZE);
+
+            int placed = 0;
+
+            for (int x = 0; x < width; x++)
             {
-                if (placed >= variation.tileCount)
-                    break;
+                for (int y = 0; y < height; y++)
+                {
+                    if (placed >= variation.tileCount)
+                        break;
 
-                int px = startX + x;
-                int py = startY + y;
+                    int px = startX + x;
+                    int py = startY + y;
 
-                // 🔥 Allow clipping at edges instead of rejecting
-                if (px < 0 || py < 0 || px >= GRID_SIZE || py >= GRID_SIZE)
-                    continue;
+                    // 🔥 Allow clipping at edges instead of rejecting
+                    if (px < 0 || py < 0 || px >= GRID_SIZE || py >= GRID_SIZE)
+                        continue;
 
-                var coord = new Vector2Int(px, py);
+                    var coord = new Vector2Int(px, py);
 
-                if (usedTiles.Contains(coord))
-                    continue;
+                    if (usedTiles.Contains(coord))
+                        continue;
 
-                if (!IsValid(coord, playerCity, enemyCity))
-                    continue;
+                    if (!IsValid(coord, playerCity, enemyCity))
+                        continue;
 
-                ApplyVariation(coord, variation);
-                placed++;
+                    ApplyVariation(coord, variation);
+                    placed++;
+                }
             }
-        }
 
-        if (placed > variation.tileCount * 0.6f)
-            break; // accept even partial clusters near edges
+            if (placed > variation.tileCount * 0.6f)
+                break; // accept even partial clusters near edges
+        }
     }
-}
 
     // 🔹 LAVA / SMALL PATCHES
     void GenerateMultiCluster(VariationData variation, Vector2Int playerCity, Vector2Int enemyCity)
@@ -147,13 +144,13 @@ void GenerateSingleCluster(VariationData variation, Vector2Int playerCity, Vecto
 
     void ApplyVariation(Vector2Int coord, VariationData variation)
     {
-        Tile tile = CubeGridManager.Instance.GetCube(coord);
+        Tile tile = CubeGridManager.Instance.GetTile(coord);
         if (tile == null) return;
 
         tile.transform.position += Vector3.down * 0.5f; // sink the tile slightly for better visuals
 
-        tile.tileRenderer.material = variation.material;
-        tile.ownerSide = Side.NeutralEnemy; // for water/lava
+        tile.GetComponentInChildren<MeshRenderer>().material = variation.material;
+        tile.ChangeSide(Side.Neutral);      // for water/lava
 
         usedTiles.Add(coord);
 

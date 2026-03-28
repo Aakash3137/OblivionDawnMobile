@@ -2,51 +2,41 @@ using UnityEngine;
 
 public class ScenarioTlesClaim : MonoBehaviour
 {
-    Vector2Int currentCoord;
+    private Stats stats;
+    private Side currentSide => stats.side;
+    private CubeGridManager cgmInstance;
+    private float updateDelay = 0.1f;
 
-    private void Update()
+    private void Awake()
     {
-        UpdateTileOwnership();
+        stats = GetComponent<Stats>();
+    }
+
+    private void Start()
+    {
+        cgmInstance = CubeGridManager.Instance;
+        _ = UpdateTileOwnerShip();
+    }
+
+    private async Awaitable UpdateTileOwnerShip()
+    {
+        while (gameObject.activeInHierarchy)
+        {
+            await Awaitable.WaitForSecondsAsync(updateDelay, destroyCancellationToken);
+            VerifyOwnerShip();
+        }
     }
 
     #region Tile Ownership
-    // --- Tile ownership ---
-    void UpdateTileOwnership()
+    private void VerifyOwnerShip()
     {
-        if (CubeGridManager.Instance == null) return;
+        Vector2Int coord = cgmInstance.WorldToGrid(transform.position);
+        var tile = cgmInstance.GetTile(coord);
 
-        Vector2Int coord = CubeGridManager.Instance.WorldToGrid(transform.position);
-        if (coord != currentCoord)
-        {
-            LeaveTile(currentCoord);
-            currentCoord = coord;
-            EnterTile(currentCoord);
-        }
-    }
+        if (currentSide == tile.ownerSide)
+            return;
 
-    void EnterTile(Vector2Int coord)
-    {
-        if (TileManager.Instance != null)
-            TileManager.Instance.TryEnterTile(gameObject, coord);
-
-        var tile = CubeGridManager.Instance?.GetCube(coord);
-        if (tile != null)
-        {
-            tile.Occupy(GetComponent<Stats>().side);
-        }
-    }
-
-    void LeaveTile(Vector2Int coord)
-    {
-        if (TileManager.Instance != null)
-        {
-            TileManager.Instance.LeaveTile(coord, gameObject);
-            //Debug.Log($"Tile Vacated at {coord}");
-        }
-
-        var tile = CubeGridManager.Instance?.GetCube(coord);
-        if (tile != null)
-            tile.Vacate(GetComponent<Stats>().side);
+        tile.Occupy(currentSide);
     }
     #endregion
 }

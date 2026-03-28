@@ -4,184 +4,166 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    [Header("Ownership"), ReadOnly]
-    public Side ownerSide;            // Current owner of the tile
-
-    [Header("Visuals"), ReadOnly]
-    public Renderer tileRenderer;     // Renderer for the tile mesh
-    [field: SerializeField, ReadOnly]
-    public GameObject myPlusIcon { get; private set; }
-
-    [SerializeField] GameObject borderNorth;
-    [SerializeField] GameObject borderSouth;
-    [SerializeField] GameObject borderEast;
-    [SerializeField] GameObject borderWest;
-
-    private SideManager sideManager;
-    [ReadOnly] public bool isOpen = false; // set true when PlusIcon is activated
+    [field: SerializeField, ReadOnly] public Side ownerSide { get; private set; }
+    [field: SerializeField, ReadOnly] public bool isOpen { get; private set; } = false;
     [field: SerializeField, ReadOnly] public bool hasBuilding { get; private set; }
-    // [ReadOnly] public bool isRegistered = false;
+    [field: SerializeField, ReadOnly] public BuildingStats currentBuilding { get; private set; }
+    [field: SerializeField, ReadOnly] public List<Tile> proxyTiles = new List<Tile>();
 
+    [field: SerializeField, ReadOnly, Space(15)] public Vector2Int coord { get; private set; }
+    [SerializeField, ReadOnly] private MeshRenderer meshObject;
+    [SerializeField, ReadOnly] private GameObject openTileVisual;
 
-    [field: SerializeField, ReadOnly]
-    public BuildingStats currentOccupant { get; private set; }
-    private Side OldSide;
+    [Space(5)]
+    [Header("Borders Right Left Up Down (East West North South) ")]
+    [SerializeField] GameObject[] borders;
+    [Space(5)]
+    [Header("Materials")]
+    public Material playerMaterial;
+    public Material enemyMaterial;
+    public Material neutralMaterial;
+    public Material neutralAllyMaterial;
+    public Material neutralEnemyMaterial;
 
-    [ReadOnly] public List<Tile> proxyTiles = new List<Tile>();
+    private Side previousSide = Side.Neutral;
 
-    public void SetOccupant(BuildingStats occupant)
+    private CubeGridManager cgmInstance => CubeGridManager.Instance;
+
+    public List<TileEffect> tileEffects = new();
+
+    private void Start()
     {
-        currentOccupant = occupant;
-        occupant.SetBuildingSide(ownerSide);
-        hasBuilding = true;
+        RefreshBorders();
     }
-    public void ClearOccupant()
-    {
-        currentOccupant = null;
-        hasBuilding = false;
-    }
-    public BuildingStats GetOccupant()
-    {
-        return currentOccupant;
-    }
-    private void OnValidate()
-    {
-        if (myPlusIcon == null)
-            myPlusIcon = transform.Find("Cube/Plus_Icon")?.gameObject;
-    }
-    
 
-    void Start()
+#if UNITY_EDITOR
+    public void InitializeSide(Side side)
     {
-        sideManager = FindAnyObjectByType<SideManager>();
+        // Only for editor to assign side to apply serialization of field is required
+        ChangeSide(side);
+        ApplyMaterials();
+    }
+#endif
+    public void Initialize(Vector2Int coord)
+    {
+        this.coord = coord;
+    }
 
-        if (CubeGridManager.Instance != null)
+    public void ChangeSide(Side side)
+    {
+        ownerSide = side;
+
+        if (!Application.isPlaying) return;
+
+        RefreshBorders();
+
+        foreach (var neighbor in cgmInstance.GetCardinalTiles(coord))
         {
-            var coord = CubeGridManager.Instance.WorldToGrid(transform.position);
-            CubeGridManager.Instance.RegisterCube(coord, this);
+            neighbor?.RefreshBorders();
         }
+    }
 
-        if (tileRenderer == null)
-            tileRenderer = GetComponentInChildren<Renderer>();
-
-        if (myPlusIcon == null)
+    private void ApplyMaterials()
+    {
+        var material = ownerSide switch
         {
-            Debug.Log("<color=red>Plus_Icon not found</color>");
-            myPlusIcon = transform.Find("Cube/Plus_Icon")?.gameObject;
-        }
-
-        OldSide = ownerSide;
-        ApplyOwnerMaterial();
-
-        UpdateBorders();
-        UpdateNeighborBorders();
-    }
-
-
-public void UpdateBorders()
-{
-    var grid = CubeGridManager.Instance;
-    var coord = grid.WorldToGrid(transform.position);
-
-    Tile north = grid.GetCube(coord + new Vector2Int(0,1));
-    Tile south = grid.GetCube(coord + new Vector2Int(0,-1));
-    Tile east = grid.GetCube(coord + new Vector2Int(1,0));
-    Tile west = grid.GetCube(coord + new Vector2Int(-1,0));
-
-    if(ownerSide == Side.Enemy)
-    {
-        borderNorth.SetActive(false);
-        borderSouth.SetActive(false);
-        borderEast.SetActive(false);
-        borderWest.SetActive(false);
-        return;
-    }
-
-    if(ownerSide == Side.Player)
-    {
-        borderNorth.SetActive(north == null || north.ownerSide == Side.Enemy);
-        borderSouth.SetActive(south == null || south.ownerSide == Side.Enemy);
-        borderEast.SetActive(east == null || east.ownerSide == Side.Enemy);
-        borderWest.SetActive(west == null || west.ownerSide == Side.Enemy);
-    }
-}
-
-    public void SetOpen(bool open)
-    {
-        isOpen = open;
-
-        if (myPlusIcon == null)
-            return;
-
-        if (ownerSide == Side.Enemy)
-        {
-            myPlusIcon.SetActive(false);
-            return;
-        }
-        if (ownerSide == Side.Player)
-            myPlusIcon.SetActive(open);
-    }
-
-    // Apply correct material based on ownerSide
-    public void ApplyOwnerMaterial()
-    {
-        if (sideManager != null && tileRenderer != null)
-            sideManager.SetSide(gameObject, ownerSide);
-    }
-
-    // Flip ownership
-    public void SetOwner(Side newOwner)
-    {
-        // GameDebug.Log($"Occupy called on tile at {ownerSide}");
-        OldSide = ownerSide;
-        ownerSide = newOwner;
-        // GameDebug.Log($"Occupy called on tile at {OldSide}, new owner: {ownerSide} ");
-        TileCounterUI.Instance.UpdateTileOwnerCount(OldSide, ownerSide);
-        ApplyOwnerMaterial();
-
-        UpdateBorders();
-        UpdateNeighborBorders();
-
-    }
-
-
-    void UpdateNeighborBorders()
-    {
-        var grid = CubeGridManager.Instance;
-        var coord = grid.WorldToGrid(transform.position);
-
-        Tile[] neighbors =
-        {
-            grid.GetCube(coord + new Vector2Int(0,1)),
-            grid.GetCube(coord + new Vector2Int(0,-1)),
-            grid.GetCube(coord + new Vector2Int(1,0)),
-            grid.GetCube(coord + new Vector2Int(-1,0))
+            Side.Player => playerMaterial,
+            Side.Enemy => enemyMaterial,
+            Side.Neutral => neutralMaterial,
+            Side.NeutralAlly => neutralAllyMaterial,
+            Side.NeutralEnemy => neutralEnemyMaterial,
+            _ => playerMaterial
         };
 
-        foreach(var n in neighbors)
+        if (meshObject != null)
         {
-            if(n != null)
-                n.UpdateBorders();
+            meshObject.sharedMaterial = material;
         }
     }
-    // Called when a unit steps onto this tile
-    public void Occupy(Side unitSide)
+
+    public void OverrideMaterial(Material material)
     {
-        // Always flip ownership to the entering unit’s side
-        // occupant = unit;   // update occupant reference
-        if (ownerSide == Side.NeutralAlly || ownerSide == Side.NeutralEnemy)
-            return;
-
-        SetOwner(unitSide);
-
-        SetOpen(isOpen);
+        meshObject.sharedMaterial = material;
     }
 
-    // Called when a unit leaves
-    public void Vacate(Side unitSide)
+    public void OpenStatusHandler(bool flag)
     {
-        // Clear occupant only if this unit was tracked
-        // if (occupant == unit)
-        //     occupant = null;
+        isOpen = flag;
+
+        if (openTileVisual == null)
+            return;
+
+        if (ownerSide != Side.Player)
+        {
+            openTileVisual.SetActive(false);
+            return;
+        }
+
+        var allNeighbors = cgmInstance.GetAllTiles(coord);
+
+        foreach (var neighbor in allNeighbors)
+        {
+            if (neighbor == null)
+                continue;
+
+            if (neighbor.currentBuilding != null && neighbor.currentBuilding.side != Side.Player)
+            {
+                openTileVisual.SetActive(false);
+                return;
+            }
+        }
+
+        openTileVisual.SetActive(flag);
+    }
+
+    public void Occupy(Side side)
+    {
+        if (ownerSide != Side.Player && ownerSide != Side.Enemy)
+            return;
+
+        // Change previous side only when occupying
+        previousSide = ownerSide;
+        ChangeSide(side);
+        OpenStatusHandler(isOpen);
+        cgmInstance.TileOccupied(side, this);
+    }
+
+    public void RefreshBorders()
+    {
+        var neighbors = cgmInstance.GetCardinalTiles(coord);
+
+        for (int i = 0; i < borders.Length; i++)
+        {
+            borders[i].SetActive(ShouldShowBorder(neighbors[i]));
+        }
+    }
+
+    private bool ShouldShowBorder(Tile neighbor)
+    {
+        if (ownerSide != Side.Player)
+            return false;
+
+        bool neighborIsDifferentSide = neighbor == null || neighbor.ownerSide != Side.Player;
+        return neighborIsDifferentSide;
+    }
+
+    public void SetCurrentBuilding(BuildingStats building)
+    {
+        currentBuilding = building;
+        hasBuilding = true;
+    }
+    public void ClearCurrentBuilding()
+    {
+        currentBuilding = null;
+        hasBuilding = false;
+    }
+
+    private void OnValidate()
+    {
+        if (meshObject == null)
+            meshObject = transform.GetChild(0).GetComponent<MeshRenderer>();
+
+        if (openTileVisual == null)
+            openTileVisual = transform.GetChild(1).gameObject;
     }
 }

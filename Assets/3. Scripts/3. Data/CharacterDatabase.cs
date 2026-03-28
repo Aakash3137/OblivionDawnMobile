@@ -6,6 +6,7 @@ public class CharacterDatabase : MonoBehaviour
     public static CharacterDatabase Instance { get; private set; }
 
     public List<UnitStats> unitPrefabs;
+    public List<MainBuildingStats> mainBuildingPrefabs;
     public List<DefenseBuildingStats> defenseBuildingPrefabs;
     public List<ResourceBuildingStats> resourceBuildingPrefabs;
     private Dictionary<UnitProduceStatsSO, UnitStats> lookup;
@@ -17,15 +18,15 @@ public class CharacterDatabase : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
         else
             Destroy(gameObject);
-
+        
         RegisterUnits();
         RegisterDefenseBuildings();
         RegisterResourceBuildings();
     }
+
     private void RegisterUnits()
     {
         lookup = new Dictionary<UnitProduceStatsSO, UnitStats>();
@@ -47,6 +48,18 @@ public class CharacterDatabase : MonoBehaviour
             lookup.Add(characterPrefab.unitProduceSO, characterPrefab);
         }
     }
+
+    // private void RegisterCityCenterBuildings()
+    // {
+    //     foreach (var cityCenterPrefab in cityCenterPrefabs)
+    //     {
+    //         if (cityCenterPrefab.GetBuildingSO() == null)
+    //         {
+    //             Debug.LogError(cityCenterPrefab.name + " has no MainBuildingDataSO assigned!");
+    //             continue;
+    //         }
+    //     }
+    // }
 
     private void RegisterDefenseBuildings()
     {

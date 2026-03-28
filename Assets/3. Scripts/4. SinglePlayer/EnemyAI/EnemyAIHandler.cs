@@ -52,11 +52,16 @@ public class EnemyAIHandler : MonoBehaviour
     // Resource building tracking
     private int[] resourceBuildingCounts = new int[4];
     private bool balancedPhaseComplete = false;
-    
+
     //Resource build economical
     [SerializeField] private int earlyResourceTarget = 2;
     private bool earlyEconomyComplete = false;
-    
+
+    private void Awake()
+    {
+        GameData.enemyFaction = enemyFactionName;
+    }
+
     void Start()
     {
         if (GameManager.Instance == null)
@@ -76,8 +81,6 @@ public class EnemyAIHandler : MonoBehaviour
 
         enemyMainBuildingTransform = GameManager.Instance.enemySpawnPoint;
         playerMainBuildingTransform = GameManager.Instance.playerSpawnPoint;
-
-        GameManager.Instance.SetEnemyFaction(enemyFactionName);
 
         Invoke(nameof(AnalyzeResourceNeeds), 1.5f);
         Invoke(nameof(InitializeSpawnableTiles), 1f);
@@ -104,18 +107,23 @@ public class EnemyAIHandler : MonoBehaviour
 
     void InitializeSpawnableTiles()
     {
+        if (GameManager.Instance.enemySpawnPoint != null)
+            enemyMainBuildingTransform = GameManager.Instance.enemySpawnPoint;
+        if (GameManager.Instance.playerSpawnPoint != null)
+            playerMainBuildingTransform = GameManager.Instance.playerSpawnPoint;
+        
         if (enemyMainBuildingTransform == null || CubeGridManager.Instance == null)
             return;
 
         Vector2Int mainGrid = CubeGridManager.Instance.WorldToGrid(enemyMainBuildingTransform.position);
         UpdateSpawnableTiles(mainGrid);
     }
-
+ 
     void UpdateSpawnableTiles(Vector2Int buildingGrid)
     {
         foreach (var neighborGrid in CubeGridManager.Instance.GetAllNeighbors(buildingGrid))
         {
-            Tile tile = CubeGridManager.Instance.GetCube(neighborGrid);
+            Tile tile = CubeGridManager.Instance.GetTile(neighborGrid);
             if (tile == null || tile.hasBuilding || tile.ownerSide != Side.Enemy)
                 continue;
 
@@ -131,7 +139,7 @@ public class EnemyAIHandler : MonoBehaviour
     {
         foreach (var neighbor in CubeGridManager.Instance.GetAllNeighbors(gridPos))
         {
-            Tile neighborTile = CubeGridManager.Instance.GetCube(neighbor);
+            Tile neighborTile = CubeGridManager.Instance.GetTile(neighbor);
             if (neighborTile != null && neighborTile.ownerSide == Side.Player)
                 return false;
         }
@@ -161,7 +169,7 @@ public class EnemyAIHandler : MonoBehaviour
 
         return true;
     }
-    
+
     void TrySpawnBuilding()
     {
         if (totalBuildingsSpawned >= currentPersonality.maxEnemyBuildings)
@@ -222,7 +230,7 @@ public class EnemyAIHandler : MonoBehaviour
                 return GetLowestResourceBuilding();
             }
         }
-        
+
         float unit = currentPersonality.unitBuildingWeight;
         float resource = currentPersonality.resourceBuildingWeight;
         float defense = currentPersonality.defenseBuildingWeight;
@@ -297,7 +305,7 @@ public class EnemyAIHandler : MonoBehaviour
     #endregion
 
     #region Weighted Building Selection
-    
+
     BuildingStats GetLowestResourceBuilding()
     {
         BuildingStats[] buildings = GetResourceBuildings();
@@ -384,12 +392,12 @@ public class EnemyAIHandler : MonoBehaviour
         BuildingStats[] buildings = GetResourceBuildings();
         if (buildings == null || buildings.Length == 0)
             return null;
-        
+
         // ================= BALANCED START =================
         if (currentPersonality.balancedResourceStart && !balancedPhaseComplete)
         {
             int target = currentPersonality.balancedResourceTarget;
-            
+
             int minCount = int.MaxValue;
             int targetIndex = 0;
 
