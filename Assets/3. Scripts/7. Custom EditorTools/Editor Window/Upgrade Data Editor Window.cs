@@ -468,7 +468,7 @@ public class UpgradeDataEditorWindow : EditorWindow
     {
         foreach (var field in fields)
         {
-            field.style.display = value ? DisplayStyle.Flex : DisplayStyle.None;
+            field.style.visibility = value ? Visibility.Visible : Visibility.Hidden;
         }
     }
     private void RegisterButtons(VisualElement root)

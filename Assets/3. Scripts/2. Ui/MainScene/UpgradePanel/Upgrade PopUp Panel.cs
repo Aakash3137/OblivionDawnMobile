@@ -48,11 +48,9 @@ public class UpgradePopUpPanel : MonoBehaviour
     [SerializeField] protected Sprite resourceIcon;
 
     protected CanvasGroup canvasGroup;
-
     private UpgradeCard currentUpgradeCard;
 
-
-    private BuildingUpgrade buildingUpgrade;
+    // private BuildingUpgrade buildingUpgrade;
     private UnitProduceUpgrade unitProduceUpgrade;
 
     protected void Awake()
@@ -62,8 +60,7 @@ public class UpgradePopUpPanel : MonoBehaviour
         else
             Destroy(gameObject);
 
-
-        buildingUpgrade = new BuildingUpgrade();
+        // buildingUpgrade = new BuildingUpgrade();
         unitProduceUpgrade = new UnitProduceUpgrade();
     }
 
@@ -231,7 +228,7 @@ public class UpgradePopUpPanel : MonoBehaviour
         userData.Diamonds -= cost;
         userData.ConsumeFragments(identity.faction, fragmentCost);
 
-        buildingUpgrade.UpgradeNext(data);
+        // buildingUpgrade.UpgradeNext(data);
         InitializeStatBlocks(data);
 
         RefreshButtonState(data.cardDetails, identity.spawnLevel, identity.faction);
