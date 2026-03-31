@@ -38,7 +38,7 @@ public class UnitProduceStatsSO : ScriptableObject
 
     [Space(20), Header("Abilities")]
     public List<AbilitySO> abilities;
-    
+
     private void ValidateBase()
     {
         if (unitUpgradeData == null || unitUpgradeData.Length == 0)

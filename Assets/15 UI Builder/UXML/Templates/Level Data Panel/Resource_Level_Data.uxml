@@ -1,0 +1,11 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:VisualElement name="LevelData" style="height: 30px; flex-direction: row; margin-bottom: 5px; -unity-text-align: upper-center; margin-top: 5px;">
+        <ui:EnumField value="Sayuri" type="GameBuildingName, Assembly-CSharp" name="Name" enabled="false" class="text disabledOpacity" style="width: 150px; align-items: center; margin-right: 43px;" />
+        <ui:IntegerField value="1" name="Level" binding-path="buildingLevel" class="text" style="width: 45px;" />
+        <ui:FloatField value="42.2" name="Health" binding-path="buildingBasicStats.maxHealth" class="text" style="width: 55px;" />
+        <ui:FloatField value="42.2" name="Armor" binding-path="buildingBasicStats.armor" class="text" style="width: 55px;" />
+        <ui:FloatField value="42.2" name="BuildTime" binding-path="buildingBuildTime" class="text" style="width: 75px;" />
+        <ui:IntegerField value="42" name="resourceAmountPerBatch" class="text" style="width: 75px;" />
+        <ui:IntegerField value="42" name="resourceAmountCapacity" class="text" style="width: 75px;" />
+    </ui:VisualElement>
+</ui:UXML>

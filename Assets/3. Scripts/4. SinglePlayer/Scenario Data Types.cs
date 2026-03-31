@@ -38,13 +38,12 @@ public enum ScenarioDefenseType
     AntiAir = 3
 }
 
+// Preassign 100 indexes for each faction
 public enum GameUnitName
 {
+    // Default Units in first line 
     // Medieval Faction Units
-    Sayuri,
-    Veer,
-    Griffin,
-    Ballista,
+    Sayuri = 0, Veer, Griffin, Ballista,
     ShieldBearer,
     Crossbowman,
     WarEagle,
@@ -57,10 +56,7 @@ public enum GameUnitName
     Paladin,
 
     // Present Faction Units
-    Soldier,
-    Tank,
-    Aircraft,
-    ArtilleryGun,
+    Soldier = 100, Tank, Aircraft, ArtilleryGun,
     Marine,
     Sniper,
     Helicopter,
@@ -73,10 +69,7 @@ public enum GameUnitName
     MLRS,
 
     // Futuristic Faction Units
-    Mech,
-    PlasmaTurret,
-    Drone,
-    GuidedMissile,
+    Mech = 200, PlasmaTurret, Drone, GuidedMissile,
     CyberWarrior,
     RailGun,
     StealthDrone,
@@ -89,10 +82,7 @@ public enum GameUnitName
     HoverBike,
 
     // Galvadore Faction Units
-    Sabretooth,
-    Pugrash,
-    FireDragon,
-    Gemitshu,
+    Sabretooth = 300, Pugrash, FireDragon, Gemitshu,
     Wraith,
     BoneArcher,
     ShadowBat,
@@ -103,6 +93,47 @@ public enum GameUnitName
     CurseCannon,
     DarkTroll,
     SpectralArcher
+}
+
+public enum GameBuildingName
+{
+    // main building - Offense - Defense - Resource
+    // Medieval Faction Buildings
+    MedievalCity = 0,
+
+    MedievalMeleeSpawner, MedievalRangedSpawner, MedievalAOERangedSpawner, MedievalAirSpawner,
+
+    MedievalWall = 20, MedievalTurret, MedievalAntiTank, MedievalAntiAir,
+
+    MedievalFoodFarm = 80, MedievalGoldMine, MedievalMetalMine, MedievalPowerPlant,
+
+
+    // Present Faction Buildings
+    PresentCity = 100, PresentMeleeSpawner, PresentRangedSpawner, PresentAOERangedSpawner, PresentAirSpawner,
+
+    PresentWall = 120, PresentTurret, PresentAntiTank, PresentAntiAir,
+
+    PresentFoodFarm = 180, PresentGoldMine, PresentMetalMine, PresentPowerPlant,
+
+
+    // Futuristic Faction Buildings
+    FutureCity = 200,
+
+    FutureMeleeSpawner, FutureRangedSpawner, FutureAOERangedSpawner, FutureAirSpawner,
+
+    FutureWall = 220, FutureTurret, FutureAntiTank, FutureAntiAir,
+
+    FutureFoodFarm = 280, FutureGoldMine, FutureMetalMine, FuturePowerPlant,
+
+
+    // Galvadore Faction Buildings
+    GalvadoreCity = 300,
+
+    GalvadoreMeleeSpawner, GalvadoreRangedSpawner, GalvadoreAOERangedSpawner, GalvadoreAirSpawner,
+
+    GalvadoreWall = 320, GalvadoreTurret, GalvadoreAntiTank, GalvadoreAntiAir,
+
+    GalvadoreFoodFarm = 380, GalvadoreGoldMine, GalvadoreMetalMine, GalvadorePowerPlant
 }
 
 public static class ScenarioDataTypes

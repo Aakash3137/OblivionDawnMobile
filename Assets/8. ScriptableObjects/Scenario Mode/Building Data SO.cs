@@ -5,6 +5,7 @@ using Sirenix.OdinInspector;
 [CreateAssetMenu(fileName = "Building Data SO", menuName = "Scenario Stats/Building Data")]
 public class BuildingDataSO : ScriptableObject
 {
+    public GameBuildingName gameBuildingName;
     public Identity buildingIdentity;
     public ScenarioBuildingType buildingType;
     public Visuals buildingVisuals;

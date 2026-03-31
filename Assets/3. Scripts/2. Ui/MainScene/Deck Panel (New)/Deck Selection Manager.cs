@@ -222,8 +222,7 @@ public class DeckSelectionManager : MonoBehaviour
             selectedCards[i].transform.SetSiblingIndex(i);
     }
 
-    private static int GetTypeOrder(ScriptableObject so) =>
-        so is UnitProduceStatsSO ? 0 : 1;
+    private static int GetTypeOrder(ScriptableObject so) => so is UnitProduceStatsSO ? 0 : 1;
 
     private static int CompareBySO(ScriptableObject a, ScriptableObject b)
     {

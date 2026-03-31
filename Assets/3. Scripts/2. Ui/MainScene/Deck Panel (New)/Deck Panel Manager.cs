@@ -15,7 +15,7 @@ public class DeckPanelManager : MonoBehaviour
 
     public List<MainBuildingDataSO> cityCenterScriptables { get; private set; }
     private List<UnitProduceStatsSO> unitScriptables;
-    private List<BuildingDataSO> buildingScriptables;
+    private List<DefenseBuildingDataSO> buildingScriptables;
 
     private void Awake()
     {
@@ -28,8 +28,8 @@ public class DeckPanelManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        cityCenterScriptables = allBuildingData.cityCenterBuildingsSO;
-        buildingScriptables = allBuildingData.GetDefenseBuildingsSO();
+        cityCenterScriptables = allBuildingData.mainBuildingSO;
+        buildingScriptables = allBuildingData.defenseBuildingsSO;
         unitScriptables = allUnitData.allUnitsSO;
 
         CreateUnitCards();
