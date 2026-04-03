@@ -15,7 +15,8 @@ public class DeckPanelManager : MonoBehaviour
 
     public List<MainBuildingDataSO> cityCenterScriptables { get; private set; }
     private List<UnitProduceStatsSO> unitScriptables;
-    private List<DefenseBuildingDataSO> buildingScriptables;
+    private List<DefenseBuildingDataSO> defenseScriptables;
+
 
     private void Awake()
     {
@@ -29,9 +30,12 @@ public class DeckPanelManager : MonoBehaviour
         }
 
         cityCenterScriptables = allBuildingData.mainBuildingSO;
-        buildingScriptables = allBuildingData.defenseBuildingsSO;
+        defenseScriptables = allBuildingData.defenseBuildingsSO;
         unitScriptables = allUnitData.allUnitsSO;
+    }
 
+    private void OnEnable()
+    {
         CreateUnitCards();
         CreateDefenseCards();
     }
@@ -41,20 +45,28 @@ public class DeckPanelManager : MonoBehaviour
         foreach (var unitSO in unitScriptables)
         {
             if (unitSO == null) { LogNullScriptable("Unit"); continue; }
+            var cardPanel = factionCardPanels[(int)unitSO.unitIdentity.faction].cardPanels[0];
 
-            if (unitSO.cardDetails.cardState == CardState.Purchased)
-                factionCardPanels[(int)unitSO.unitIdentity.faction].cardPanels[0].AddCard(deckCardPrefab, unitSO);
-
+            if (unitSO.cardDetails.cardState == CardState.Purchased && !cardPanel.scriptablesInDeck.Contains(unitSO))
+            {
+                cardPanel.AddCard(deckCardPrefab, unitSO);
+                cardPanel.scriptablesInDeck.Add(unitSO);
+            }
         }
     }
     public void CreateDefenseCards()
     {
-        foreach (var defenseSO in buildingScriptables)
+        if (defenseScriptables == null) { LogNullScriptable("Defense Building List"); return; }
+        foreach (var defenseSO in defenseScriptables)
         {
             if (defenseSO == null) { LogNullScriptable("Defense Building"); continue; }
+            var cardPanel = factionCardPanels[(int)defenseSO.buildingIdentity.faction].cardPanels[0];
 
-            if (defenseSO.cardDetails.cardState == CardState.Purchased)
-                factionCardPanels[(int)defenseSO.buildingIdentity.faction].cardPanels[0].AddCard(deckCardPrefab, defenseSO);
+            if (defenseSO.cardDetails.cardState == CardState.Purchased && !cardPanel.scriptablesInDeck.Contains(defenseSO))
+            {
+                cardPanel.AddCard(deckCardPrefab, defenseSO);
+                cardPanel.scriptablesInDeck.Add(defenseSO);
+            }
         }
     }
 

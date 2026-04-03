@@ -10,7 +10,7 @@ public class CardsPanel : MonoBehaviour
     [field: SerializeField, ReadOnly] public List<UpgradeCard> lockedCards { get; private set; }
     [field: SerializeField, ReadOnly] public List<UpgradeCard> purchasedCards { get; private set; }
     [field: SerializeField, ReadOnly] public List<UpgradeCard> allCards { get; private set; }
-
+    public List<ScriptableObject> scriptablesInDeck;
 
     public void AddCard(UpgradeCard cardPrefab, ScriptableObject dataSO)
     {

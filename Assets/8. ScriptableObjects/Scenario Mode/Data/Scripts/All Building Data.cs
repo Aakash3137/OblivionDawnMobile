@@ -19,13 +19,22 @@ public class AllBuildingData : ScriptableObject
     public List<ResourceBuildingDataSO> resourceBuildingsSO { get; internal set; }
     public List<DefenseBuildingDataSO> defenseBuildingsSO { get; internal set; }
 
-    private void OnValidate()
+    private void Awake()
     {
         Populate();
         ValidateBase();
 
         allBuildingsSO.Sort(CompareBuildingSO);
     }
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (Application.isPlaying) return;
+        Populate();
+        ValidateBase();
+        allBuildingsSO.Sort(CompareBuildingSO);
+    }
+#endif
 
     public void Populate()
     {
