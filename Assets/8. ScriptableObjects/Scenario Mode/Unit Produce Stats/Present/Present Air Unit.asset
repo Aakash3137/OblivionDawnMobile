@@ -29,10 +29,11 @@ MonoBehaviour:
     canAttackAir: 1
     canAttackGround: 1
   cardDetails:
-    factionUnlocked: 0
-    isUnlocked: 1
-    purchased: 1
+    cardState: 2
     minBuildingLevel: 0
+    purchaseCost: 50
+    upgradeCostMultiplier: 1
+    fragmentCostMultiplier: 1
   unitIcon: {fileID: 536578074, guid: c57feff7fce94a94c8b1cc7b508083df, type: 3}
   hasUpkeep: 0
   upKeepCost:
@@ -56,8 +57,8 @@ MonoBehaviour:
     attackAngleTolerance: 90
   populationCost: 3
   unitUpgradeData:
-  - unitLevel: 0
-    unitBuildTime: 45
+  - unitLevel: 1
+    unitSpawnTime: 40
     unitBasicStats:
       maxHealth: 700
       armor: 8
@@ -69,6 +70,291 @@ MonoBehaviour:
       moveSpeed: 3.5
     unitRangeStats:
       detectionRange: 40
-      attackRange: 5
+      attackRange: 10
+      minAttackRange: 0
+  - unitLevel: 2
+    unitSpawnTime: 40
+    unitBasicStats:
+      maxHealth: 784
+      armor: 8.48
+    unitAttackStats:
+      damage: 44.8
+      buildingDamage: 44.8
+      fireRate: 0.1
+    unitMobilityStats:
+      moveSpeed: 3.5
+    unitRangeStats:
+      detectionRange: 40
+      attackRange: 10
+      minAttackRange: 0
+  - unitLevel: 3
+    unitSpawnTime: 40
+    unitBasicStats:
+      maxHealth: 868
+      armor: 8.96
+    unitAttackStats:
+      damage: 49.6
+      buildingDamage: 49.6
+      fireRate: 0.1
+    unitMobilityStats:
+      moveSpeed: 3.5
+    unitRangeStats:
+      detectionRange: 40
+      attackRange: 10
+      minAttackRange: 0
+  - unitLevel: 4
+    unitSpawnTime: 40
+    unitBasicStats:
+      maxHealth: 952
+      armor: 9.44
+    unitAttackStats:
+      damage: 54.4
+      buildingDamage: 54.4
+      fireRate: 0.1
+    unitMobilityStats:
+      moveSpeed: 3.5
+    unitRangeStats:
+      detectionRange: 40
+      attackRange: 10
+      minAttackRange: 0
+  - unitLevel: 5
+    unitSpawnTime: 40
+    unitBasicStats:
+      maxHealth: 1036
+      armor: 9.92
+    unitAttackStats:
+      damage: 59.2
+      buildingDamage: 59.2
+      fireRate: 0.1
+    unitMobilityStats:
+      moveSpeed: 3.5
+    unitRangeStats:
+      detectionRange: 40
+      attackRange: 10.2
+      minAttackRange: 0
+  - unitLevel: 6
+    unitSpawnTime: 40
+    unitBasicStats:
+      maxHealth: 1120
+      armor: 10.4
+    unitAttackStats:
+      damage: 64
+      buildingDamage: 64
+      fireRate: 0.1
+    unitMobilityStats:
+      moveSpeed: 3.5
+    unitRangeStats:
+      detectionRange: 40
+      attackRange: 10.2
+      minAttackRange: 0
+  - unitLevel: 7
+    unitSpawnTime: 40
+    unitBasicStats:
+      maxHealth: 1204
+      armor: 10.88
+    unitAttackStats:
+      damage: 68.81
+      buildingDamage: 68.81
+      fireRate: 0.1
+    unitMobilityStats:
+      moveSpeed: 3.5
+    unitRangeStats:
+      detectionRange: 40
+      attackRange: 10.2
+      minAttackRange: 0
+  - unitLevel: 8
+    unitSpawnTime: 40
+    unitBasicStats:
+      maxHealth: 1288
+      armor: 11.36
+    unitAttackStats:
+      damage: 73.6
+      buildingDamage: 73.6
+      fireRate: 0.1
+    unitMobilityStats:
+      moveSpeed: 3.71
+    unitRangeStats:
+      detectionRange: 40
+      attackRange: 10.2
+      minAttackRange: 0
+  - unitLevel: 9
+    unitSpawnTime: 40
+    unitBasicStats:
+      maxHealth: 1372
+      armor: 11.84
+    unitAttackStats:
+      damage: 78.4
+      buildingDamage: 78.4
+      fireRate: 0.1
+    unitMobilityStats:
+      moveSpeed: 3.71
+    unitRangeStats:
+      detectionRange: 40
+      attackRange: 10.2
+      minAttackRange: 0
+  - unitLevel: 10
+    unitSpawnTime: 38.8
+    unitBasicStats:
+      maxHealth: 1456
+      armor: 12.32
+    unitAttackStats:
+      damage: 83.2
+      buildingDamage: 83.2
+      fireRate: 0.09
+    unitMobilityStats:
+      moveSpeed: 3.71
+    unitRangeStats:
+      detectionRange: 40
+      attackRange: 10.4
+      minAttackRange: 0
+  - unitLevel: 11
+    unitSpawnTime: 38.8
+    unitBasicStats:
+      maxHealth: 1540
+      armor: 12.8
+    unitAttackStats:
+      damage: 88
+      buildingDamage: 88
+      fireRate: 0.09
+    unitMobilityStats:
+      moveSpeed: 3.71
+    unitRangeStats:
+      detectionRange: 40
+      attackRange: 10.4
+      minAttackRange: 0
+  - unitLevel: 12
+    unitSpawnTime: 38.8
+    unitBasicStats:
+      maxHealth: 1624
+      armor: 13.28
+    unitAttackStats:
+      damage: 92.8
+      buildingDamage: 92.8
+      fireRate: 0.09
+    unitMobilityStats:
+      moveSpeed: 3.71
+    unitRangeStats:
+      detectionRange: 40
+      attackRange: 10.4
+      minAttackRange: 0
+  - unitLevel: 13
+    unitSpawnTime: 38.8
+    unitBasicStats:
+      maxHealth: 1708
+      armor: 13.76
+    unitAttackStats:
+      damage: 97.6
+      buildingDamage: 97.6
+      fireRate: 0.09
+    unitMobilityStats:
+      moveSpeed: 3.71
+    unitRangeStats:
+      detectionRange: 40
+      attackRange: 10.4
+      minAttackRange: 0
+  - unitLevel: 14
+    unitSpawnTime: 38.8
+    unitBasicStats:
+      maxHealth: 1792
+      armor: 14.24
+    unitAttackStats:
+      damage: 102.4
+      buildingDamage: 102.4
+      fireRate: 0.09
+    unitMobilityStats:
+      moveSpeed: 3.71
+    unitRangeStats:
+      detectionRange: 40
+      attackRange: 10.4
+      minAttackRange: 0
+  - unitLevel: 15
+    unitSpawnTime: 38.8
+    unitBasicStats:
+      maxHealth: 1876
+      armor: 14.72
+    unitAttackStats:
+      damage: 107.2
+      buildingDamage: 107.2
+      fireRate: 0.09
+    unitMobilityStats:
+      moveSpeed: 3.71
+    unitRangeStats:
+      detectionRange: 40
+      attackRange: 10.6
+      minAttackRange: 0
+  - unitLevel: 16
+    unitSpawnTime: 38.8
+    unitBasicStats:
+      maxHealth: 1960
+      armor: 15.2
+    unitAttackStats:
+      damage: 112
+      buildingDamage: 112
+      fireRate: 0.09
+    unitMobilityStats:
+      moveSpeed: 3.92
+    unitRangeStats:
+      detectionRange: 40
+      attackRange: 10.6
+      minAttackRange: 0
+  - unitLevel: 17
+    unitSpawnTime: 38.8
+    unitBasicStats:
+      maxHealth: 2044
+      armor: 15.68
+    unitAttackStats:
+      damage: 116.8
+      buildingDamage: 116.8
+      fireRate: 0.09
+    unitMobilityStats:
+      moveSpeed: 3.92
+    unitRangeStats:
+      detectionRange: 40
+      attackRange: 10.6
+      minAttackRange: 0
+  - unitLevel: 18
+    unitSpawnTime: 38.8
+    unitBasicStats:
+      maxHealth: 2128
+      armor: 16.16
+    unitAttackStats:
+      damage: 121.6
+      buildingDamage: 121.6
+      fireRate: 0.09
+    unitMobilityStats:
+      moveSpeed: 3.92
+    unitRangeStats:
+      detectionRange: 40
+      attackRange: 10.6
+      minAttackRange: 0
+  - unitLevel: 19
+    unitSpawnTime: 38.8
+    unitBasicStats:
+      maxHealth: 2212
+      armor: 16.64
+    unitAttackStats:
+      damage: 126.4
+      buildingDamage: 126.4
+      fireRate: 0.09
+    unitMobilityStats:
+      moveSpeed: 3.92
+    unitRangeStats:
+      detectionRange: 40
+      attackRange: 10.6
+      minAttackRange: 0
+  - unitLevel: 20
+    unitSpawnTime: 37.6
+    unitBasicStats:
+      maxHealth: 2296
+      armor: 17.12
+    unitAttackStats:
+      damage: 131.2
+      buildingDamage: 131.2
+      fireRate: 0.08
+    unitMobilityStats:
+      moveSpeed: 3.92
+    unitRangeStats:
+      detectionRange: 40
+      attackRange: 10.8
       minAttackRange: 0
   abilities: []

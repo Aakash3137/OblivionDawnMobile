@@ -37,6 +37,12 @@ public class BuildingDataSO : ScriptableObject
 
         for (int j = 0; j < upKeepCost.Length; j++)
             upKeepCost[j].resourceType = enumValues[j];
+
+        if (cardDetails.upgradeCostMultiplier < 0)
+            cardDetails.upgradeCostMultiplier = 1f;
+
+        if (cardDetails.fragmentCostMultiplier < 0)
+            cardDetails.fragmentCostMultiplier = 1f;
     }
 
     internal virtual void OnValidate()
@@ -72,5 +78,10 @@ public class BuildingDataSO : ScriptableObject
                 upKeepCost[i].resourceAmount = Mathf.Max(amt, 1);
             }
         }
+    }
+    [Button]
+    public void GenerateLevels()
+    {
+        StatUpgrade.GenerateUpgradeData(this);
     }
 }

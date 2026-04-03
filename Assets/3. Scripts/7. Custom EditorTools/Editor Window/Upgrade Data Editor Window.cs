@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -26,12 +27,6 @@ public class UpgradeDataEditorWindow : EditorWindow
     private ScrollView selectScroll;
     private ScrollView levelDataScroll;
 
-    private Button unitButton;
-    private Button defenseButton;
-    private Button resourceButton;
-    private Button offenseButton;
-    private Button cityCenterButton;
-
     private VisualElement unitLevelPanel;
     private VisualElement defenseLevelPanel;
     private VisualElement offenseLevelPanel;
@@ -44,7 +39,10 @@ public class UpgradeDataEditorWindow : EditorWindow
     private VisualElement offenseFieldHeader;
     private VisualElement mainFieldHeader;
 
+    private IntegerField maxLevelField;
+    private ObjectField currentEditingObjectField;
 
+    private Button generateLevelsButton;
 
     [MenuItem("Custom Editor Tools/Upgrade Data")]
     public static void ShowWindow()
@@ -57,6 +55,10 @@ public class UpgradeDataEditorWindow : EditorWindow
         root.Clear();
 
         visualTree.CloneTree(root);
+
+        maxLevelField = root.Q<IntegerField>("MaxLevel");
+        maxLevelField.value = GameData.GameMaxObjectLevel;
+        currentEditingObjectField = root.Q<ObjectField>("CurrentEditingObject");
 
         selectScroll = root.Q<ScrollView>("ScrollPanel");
         levelDataScroll = root.Q<ScrollView>("LevelScroll");
@@ -86,25 +88,36 @@ public class UpgradeDataEditorWindow : EditorWindow
         {
             case UnitProduceStatsSO unit:
                 unitLevelPanel.style.display = DisplayStyle.Flex;
+                generateLevelsButton = unitLevelPanel.Q<Button>("GenerateLevels");
                 GenerateUnitLevelData(unit);
                 break;
             case MainBuildingDataSO main:
                 mainLevelPanel.style.display = DisplayStyle.Flex;
+                generateLevelsButton = mainLevelPanel.Q<Button>("GenerateLevels");
                 GenerateMainLevelData(main);
                 break;
             case DefenseBuildingDataSO defense:
                 defenseLevelPanel.style.display = DisplayStyle.Flex;
+                generateLevelsButton = defenseLevelPanel.Q<Button>("GenerateLevels");
                 GenerateDefenseLevelData(defense);
                 break;
             case ResourceBuildingDataSO resource:
                 resourceLevelPanel.style.display = DisplayStyle.Flex;
+                generateLevelsButton = resourceLevelPanel.Q<Button>("GenerateLevels");
                 GenerateResourceLevelData(resource);
                 break;
             case OffenseBuildingDataSO offense:
                 offenseLevelPanel.style.display = DisplayStyle.Flex;
+                generateLevelsButton = offenseLevelPanel.Q<Button>("GenerateLevels");
                 GenerateOffenseLevelData(offense);
                 break;
         }
+
+        currentEditingObjectField.value = scriptable;
+
+        if (generateLevelsButton != null)
+            generateLevelsButton.clicked += OnClickGenerateLevels;
+
     }
 
     #region Units
@@ -132,10 +145,11 @@ public class UpgradeDataEditorWindow : EditorWindow
             instance.Q<ObjectField>("Icon").BindProperty(serializedObject.FindProperty($"unitIcon"));
             instance.Q<ObjectField>("Spawner").BindProperty(serializedObject.FindProperty($"spawnerBuilding"));
             instance.Q<IntegerField>("Population").BindProperty(serializedObject.FindProperty($"populationCost"));
-            instance.Q<Toggle>("FactionUnlocked").BindProperty(serializedObject.FindProperty($"cardDetails.factionUnlocked"));
-            instance.Q<Toggle>("isUnlocked").BindProperty(serializedObject.FindProperty($"cardDetails.isUnlocked"));
-            instance.Q<Toggle>("purchased").BindProperty(serializedObject.FindProperty($"cardDetails.purchased"));
+            instance.Q<EnumField>("CardState").BindProperty(serializedObject.FindProperty($"cardDetails.cardState"));
             instance.Q<IntegerField>("minBuildingLevel").BindProperty(serializedObject.FindProperty($"cardDetails.minBuildingLevel"));
+            instance.Q<IntegerField>("purchaseCost").BindProperty(serializedObject.FindProperty($"cardDetails.purchaseCost"));
+            instance.Q<FloatField>("upgradeCostMultiplier").BindProperty(serializedObject.FindProperty($"cardDetails.upgradeCostMultiplier"));
+            instance.Q<FloatField>("fragmentCostMultiplier").BindProperty(serializedObject.FindProperty($"cardDetails.fragmentCostMultiplier"));
 
             instance.Q<Button>("select").clicked += () => OnClickSelect(unit);
 
@@ -150,10 +164,9 @@ public class UpgradeDataEditorWindow : EditorWindow
 
     private void GenerateUnitLevelData(UnitProduceStatsSO unitSO)
     {
-        var unitUpgradeData = unitSO.unitUpgradeData;
         var serializedObject = new SerializedObject(unitSO);
 
-        for (int i = 0; i < unitUpgradeData.Length; i++)
+        for (int i = 0; i < unitSO.unitUpgradeData.Length; i++)
         {
             var instance = unitLevelDataVisualTree.CloneTree();
             // Get the serialized property for this specific array element            
@@ -165,7 +178,7 @@ public class UpgradeDataEditorWindow : EditorWindow
             instance.Q<IntegerField>("Level").BindProperty(serializedProperty.FindPropertyRelative("unitLevel"));
             instance.Q<FloatField>("Health").BindProperty(serializedProperty.FindPropertyRelative("unitBasicStats.maxHealth"));
             instance.Q<FloatField>("Armor").BindProperty(serializedProperty.FindPropertyRelative("unitBasicStats.armor"));
-            instance.Q<FloatField>("BuildTime").BindProperty(serializedProperty.FindPropertyRelative("unitBuildTime"));
+            instance.Q<FloatField>("BuildTime").BindProperty(serializedProperty.FindPropertyRelative("unitSpawnTime"));
             instance.Q<FloatField>("UnitDMG").BindProperty(serializedProperty.FindPropertyRelative("unitAttackStats.damage"));
             instance.Q<FloatField>("BuildingDMG").BindProperty(serializedProperty.FindPropertyRelative("unitAttackStats.buildingDamage"));
             instance.Q<FloatField>("FireRate").BindProperty(serializedProperty.FindPropertyRelative("unitAttackStats.fireRate"));
@@ -200,10 +213,11 @@ public class UpgradeDataEditorWindow : EditorWindow
             instance.Q<EnumField>("Type").BindProperty(serializedObject.FindProperty($"defenseType"));
             instance.Q<ObjectField>("Icon").BindProperty(serializedObject.FindProperty($"buildingIcon"));
             instance.Q<IntegerField>("Population").BindProperty(serializedObject.FindProperty($"populationCost"));
-            instance.Q<Toggle>("FactionUnlocked").BindProperty(serializedObject.FindProperty($"cardDetails.factionUnlocked"));
-            instance.Q<Toggle>("isUnlocked").BindProperty(serializedObject.FindProperty($"cardDetails.isUnlocked"));
-            instance.Q<Toggle>("purchased").BindProperty(serializedObject.FindProperty($"cardDetails.purchased"));
+            instance.Q<EnumField>("CardState").BindProperty(serializedObject.FindProperty($"cardDetails.cardState"));
             instance.Q<IntegerField>("minBuildingLevel").BindProperty(serializedObject.FindProperty($"cardDetails.minBuildingLevel"));
+            instance.Q<IntegerField>("purchaseCost").BindProperty(serializedObject.FindProperty($"cardDetails.purchaseCost"));
+            instance.Q<FloatField>("upgradeCostMultiplier").BindProperty(serializedObject.FindProperty($"cardDetails.upgradeCostMultiplier"));
+            instance.Q<FloatField>("fragmentCostMultiplier").BindProperty(serializedObject.FindProperty($"cardDetails.fragmentCostMultiplier"));
             for (int i = 0; i < buildingCosts.Count; i++)
                 buildingCosts[i].BindProperty(serializedObject.FindProperty($"buildingBuildCost.Array.data[{i}].resourceAmount"));
             for (int i = 0; i < upKeepCosts.Count; i++)
@@ -227,10 +241,9 @@ public class UpgradeDataEditorWindow : EditorWindow
     }
     private void GenerateDefenseLevelData(DefenseBuildingDataSO defenseSO)
     {
-        var defenseUpgradeData = defenseSO.defenseBuildingUpgradeData;
         var serializedObject = new SerializedObject(defenseSO);
 
-        for (int i = 0; i < defenseUpgradeData.Count; i++)
+        for (int i = 0; i < defenseSO.defenseBuildingUpgradeData.Count; i++)
         {
             var instance = defenseLevelDataVisualTree.CloneTree();
             SerializedProperty serializedProperty = serializedObject.FindProperty($"defenseBuildingUpgradeData.Array.data[{i}]");
@@ -275,10 +288,11 @@ public class UpgradeDataEditorWindow : EditorWindow
             instance.Q<EnumField>("Name").BindProperty(serializedObject.FindProperty($"gameBuildingName"));
             instance.Q<EnumField>("Type").BindProperty(serializedObject.FindProperty($"offenseType"));
             instance.Q<ObjectField>("Icon").BindProperty(serializedObject.FindProperty($"buildingIcon"));
-            instance.Q<Toggle>("FactionUnlocked").BindProperty(serializedObject.FindProperty($"cardDetails.factionUnlocked"));
-            instance.Q<Toggle>("isUnlocked").BindProperty(serializedObject.FindProperty($"cardDetails.isUnlocked"));
-            instance.Q<Toggle>("purchased").BindProperty(serializedObject.FindProperty($"cardDetails.purchased"));
+            instance.Q<EnumField>("CardState").BindProperty(serializedObject.FindProperty($"cardDetails.cardState"));
             instance.Q<IntegerField>("minBuildingLevel").BindProperty(serializedObject.FindProperty($"cardDetails.minBuildingLevel"));
+            instance.Q<IntegerField>("purchaseCost").BindProperty(serializedObject.FindProperty($"cardDetails.purchaseCost"));
+            instance.Q<FloatField>("upgradeCostMultiplier").BindProperty(serializedObject.FindProperty($"cardDetails.upgradeCostMultiplier"));
+            instance.Q<FloatField>("fragmentCostMultiplier").BindProperty(serializedObject.FindProperty($"cardDetails.fragmentCostMultiplier"));
             for (int i = 0; i < buildingCosts.Count; i++)
                 buildingCosts[i].BindProperty(serializedObject.FindProperty($"buildingBuildCost.Array.data[{i}].resourceAmount"));
             for (int i = 0; i < upKeepCosts.Count; i++)
@@ -302,10 +316,9 @@ public class UpgradeDataEditorWindow : EditorWindow
     }
     private void GenerateOffenseLevelData(OffenseBuildingDataSO offenseSO)
     {
-        var offenseUpgradeData = offenseSO.offenseBuildingUpgradeData;
         var serializedObject = new SerializedObject(offenseSO);
 
-        for (int i = 0; i < offenseUpgradeData.Count; i++)
+        for (int i = 0; i < offenseSO.offenseBuildingUpgradeData.Count; i++)
         {
             var instance = offenseLevelDataVisualTree.CloneTree();
             SerializedProperty serializedProperty = serializedObject.FindProperty($"offenseBuildingUpgradeData.Array.data[{i}]");
@@ -347,10 +360,11 @@ public class UpgradeDataEditorWindow : EditorWindow
             instance.Q<EnumField>("Name").BindProperty(serializedObject.FindProperty($"gameBuildingName"));
             instance.Q<EnumField>("Type").BindProperty(serializedObject.FindProperty($"resourceType"));
             instance.Q<ObjectField>("Icon").BindProperty(serializedObject.FindProperty($"buildingIcon"));
-            instance.Q<Toggle>("FactionUnlocked").BindProperty(serializedObject.FindProperty($"cardDetails.factionUnlocked"));
-            instance.Q<Toggle>("isUnlocked").BindProperty(serializedObject.FindProperty($"cardDetails.isUnlocked"));
-            instance.Q<Toggle>("purchased").BindProperty(serializedObject.FindProperty($"cardDetails.purchased"));
+            instance.Q<EnumField>("CardState").BindProperty(serializedObject.FindProperty($"cardDetails.cardState"));
             instance.Q<IntegerField>("minBuildingLevel").BindProperty(serializedObject.FindProperty($"cardDetails.minBuildingLevel"));
+            instance.Q<IntegerField>("purchaseCost").BindProperty(serializedObject.FindProperty($"cardDetails.purchaseCost"));
+            instance.Q<FloatField>("upgradeCostMultiplier").BindProperty(serializedObject.FindProperty($"cardDetails.upgradeCostMultiplier"));
+            instance.Q<FloatField>("fragmentCostMultiplier").BindProperty(serializedObject.FindProperty($"cardDetails.fragmentCostMultiplier"));
             for (int i = 0; i < buildingCosts.Count; i++)
                 buildingCosts[i].BindProperty(serializedObject.FindProperty($"buildingBuildCost.Array.data[{i}].resourceAmount"));
             for (int i = 0; i < upKeepCosts.Count; i++)
@@ -375,10 +389,9 @@ public class UpgradeDataEditorWindow : EditorWindow
 
     private void GenerateResourceLevelData(ResourceBuildingDataSO resourceSO)
     {
-        var resourceUpgradeData = resourceSO.resourceBuildingUpgradeData;
         var serializedObject = new SerializedObject(resourceSO);
 
-        for (int i = 0; i < resourceUpgradeData.Count; i++)
+        for (int i = 0; i < resourceSO.resourceBuildingUpgradeData.Count; i++)
         {
             var instance = resourceLevelDataVisualTree.CloneTree();
             SerializedProperty serializedProperty = serializedObject.FindProperty($"resourceBuildingUpgradeData.Array.data[{i}]");
@@ -390,8 +403,8 @@ public class UpgradeDataEditorWindow : EditorWindow
             instance.Q<FloatField>("Health").BindProperty(serializedProperty.FindPropertyRelative("buildingBasicStats.maxHealth"));
             instance.Q<FloatField>("Armor").BindProperty(serializedProperty.FindPropertyRelative("buildingBasicStats.armor"));
             instance.Q<FloatField>("BuildTime").BindProperty(serializedProperty.FindPropertyRelative("buildingBuildTime"));
-            instance.Q<FloatField>("resourceAmountPerBatch").BindProperty(serializedProperty.FindPropertyRelative("resourceAmountPerBatch"));
-            instance.Q<FloatField>("resourceAmountCapacity").BindProperty(serializedProperty.FindPropertyRelative("resourceAmountCapacity"));
+            instance.Q<IntegerField>("resourceAmountPerBatch").BindProperty(serializedProperty.FindPropertyRelative("resourceAmountPerBatch"));
+            instance.Q<IntegerField>("resourceAmountCapacity").BindProperty(serializedProperty.FindPropertyRelative("resourceAmountCapacity"));
 
             levelDataScroll.Add(instance);
         }
@@ -420,10 +433,12 @@ public class UpgradeDataEditorWindow : EditorWindow
             instance.Q<EnumField>("Faction").BindProperty(serializedObject.FindProperty($"buildingIdentity.faction"));
             instance.Q<EnumField>("Name").BindProperty(serializedObject.FindProperty($"gameBuildingName"));
             instance.Q<ObjectField>("Icon").BindProperty(serializedObject.FindProperty($"buildingIcon"));
-            instance.Q<Toggle>("FactionUnlocked").BindProperty(serializedObject.FindProperty($"cardDetails.factionUnlocked"));
-            instance.Q<Toggle>("isUnlocked").BindProperty(serializedObject.FindProperty($"cardDetails.isUnlocked"));
-            instance.Q<Toggle>("purchased").BindProperty(serializedObject.FindProperty($"cardDetails.purchased"));
+            instance.Q<Toggle>("FactionUnlocked").BindProperty(serializedObject.FindProperty($"factionUnlocked"));
+            instance.Q<EnumField>("CardState").BindProperty(serializedObject.FindProperty($"cardDetails.cardState"));
             instance.Q<IntegerField>("minBuildingLevel").BindProperty(serializedObject.FindProperty($"cardDetails.minBuildingLevel"));
+            instance.Q<IntegerField>("purchaseCost").BindProperty(serializedObject.FindProperty($"cardDetails.purchaseCost"));
+            instance.Q<FloatField>("upgradeCostMultiplier").BindProperty(serializedObject.FindProperty($"cardDetails.upgradeCostMultiplier"));
+            instance.Q<FloatField>("fragmentCostMultiplier").BindProperty(serializedObject.FindProperty($"cardDetails.fragmentCostMultiplier"));
 
             instance.Q<Button>("select").clicked += () => OnClickSelect(main);
 
@@ -438,10 +453,9 @@ public class UpgradeDataEditorWindow : EditorWindow
 
     private void GenerateMainLevelData(MainBuildingDataSO mainSO)
     {
-        var mainUpgradeData = mainSO.mainBuildingUpgradeData;
         var serializedObject = new SerializedObject(mainSO);
 
-        for (int i = 0; i < mainUpgradeData.Count; i++)
+        for (int i = 0; i < mainSO.mainBuildingUpgradeData.Count; i++)
         {
             var instance = cityCenterLevelDataVisualTree.CloneTree();
             SerializedProperty serializedProperty = serializedObject.FindProperty($"mainBuildingUpgradeData.Array.data[{i}]");
@@ -463,6 +477,12 @@ public class UpgradeDataEditorWindow : EditorWindow
     #endregion
 
     #region Helper Functions
+    private void OnClickGenerateLevels()
+    {
+        var currentEditingObject = currentEditingObjectField.value as ScriptableObject;
+        StatUpgrade.GenerateUpgradeData(currentEditingObject);
+        OnClickSelect(currentEditingObject);
+    }
 
     private void OnToggleUpkeep(bool value, List<IntegerField> fields)
     {
@@ -473,22 +493,30 @@ public class UpgradeDataEditorWindow : EditorWindow
     }
     private void RegisterButtons(VisualElement root)
     {
-        unitButton = root.Q<Button>("Unit");
-        defenseButton = root.Q<Button>("Defense");
-        resourceButton = root.Q<Button>("Resource");
-        offenseButton = root.Q<Button>("Offense");
-        cityCenterButton = root.Q<Button>("CityCenter");
+        var unitButton = root.Q<Button>("Unit");
+        var defenseButton = root.Q<Button>("Defense");
+        var resourceButton = root.Q<Button>("Resource");
+        var offenseButton = root.Q<Button>("Offense");
+        var cityCenterButton = root.Q<Button>("CityCenter");
+        var setMaxLevelButton = root.Q<Button>("SetMaxLevel");
 
         unitButton.clicked += CreateUnitFields;
         defenseButton.clicked += CreateDefenseFields;
         resourceButton.clicked += CreateResourceFields;
         offenseButton.clicked += CreateOffenseFields;
         cityCenterButton.clicked += CreateCityCenterFields;
+        setMaxLevelButton.clicked += SetMaxLevel;
+    }
+    private void SetMaxLevel()
+    {
+        GameData.GameMaxObjectLevel = maxLevelField.value;
     }
     private void RefreshUI()
     {
         selectScroll.Clear();
         levelDataScroll.Clear();
+
+        currentEditingObjectField.value = null;
 
         unitLevelPanel.style.display = DisplayStyle.None;
         defenseLevelPanel.style.display = DisplayStyle.None;
@@ -501,6 +529,11 @@ public class UpgradeDataEditorWindow : EditorWindow
         defenseFieldHeader.style.display = DisplayStyle.None;
         resourceFieldHeader.style.display = DisplayStyle.None;
         offenseFieldHeader.style.display = DisplayStyle.None;
+
+        if (generateLevelsButton != null)
+            generateLevelsButton.clicked -= OnClickGenerateLevels;
+
+        generateLevelsButton = null;
     }
     private List<IntegerField> GetBuildingCostsFields(VisualElement instance)
     {
@@ -527,3 +560,4 @@ public class UpgradeDataEditorWindow : EditorWindow
     #endregion
 
 }
+#endif

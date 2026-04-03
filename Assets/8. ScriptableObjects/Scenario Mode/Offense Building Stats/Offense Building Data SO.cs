@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 
 [CreateAssetMenu(fileName = "Building Data SO", menuName = "Scenario Stats/Offense Building Data")]
 public class OffenseBuildingDataSO : BuildingDataSO
@@ -19,7 +20,7 @@ public class OffenseBuildingDataSO : BuildingDataSO
 
         for (int i = 0; i < offenseBuildingUpgradeData.Count; i++)
         {
-            offenseBuildingUpgradeData[i].buildingLevel = i;
+            offenseBuildingUpgradeData[i].buildingLevel = i + 1;
         }
 
         buildingIdentity.spawnLevel = Mathf.Clamp(buildingIdentity.spawnLevel, 0, offenseBuildingUpgradeData.Count - 1);
@@ -32,6 +33,5 @@ public class OffenseBuildingDataSO : BuildingDataSO
 [Serializable]
 public class OffenseBuildingUpgradeData : BuildingUpgradeData
 {
-    public float unitSpawnTime;
     public int maxSpawnableUnits;
 }

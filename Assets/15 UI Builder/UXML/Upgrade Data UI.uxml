@@ -1,20 +1,23 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <Style src="project://database/Assets/15%20UI%20Builder/USS/upgradeEditorTopBar.uss?fileID=7433441132597879392&amp;guid=db20df8c372b3e546a44ceb2eb58db57&amp;type=3#upgradeEditorTopBar" />
-    <ui:VisualElement name="_root" style="flex-grow: 1; background-color: rgb(29, 29, 41);">
+    <ui:VisualElement name="_root" style="flex-grow: 1; background-color: rgb(29, 29, 41); -unity-background-scale-mode: scale-to-fit;">
         <ui:VisualElement name="Offset" style="flex-grow: 1; margin-top: 20px; margin-right: 20px; margin-bottom: 10px; margin-left: 20px;">
-            <ui:VisualElement name="Top_Panel" style="height: 50px; flex-direction: row; margin-bottom: 20px; min-height: 50px;">
+            <ui:VisualElement name="Top_Panel" style="height: 50px; margin-bottom: 20px; min-height: 50px; flex-direction: row;">
                 <ui:Button text="CityCenter" name="CityCenter" class="text" style="width: 100px; height: 85%; color: rgb(8, 238, 226); align-items: center;" />
                 <ui:Button text="Units" name="Unit" class="text" style="width: 100px; height: 85%; color: rgb(8, 238, 226); align-items: center;" />
-                <ui:Button text="Offense" name="Offense" class="text" style="width: 100px; height: 85%; color: rgb(8, 238, 226); align-items: center;" />
                 <ui:Button text="Defense" name="Defense" class="text" style="width: 100px; height: 85%; color: rgb(8, 238, 226); align-items: center;" />
+                <ui:Button text="Offense" name="Offense" class="text" style="width: 100px; height: 85%; color: rgb(8, 238, 226); align-items: center;" />
                 <ui:Button text="Resource" name="Resource" class="text" style="width: 100px; height: 85%; color: rgb(8, 238, 226); align-items: center;" />
+                <ui:IntegerField label="max level" value="42" name="MaxLevel" class="text unity-base-field" style="width: 165px; height: 85%; -unity-text-align: middle-center;" />
+                <ui:Button text="set max level" name="SetMaxLevel" class="text unity-base-field" style="width: 120px; height: 85%;" />
+                <uie:ObjectField label="Editing Object" name="CurrentEditingObject" allow-scene-objects="false" type="UnityEngine.ScriptableObject, UnityEngine.CoreModule" enabled="false" class="text unity-base-field" style="height: 85%; -unity-text-align: middle-left; width: 400px; opacity: 1;" />
             </ui:VisualElement>
             <ui:ScrollView name="DataScroll" vertical-scroller-visibility="Hidden" mode="Horizontal">
-                <ui:VisualElement name="DataPanel">
-                    <ui:VisualElement name="UnitHeader" style="display: none; height: 60px; min-height: 60px;">
+                <ui:VisualElement name="DataPanel" style="min-width: 100%; min-height: 100%;">
+                    <ui:VisualElement name="UnitHeader" style="display: flex; min-height: 60px;">
                         <ui:VisualElement name="TopPanel" style="height: 30px; flex-direction: row;">
                             <ui:Label name="Space" class="text unity-base-field" style="width: 1057px; -unity-text-align: middle-center; background-color: rgba(255, 255, 255, 0);" />
-                            <ui:Label text="CardDetails" name="CardDetails" class="text unity-base-field" style="width: 418px; -unity-text-align: middle-center; background-color: rgb(56, 56, 56);" />
+                            <ui:Label text="CardDetails" name="CardDetails" class="text unity-base-field" style="width: 524px; -unity-text-align: middle-center; background-color: rgb(56, 56, 56);" />
                         </ui:VisualElement>
                         <ui:VisualElement name="LabelsPanel" style="flex-direction: row; height: 30px;">
                             <ui:Label name="Space" class="text unity-base-field" style="width: 75px; -unity-text-align: middle-center;" />
@@ -25,16 +28,17 @@
                             <ui:Label text="Icon&#10;" name="Icon" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
                             <ui:Label text="Spawner" name="Spawner" class="text unity-base-field" style="width: 150px; -unity-text-align: middle-center;" />
                             <ui:Label text="Population" name="Population" class="text unity-base-field" style="width: 90px; -unity-text-align: middle-center;" />
-                            <ui:Label text="Faction Unlocked" name="FactionUnlocked" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
-                            <ui:Label text="is unlocked" name="isunlocked" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
-                            <ui:Label text="is purchased" name="isPurchased" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
-                            <ui:Label text="Min City &#10;Level" name="MinCityLevel" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
+                            <ui:Label text="card state" name="CardState" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
+                            <ui:Label text="Min City Level" name="MinCityLevel" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
+                            <ui:Label text="Purchse Cost" name="PurcahseCost" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
+                            <ui:Label text="Upgrade Multiplier" name="UpgradeMultiplier" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
+                            <ui:Label text="Fragment Multiplier" name="FragmentMultiplier" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
                         </ui:VisualElement>
                     </ui:VisualElement>
-                    <ui:VisualElement name="DefenseHeader" style="display: none; height: 60px; min-height: 60px;">
+                    <ui:VisualElement name="DefenseHeader" style="display: flex; min-height: 60px;">
                         <ui:VisualElement name="TopPanel" style="height: 30px; flex-direction: row;">
                             <ui:Label name="Space" class="text unity-base-field" style="width: 901px; -unity-text-align: middle-center; background-color: rgba(255, 255, 255, 0);" />
-                            <ui:Label text="CardDetails" name="CardDetails" class="text unity-base-field" style="width: 418px; -unity-text-align: middle-center; background-color: rgb(56, 56, 56);" />
+                            <ui:Label text="CardDetails" name="CardDetails" class="text unity-base-field" style="width: 524px; -unity-text-align: middle-center; background-color: rgb(56, 56, 56);" />
                             <ui:Label text="Building Cost" name="BuildingCost" class="text unity-base-field" style="width: 218px; -unity-text-align: middle-center; background-color: rgb(56, 56, 56);" />
                             <ui:Label name="Space" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center; background-color: rgba(255, 255, 255, 0);" />
                             <ui:Label text="Upkeep cost" name="UpkeepCost" class="text unity-base-field" style="width: 218px; -unity-text-align: middle-center; background-color: rgb(56, 56, 56);" />
@@ -47,10 +51,11 @@
                             <ui:Label text="Type" name="Type" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
                             <ui:Label text="Icon&#10;" name="Icon" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
                             <ui:Label text="Population" name="Population" class="text unity-base-field" style="width: 90px; -unity-text-align: middle-center;" />
-                            <ui:Label text="Faction Unlocked" name="FactionUnlocked" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
-                            <ui:Label text="is unlocked" name="isunlocked" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
-                            <ui:Label text="is purchased" name="isPurchased" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
+                            <ui:Label text="card state" name="CardState" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
                             <ui:Label text="Min City Level" name="MinCityLevel" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
+                            <ui:Label text="Purchse Cost" name="PurcahseCost" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
+                            <ui:Label text="Upgrade Multiplier" name="UpgradeMultiplier" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
+                            <ui:Label text="Fragment Multiplier" name="FragmentMultiplier" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
                             <ui:Label text="Food" name="Food" class="text unity-base-field" style="width: 50px; -unity-text-align: middle-center;" />
                             <ui:Label text="gold" name="Gold" class="text unity-base-field" style="width: 50px; -unity-text-align: middle-center;" />
                             <ui:Label text="metal" name="Metal" class="text unity-base-field" style="width: 50px; -unity-text-align: middle-center;" />
@@ -62,10 +67,10 @@
                             <ui:Label text="power" name="Power" class="text unity-base-field" style="width: 50px; -unity-text-align: middle-center;" />
                         </ui:VisualElement>
                     </ui:VisualElement>
-                    <ui:VisualElement name="ResourceHeader" style="display: none; height: 60px; min-height: 60px;">
+                    <ui:VisualElement name="ResourceHeader" style="display: flex; min-height: 60px;">
                         <ui:VisualElement name="TopPanel" style="height: 30px; flex-direction: row;">
                             <ui:Label name="Space" class="text unity-base-field" style="width: 805px; -unity-text-align: middle-center; background-color: rgba(255, 255, 255, 0);" />
-                            <ui:Label text="CardDetails" name="CardDetails" class="text unity-base-field" style="width: 418px; -unity-text-align: middle-center; background-color: rgb(56, 56, 56);" />
+                            <ui:Label text="CardDetails" name="CardDetails" class="text unity-base-field" style="width: 524px; -unity-text-align: middle-center; background-color: rgb(56, 56, 56);" />
                             <ui:Label text="Building Cost" name="BuildingCost" class="text unity-base-field" style="width: 218px; -unity-text-align: middle-center; background-color: rgb(56, 56, 56);" />
                             <ui:Label name="Space" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center; background-color: rgba(255, 255, 255, 0);" />
                             <ui:Label text="Upkeep cost" name="UpkeepCost" class="text unity-base-field" style="width: 218px; -unity-text-align: middle-center; background-color: rgb(56, 56, 56);" />
@@ -77,10 +82,11 @@
                             <ui:Label text="Name" name="Name" class="text unity-base-field" style="width: 150px; -unity-text-align: middle-center;" />
                             <ui:Label text="Type" name="Type" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
                             <ui:Label text="Icon&#10;" name="Icon" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
-                            <ui:Label text="Faction Unlocked" name="FactionUnlocked" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
-                            <ui:Label text="is unlocked" name="isunlocked" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
-                            <ui:Label text="is purchased" name="isPurchased" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
+                            <ui:Label text="card state" name="CardState" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
                             <ui:Label text="Min City Level" name="MinCityLevel" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
+                            <ui:Label text="Purchse Cost" name="PurcahseCost" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
+                            <ui:Label text="Upgrade Multiplier" name="UpgradeMultiplier" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
+                            <ui:Label text="Fragment Multiplier" name="FragmentMultiplier" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
                             <ui:Label text="Food" name="Food" class="text unity-base-field" style="width: 50px; -unity-text-align: middle-center;" />
                             <ui:Label text="gold" name="Gold" class="text unity-base-field" style="width: 50px; -unity-text-align: middle-center;" />
                             <ui:Label text="metal" name="Metal" class="text unity-base-field" style="width: 50px; -unity-text-align: middle-center;" />
@@ -92,10 +98,10 @@
                             <ui:Label text="power" name="Power" class="text unity-base-field" style="width: 50px; -unity-text-align: middle-center;" />
                         </ui:VisualElement>
                     </ui:VisualElement>
-                    <ui:VisualElement name="OffenseHeader" style="display: none; height: 60px; min-height: 60px;">
+                    <ui:VisualElement name="OffenseHeader" style="display: flex; min-height: 60px;">
                         <ui:VisualElement name="TopPanel" style="height: 30px; flex-direction: row;">
                             <ui:Label name="Space" class="text unity-base-field" style="width: 805px; -unity-text-align: middle-center; background-color: rgba(255, 255, 255, 0);" />
-                            <ui:Label text="CardDetails" name="CardDetails" class="text unity-base-field" style="width: 418px; -unity-text-align: middle-center; background-color: rgb(56, 56, 56);" />
+                            <ui:Label text="CardDetails" name="CardDetails" class="text unity-base-field" style="width: 524px; -unity-text-align: middle-center; background-color: rgb(56, 56, 56);" />
                             <ui:Label text="Building Cost" name="BuildingCost" class="text unity-base-field" style="width: 218px; -unity-text-align: middle-center; background-color: rgb(56, 56, 56);" />
                             <ui:Label name="Space" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center; background-color: rgba(255, 255, 255, 0);" />
                             <ui:Label text="Upkeep cost" name="UpkeepCost" class="text unity-base-field" style="width: 218px; -unity-text-align: middle-center; background-color: rgb(56, 56, 56);" />
@@ -107,10 +113,11 @@
                             <ui:Label text="Name" name="Name" class="text unity-base-field" style="width: 150px; -unity-text-align: middle-center;" />
                             <ui:Label text="Type" name="Type" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
                             <ui:Label text="Icon&#10;" name="Icon" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
-                            <ui:Label text="Faction Unlocked" name="FactionUnlocked" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
-                            <ui:Label text="is unlocked" name="isunlocked" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
-                            <ui:Label text="is purchased" name="isPurchased" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
+                            <ui:Label text="card state" name="CardState" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
                             <ui:Label text="Min City Level" name="MinCityLevel" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
+                            <ui:Label text="Purchse Cost" name="PurcahseCost" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
+                            <ui:Label text="Upgrade Multiplier" name="UpgradeMultiplier" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
+                            <ui:Label text="Fragment Multiplier" name="FragmentMultiplier" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
                             <ui:Label text="Food" name="Food" class="text unity-base-field" style="width: 50px; -unity-text-align: middle-center;" />
                             <ui:Label text="gold" name="Gold" class="text unity-base-field" style="width: 50px; -unity-text-align: middle-center;" />
                             <ui:Label text="metal" name="Metal" class="text unity-base-field" style="width: 50px; -unity-text-align: middle-center;" />
@@ -122,10 +129,10 @@
                             <ui:Label text="power" name="Power" class="text unity-base-field" style="width: 50px; -unity-text-align: middle-center;" />
                         </ui:VisualElement>
                     </ui:VisualElement>
-                    <ui:VisualElement name="MainHeader" style="display: none; height: 60px; min-height: 60px;">
+                    <ui:VisualElement name="MainHeader" style="display: flex; min-height: 60px;">
                         <ui:VisualElement name="TopPanel" style="height: 30px; flex-direction: row;">
-                            <ui:Label name="Space" class="text unity-base-field" style="width: 699px; -unity-text-align: middle-center; background-color: rgba(255, 255, 255, 0);" />
-                            <ui:Label text="CardDetails" name="CardDetails" class="text unity-base-field" style="width: 418px; -unity-text-align: middle-center; background-color: rgb(56, 56, 56);" />
+                            <ui:Label name="Space" class="text unity-base-field" style="width: 805px; -unity-text-align: middle-center; background-color: rgba(255, 255, 255, 0);" />
+                            <ui:Label text="CardDetails" name="CardDetails" class="text unity-base-field" style="width: 524px; -unity-text-align: middle-center; background-color: rgb(56, 56, 56);" />
                         </ui:VisualElement>
                         <ui:VisualElement name="LabelsPanel" style="flex-direction: row; height: 30px;">
                             <ui:Label name="Space" class="text unity-base-field" style="width: 75px; -unity-text-align: middle-center;" />
@@ -134,14 +141,16 @@
                             <ui:Label text="Name" name="Name" class="text unity-base-field" style="width: 150px; -unity-text-align: middle-center;" />
                             <ui:Label text="Icon&#10;" name="Icon" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
                             <ui:Label text="Faction Unlocked" name="FactionUnlocked" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
-                            <ui:Label text="is unlocked" name="isunlocked" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
-                            <ui:Label text="is purchased" name="isPurchased" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
+                            <ui:Label text="card state" name="CardState" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
                             <ui:Label text="Min City Level" name="MinCityLevel" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
+                            <ui:Label text="Purchse Cost" name="PurcahseCost" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
+                            <ui:Label text="Upgrade Multiplier" name="UpgradeMultiplier" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
+                            <ui:Label text="Fragment Multiplier" name="FragmentMultiplier" class="text unity-base-field" style="width: 100px; -unity-text-align: middle-center;" />
                         </ui:VisualElement>
                     </ui:VisualElement>
-                    <ui:VisualElement name="UnitLevelPanel" style="margin-bottom: 10px; display: none; height: 80px; min-height: 80px;">
+                    <ui:VisualElement name="UnitLevelPanel" style="display: flex; height: auto; min-height: 40px;">
                         <ui:VisualElement name="Header" style="height: 30px; flex-direction: row; margin-bottom: 10px;">
-                            <ui:Label text="Name" name="Name" class="text unity-base-field" style="align-items: center; align-self: center; width: 150px; margin-left: 3px; margin-right: 43px;" />
+                            <ui:Label text="Name" name="Name" class="text unity-base-field" style="align-items: center; align-self: center; width: 200px; display: flex;" />
                             <ui:Label text="Level" name="Level" class="text unity-base-field" style="align-items: center; align-self: center; width: 45px; -unity-text-align: upper-center;" />
                             <ui:Label text="Health" name="Health" class="text unity-base-field" style="align-items: center; align-self: center; width: 55px; -unity-text-align: upper-center;" />
                             <ui:Label text="Armor" name="Armor" class="text unity-base-field" style="align-items: center; align-self: center; width: 55px; -unity-text-align: upper-center;" />
@@ -151,12 +160,11 @@
                             <ui:Label text="fire rate" name="FireRate" class="text unity-base-field" style="align-items: center; align-self: center; width: 75px; -unity-text-align: upper-center;" />
                             <ui:Label text="attack range" name="AtkRng" class="text unity-base-field" style="align-items: center; align-self: center; width: 75px; -unity-text-align: upper-center;" />
                             <ui:Label text="speed" name="Speed" class="text unity-base-field" style="align-items: center; align-self: center; width: 75px; -unity-text-align: upper-center;" />
-                            <ui:Button text="set Values" name="RegMaxVaues" class="text unity-base-field" style="width: 100px;" />
-                            <ui:Button text="generate level data" name="CreateLevelData" class="text unity-base-field" style="width: 170px;" />
+                            <ui:Button text="generate All Levels" name="GenerateLevels" class="text unity-base-field" style="width: 170px;" />
                         </ui:VisualElement>
-                        <ui:VisualElement name="LevelData" style="height: 30px; flex-direction: row; margin-bottom: 10px; -unity-text-align: upper-center;">
-                            <ui:EnumField value="Sayuri" type="GameUnitName, Assembly-CSharp" name="Name" enabled="false" class="text disabledOpacity" style="width: 150px; align-items: center; margin-right: 43px;" />
-                            <ui:IntegerField value="1" name="Level" class="text" style="width: 45px;" />
+                        <ui:VisualElement name="LevelData" style="height: 30px; flex-direction: row; -unity-text-align: upper-center; display: none;">
+                            <ui:EnumField value="Sayuri" type="GameUnitName, Assembly-CSharp" name="Name" enabled="false" class="text disabledOpacity" style="width: 150px; align-items: center; margin-right: 43px; display: flex;" />
+                            <ui:IntegerField value="1" name="Level" class="text" style="width: 45px; visibility: visible;" />
                             <ui:FloatField value="42.2" name="Health" class="text" style="width: 55px;" />
                             <ui:FloatField value="42.2" name="Armor" class="text" style="width: 55px;" />
                             <ui:FloatField value="42.2" name="BuildTime" class="text" style="width: 75px;" />
@@ -167,9 +175,9 @@
                             <ui:FloatField value="42.2" name="Speed" class="text" style="width: 75px;" />
                         </ui:VisualElement>
                     </ui:VisualElement>
-                    <ui:VisualElement name="DefenseLevelPanel" style="margin-bottom: 10px; display: none; height: 80px; min-height: 80px;">
+                    <ui:VisualElement name="DefenseLevelPanel" style="display: flex; height: auto; min-height: 40px;">
                         <ui:VisualElement name="Header" style="height: 30px; flex-direction: row; margin-bottom: 10px;">
-                            <ui:Label text="Name" name="Name" class="text unity-base-field" style="align-items: center; align-self: center; width: 150px; margin-left: 3px; margin-right: 43px;" />
+                            <ui:Label text="Name" name="Name" class="text unity-base-field" style="align-items: center; align-self: center; width: 200px; display: flex;" />
                             <ui:Label text="Level" name="Level" class="text unity-base-field" style="align-items: center; align-self: center; width: 45px; -unity-text-align: upper-center;" />
                             <ui:Label text="Health" name="Health" class="text unity-base-field" style="align-items: center; align-self: center; width: 55px; -unity-text-align: upper-center;" />
                             <ui:Label text="Armor" name="Armor" class="text unity-base-field" style="align-items: center; align-self: center; width: 55px; -unity-text-align: upper-center;" />
@@ -178,12 +186,11 @@
                             <ui:Label text="building dmg" name="BuildingDMG" class="text unity-base-field" style="align-items: center; align-self: center; width: 75px; -unity-text-align: upper-center;" />
                             <ui:Label text="fire rate" name="FireRate" class="text unity-base-field" style="align-items: center; align-self: center; width: 75px; -unity-text-align: upper-center;" />
                             <ui:Label text="attack range" name="AtkRng" class="text unity-base-field" style="align-items: center; align-self: center; width: 75px; -unity-text-align: upper-center;" />
-                            <ui:Button text="set Values" name="RegMaxVaues" class="text unity-base-field" style="width: 100px;" />
-                            <ui:Button text="generate level data" name="CreateLevelData" class="text unity-base-field" style="width: 170px;" />
+                            <ui:Button text="generate All Levels" name="GenerateLevels" class="text unity-base-field" style="width: 170px;" />
                         </ui:VisualElement>
-                        <ui:VisualElement name="LevelData" style="height: 30px; flex-direction: row; margin-bottom: 10px; -unity-text-align: upper-center;">
-                            <ui:EnumField value="Sayuri" type="GameBuildingName, Assembly-CSharp" name="Name" enabled="false" class="text disabledOpacity" style="width: 150px; align-items: center; margin-right: 43px;" />
-                            <ui:IntegerField value="1" name="Level" class="text" style="width: 45px;" />
+                        <ui:VisualElement name="LevelData" style="height: 30px; flex-direction: row; -unity-text-align: upper-center; display: none;">
+                            <ui:EnumField value="Sayuri" type="GameBuildingName, Assembly-CSharp" name="Name" enabled="false" class="text disabledOpacity" style="width: 150px; align-items: center; margin-right: 43px; display: flex;" />
+                            <ui:IntegerField value="1" name="Level" class="text" style="width: 45px; visibility: visible;" />
                             <ui:FloatField value="42.2" name="Health" class="text" style="width: 55px;" />
                             <ui:FloatField value="42.2" name="Armor" class="text" style="width: 55px;" />
                             <ui:FloatField value="42.2" name="BuildTime" class="text" style="width: 75px;" />
@@ -193,48 +200,46 @@
                             <ui:FloatField value="42.2" name="AtkRng" class="text" style="width: 75px;" />
                         </ui:VisualElement>
                     </ui:VisualElement>
-                    <ui:VisualElement name="MainLevelPanel" style="margin-bottom: 10px; display: none; height: 80px; min-height: 80px;">
+                    <ui:VisualElement name="MainLevelPanel" style="display: flex; height: auto; min-height: 40px;">
                         <ui:VisualElement name="Header" style="height: 30px; flex-direction: row; margin-bottom: 10px;">
-                            <ui:Label text="Name" name="Name" class="text unity-base-field" style="align-items: center; align-self: center; width: 150px; margin-left: 3px; margin-right: 43px;" />
+                            <ui:Label text="Name" name="Name" class="text unity-base-field" style="align-items: center; align-self: center; width: 200px; display: flex;" />
                             <ui:Label text="Level" name="Level" class="text unity-base-field" style="align-items: center; align-self: center; width: 45px; -unity-text-align: upper-center;" />
                             <ui:Label text="Health" name="Health" class="text unity-base-field" style="align-items: center; align-self: center; width: 55px; -unity-text-align: upper-center;" />
                             <ui:Label text="Armor" name="Armor" class="text unity-base-field" style="align-items: center; align-self: center; width: 55px; -unity-text-align: upper-center;" />
-                            <ui:Label text="build time" name="BuildTime" class="text unity-base-field" style="align-items: center; align-self: center; width: 75px; -unity-text-align: upper-center;" />
+                            <ui:Label text="build time" name="BuildTime" class="text unity-base-field" style="align-items: center; align-self: center; width: 75px; -unity-text-align: upper-center; display: none;" />
                             <ui:Label text="max deck size" name="maxDeckEquipCount" class="text unity-base-field" style="align-items: center; align-self: center; width: 75px; -unity-text-align: upper-center;" />
                             <ui:Label text="max population" name="maxPopulation" class="text unity-base-field" style="align-items: center; align-self: center; width: 100px; -unity-text-align: upper-center;" />
                             <ui:Label text="start Resources" name="starterResources" class="text unity-base-field" style="align-items: center; align-self: center; width: 100px; -unity-text-align: upper-center;" />
-                            <ui:Button text="set Values" name="RegMaxVaues" class="text unity-base-field" style="width: 100px;" />
-                            <ui:Button text="generate level data" name="CreateLevelData" class="text unity-base-field" style="width: 170px;" />
+                            <ui:Button text="generate All Levels" name="GenerateLevels" class="text unity-base-field" style="width: 170px;" />
                         </ui:VisualElement>
-                        <ui:VisualElement name="Main_Level_Data" template="Main_Level_Data">
+                        <ui:VisualElement name="Main_Level_Data" template="Main_Level_Data" style="display: none; height: 30px;">
                             <ui:VisualElement name="LevelData" style="height: 30px; flex-direction: row; margin-bottom: 10px; -unity-text-align: upper-center;">
-                                <ui:EnumField value="Sayuri" type="GameBuildingName, Assembly-CSharp" name="Name" enabled="false" class="text disabledOpacity" style="width: 150px; align-items: center; margin-right: 43px;" />
-                                <ui:IntegerField value="1" name="Level" class="text" style="width: 45px;" />
+                                <ui:EnumField value="Sayuri" type="GameBuildingName, Assembly-CSharp" name="Name" enabled="false" class="text disabledOpacity" style="width: 150px; align-items: center; margin-right: 43px; display: flex;" />
+                                <ui:IntegerField value="1" name="Level" class="text" style="width: 45px; visibility: visible;" />
                                 <ui:FloatField value="42.2" name="Health" class="text" style="width: 55px;" />
                                 <ui:FloatField value="42.2" name="Armor" class="text" style="width: 55px;" />
-                                <ui:FloatField value="42.2" name="BuildTime" class="text" style="width: 75px;" />
+                                <ui:FloatField value="42.2" name="BuildTime" class="text" style="width: 75px; display: none;" />
                                 <ui:IntegerField value="42" name="maxDeckEquipCount" class="text unity-base-field" style="width: 75px;" />
                                 <ui:IntegerField value="42" name="maxPopulation" class="text unity-base-field" style="width: 100px;" />
                                 <ui:IntegerField value="42" name="starterResources" class="text unity-base-field" style="width: 100px;" />
                             </ui:VisualElement>
                         </ui:VisualElement>
                     </ui:VisualElement>
-                    <ui:VisualElement name="ResourceLevelPanel" style="margin-bottom: 10px; display: none; height: 80px; min-height: 80px;">
+                    <ui:VisualElement name="ResourceLevelPanel" style="display: flex; height: auto; min-height: 40px;">
                         <ui:VisualElement name="Header" style="height: 30px; flex-direction: row; margin-bottom: 10px;">
-                            <ui:Label text="Name" name="Name" class="text unity-base-field" style="align-items: center; align-self: center; width: 150px; margin-left: 3px; margin-right: 43px;" />
+                            <ui:Label text="Name" name="Name" class="text unity-base-field" style="align-items: center; align-self: center; width: 200px; display: flex;" />
                             <ui:Label text="Level" name="Level" class="text unity-base-field" style="align-items: center; align-self: center; width: 45px; -unity-text-align: upper-center;" />
                             <ui:Label text="Health" name="Health" class="text unity-base-field" style="align-items: center; align-self: center; width: 55px; -unity-text-align: upper-center;" />
                             <ui:Label text="Armor" name="Armor" class="text unity-base-field" style="align-items: center; align-self: center; width: 55px; -unity-text-align: upper-center;" />
                             <ui:Label text="build time" name="BuildTime" class="text unity-base-field" style="align-items: center; align-self: center; width: 75px; -unity-text-align: upper-center;" />
                             <ui:Label text="Amount" name="resourceAmountPerBatch" class="text unity-base-field" style="align-items: center; align-self: center; width: 75px; -unity-text-align: upper-center;" />
                             <ui:Label text="capacity" name="resourceAmountCapacity" class="text unity-base-field" style="align-items: center; align-self: center; width: 75px; -unity-text-align: upper-center;" />
-                            <ui:Button text="set Values" name="RegMaxVaues" class="text unity-base-field" style="width: 100px;" />
-                            <ui:Button text="generate level data" name="CreateLevelData" class="text unity-base-field" style="width: 170px;" />
+                            <ui:Button text="generate All Levels" name="GenerateLevels" class="text unity-base-field" style="width: 170px;" />
                         </ui:VisualElement>
-                        <ui:VisualElement name="Resource_Level_Data" template="Resource_Level_Data">
+                        <ui:VisualElement name="Resource_Level_Data" template="Resource_Level_Data" style="display: none; height: 30px;">
                             <ui:VisualElement name="LevelData" style="height: 30px; flex-direction: row; margin-bottom: 10px; -unity-text-align: upper-center;">
-                                <ui:EnumField value="Sayuri" type="GameBuildingName, Assembly-CSharp" name="Name" enabled="false" class="text disabledOpacity" style="width: 150px; align-items: center; margin-right: 43px;" />
-                                <ui:IntegerField value="1" name="Level" class="text" style="width: 45px;" />
+                                <ui:EnumField value="Sayuri" type="GameBuildingName, Assembly-CSharp" name="Name" enabled="false" class="text disabledOpacity" style="width: 150px; align-items: center; margin-right: 43px; display: flex;" />
+                                <ui:IntegerField value="1" name="Level" class="text" style="width: 45px; visibility: visible;" />
                                 <ui:FloatField value="42.2" name="Health" class="text" style="width: 55px;" />
                                 <ui:FloatField value="42.2" name="Armor" class="text" style="width: 55px;" />
                                 <ui:FloatField value="42.2" name="BuildTime" class="text" style="width: 75px;" />
@@ -243,21 +248,20 @@
                             </ui:VisualElement>
                         </ui:VisualElement>
                     </ui:VisualElement>
-                    <ui:VisualElement name="OffenseLevelPanel" style="margin-bottom: 10px; display: none; height: 80px; min-height: 80px;">
+                    <ui:VisualElement name="OffenseLevelPanel" style="display: flex; height: auto; min-height: 40px;">
                         <ui:VisualElement name="Header" style="height: 30px; flex-direction: row; margin-bottom: 10px;">
-                            <ui:Label text="Name" name="Name" class="text unity-base-field" style="align-items: center; align-self: center; width: 150px; margin-left: 3px; margin-right: 43px;" />
+                            <ui:Label text="Name" name="Name" class="text unity-base-field" style="align-items: center; align-self: center; width: 200px; display: flex;" />
                             <ui:Label text="Level" name="Level" class="text unity-base-field" style="align-items: center; align-self: center; width: 45px; -unity-text-align: upper-center;" />
                             <ui:Label text="Health" name="Health" class="text unity-base-field" style="align-items: center; align-self: center; width: 55px; -unity-text-align: upper-center;" />
                             <ui:Label text="Armor" name="Armor" class="text unity-base-field" style="align-items: center; align-self: center; width: 55px; -unity-text-align: upper-center;" />
                             <ui:Label text="build time" name="BuildTime" class="text unity-base-field" style="align-items: center; align-self: center; width: 75px; -unity-text-align: upper-center;" />
                             <ui:Label text="max units" name="maxSpawnableUnits" class="text unity-base-field" style="align-items: center; align-self: center; width: 75px; -unity-text-align: upper-center;" />
-                            <ui:Button text="set Values" name="RegMaxVaues" class="text unity-base-field" style="width: 100px;" />
-                            <ui:Button text="generate level data" name="CreateLevelData" class="text unity-base-field" style="width: 170px;" />
+                            <ui:Button text="generate All Levels" name="GenerateLevels" class="text unity-base-field" style="width: 170px;" />
                         </ui:VisualElement>
-                        <ui:VisualElement name="Offense_Level_Data" template="Offense_Level_Data">
+                        <ui:VisualElement name="Offense_Level_Data" template="Offense_Level_Data" style="display: none; height: 30px;">
                             <ui:VisualElement name="LevelData" style="height: 30px; flex-direction: row; margin-bottom: 10px; -unity-text-align: upper-center;">
-                                <ui:EnumField value="Sayuri" type="GameBuildingName, Assembly-CSharp" name="Name" enabled="false" class="text disabledOpacity" style="width: 150px; align-items: center; margin-right: 43px;" />
-                                <ui:IntegerField value="1" name="Level" class="text" style="width: 45px;" />
+                                <ui:EnumField value="Sayuri" type="GameBuildingName, Assembly-CSharp" name="Name" enabled="false" class="text disabledOpacity" style="width: 150px; align-items: center; margin-right: 43px; display: flex;" />
+                                <ui:IntegerField value="1" name="Level" class="text" style="width: 45px; visibility: visible;" />
                                 <ui:FloatField value="42.2" name="Health" class="text" style="width: 55px;" />
                                 <ui:FloatField value="42.2" name="Armor" class="text" style="width: 55px;" />
                                 <ui:FloatField value="42.2" name="BuildTime" class="text" style="width: 75px;" />
@@ -265,8 +269,8 @@
                             </ui:VisualElement>
                         </ui:VisualElement>
                     </ui:VisualElement>
-                    <ui:ScrollView name="LevelScroll" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" style="min-width: 1920px;" />
-                    <ui:ScrollView name="ScrollPanel" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="overFlowVisible" style="min-width: 1920px;" />
+                    <ui:ScrollView name="LevelScroll" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" />
+                    <ui:ScrollView name="ScrollPanel" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="overFlowVisible" />
                 </ui:VisualElement>
             </ui:ScrollView>
         </ui:VisualElement>

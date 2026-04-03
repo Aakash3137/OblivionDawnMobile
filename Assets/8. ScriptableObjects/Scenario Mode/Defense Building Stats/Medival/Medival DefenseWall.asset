@@ -33,10 +33,11 @@ MonoBehaviour:
     resourceAmount: 6
   buildingIcon: {fileID: -1330204234, guid: c57feff7fce94a94c8b1cc7b508083df, type: 3}
   cardDetails:
-    factionUnlocked: 0
-    isUnlocked: 1
-    purchased: 1
+    cardState: 0
     minBuildingLevel: 0
+    purchaseCost: 0
+    upgradeCostMultiplier: 0
+    fragmentCostMultiplier: 0
   hasUpkeep: 0
   upKeepCost:
   - resourceType: 0
@@ -59,7 +60,7 @@ MonoBehaviour:
     canAttackGround: 0
   populationCost: 2
   defenseBuildingUpgradeData:
-  - buildingLevel: 0
+  - buildingLevel: 1
     buildingBasicStats:
       maxHealth: 2000
       armor: 15
@@ -69,6 +70,253 @@ MonoBehaviour:
       buildingDamage: 0
       fireRate: 0
     defenseRangeStats:
-      detectionRange: 12
+      detectionRange: 0
       attackRange: 10
+      minAttackRange: 0
+  - buildingLevel: 2
+    buildingBasicStats:
+      maxHealth: 2240
+      armor: 15.9
+    buildingBuildTime: 6
+    defenseAttackStats:
+      damage: 22.4
+      buildingDamage: 0
+      fireRate: 0
+    defenseRangeStats:
+      detectionRange: 0
+      attackRange: 10
+      minAttackRange: 0
+  - buildingLevel: 3
+    buildingBasicStats:
+      maxHealth: 2480
+      armor: 16.8
+    buildingBuildTime: 6
+    defenseAttackStats:
+      damage: 24.8
+      buildingDamage: 0
+      fireRate: 0
+    defenseRangeStats:
+      detectionRange: 0
+      attackRange: 10
+      minAttackRange: 0
+  - buildingLevel: 4
+    buildingBasicStats:
+      maxHealth: 2720
+      armor: 17.71
+    buildingBuildTime: 6
+    defenseAttackStats:
+      damage: 27.2
+      buildingDamage: 0
+      fireRate: 0
+    defenseRangeStats:
+      detectionRange: 0
+      attackRange: 10
+      minAttackRange: 0
+  - buildingLevel: 5
+    buildingBasicStats:
+      maxHealth: 2960
+      armor: 18.6
+    buildingBuildTime: 6
+    defenseAttackStats:
+      damage: 29.6
+      buildingDamage: 0
+      fireRate: 0
+    defenseRangeStats:
+      detectionRange: 0
+      attackRange: 10.2
+      minAttackRange: 0
+  - buildingLevel: 6
+    buildingBasicStats:
+      maxHealth: 3200
+      armor: 19.5
+    buildingBuildTime: 6
+    defenseAttackStats:
+      damage: 32
+      buildingDamage: 0
+      fireRate: 0
+    defenseRangeStats:
+      detectionRange: 0
+      attackRange: 10.2
+      minAttackRange: 0
+  - buildingLevel: 7
+    buildingBasicStats:
+      maxHealth: 3440
+      armor: 20.4
+    buildingBuildTime: 6
+    defenseAttackStats:
+      damage: 34.41
+      buildingDamage: 0
+      fireRate: 0
+    defenseRangeStats:
+      detectionRange: 0
+      attackRange: 10.2
+      minAttackRange: 0
+  - buildingLevel: 8
+    buildingBasicStats:
+      maxHealth: 3680
+      armor: 21.3
+    buildingBuildTime: 6
+    defenseAttackStats:
+      damage: 36.8
+      buildingDamage: 0
+      fireRate: 0
+    defenseRangeStats:
+      detectionRange: 0
+      attackRange: 10.2
+      minAttackRange: 0
+  - buildingLevel: 9
+    buildingBasicStats:
+      maxHealth: 3920
+      armor: 22.2
+    buildingBuildTime: 6
+    defenseAttackStats:
+      damage: 39.2
+      buildingDamage: 0
+      fireRate: 0
+    defenseRangeStats:
+      detectionRange: 0
+      attackRange: 10.2
+      minAttackRange: 0
+  - buildingLevel: 10
+    buildingBasicStats:
+      maxHealth: 4160
+      armor: 23.1
+    buildingBuildTime: 5.82
+    defenseAttackStats:
+      damage: 41.6
+      buildingDamage: 0
+      fireRate: 0
+    defenseRangeStats:
+      detectionRange: 0
+      attackRange: 10.4
+      minAttackRange: 0
+  - buildingLevel: 11
+    buildingBasicStats:
+      maxHealth: 4400
+      armor: 24
+    buildingBuildTime: 5.82
+    defenseAttackStats:
+      damage: 44
+      buildingDamage: 0
+      fireRate: 0
+    defenseRangeStats:
+      detectionRange: 0
+      attackRange: 10.4
+      minAttackRange: 0
+  - buildingLevel: 12
+    buildingBasicStats:
+      maxHealth: 4640
+      armor: 24.9
+    buildingBuildTime: 5.82
+    defenseAttackStats:
+      damage: 46.4
+      buildingDamage: 0
+      fireRate: 0
+    defenseRangeStats:
+      detectionRange: 0
+      attackRange: 10.4
+      minAttackRange: 0
+  - buildingLevel: 13
+    buildingBasicStats:
+      maxHealth: 4880
+      armor: 25.8
+    buildingBuildTime: 5.82
+    defenseAttackStats:
+      damage: 48.8
+      buildingDamage: 0
+      fireRate: 0
+    defenseRangeStats:
+      detectionRange: 0
+      attackRange: 10.4
+      minAttackRange: 0
+  - buildingLevel: 14
+    buildingBasicStats:
+      maxHealth: 5120
+      armor: 26.7
+    buildingBuildTime: 5.82
+    defenseAttackStats:
+      damage: 51.2
+      buildingDamage: 0
+      fireRate: 0
+    defenseRangeStats:
+      detectionRange: 0
+      attackRange: 10.4
+      minAttackRange: 0
+  - buildingLevel: 15
+    buildingBasicStats:
+      maxHealth: 5360
+      armor: 27.6
+    buildingBuildTime: 5.82
+    defenseAttackStats:
+      damage: 53.6
+      buildingDamage: 0
+      fireRate: 0
+    defenseRangeStats:
+      detectionRange: 0
+      attackRange: 10.6
+      minAttackRange: 0
+  - buildingLevel: 16
+    buildingBasicStats:
+      maxHealth: 5600
+      armor: 28.5
+    buildingBuildTime: 5.82
+    defenseAttackStats:
+      damage: 56
+      buildingDamage: 0
+      fireRate: 0
+    defenseRangeStats:
+      detectionRange: 0
+      attackRange: 10.6
+      minAttackRange: 0
+  - buildingLevel: 17
+    buildingBasicStats:
+      maxHealth: 5840
+      armor: 29.4
+    buildingBuildTime: 5.82
+    defenseAttackStats:
+      damage: 58.4
+      buildingDamage: 0
+      fireRate: 0
+    defenseRangeStats:
+      detectionRange: 0
+      attackRange: 10.6
+      minAttackRange: 0
+  - buildingLevel: 18
+    buildingBasicStats:
+      maxHealth: 6080
+      armor: 30.3
+    buildingBuildTime: 5.82
+    defenseAttackStats:
+      damage: 60.8
+      buildingDamage: 0
+      fireRate: 0
+    defenseRangeStats:
+      detectionRange: 0
+      attackRange: 10.6
+      minAttackRange: 0
+  - buildingLevel: 19
+    buildingBasicStats:
+      maxHealth: 6320
+      armor: 31.2
+    buildingBuildTime: 5.82
+    defenseAttackStats:
+      damage: 63.2
+      buildingDamage: 0
+      fireRate: 0
+    defenseRangeStats:
+      detectionRange: 0
+      attackRange: 10.6
+      minAttackRange: 0
+  - buildingLevel: 20
+    buildingBasicStats:
+      maxHealth: 6560
+      armor: 32.1
+    buildingBuildTime: 5.64
+    defenseAttackStats:
+      damage: 65.6
+      buildingDamage: 0
+      fireRate: 0
+    defenseRangeStats:
+      detectionRange: 0
+      attackRange: 10.8
       minAttackRange: 0

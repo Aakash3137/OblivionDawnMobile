@@ -39,6 +39,16 @@ public class UnitProduceStatsSO : ScriptableObject
     [Space(20), Header("Abilities")]
     public List<AbilitySO> abilities;
 
+    public float GetUnitSpawnTime()
+    {
+        return unitUpgradeData[unitIdentity.spawnLevel].unitSpawnTime;
+    }
+
+    [Button]
+    public void GenerateLevels()
+    {
+        StatUpgrade.GenerateUpgradeData(this);
+    }
     private void ValidateBase()
     {
         if (unitUpgradeData == null || unitUpgradeData.Length == 0)
@@ -49,7 +59,7 @@ public class UnitProduceStatsSO : ScriptableObject
 
         for (int i = 0; i < unitUpgradeData.Length; i++)
         {
-            unitUpgradeData[i].unitLevel = i;
+            unitUpgradeData[i].unitLevel = i + 1;
         }
 
         canFly = unitType == ScenarioUnitType.Air;
@@ -67,6 +77,11 @@ public class UnitProduceStatsSO : ScriptableObject
         for (int j = 0; j < upKeepCost.Length; j++)
             upKeepCost[j].resourceType = enumValues[j];
 
+        if (cardDetails.upgradeCostMultiplier < 0)
+            cardDetails.upgradeCostMultiplier = 1f;
+
+        if (cardDetails.fragmentCostMultiplier < 0)
+            cardDetails.fragmentCostMultiplier = 1f;
     }
 
     private void OnValidate()
@@ -89,11 +104,13 @@ public class UnitProduceStatsSO : ScriptableObject
         }
     }
 }
+
 [Serializable]
 public class UnitUpgradeData
 {
+    // show actual level
     public int unitLevel;
-    public float unitBuildTime;
+    public float unitSpawnTime;
     public BasicStats unitBasicStats;
     public AttackStats unitAttackStats;
     public MobilityStats unitMobilityStats;

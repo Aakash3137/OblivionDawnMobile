@@ -18,7 +18,7 @@ public class ResourceBuildingDataSO : BuildingDataSO
 
         for (int i = 0; i < resourceBuildingUpgradeData.Count; i++)
         {
-            resourceBuildingUpgradeData[i].buildingLevel = i;
+            resourceBuildingUpgradeData[i].buildingLevel = i + 1;
 
             //resourceBuildingUpgradeData[i].resourceGenerationRate = resourceBuildingUpgradeData[i].resourceAmountPerBatch / resourceBuildingUpgradeData[i].resourceTimeToProduce;
             resourceBuildingUpgradeData[i].resourceGenerationRate = resourceBuildingUpgradeData[i].resourceAmountPerBatch;

@@ -38,23 +38,23 @@ public class DeckPanelManager : MonoBehaviour
 
     public void CreateUnitCards()
     {
-        foreach (var scriptable in unitScriptables)
+        foreach (var unitSO in unitScriptables)
         {
-            if (scriptable == null) { LogNullScriptable("Unit"); continue; }
+            if (unitSO == null) { LogNullScriptable("Unit"); continue; }
 
-            if (scriptable.cardDetails.isUnlocked)
-                factionCardPanels[(int)scriptable.unitIdentity.faction].cardPanels[0].AddCard(deckCardPrefab, scriptable);
+            if (unitSO.cardDetails.cardState == CardState.Purchased)
+                factionCardPanels[(int)unitSO.unitIdentity.faction].cardPanels[0].AddCard(deckCardPrefab, unitSO);
 
         }
     }
     public void CreateDefenseCards()
     {
-        foreach (var scriptable in buildingScriptables)
+        foreach (var defenseSO in buildingScriptables)
         {
-            if (scriptable == null) { LogNullScriptable("Defense Building"); continue; }
+            if (defenseSO == null) { LogNullScriptable("Defense Building"); continue; }
 
-            if (scriptable.cardDetails.isUnlocked)
-                factionCardPanels[(int)scriptable.buildingIdentity.faction].cardPanels[0].AddCard(deckCardPrefab, scriptable);
+            if (defenseSO.cardDetails.cardState == CardState.Purchased)
+                factionCardPanels[(int)defenseSO.buildingIdentity.faction].cardPanels[0].AddCard(deckCardPrefab, defenseSO);
         }
     }
 

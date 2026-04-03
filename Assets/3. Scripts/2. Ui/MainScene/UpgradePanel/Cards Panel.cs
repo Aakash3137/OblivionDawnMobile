@@ -17,36 +17,35 @@ public class CardsPanel : MonoBehaviour
         var card = Instantiate(cardPrefab, cardsContainer);
         card.upgradeDataSO = dataSO;
         card.myPanel = this;
-        card.RefreshCard();
+        card.InitializeCard();
         ManageCardList(card, dataSO);
     }
 
     public void ManageCardList(UpgradeCard card, ScriptableObject dataSO)
     {
-        CardDetails cardDetails = null;
+        CardState cardState;
 
         if (dataSO is UnitProduceStatsSO unitProduceStatsSO)
-            cardDetails = unitProduceStatsSO.cardDetails;
+            cardState = unitProduceStatsSO.cardDetails.cardState;
         else if (dataSO is BuildingDataSO buildingDataSO)
-            cardDetails = buildingDataSO.cardDetails;
-
-        if (cardDetails == null)
+            cardState = buildingDataSO.cardDetails.cardState;
+        else
         {
-            Debug.LogError("[CardsPanel] CardDetails is null");
+            Debug.LogError("[CardsPanel] Imposter Scriptable Object not Unit SO or Building SO");
             return;
         }
 
-        if (cardDetails.isUnlocked)
+        switch (cardState)
         {
-            unlockedCards.Add(card);
-
-            if (cardDetails.purchased)
+            case CardState.Unlocked:
+                unlockedCards.Add(card);
+                break;
+            case CardState.Locked:
+                lockedCards.Add(card);
+                break;
+            case CardState.Purchased:
                 purchasedCards.Add(card);
-        }
-        else
-        {
-            lockedCards.Add(card);
-            cardDetails.purchased = false;
+                break;
         }
 
         allCards.Add(card);
