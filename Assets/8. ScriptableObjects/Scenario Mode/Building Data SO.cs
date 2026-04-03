@@ -79,9 +79,11 @@ public class BuildingDataSO : ScriptableObject
             }
         }
     }
+#if UNITY_EDITOR
     [Button]
     public void GenerateLevels()
     {
         StatUpgrade.GenerateUpgradeData(this);
     }
+#endif
 }

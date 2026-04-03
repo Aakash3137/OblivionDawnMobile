@@ -43,12 +43,13 @@ public class UnitProduceStatsSO : ScriptableObject
     {
         return unitUpgradeData[unitIdentity.spawnLevel].unitSpawnTime;
     }
-
+#if UNITY_EDITOR
     [Button]
     public void GenerateLevels()
     {
         StatUpgrade.GenerateUpgradeData(this);
     }
+#endif
     private void ValidateBase()
     {
         if (unitUpgradeData == null || unitUpgradeData.Length == 0)
