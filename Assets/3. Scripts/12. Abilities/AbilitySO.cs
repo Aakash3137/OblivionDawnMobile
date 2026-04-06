@@ -8,6 +8,10 @@ public class AbilitySO : ScriptableObject
     public string abilityName;
     public AbilityType abilityType;
     public Sprite abilityIcon;
+    
+    [Header("Scope")]
+    public AbilityScope abilityScope = AbilityScope.Personal;  // Personal by default
+    public Side casterSide = Side.Player;  // Which side is using this ability
 
     [Header("Targeting")]
     public AbilityTargetType targetType;

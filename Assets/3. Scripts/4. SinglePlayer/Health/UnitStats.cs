@@ -58,7 +58,12 @@ public class UnitStats : Stats
 
         if (abilityController != null)
         {
+            Debug.Log($"[UnitStats] {gameObject.name} - Found AbilityController, initializing with {(unitProduceSO.abilities != null ? unitProduceSO.abilities.Count : 0)} abilities");
             abilityController.Initialize(unitProduceSO.abilities);
+        }
+        else
+        {
+            Debug.LogWarning($"[UnitStats] {gameObject.name} - No AbilityController component found!");
         }
 
 // assign name

@@ -107,13 +107,18 @@ public class EnemyAIHandler : MonoBehaviour
 
     void InitializeSpawnableTiles()
     {
+        if (GameManager.Instance.enemySpawnPoint != null)
+            enemyMainBuildingTransform = GameManager.Instance.enemySpawnPoint;
+        if (GameManager.Instance.playerSpawnPoint != null)
+            playerMainBuildingTransform = GameManager.Instance.playerSpawnPoint;
+        
         if (enemyMainBuildingTransform == null || CubeGridManager.Instance == null)
             return;
 
         Vector2Int mainGrid = CubeGridManager.Instance.WorldToGrid(enemyMainBuildingTransform.position);
         UpdateSpawnableTiles(mainGrid);
     }
-
+ 
     void UpdateSpawnableTiles(Vector2Int buildingGrid)
     {
         foreach (var neighborGrid in CubeGridManager.Instance.GetAllNeighbors(buildingGrid))
