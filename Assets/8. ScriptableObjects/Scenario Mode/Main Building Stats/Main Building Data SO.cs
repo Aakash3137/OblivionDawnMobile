@@ -32,4 +32,6 @@ public class MainBuildingUpgradeData : BuildingUpgradeData
     [Range(4, 8)] public int maxDeckEquipCount;
     [Range(10, 50)] public int maxPopulation;
     [Range(500, 1000)] public int starterResources;
+    public AttackStats mainAttackStats;
+    public RangeStats mainRangeStats;
 }

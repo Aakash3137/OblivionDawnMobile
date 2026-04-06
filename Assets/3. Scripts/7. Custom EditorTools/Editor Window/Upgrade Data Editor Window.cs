@@ -471,6 +471,9 @@ public class UpgradeDataEditorWindow : EditorWindow
             instance.Q<IntegerField>("maxDeckEquipCount").BindProperty(serializedProperty.FindPropertyRelative("maxDeckEquipCount"));
             instance.Q<IntegerField>("maxPopulation").BindProperty(serializedProperty.FindPropertyRelative("maxPopulation"));
             instance.Q<IntegerField>("starterResources").BindProperty(serializedProperty.FindPropertyRelative("starterResources"));
+            instance.Q<FloatField>("UnitDMG").BindProperty(serializedProperty.FindPropertyRelative("mainAttackStats.damage"));
+            instance.Q<FloatField>("BuildingDMG").BindProperty(serializedProperty.FindPropertyRelative("mainAttackStats.buildingDamage"));
+            instance.Q<FloatField>("AtkRng").BindProperty(serializedProperty.FindPropertyRelative("mainRangeStats.attackRange"));
 
             levelDataScroll.Add(instance);
         }
