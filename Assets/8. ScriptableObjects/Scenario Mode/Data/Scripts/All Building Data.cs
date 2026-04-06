@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using Sirenix.OdinInspector;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "All Building Data", menuName = "Data/All Building Data")]
 public class AllBuildingData : ScriptableObject
 {
-    public List<MainBuildingDataSO> cityCenterBuildingsSO;
+    public List<MainBuildingDataSO> mainBuildingSO;
     [Space(10)]
     public List<BuildingDataSO> allBuildingsSO;
     [Space(10)]
@@ -16,11 +15,26 @@ public class AllBuildingData : ScriptableObject
     public List<ResourceBuilding> resourceBuildings { get; internal set; }
     public List<DefenseBuilding> defenseBuildings { get; internal set; }
 
-    private void OnValidate()
+    public List<OffenseBuildingDataSO> offenseBuildingsSO { get; internal set; }
+    public List<ResourceBuildingDataSO> resourceBuildingsSO { get; internal set; }
+    public List<DefenseBuildingDataSO> defenseBuildingsSO { get; internal set; }
+
+    private void Awake()
     {
         Populate();
         ValidateBase();
+
+        allBuildingsSO.Sort(CompareBuildingSO);
     }
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (Application.isPlaying) return;
+        Populate();
+        ValidateBase();
+        allBuildingsSO.Sort(CompareBuildingSO);
+    }
+#endif
 
     public void Populate()
     {
@@ -31,6 +45,10 @@ public class AllBuildingData : ScriptableObject
         resourceBuildings = new List<ResourceBuilding>();
         defenseBuildings = new List<DefenseBuilding>();
 
+        offenseBuildingsSO = new List<OffenseBuildingDataSO>();
+        resourceBuildingsSO = new List<ResourceBuildingDataSO>();
+        defenseBuildingsSO = new List<DefenseBuildingDataSO>();
+
         foreach (FactionName factionName in enumValues)
         {
             offenseBuildings.Add(new OffenseBuilding { faction = factionName });
@@ -39,8 +57,11 @@ public class AllBuildingData : ScriptableObject
         }
 
         AddBuildingsDataSO();
+
+        SortBuildingData();
     }
 
+    #region  Data Management to custom Class
     private void AddBuildingsDataSO()
     {
         foreach (var buildingSO in allBuildingsSO)
@@ -48,12 +69,15 @@ public class AllBuildingData : ScriptableObject
             switch (buildingSO.buildingType)
             {
                 case ScenarioBuildingType.ResourceBuilding:
+                    resourceBuildingsSO.Add((ResourceBuildingDataSO)buildingSO);
                     AddResourceBuildings((ResourceBuildingDataSO)buildingSO);
                     break;
                 case ScenarioBuildingType.OffenseBuilding:
+                    offenseBuildingsSO.Add((OffenseBuildingDataSO)buildingSO);
                     AddOffenseBuildings((OffenseBuildingDataSO)buildingSO);
                     break;
                 case ScenarioBuildingType.DefenseBuilding:
+                    defenseBuildingsSO.Add((DefenseBuildingDataSO)buildingSO);
                     AddDefenseBuildings((DefenseBuildingDataSO)buildingSO);
                     break;
             }
@@ -126,30 +150,29 @@ public class AllBuildingData : ScriptableObject
                 break;
         }
     }
+    #endregion
 
-    public List<BuildingDataSO> GetFactionDefenseBuildingsSO(FactionName faction)
+    public List<DefenseBuildingDataSO> GetFactionDefenseBuildingsSO(FactionName faction)
     {
-        var defenseSO = new List<BuildingDataSO>();
+        var defenseSO = new List<DefenseBuildingDataSO>();
 
-        foreach (var buildingSO in allBuildingsSO)
+        foreach (var buildingSO in defenseBuildingsSO)
         {
-            if (buildingSO.buildingIdentity.faction == faction && buildingSO.buildingType == ScenarioBuildingType.DefenseBuilding)
+            if (buildingSO.buildingIdentity.faction == faction)
                 defenseSO.Add(buildingSO);
         }
-
         return defenseSO;
     }
 
-    public List<BuildingDataSO> GetFactionOffenseBuildingsSO(FactionName faction)
+    public List<OffenseBuildingDataSO> GetFactionOffenseBuildingsSO(FactionName faction)
     {
-        var offenseSO = new List<BuildingDataSO>();
+        var offenseSO = new List<OffenseBuildingDataSO>();
 
-        foreach (var buildingSO in allBuildingsSO)
+        foreach (var buildingSO in offenseBuildingsSO)
         {
-            if (buildingSO.buildingIdentity.faction == faction && buildingSO.buildingType == ScenarioBuildingType.OffenseBuilding)
+            if (buildingSO.buildingIdentity.faction == faction)
                 offenseSO.Add(buildingSO);
         }
-
         return offenseSO;
     }
 
@@ -157,49 +180,102 @@ public class AllBuildingData : ScriptableObject
     {
         var resourceSO = new List<ResourceBuildingDataSO>();
 
-        foreach (var buildingSO in allBuildingsSO)
+        foreach (var buildingSO in resourceBuildingsSO)
         {
-            if (buildingSO.buildingIdentity.faction == faction && buildingSO.buildingType == ScenarioBuildingType.ResourceBuilding)
+            if (buildingSO.buildingIdentity.faction == faction)
             {
-                if (buildingSO is ResourceBuildingDataSO resourceBuildingDataSO)
-                    resourceSO.Add(resourceBuildingDataSO);
+                resourceSO.Add(buildingSO);
             }
         }
 
         resourceSO.Sort(CompareResourceSO);
-
         return resourceSO;
     }
 
     public ResourceBuildingDataSO GetResourceBuildingSO(FactionName faction, ScenarioResourceType resourceType)
     {
-        foreach (var buildingSO in allBuildingsSO)
+        foreach (var buildingSO in resourceBuildingsSO)
         {
-            if (buildingSO.buildingIdentity.faction == faction && buildingSO.buildingType == ScenarioBuildingType.ResourceBuilding && ((ResourceBuildingDataSO)buildingSO).resourceType == resourceType)
-                return (ResourceBuildingDataSO)buildingSO;
+            if (buildingSO.buildingIdentity.faction == faction && buildingSO.resourceType == resourceType)
+                return buildingSO;
         }
 
         return null;
     }
 
-    public List<BuildingDataSO> GetDefenseBuildingsSO()
+    #region Sorting internal 
+    private void SortBuildingData()
     {
-        var defenseBuildingSO = new List<BuildingDataSO>();
+        offenseBuildingsSO.Sort(CompareOffenseSO);
+        defenseBuildingsSO.Sort(CompareDefenseSO);
+        resourceBuildingsSO.Sort(CompareResourceSO);
+        mainBuildingSO.Sort(CompareMainSO);
+    }
+    private static int CompareBuildingSO(BuildingDataSO a, BuildingDataSO b)
+    {
+        int order = a.buildingIdentity.faction.CompareTo(b.buildingIdentity.faction);
 
-        foreach (var buildingSO in allBuildingsSO)
+        // if(both are same then compare by buildingType)
+        if (order == 0)
+            order = a.buildingType.CompareTo(b.buildingType);
+
+        // if building type is same compare with it own types
+        if (order == 0)
         {
-            if (buildingSO.buildingType == ScenarioBuildingType.DefenseBuilding)
-                defenseBuildingSO.Add(buildingSO);
+            if (a is MainBuildingDataSO)
+                order = CompareMainSO((MainBuildingDataSO)a, (MainBuildingDataSO)b);
+            else if (a is OffenseBuildingDataSO)
+                order = CompareOffenseSO(a as OffenseBuildingDataSO, b as OffenseBuildingDataSO);
+            else if (a is DefenseBuildingDataSO)
+                order = CompareDefenseSO(a as DefenseBuildingDataSO, b as DefenseBuildingDataSO);
+            else if (a is ResourceBuildingDataSO)
+                order = CompareResourceSO(a as ResourceBuildingDataSO, b as ResourceBuildingDataSO);
         }
 
-        return defenseBuildingSO;
+        return order;
     }
-    private static int CompareResourceSO(ScriptableObject x, ScriptableObject y)
+    private static int CompareMainSO(MainBuildingDataSO a, MainBuildingDataSO b)
     {
-        var rx = (ResourceBuildingDataSO)x;
-        var ry = (ResourceBuildingDataSO)y;
-        return rx.resourceType.CompareTo(ry.resourceType);
+        int order = a.buildingIdentity.faction.CompareTo(b.buildingIdentity.faction);
+
+        // if(both are same then compare by defenseType)
+        // if (order == 0)
+        // order = a.defenseType.CompareTo(b.defenseType);
+
+        return order;
     }
+    private static int CompareOffenseSO(OffenseBuildingDataSO a, OffenseBuildingDataSO b)
+    {
+        int order = a.buildingIdentity.faction.CompareTo(b.buildingIdentity.faction);
+
+        // if(both are same then compare by offenseType)
+        if (order == 0)
+            order = a.offenseType.CompareTo(b.offenseType);
+
+        return order;
+    }
+    private static int CompareDefenseSO(DefenseBuildingDataSO a, DefenseBuildingDataSO b)
+    {
+        int order = a.buildingIdentity.faction.CompareTo(b.buildingIdentity.faction);
+
+        // if(both are same then compare by defenseType)
+        if (order == 0)
+            order = a.defenseType.CompareTo(b.defenseType);
+
+        return order;
+    }
+    private static int CompareResourceSO(ResourceBuildingDataSO a, ResourceBuildingDataSO b)
+    {
+        int order = a.buildingIdentity.faction.CompareTo(b.buildingIdentity.faction);
+
+        // if(both are same then compare by resourceType)
+        if (order == 0)
+            order = a.resourceType.CompareTo(b.resourceType);
+
+        return order;
+    }
+    #endregion
+
     private void ValidateBase()
     {
         var enumValues = Enum.GetValues(typeof(FactionName));

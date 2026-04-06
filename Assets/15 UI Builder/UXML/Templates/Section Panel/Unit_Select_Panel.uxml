@@ -1,0 +1,18 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/15%20UI%20Builder/USS/upgradeEditorTopBar.uss?fileID=7433441132597879392&amp;guid=db20df8c372b3e546a44ceb2eb58db57&amp;type=3#upgradeEditorTopBar" />
+    <ui:VisualElement name="Unit_Select_Panel" style="height: 30px; flex-direction: row; margin-top: 5px; margin-bottom: 5px;">
+        <ui:Button text="Select" name="select" class="text" style="align-items: center; align-self: center; width: 75px;" />
+        <uie:ObjectField name="Scriptable" type="UnitProduceStatsSO, Assembly-CSharp" allow-scene-objects="false" enabled="false" class="text disabledOpacity" style="width: 250px; -unity-text-align: middle-left;" />
+        <ui:EnumField value="Galvadore" type="FactionName, Assembly-CSharp" name="Faction" class="text" style="align-items: center; width: 100px;" />
+        <ui:EnumField value="Sayuri" type="GameUnitName, Assembly-CSharp" name="Name" class="text" style="width: 150px; align-items: center;" />
+        <ui:EnumField value="AOERanged" type="ScenarioUnitType, Assembly-CSharp" name="Type" class="text" style="width: 100px; align-items: center;" />
+        <uie:ObjectField name="Icon" type="UnityEngine.Sprite, UnityEngine.CoreModule" allow-scene-objects="false" style="width: 100px; align-items: center;" />
+        <uie:ObjectField name="Spawner" type="OffenseBuildingStats, Assembly-CSharp" allow-scene-objects="false" style="width: 150px; align-items: center;" />
+        <ui:IntegerField name="Population" class="text unity-base-field" style="width: 90px;" />
+        <ui:EnumField value="Unlocked" type="CardState, Assembly-CSharp" name="CardState" class="text unity-base-field" style="width: 100px;" />
+        <ui:IntegerField name="minBuildingLevel" class="text unity-base-field" style="width: 100px;" />
+        <ui:IntegerField name="purchaseCost" class="text unity-base-field" style="width: 100px;" />
+        <ui:FloatField value="42.2" name="upgradeCostMultiplier" class="text unity-base-field" style="width: 100px;" />
+        <ui:FloatField value="42.2" name="fragmentCostMultiplier" class="unity-base-field text" style="width: 100px;" />
+    </ui:VisualElement>
+</ui:UXML>

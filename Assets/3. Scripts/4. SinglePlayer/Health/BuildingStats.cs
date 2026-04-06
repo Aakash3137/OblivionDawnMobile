@@ -63,8 +63,6 @@ public class BuildingStats : Stats
         _ = InitializeOnBuilt();
     }
 
-
-
     internal virtual async Awaitable InitializeOnBuilt()
     {
         hasBuilt = false;

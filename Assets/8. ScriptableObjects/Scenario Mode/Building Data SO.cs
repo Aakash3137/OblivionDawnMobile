@@ -5,6 +5,7 @@ using Sirenix.OdinInspector;
 [CreateAssetMenu(fileName = "Building Data SO", menuName = "Scenario Stats/Building Data")]
 public class BuildingDataSO : ScriptableObject
 {
+    public GameBuildingName gameBuildingName;
     public Identity buildingIdentity;
     public ScenarioBuildingType buildingType;
     public Visuals buildingVisuals;
@@ -36,6 +37,12 @@ public class BuildingDataSO : ScriptableObject
 
         for (int j = 0; j < upKeepCost.Length; j++)
             upKeepCost[j].resourceType = enumValues[j];
+
+        if (cardDetails.upgradeCostMultiplier < 0)
+            cardDetails.upgradeCostMultiplier = 1f;
+
+        if (cardDetails.fragmentCostMultiplier < 0)
+            cardDetails.fragmentCostMultiplier = 1f;
     }
 
     internal virtual void OnValidate()
@@ -72,4 +79,11 @@ public class BuildingDataSO : ScriptableObject
             }
         }
     }
+#if UNITY_EDITOR
+    [Button]
+    public void GenerateLevels()
+    {
+        StatUpgrade.GenerateUpgradeData(this);
+    }
+#endif
 }

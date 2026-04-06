@@ -2,10 +2,18 @@ using System;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
+public enum CardState
+{
+    Locked,
+    Unlocked,
+    Purchased
+}
+
 [Serializable]
 public struct Identity
 {
     public string name;
+    // acts as array index
     public int spawnLevel;
     public FactionName faction;
     public int priority;
@@ -13,12 +21,11 @@ public struct Identity
 [Serializable]
 public class CardDetails
 {
-    public bool factionUnlocked;
-    public bool isUnlocked;
-
-    [ShowIf(nameof(isUnlocked))]
-    public bool purchased;
+    public CardState cardState;
     public int minBuildingLevel;
+    public int purchaseCost;
+    public float upgradeCostMultiplier;
+    public float fragmentCostMultiplier;
 }
 [Serializable]
 public class BuildingUpgradeData

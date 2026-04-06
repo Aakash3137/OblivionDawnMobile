@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 
 [CreateAssetMenu(fileName = "Building Data SO", menuName = "Scenario Stats/Defense Building Data")]
 public class DefenseBuildingDataSO : BuildingDataSO
@@ -22,7 +23,7 @@ public class DefenseBuildingDataSO : BuildingDataSO
 
         for (int i = 0; i < defenseBuildingUpgradeData.Count; i++)
         {
-            defenseBuildingUpgradeData[i].buildingLevel = i;
+            defenseBuildingUpgradeData[i].buildingLevel = i + 1;
         }
 
         buildingIdentity.spawnLevel = Mathf.Clamp(buildingIdentity.spawnLevel, 0, defenseBuildingUpgradeData.Count - 1);

@@ -11,6 +11,7 @@ public class TileCounterUI : MonoBehaviour
 
     private async Awaitable OnEnable()
     {
+        await Awaitable.NextFrameAsync();
         CubeGridManager.Instance.onTileOccupied += UpdateUI;
     }
 
