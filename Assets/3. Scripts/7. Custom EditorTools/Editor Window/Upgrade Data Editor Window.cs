@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -499,6 +500,7 @@ public class UpgradeDataEditorWindow : EditorWindow
         var offenseButton = root.Q<Button>("Offense");
         var cityCenterButton = root.Q<Button>("CityCenter");
         var setMaxLevelButton = root.Q<Button>("SetMaxLevel");
+        var resetButton = root.Q<Button>("Reset");
 
         unitButton.clicked += CreateUnitFields;
         defenseButton.clicked += CreateDefenseFields;
@@ -506,7 +508,23 @@ public class UpgradeDataEditorWindow : EditorWindow
         offenseButton.clicked += CreateOffenseFields;
         cityCenterButton.clicked += CreateCityCenterFields;
         setMaxLevelButton.clicked += SetMaxLevel;
+        resetButton.clicked += RestoreDefaultValues;
     }
+
+    private void RestoreDefaultValues()
+    {
+        foreach (var building in allBuildingData.allBuildingsSO)
+            building.buildingIdentity.spawnLevel = 0;
+
+        foreach (var main in allBuildingData.mainBuildingSO)
+            main.buildingIdentity.spawnLevel = 0;
+
+        foreach (var unit in allUnitData.allUnitsSO)
+            unit.unitIdentity.spawnLevel = 0;
+
+        RefreshUI();
+    }
+
     private void SetMaxLevel()
     {
         GameData.GameMaxObjectLevel = maxLevelField.value;
