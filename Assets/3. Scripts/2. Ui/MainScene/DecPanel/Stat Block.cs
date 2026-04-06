@@ -4,22 +4,28 @@ using UnityEngine.UI;
 
 public class StatBlock : MonoBehaviour
 {
-    [SerializeField] internal Image IconImage;
-    [SerializeField] internal TMP_Text TitleText;
-    [SerializeField] internal TMP_Text CurrentValueText;
-    [SerializeField] internal TMP_Text IncreaseByText;
-    [SerializeField] internal bool Increasable;
+    [SerializeField] internal Image icon;
+    [SerializeField] internal TMP_Text title;
+    [SerializeField] internal TMP_Text currentValueText;
+    [SerializeField] internal TMP_Text nextValueText;
     [SerializeField] private CanvasGroup canvasGroup;
 
 
-    public void SetValues(string title, string currentValue, string increaseBy)
+    public void SetValues(string title, float currentValue, float nextValue)
     {
-        TitleText.text = title;
-        CurrentValueText.text = currentValue;
-        IncreaseByText.text = increaseBy;
+        this.title.SetText(title);
+
+        currentValueText.SetText(currentValue % 1f == 0f ? "{0:0}" : "{0:0.00}", currentValue);
+
+        if (nextValue == 0f || nextValue == currentValue)
+            nextValueText.SetText("");
+        else if (nextValue < 0f)
+            nextValueText.SetText(nextValue % 1f == 0f ? "-{0:0}" : "-{0:0.00}", nextValue);
+        else if (nextValue > 0f)
+            nextValueText.SetText(nextValue % 1f == 0f ? "+{0:0}" : "+{0:0.00}", nextValue);
     }
 
-    public void EnableBlock(bool showIncreaseBy)
+    public void EnableBlock(bool showNextValue)
     {
         if (canvasGroup != null)
         {
@@ -27,9 +33,8 @@ public class StatBlock : MonoBehaviour
             canvasGroup.interactable = true;
             canvasGroup.blocksRaycasts = true;
         }
-        IncreaseByText.gameObject.SetActive(showIncreaseBy);
+        nextValueText.gameObject.SetActive(showNextValue);
     }
-
     public void DisableBlock()
     {
         if (canvasGroup != null)
@@ -38,14 +43,14 @@ public class StatBlock : MonoBehaviour
             canvasGroup.interactable = false;
             canvasGroup.blocksRaycasts = false;
         }
-        IncreaseByText.gameObject.SetActive(false);
+        nextValueText.gameObject.SetActive(false);
     }
     public void SetIcon(Sprite icon)
     {
-        if (IconImage == null || IconImage.sprite == icon)
+        if (this.icon == null || this.icon.sprite == icon)
             return;
 
-        IconImage.sprite = icon;
+        this.icon.sprite = icon;
     }
 }
 

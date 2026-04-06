@@ -8,6 +8,8 @@ public class UpgradeCard : MonoBehaviour
     [Space(10)]
     [ReadOnly] public ScriptableObject upgradeDataSO;
     [Space(10)]
+
+    #region References to UI elements
     [SerializeField] private Userdata userData;
     [SerializeField] private Image cardImage;
     [SerializeField] private Image levelProgressBar;
@@ -18,8 +20,15 @@ public class UpgradeCard : MonoBehaviour
     [SerializeField] private TMP_Text populationCostText;
     [SerializeField] private TMP_Text levelText;
     [SerializeField] private GameObject populationCostRoot;
+    #endregion
 
     [HideInInspector] public CardsPanel myPanel;
+
+    public int cardUpgradeCost { get; private set; }
+    public int cardFragmentCost { get; private set; }
+
+    private FactionName cardFaction;
+    private int currentFragments => userData.GetFragment(cardFaction);
 
     private void Awake()
     {
@@ -33,26 +42,44 @@ public class UpgradeCard : MonoBehaviour
         }
     }
 
-    public virtual void RefreshCard()
+    public virtual void InitializeCard()
     {
-        SetCardSprite();
+        SetPersistentVariables();
+        RefreshCardCosts();
         UpdateLevelUI();
     }
 
-    private void SetCardSprite()
+    public void RefreshCardCosts()
     {
-        Sprite icon = upgradeDataSO switch
+        if (upgradeDataSO is BuildingDataSO buildingDataSO)
         {
-            UnitProduceStatsSO unit => unit.unitIcon,
-            BuildingDataSO building => building.buildingIcon,
-            _ => null
-        };
-
-        if (icon != null)
-            cardImage.sprite = icon;
+            cardUpgradeCost = StatUpgrade.GetUpgradeCost(buildingDataSO.buildingIdentity.spawnLevel, buildingDataSO.cardDetails.upgradeCostMultiplier);
+            cardFragmentCost = StatUpgrade.GetFragmentCost(buildingDataSO.buildingIdentity.spawnLevel, buildingDataSO.cardDetails.fragmentCostMultiplier);
+        }
+        else if (upgradeDataSO is UnitProduceStatsSO unitDataSO)
+        {
+            cardUpgradeCost = StatUpgrade.GetUpgradeCost(unitDataSO.unitIdentity.spawnLevel, unitDataSO.cardDetails.upgradeCostMultiplier);
+            cardFragmentCost = StatUpgrade.GetFragmentCost(unitDataSO.unitIdentity.spawnLevel, unitDataSO.cardDetails.fragmentCostMultiplier);
+        }
     }
 
-    private void UpdateLevelUI()
+    internal void SetPersistentVariables()
+    {
+        if (upgradeDataSO is BuildingDataSO buildingDataSO)
+        {
+            cardFaction = buildingDataSO.buildingIdentity.faction;
+            Sprite icon = buildingDataSO.buildingIcon;
+            cardImage.sprite = icon;
+        }
+        else if (upgradeDataSO is UnitProduceStatsSO unitDataSO)
+        {
+            cardFaction = unitDataSO.unitIdentity.faction;
+            Sprite icon = unitDataSO.unitIcon;
+            cardImage.sprite = icon;
+        }
+    }
+
+    internal void UpdateLevelUI()
     {
         if (upgradeDataSO is BuildingDataSO buildingDataSO)
         {
@@ -67,28 +94,21 @@ public class UpgradeCard : MonoBehaviour
                 populationCostRoot.SetActive(false);
             }
 
-            UpdateProgressBar(buildingDataSO.buildingIdentity);
         }
         else if (upgradeDataSO is UnitProduceStatsSO unitDataSO)
         {
             populationCostText.SetText($"{unitDataSO.populationCost}");
 
             levelText.SetText($"Level {unitDataSO.unitIdentity.spawnLevel + 1}");
-
-            UpdateProgressBar(unitDataSO.unitIdentity);
         }
+
+        UpdateProgressBar();
     }
 
-    internal void UpdateProgressBar(Identity identity)
+    internal void UpdateProgressBar()
     {
-        int spawnLevel = identity.spawnLevel;
-        FactionName faction = identity.faction;
-
-        int fragmentCost = StatUpgrade.FragmentCost(spawnLevel + 1);
-        int currentFragments = userData.GetFragment((int)faction);
-
-        levelProgressBar.fillAmount = (float)currentFragments / fragmentCost;
-        levelProgressText.SetText($"{currentFragments}/{fragmentCost}");
+        levelProgressBar.fillAmount = (float)currentFragments / cardFragmentCost;
+        levelProgressText.SetText($"{currentFragments}/{cardFragmentCost}");
     }
 
     private void OnCardClick()
@@ -115,7 +135,7 @@ public class UpgradeCard : MonoBehaviour
         }
         else
         {
-            Debug.Log("<color=green> [CardUpgradeData] Initialize failed Uint Stats and Building Stats are null</color>");
+            Debug.Log("<color=green> [CardUpgradeData]Imposter Scriptable Object not Unit SO or Building SO </color>");
         }
     }
 

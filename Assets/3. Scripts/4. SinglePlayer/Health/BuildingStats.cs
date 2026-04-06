@@ -4,8 +4,8 @@ using UnityEngine;
 public class BuildingStats : Stats
 {
     [field: Header("Assign Building Stats")]
-    [field: SerializeField]
-    public BuildingDataSO buildingStatsSO { get; private set; }
+    [field: SerializeField] public BuildingDataSO buildingStatsSO { get; private set; }
+    [field: SerializeField, ReadOnly] public virtual TileEffectType compatibleTileEffectType { get; }
     public ScenarioBuildingType buildingType { get; private set; }
     public float buildTime { get; protected set; }
     private GameObject buildingPool;
@@ -62,8 +62,6 @@ public class BuildingStats : Stats
 
         _ = InitializeOnBuilt();
     }
-
-
 
     internal virtual async Awaitable InitializeOnBuilt()
     {

@@ -15,7 +15,8 @@ public class DeckPanelManager : MonoBehaviour
 
     public List<MainBuildingDataSO> cityCenterScriptables { get; private set; }
     private List<UnitProduceStatsSO> unitScriptables;
-    private List<BuildingDataSO> buildingScriptables;
+    private List<DefenseBuildingDataSO> defenseScriptables;
+
 
     private void Awake()
     {
@@ -28,33 +29,44 @@ public class DeckPanelManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        cityCenterScriptables = allBuildingData.cityCenterBuildingsSO;
-        buildingScriptables = allBuildingData.GetDefenseBuildingsSO();
+        cityCenterScriptables = allBuildingData.mainBuildingSO;
+        defenseScriptables = allBuildingData.defenseBuildingsSO;
         unitScriptables = allUnitData.allUnitsSO;
+    }
 
+    private void OnEnable()
+    {
         CreateUnitCards();
         CreateDefenseCards();
     }
 
     public void CreateUnitCards()
     {
-        foreach (var scriptable in unitScriptables)
+        foreach (var unitSO in unitScriptables)
         {
-            if (scriptable == null) { LogNullScriptable("Unit"); continue; }
+            if (unitSO == null) { LogNullScriptable("Unit"); continue; }
+            var cardPanel = factionCardPanels[(int)unitSO.unitIdentity.faction].cardPanels[0];
 
-            if (scriptable.cardDetails.isUnlocked)
-                factionCardPanels[(int)scriptable.unitIdentity.faction].cardPanels[0].AddCard(deckCardPrefab, scriptable);
-
+            if (unitSO.cardDetails.cardState == CardState.Purchased && !cardPanel.scriptablesInDeck.Contains(unitSO))
+            {
+                cardPanel.AddCard(deckCardPrefab, unitSO);
+                cardPanel.scriptablesInDeck.Add(unitSO);
+            }
         }
     }
     public void CreateDefenseCards()
     {
-        foreach (var scriptable in buildingScriptables)
+        if (defenseScriptables == null) { LogNullScriptable("Defense Building List"); return; }
+        foreach (var defenseSO in defenseScriptables)
         {
-            if (scriptable == null) { LogNullScriptable("Defense Building"); continue; }
+            if (defenseSO == null) { LogNullScriptable("Defense Building"); continue; }
+            var cardPanel = factionCardPanels[(int)defenseSO.buildingIdentity.faction].cardPanels[0];
 
-            if (scriptable.cardDetails.isUnlocked)
-                factionCardPanels[(int)scriptable.buildingIdentity.faction].cardPanels[0].AddCard(deckCardPrefab, scriptable);
+            if (defenseSO.cardDetails.cardState == CardState.Purchased && !cardPanel.scriptablesInDeck.Contains(defenseSO))
+            {
+                cardPanel.AddCard(deckCardPrefab, defenseSO);
+                cardPanel.scriptablesInDeck.Add(defenseSO);
+            }
         }
     }
 

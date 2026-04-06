@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 489f4aaf63c4f48428249684eb8dc4a8, type: 3}
   m_Name: Galvadore Main Building
   m_EditorClassIdentifier: 
+  gameBuildingName: 300
   buildingIdentity:
     name: Galvadore City Center
     spawnLevel: 0
@@ -32,10 +33,11 @@ MonoBehaviour:
     resourceAmount: 0
   buildingIcon: {fileID: -1139589669, guid: c57feff7fce94a94c8b1cc7b508083df, type: 3}
   cardDetails:
-    factionUnlocked: 0
-    isUnlocked: 0
-    purchased: 0
+    cardState: 0
     minBuildingLevel: 0
+    purchaseCost: 0
+    upgradeCostMultiplier: 0
+    fragmentCostMultiplier: 0
   hasUpkeep: 0
   upKeepCost:
   - resourceType: 0
@@ -48,7 +50,7 @@ MonoBehaviour:
     resourceAmount: 0
   <upKeepTime>k__BackingField: 0
   mainBuildingUpgradeData:
-  - buildingLevel: 0
+  - buildingLevel: 1
     buildingBasicStats:
       maxHealth: 4000
       armor: 0
@@ -56,3 +58,316 @@ MonoBehaviour:
     maxDeckEquipCount: 8
     maxPopulation: 20
     starterResources: 500
+    mainAttackStats:
+      damage: 65
+      buildingDamage: 30
+      fireRate: 0.5
+    mainRangeStats:
+      detectionRange: 14
+      attackRange: 12
+      minAttackRange: 0
+  - buildingLevel: 2
+    buildingBasicStats:
+      maxHealth: 4480
+      armor: 0
+    buildingBuildTime: 0
+    maxDeckEquipCount: 8
+    maxPopulation: 20
+    starterResources: 500
+    mainAttackStats:
+      damage: 0
+      buildingDamage: 0
+      fireRate: 0
+    mainRangeStats:
+      detectionRange: 0
+      attackRange: 0
+      minAttackRange: 0
+  - buildingLevel: 3
+    buildingBasicStats:
+      maxHealth: 4960
+      armor: 0
+    buildingBuildTime: 0
+    maxDeckEquipCount: 8
+    maxPopulation: 24
+    starterResources: 500
+    mainAttackStats:
+      damage: 0
+      buildingDamage: 0
+      fireRate: 0
+    mainRangeStats:
+      detectionRange: 0
+      attackRange: 0
+      minAttackRange: 0
+  - buildingLevel: 4
+    buildingBasicStats:
+      maxHealth: 5440
+      armor: 0
+    buildingBuildTime: 0
+    maxDeckEquipCount: 8
+    maxPopulation: 24
+    starterResources: 625
+    mainAttackStats:
+      damage: 0
+      buildingDamage: 0
+      fireRate: 0
+    mainRangeStats:
+      detectionRange: 0
+      attackRange: 0
+      minAttackRange: 0
+  - buildingLevel: 5
+    buildingBasicStats:
+      maxHealth: 5920
+      armor: 0
+    buildingBuildTime: 0
+    maxDeckEquipCount: 8
+    maxPopulation: 24
+    starterResources: 625
+    mainAttackStats:
+      damage: 0
+      buildingDamage: 0
+      fireRate: 0
+    mainRangeStats:
+      detectionRange: 0
+      attackRange: 0
+      minAttackRange: 0
+  - buildingLevel: 6
+    buildingBasicStats:
+      maxHealth: 6400
+      armor: 0
+    buildingBuildTime: 0
+    maxDeckEquipCount: 8
+    maxPopulation: 28
+    starterResources: 625
+    mainAttackStats:
+      damage: 0
+      buildingDamage: 0
+      fireRate: 0
+    mainRangeStats:
+      detectionRange: 0
+      attackRange: 0
+      minAttackRange: 0
+  - buildingLevel: 7
+    buildingBasicStats:
+      maxHealth: 6880
+      armor: 0
+    buildingBuildTime: 0
+    maxDeckEquipCount: 8
+    maxPopulation: 28
+    starterResources: 625
+    mainAttackStats:
+      damage: 0
+      buildingDamage: 0
+      fireRate: 0
+    mainRangeStats:
+      detectionRange: 0
+      attackRange: 0
+      minAttackRange: 0
+  - buildingLevel: 8
+    buildingBasicStats:
+      maxHealth: 7360
+      armor: 0
+    buildingBuildTime: 0
+    maxDeckEquipCount: 8
+    maxPopulation: 28
+    starterResources: 750
+    mainAttackStats:
+      damage: 0
+      buildingDamage: 0
+      fireRate: 0
+    mainRangeStats:
+      detectionRange: 0
+      attackRange: 0
+      minAttackRange: 0
+  - buildingLevel: 9
+    buildingBasicStats:
+      maxHealth: 7840
+      armor: 0
+    buildingBuildTime: 0
+    maxDeckEquipCount: 8
+    maxPopulation: 32
+    starterResources: 750
+    mainAttackStats:
+      damage: 0
+      buildingDamage: 0
+      fireRate: 0
+    mainRangeStats:
+      detectionRange: 0
+      attackRange: 0
+      minAttackRange: 0
+  - buildingLevel: 10
+    buildingBasicStats:
+      maxHealth: 8320
+      armor: 0
+    buildingBuildTime: 0
+    maxDeckEquipCount: 8
+    maxPopulation: 32
+    starterResources: 750
+    mainAttackStats:
+      damage: 0
+      buildingDamage: 0
+      fireRate: 0
+    mainRangeStats:
+      detectionRange: 0
+      attackRange: 0
+      minAttackRange: 0
+  - buildingLevel: 11
+    buildingBasicStats:
+      maxHealth: 8800
+      armor: 0
+    buildingBuildTime: 0
+    maxDeckEquipCount: 8
+    maxPopulation: 32
+    starterResources: 750
+    mainAttackStats:
+      damage: 0
+      buildingDamage: 0
+      fireRate: 0
+    mainRangeStats:
+      detectionRange: 0
+      attackRange: 0
+      minAttackRange: 0
+  - buildingLevel: 12
+    buildingBasicStats:
+      maxHealth: 9280
+      armor: 0
+    buildingBuildTime: 0
+    maxDeckEquipCount: 8
+    maxPopulation: 36
+    starterResources: 875
+    mainAttackStats:
+      damage: 0
+      buildingDamage: 0
+      fireRate: 0
+    mainRangeStats:
+      detectionRange: 0
+      attackRange: 0
+      minAttackRange: 0
+  - buildingLevel: 13
+    buildingBasicStats:
+      maxHealth: 9760
+      armor: 0
+    buildingBuildTime: 0
+    maxDeckEquipCount: 8
+    maxPopulation: 36
+    starterResources: 875
+    mainAttackStats:
+      damage: 0
+      buildingDamage: 0
+      fireRate: 0
+    mainRangeStats:
+      detectionRange: 0
+      attackRange: 0
+      minAttackRange: 0
+  - buildingLevel: 14
+    buildingBasicStats:
+      maxHealth: 10240
+      armor: 0
+    buildingBuildTime: 0
+    maxDeckEquipCount: 8
+    maxPopulation: 36
+    starterResources: 875
+    mainAttackStats:
+      damage: 0
+      buildingDamage: 0
+      fireRate: 0
+    mainRangeStats:
+      detectionRange: 0
+      attackRange: 0
+      minAttackRange: 0
+  - buildingLevel: 15
+    buildingBasicStats:
+      maxHealth: 10720
+      armor: 0
+    buildingBuildTime: 0
+    maxDeckEquipCount: 8
+    maxPopulation: 40
+    starterResources: 875
+    mainAttackStats:
+      damage: 0
+      buildingDamage: 0
+      fireRate: 0
+    mainRangeStats:
+      detectionRange: 0
+      attackRange: 0
+      minAttackRange: 0
+  - buildingLevel: 16
+    buildingBasicStats:
+      maxHealth: 11200
+      armor: 0
+    buildingBuildTime: 0
+    maxDeckEquipCount: 8
+    maxPopulation: 40
+    starterResources: 1000
+    mainAttackStats:
+      damage: 0
+      buildingDamage: 0
+      fireRate: 0
+    mainRangeStats:
+      detectionRange: 0
+      attackRange: 0
+      minAttackRange: 0
+  - buildingLevel: 17
+    buildingBasicStats:
+      maxHealth: 11680
+      armor: 0
+    buildingBuildTime: 0
+    maxDeckEquipCount: 8
+    maxPopulation: 40
+    starterResources: 1000
+    mainAttackStats:
+      damage: 0
+      buildingDamage: 0
+      fireRate: 0
+    mainRangeStats:
+      detectionRange: 0
+      attackRange: 0
+      minAttackRange: 0
+  - buildingLevel: 18
+    buildingBasicStats:
+      maxHealth: 12160
+      armor: 0
+    buildingBuildTime: 0
+    maxDeckEquipCount: 8
+    maxPopulation: 40
+    starterResources: 1000
+    mainAttackStats:
+      damage: 0
+      buildingDamage: 0
+      fireRate: 0
+    mainRangeStats:
+      detectionRange: 0
+      attackRange: 0
+      minAttackRange: 0
+  - buildingLevel: 19
+    buildingBasicStats:
+      maxHealth: 12640
+      armor: 0
+    buildingBuildTime: 0
+    maxDeckEquipCount: 8
+    maxPopulation: 40
+    starterResources: 1000
+    mainAttackStats:
+      damage: 0
+      buildingDamage: 0
+      fireRate: 0
+    mainRangeStats:
+      detectionRange: 0
+      attackRange: 0
+      minAttackRange: 0
+  - buildingLevel: 20
+    buildingBasicStats:
+      maxHealth: 13120
+      armor: 0
+    buildingBuildTime: 0
+    maxDeckEquipCount: 8
+    maxPopulation: 40
+    starterResources: 1125
+    mainAttackStats:
+      damage: 0
+      buildingDamage: 0
+      fireRate: 0
+    mainRangeStats:
+      detectionRange: 0
+      attackRange: 0
+      minAttackRange: 0
+  factionUnlocked: 0

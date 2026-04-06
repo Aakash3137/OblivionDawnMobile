@@ -19,7 +19,7 @@ public class Item : MonoBehaviour
     [Header("State")]
     public bool isEquipped;
 
-    [Header ("Game Data")]
+    [Header("Game Data")]
     [SerializeField] internal UnitProduceStatsSO unit;
     [SerializeField] internal DefenseBuildingDataSO Defense;
     [SerializeField] internal ResourceBuildingDataSO Resource;
@@ -35,37 +35,37 @@ public class Item : MonoBehaviour
 
     private void OnClickItem()
     {
-        if (itemDetailsWindow == null) return;
+        // if (itemDetailsWindow == null) return;
 
-        itemDetailsWindow.ShowItemDetails(
-            itemName,
-            itemDescription,
-            itemImage.sprite,
-            itemType,
-            factionType
-        );
+        // itemDetailsWindow.ShowItemDetails(
+        //     itemName,
+        //     itemDescription,
+        //     itemImage.sprite,
+        //     itemType,
+        //     factionType
+        // );
     }
 
-    public void SetupItem(string _name, string _type, Sprite _icon,  string _details, bool _isEquipped, FactionName _factionType, ItemDetailsWindow detailsWindow,Canvas _Canvas)
+    public void SetupItem(string _name, string _type, Sprite _icon, string _details, bool _isEquipped, FactionName _factionType, ItemDetailsWindow detailsWindow, Canvas _Canvas)
     {
-        itemName = _name;
-        itemType = _type;
-        itemImage.sprite = _icon;
-        itemDescription = _details;
-        isEquipped = _isEquipped;
-        factionType = _factionType;
-        itemDetailsWindow = detailsWindow;
-        _Canvas = itemCanvas;
-        if(unit != null)
-        {
-            if(_Category == DecCategory.Offense)
-                itemDetailsWindow.unit = unit;
-            else if(_Category == DecCategory.Defense)
-                 itemDetailsWindow.Defense = Defense;
-            else if(_Category == DecCategory.Resource)
-            {
-                itemDetailsWindow.Resourse = Resource;
-            }
-        }
+        // itemName = _name;
+        // itemType = _type;
+        // itemImage.sprite = _icon;
+        // itemDescription = _details;
+        // isEquipped = _isEquipped;
+        // factionType = _factionType;
+        // itemDetailsWindow = detailsWindow;
+        // _Canvas = itemCanvas;
+        // if(unit != null)
+        // {
+        //     if(_Category == DecCategory.Offense)
+        //         itemDetailsWindow.unit = unit;
+        //     else if(_Category == DecCategory.Defense)
+        //          itemDetailsWindow.Defense = Defense;
+        //     else if(_Category == DecCategory.Resource)
+        //     {
+        //         itemDetailsWindow.Resourse = Resource;
+        //     }
+        // }
     }
 }

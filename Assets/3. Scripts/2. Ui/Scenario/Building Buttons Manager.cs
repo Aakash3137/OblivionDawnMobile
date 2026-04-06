@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using ExitGames.Client.Photon.StructWrapping;
 using UnityEngine;
 
 public class BuildingButtonsManager : MonoBehaviour
@@ -23,8 +24,8 @@ public class BuildingButtonsManager : MonoBehaviour
     private void Start()
     {
         SpawnAndInitializeButtons();
-        // SpawnAndSetButtonData();
     }
+
     private void SpawnAndInitializeButtons()
     {
         if (deckSelectionData == null)
@@ -54,7 +55,7 @@ public class BuildingButtonsManager : MonoBehaviour
 
             button.Initialize(prefab, sprite);
 
-            prefab.SetUnitPrefab(characterDatabase.GetUnitPrefab(UnitsSO[i]));
+            prefab.SetUnitPrefab(characterDatabase.GetUnitPrefab(UnitsSO[i]), UnitsSO[i].GetUnitSpawnTime());
         }
 
         for (int i = 0; i < defenseSO.Count; i++)
@@ -88,68 +89,4 @@ public class BuildingButtonsManager : MonoBehaviour
             button.SetManagers(tileUIPanel, costPanelManager);
         }
     }
-
-    private void SpawnAndSetButtonData()
-    {
-        // if (decSelectionData == null)
-        //     GameDebug.Log("<color=#000000>[BuildingButtonManager] DecSelectionData is null</color>");
-
-        // playerFaction = decSelectionData.CurrentFaction;
-
-        // GameDebug.Log($"<color=#40E0D0> [BuildingButtonsManager] Selected Faction : {playerFaction} </color>");
-
-        // int offenseBuildingsCount = decSelectionData.AllFactionDecData[(int)playerFaction].SelectedUnitDeck.Count;
-        // int defenseBuildingsCount = decSelectionData.AllFactionDecData[(int)playerFaction].SelectedDefenseDec.Count;
-        // int resourceBuildingsCount = decSelectionData.AllFactionDecData[(int)playerFaction].SelectedResourceDeck.Count;
-
-        // GameDebug.Log($"<color=#40E0D0> [BuildingButtonsManager] Offense Buildings Count : {offenseBuildingsCount} </color>");
-
-        // for (int i = 0; i < offenseBuildingsCount; i++)
-        // {
-        //     var button = Instantiate(buttonPrefab, offenseBuildingsRoot);
-        //     buttons.Add(button);
-
-        //     var buildingPrefab = characterDatabase.GetSpawnerBuilding(decSelectionData.AllFactionDecData[(int)playerFaction].SelectedUnitDeck[i]);
-        //     var unitSprite = decSelectionData.AllFactionDecData[(int)playerFaction].SelectedUnitDeck[i].unitIcon;
-
-        //     button.Initialize(buildingPrefab, unitSprite);
-
-        //     if (buildingPrefab is OffenseBuildingStats offenseBuildingPrefab)
-        //         offenseBuildingPrefab.SetUnitPrefab(characterDatabase.GetUnitPrefab(decSelectionData.AllFactionDecData[(int)playerFaction].SelectedUnitDeck[i]));
-
-        //     GameDebug.Log($"<color=#40E0D0> [BuildingButtonsManager] Offense Building : {buildingPrefab.name} with spawning unit {characterDatabase.GetUnitPrefab(decSelectionData.AllFactionDecData[(int)playerFaction].SelectedUnitDeck[i]).name}</color>");
-        // }
-
-        // for (int i = 0; i < defenseBuildingsCount; i++)
-        // {
-        //     var button = Instantiate(buttonPrefab, defenseBuildingsRoot);
-        //     buttons.Add(button);
-
-        //     var buildingPrefab = characterDatabase.GetDefenseBuildingPrefab(decSelectionData.AllFactionDecData[(int)playerFaction].SelectedDefenseDec[i]);
-        //     var buildingSprite = decSelectionData.AllFactionDecData[(int)playerFaction].SelectedDefenseDec[i].buildingIcon;
-
-        //     button.Initialize(buildingPrefab, buildingSprite);
-        // }
-
-        // for (int i = 0; i < resourceBuildingsCount; i++)
-        // {
-        //     var button = Instantiate(buttonPrefab, resourceBuildingsRoot);
-        //     buttons.Add(button);
-
-        //     var buildingPrefab = characterDatabase.GetResourceBuildingPrefab(decSelectionData.AllFactionDecData[(int)playerFaction].SelectedResourceDeck[i]);
-        //     var unitSprite = decSelectionData.AllFactionDecData[(int)playerFaction].SelectedResourceDeck[i].buildingIcon;
-
-        //     button.Initialize(buildingPrefab, unitSprite);
-        // }
-
-        // if (tileUIPanel == null || costPanelManager == null)
-        //     return;
-
-        // foreach (var button in buttons)
-        // {
-        //     button.SetManagers(tileUIPanel, costPanelManager);
-        // }
-    }
-
-
 }

@@ -13,7 +13,7 @@ public class UpgradePanelManager : MonoBehaviour
     [Space(10)]
     public FactionCardPanel[] factionCardPanels;
 
-    private List<MainBuildingDataSO> cityCenterScriptables;
+    private List<MainBuildingDataSO> mainBuildingScriptables;
     private List<UnitProduceStatsSO> unitScriptables;
     private List<BuildingDataSO> buildingScriptables;
 
@@ -33,7 +33,7 @@ public class UpgradePanelManager : MonoBehaviour
 
         upgradePanelNavigation = GetComponent<UpgradePanelNavigation>();
 
-        cityCenterScriptables = allBuildingData.cityCenterBuildingsSO;
+        mainBuildingScriptables = allBuildingData.mainBuildingSO;
         buildingScriptables = allBuildingData.allBuildingsSO;
         unitScriptables = allUnitData.allUnitsSO;
 
@@ -44,7 +44,7 @@ public class UpgradePanelManager : MonoBehaviour
 
     public void CreateCityCenterCards()
     {
-        foreach (var scriptable in cityCenterScriptables)
+        foreach (var scriptable in mainBuildingScriptables)
         {
             if (scriptable == null) { LogNullScriptable("CityCenter"); continue; }
 

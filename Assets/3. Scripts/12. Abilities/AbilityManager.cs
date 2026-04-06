@@ -17,14 +17,21 @@ public class AbilityManager : MonoBehaviour
     // Track button-ability pairs for cooldown visuals
     private Dictionary<AbilitySO, Button> abilityButtonMap = new Dictionary<AbilitySO, Button>();
     private Dictionary<AbilitySO, Image> abilityImageMap = new Dictionary<AbilitySO, Image>();
+    
+    private HashSet<GameUnitName> processedUnits = new HashSet<GameUnitName>();
 
     private void Awake()
     {
         Instance = this;
+        Debug.Log("[AbilityManager] Awake - Instance created");
     }
 
     private void Start()
     {
+        Debug.Log("[AbilityManager] Start called");
+        Debug.Log($"[AbilityManager] abilityButtonPrefab assigned: {(abilityButtonPrefab != null)}");
+        Debug.Log($"[AbilityManager] abilitiesContainer assigned: {(abilitiesContainer != null)}");
+        
         // Don't initialize here - units haven't spawned yet
         // InitializeAbilityButtons();
         
@@ -34,16 +41,23 @@ public class AbilityManager : MonoBehaviour
 
     private IEnumerator WaitForUnitsAndInitialize()
     {
-        Debug.Log("[AbilityManager] Waiting for player units to spawn...");
-        
-        // Wait until at least one player unit exists
-        while (BattleUnitRegistry.PlayerUnits.Count == 0)
+        int attempts = 0;
+        while (true)
         {
+            attempts++;
+            int currentCount = BattleUnitRegistry.PlayerUnits.Count;
+            
+            if (currentCount == 0)
+            {
+            }
+            else
+            {
+                Debug.Log($"[AbilityManager] Units detected → playerUnits={currentCount} → init UI");
+                InitializeAbilityButtons();
+            }
+            
             yield return new WaitForSeconds(0.5f);
         }
-        
-        Debug.Log($"[AbilityManager] Found {BattleUnitRegistry.PlayerUnits.Count} player units, initializing buttons");
-        InitializeAbilityButtons();
     }
 
     private void Update()
@@ -197,23 +211,30 @@ public class AbilityManager : MonoBehaviour
     {
         Debug.Log($"[AbilityManager] InitializeAbilityButtons - Player units count: {BattleUnitRegistry.PlayerUnits.Count}");
 
-        HashSet<GameUnitName> processedUnits = new HashSet<GameUnitName>();
-
         foreach (var unit in BattleUnitRegistry.PlayerUnits)
         {
+            Debug.Log($"[AbilityManager] Checking unit: {unit.gameUnitName}");
+            
             if (processedUnits.Contains(unit.gameUnitName))
+            {
+                Debug.Log($"[AbilityManager] Already processed {unit.gameUnitName}, skipping");
                 continue;
+            }
 
             processedUnits.Add(unit.gameUnitName);
 
             if (unit.unitProduceSO.abilities == null || unit.unitProduceSO.abilities.Count == 0)
             {
+                Debug.Log($"[AbilityManager] Unit {unit.gameUnitName} has no abilities");
                 continue;
             }
 
+            Debug.Log($"[AbilityManager] Processing {unit.unitProduceSO.abilities.Count} abilities for {unit.gameUnitName}");
 
             foreach (var ability in unit.unitProduceSO.abilities)
             {
+                Debug.Log($"[AbilityManager] Ability: {ability.abilityName}, Type: {ability.abilityType}");
+                
                 if (ability.abilityType == AbilityType.Passive)
                 {
                     Debug.Log($"[AbilityManager] Skipping passive ability: {ability.abilityName}");
@@ -224,16 +245,43 @@ public class AbilityManager : MonoBehaviour
                 CreateAbilityButton(ability);
             }
         }
+        
+        Debug.Log($"[AbilityManager] Button initialization complete. Total buttons created: {AbilityButtons.Count}");
     }
 
     private void CreateAbilityButton(AbilitySO ability)
     {
+        Debug.Log($"[AbilityManager] CreateAbilityButton called for: {ability.abilityName}");
+        Debug.Log($"[AbilityManager] abilityButtonPrefab: {(abilityButtonPrefab != null ? "Assigned" : "NULL")}");
+        Debug.Log($"[AbilityManager] abilitiesContainer: {(abilitiesContainer != null ? "Assigned" : "NULL")}");
+        
+        if (abilityButtonPrefab == null)
+        {
+            Debug.LogError("[AbilityManager] abilityButtonPrefab is not assigned in inspector!");
+            return;
+        }
+        
+        if (abilitiesContainer == null)
+        {
+            Debug.LogError("[AbilityManager] abilitiesContainer is not assigned in inspector!");
+            return;
+        }
+        
         GameObject buttonObj = Instantiate(abilityButtonPrefab, abilitiesContainer);
+        Debug.Log($"[AbilityManager] Button instantiated: {buttonObj.name}");
+        
         Image buttonImage = buttonObj.GetComponent<Image>();
         Button button = buttonObj.GetComponent<Button>();
 
         if (buttonImage != null && ability.abilityIcon != null)
+        {
             buttonImage.sprite = ability.abilityIcon;
+            Debug.Log($"[AbilityManager] Icon set for {ability.abilityName}");
+        }
+        else
+        {
+            Debug.LogWarning($"[AbilityManager] ButtonImage or Icon missing for {ability.abilityName}");
+        }
 
         if (button != null)
         {
@@ -243,6 +291,12 @@ public class AbilityManager : MonoBehaviour
             abilityButtonMap[ability] = button;
             abilityImageMap[ability] = buttonImage;
             AbilityButtons.Add(button);
+            
+            Debug.Log($"[AbilityManager] Button fully configured for {ability.abilityName}");
+        }
+        else
+        {
+            Debug.LogError($"[AbilityManager] Button component not found on prefab for {ability.abilityName}");
         }
     }
 

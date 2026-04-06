@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -5,69 +6,68 @@ using UnityEngine.UI;
 
 public class UpgradePopUpPanel : MonoBehaviour
 {
-    public static UpgradePopUpPanel Instance { get; protected set; }
+    public static UpgradePopUpPanel Instance { get; private set; }
 
-    [SerializeField] protected Userdata userData;
+    #region  References to UI elements
+    [SerializeField] private Userdata userData;
 
-    [SerializeField] protected TMP_Text cardName;
-    [SerializeField] protected Image cardImage;
+    [SerializeField] private TMP_Text cardName;
+    [SerializeField] private Image cardImage;
 
-    [SerializeField] protected Image unitTypeIcon;
-    [SerializeField] protected TMP_Text unitTypeText;
+    [SerializeField] private Image unitTypeIcon;
+    [SerializeField] private TMP_Text unitTypeText;
 
-    [SerializeField] protected Image buildingTypeIcon;
-    [SerializeField] protected TMP_Text buildingTypeText;
+    [SerializeField] private Image buildingTypeIcon;
+    [SerializeField] private TMP_Text buildingTypeText;
 
-    [SerializeField] protected TMP_Text cardLevel;
-    [SerializeField] protected Image levelProgressFill;
-    [SerializeField] protected TMP_Text levelProgressText;
+    [SerializeField] private TMP_Text cardLevelText;
+    [SerializeField] private Image levelProgressFill;
+    [SerializeField] private TMP_Text levelProgressText;
 
-    [SerializeField] protected List<StatBlock> statBlocks;
-    [SerializeField] protected int maxUpgradableStats;
+    [SerializeField] private List<StatBlock> statBlocks;
+    [SerializeField] private int maxUpgradableStats;
 
     [Header("Button References")]
-    [SerializeField] protected Button actionButton;
+    [SerializeField] private Button actionButton;
     private TMP_Text buttonLabel;
-    [SerializeField] protected TMP_Text actionGemCostText;
-    [SerializeField] protected Button closeButton;
-
-    protected UnitProduceStatsSO currentUnitData;
-    protected BuildingDataSO currentBuildingData;
+    [SerializeField] private TMP_Text actionGemCostText;
+    [SerializeField] private Button closeButton;
 
     [Header("Sprite references")]
-    [SerializeField] protected Sprite healthIcon;
-    [SerializeField] protected Sprite armorIcon;
-    [SerializeField] protected Sprite buildTimeIcon;
-    [SerializeField] protected Sprite speedIcon;
-    [SerializeField] protected Sprite damageIcon;
-    [SerializeField] protected Sprite fireRateIcon;
-    [SerializeField] protected Sprite attackRangeIcon;
-    [SerializeField] protected Sprite capacityIcon;
-    [SerializeField] protected Sprite deckIcon;
-    [SerializeField] protected Sprite populationIcon;
-    [SerializeField] protected Sprite resourceIcon;
+    [SerializeField] private Sprite healthIcon;
+    [SerializeField] private Sprite armorIcon;
+    [SerializeField] private Sprite buildTimeIcon;
+    [SerializeField] private Sprite speedIcon;
+    [SerializeField] private Sprite damageIcon;
+    [SerializeField] private Sprite fireRateIcon;
+    [SerializeField] private Sprite attackRangeIcon;
+    [SerializeField] private Sprite capacityIcon;
+    [SerializeField] private Sprite deckIcon;
+    [SerializeField] private Sprite populationIcon;
+    [SerializeField] private Sprite resourceIcon;
+    #endregion
 
-    protected CanvasGroup canvasGroup;
+    private UnitProduceStatsSO currentUnitData;
+    private BuildingDataSO currentBuildingData;
 
+    private CanvasGroup canvasGroup;
     private UpgradeCard currentUpgradeCard;
 
+    private FactionName currentCardFaction;
+    private CardState currentCardState;
+    private int cardSpawnLevel;
 
-    private BuildingUpgrade buildingUpgrade;
-    private UnitProduceUpgrade unitProduceUpgrade;
+    private int currentFragments => userData.GetFragment(currentCardFaction);
 
-    protected void Awake()
+    private void Awake()
     {
         if (Instance == null)
             Instance = this;
         else
             Destroy(gameObject);
-
-
-        buildingUpgrade = new BuildingUpgrade();
-        unitProduceUpgrade = new UnitProduceUpgrade();
     }
 
-    protected void Start()
+    private void Start()
     {
         if (canvasGroup == null)
             canvasGroup = GetComponent<CanvasGroup>();
@@ -80,7 +80,7 @@ public class UpgradePopUpPanel : MonoBehaviour
         actionButton.onClick.AddListener(OnClickAction);
     }
 
-    protected void OnDestroy()
+    private void OnDestroy()
     {
         closeButton.onClick.RemoveListener(OnClickClose);
         actionButton.onClick.RemoveListener(OnClickAction);
@@ -106,222 +106,184 @@ public class UpgradePopUpPanel : MonoBehaviour
         }
     }
 
-    protected void OnClickAction()
+    private void OnClickAction()
     {
-        if (currentBuildingData != null)
+        if (currentBuildingData == null && currentUnitData == null)
+            return;
+
+        var cardDetails = currentBuildingData == null ? currentUnitData.cardDetails : currentBuildingData.cardDetails;
+
+        var cardState = cardDetails.cardState;
+
+        switch (cardState)
         {
-            if (!currentBuildingData.cardDetails.purchased)
-                OnClickPurchase(currentBuildingData);
-            else
-                OnClickUpgrade(currentBuildingData);
-        }
-        else if (currentUnitData != null)
-        {
-            if (!currentUnitData.cardDetails.purchased)
-                OnClickPurchase(currentUnitData);
-            else
-                OnClickUpgrade(currentUnitData);
+            case CardState.Locked:
+                break;
+            case CardState.Unlocked:
+                var purchaseCost = cardDetails.purchaseCost;
+                OnClickPurchase(purchaseCost);
+                break;
+            case CardState.Purchased:
+                OnClickUpgrade();
+                break;
         }
     }
 
-    protected void OnClickClose()
+    private void OnClickClose()
     {
         HidePanel();
 
         if (currentUpgradeCard != null)
+        {
             currentUpgradeCard.RefreshAllCards();
+            currentUpgradeCard.RefreshCardCosts();
+        }
 
         currentUpgradeCard = null;
         currentBuildingData = null;
         currentUnitData = null;
     }
 
-    #region Helper Functions
-    private void RefreshButtonState(CardDetails cardDetails, int spawnLevel, FactionName faction)
+    #region OnClickPurchase
+    private void OnClickPurchase(int purchaseCost)
     {
-        if (!cardDetails.isUnlocked)
+        if (currentCardState != CardState.Unlocked)
         {
-            actionButton.gameObject.SetActive(false);
-            return;
+            Debug.LogError("Card is not unlocked");
         }
 
-        actionButton.gameObject.SetActive(true);
+        if (userData.Diamonds < purchaseCost)
+            return;
 
-        if (cardDetails.purchased)
+        userData.Diamonds -= purchaseCost;
+
+        currentCardState = CardState.Purchased;
+
+        if (currentBuildingData != null)
         {
-            int cost = StatUpgrade.UpgradeCost(spawnLevel + 1);
-            int fragmentCost = StatUpgrade.FragmentCost(spawnLevel + 1);
-            int currentFragments = userData.GetFragment((int)faction);
-
-            UpdateCostDisplay(cost);
-            buttonLabel.SetText("Upgrade");
-
-            actionButton.interactable = userData.Diamonds >= cost && currentFragments >= fragmentCost;
+            currentBuildingData.cardDetails.cardState = currentCardState;
+            InitializeStatBlocks(currentBuildingData);
         }
         else
         {
-            int cost = StatUpgrade.UpgradeCost(spawnLevel);
-
-            UpdateCostDisplay(cost);
-            buttonLabel.SetText("Purchase");
-
-            actionButton.interactable = userData.Diamonds >= cost;
+            currentUnitData.cardDetails.cardState = currentCardState;
+            InitializeStatBlocks(currentUnitData);
         }
-    }
 
-    private void UpdateProgressBar(int spawnLevel, FactionName faction)
-    {
-        int fragmentCost = StatUpgrade.FragmentCost(spawnLevel + 1);
-        int currentFragments = userData.GetFragment((int)faction);
-
-        levelProgressFill.fillAmount = (float)currentFragments / fragmentCost;
-        levelProgressText.SetText($"{currentFragments}/{fragmentCost}");
-    }
-
-    private void UpdateCostDisplay(int cost)
-    {
-        actionGemCostText.SetText(cost.ToString());
-    }
-    #endregion
-
-    #region OnClickPurchase
-    private void OnClickPurchase(BuildingDataSO data)
-    {
-        int cost = StatUpgrade.UpgradeCost(data.buildingIdentity.spawnLevel);
-
-        if (userData.Diamonds < cost)
-            return;
-
-        userData.Diamonds -= cost;
-        data.cardDetails.purchased = true;
-
-        RefreshButtonState(data.cardDetails, data.buildingIdentity.spawnLevel, data.buildingIdentity.faction);
-        UpdateProgressBar(data.buildingIdentity.spawnLevel, data.buildingIdentity.faction);
-
-        InitializeStatBlocks(data);
-    }
-
-    private void OnClickPurchase(UnitProduceStatsSO data)
-    {
-        int cost = StatUpgrade.UpgradeCost(data.unitIdentity.spawnLevel);
-
-        if (userData.Diamonds < cost)
-            return;
-
-        userData.Diamonds -= cost;
-        data.cardDetails.purchased = true;
-
-        RefreshButtonState(data.cardDetails, data.unitIdentity.spawnLevel, data.unitIdentity.faction);
-        UpdateProgressBar(data.unitIdentity.spawnLevel, data.unitIdentity.faction);
-
-        InitializeStatBlocks(data);
+        RefreshButtonState();
+        UpdateProgressBar();
     }
     #endregion
 
     #region OnClickUpgrade
-    private void OnClickUpgrade(BuildingDataSO data)
+    private void OnClickUpgrade()
     {
-        var identity = data.buildingIdentity;
-        int cost = StatUpgrade.UpgradeCost(identity.spawnLevel + 1);
-        int fragmentCost = StatUpgrade.FragmentCost(identity.spawnLevel + 1);
-
-        if (userData.Diamonds < cost || userData.GetFragment((int)identity.faction) < fragmentCost)
+        if (userData.Diamonds < currentUpgradeCard.cardUpgradeCost || currentFragments < currentUpgradeCard.cardFragmentCost)
             return;
 
-        userData.Diamonds -= cost;
-        userData.ConsumeFragments(identity.faction, fragmentCost);
+        userData.Diamonds -= currentUpgradeCard.cardUpgradeCost;
+        userData.ConsumeFragments(currentCardFaction, currentUpgradeCard.cardFragmentCost);
 
-        buildingUpgrade.UpgradeNext(data);
-        InitializeStatBlocks(data);
+        cardSpawnLevel++;
+        cardSpawnLevel = Mathf.Clamp(cardSpawnLevel, 0, GameData.GameMaxObjectLevel - 1);
 
-        RefreshButtonState(data.cardDetails, identity.spawnLevel, identity.faction);
-        UpdateProgressBar(identity.spawnLevel, identity.faction);
-    }
+        if (currentBuildingData != null)
+        {
+            currentBuildingData.buildingIdentity.spawnLevel = cardSpawnLevel;
+            InitializeStatBlocks(currentBuildingData);
+        }
+        else
+        {
+            currentUnitData.unitIdentity.spawnLevel = cardSpawnLevel;
+            InitializeStatBlocks(currentUnitData);
+        }
 
-    private void OnClickUpgrade(UnitProduceStatsSO data)
-    {
-        var identity = data.unitIdentity;
-        int cost = StatUpgrade.UpgradeCost(identity.spawnLevel + 1);
-        int fragmentCost = StatUpgrade.FragmentCost(identity.spawnLevel + 1);
-
-        if (userData.Diamonds < cost || userData.GetFragment((int)identity.faction) < fragmentCost)
-            return;
-
-        userData.Diamonds -= cost;
-        userData.ConsumeFragments(identity.faction, fragmentCost);
-
-        unitProduceUpgrade.UpgradeNext(data);
-        InitializeStatBlocks(data);
-
-        RefreshButtonState(data.cardDetails, identity.spawnLevel, identity.faction);
-        UpdateProgressBar(identity.spawnLevel, identity.faction);
+        currentUpgradeCard.RefreshCardCosts();
+        RefreshButtonState();
+        UpdateProgressBar();
     }
     #endregion
 
     #region OpenActionPanel
     public void OpenActionPanel(BuildingDataSO dataSO)
     {
-        if (statBlocks.Count != maxUpgradableStats)
-        {
-            Debug.LogError("[UpgradePopUpPanel] assign all stat blocks");
-            return;
-        }
+        ShowPanel();
+
+        cardName.SetText($"{dataSO.buildingIdentity.name} ");
+        cardImage.sprite = dataSO.buildingIcon;
+        buildingTypeText.SetText($"{dataSO.buildingType}");
 
         currentBuildingData = dataSO;
         currentUnitData = null;
 
-        ShowPanel();
+        currentCardFaction = dataSO.buildingIdentity.faction;
+        currentCardState = dataSO.cardDetails.cardState;
+        cardSpawnLevel = dataSO.buildingIdentity.spawnLevel;
 
-        cardName.text = dataSO.buildingIdentity.name;
-        cardImage.sprite = dataSO.buildingIcon;
-        buildingTypeText.text = dataSO.buildingType.ToString();
+        if (currentCardState == CardState.Unlocked)
+        {
+            var purchaseCost = dataSO.cardDetails.purchaseCost;
+            UpdateCostDisplay(purchaseCost);
+            actionButton.interactable = userData.Diamonds >= purchaseCost;
+        }
 
         ToggleTypeIcon(buildingTypeIcon.gameObject);
         InitializeStatBlocks(dataSO);
 
-        RefreshButtonState(dataSO.cardDetails, dataSO.buildingIdentity.spawnLevel, dataSO.buildingIdentity.faction);
-        UpdateProgressBar(dataSO.buildingIdentity.spawnLevel, dataSO.buildingIdentity.faction);
+        RefreshButtonState();
+        UpdateProgressBar();
     }
 
     public void OpenActionPanel(UnitProduceStatsSO dataSO)
     {
-        if (statBlocks.Count != maxUpgradableStats)
-        {
-            Debug.LogError("[UpgradePopUpPanel] assign all stat blocks");
-            return;
-        }
-
-        currentUnitData = dataSO;
-        currentBuildingData = null;
-
         ShowPanel();
 
         cardName.SetText(dataSO.unitIdentity.name);
         cardImage.sprite = dataSO.unitIcon;
         unitTypeText.SetText(dataSO.unitType.ToString());
 
+        currentUnitData = dataSO;
+        currentBuildingData = null;
+
+        currentCardFaction = dataSO.unitIdentity.faction;
+        currentCardState = dataSO.cardDetails.cardState;
+        cardSpawnLevel = dataSO.unitIdentity.spawnLevel;
+
+        if (currentCardState == CardState.Unlocked)
+        {
+            var purchaseCost = dataSO.cardDetails.purchaseCost;
+            UpdateCostDisplay(purchaseCost);
+            actionButton.interactable = userData.Diamonds >= purchaseCost;
+        }
+
         ToggleTypeIcon(unitTypeIcon.gameObject);
         InitializeStatBlocks(dataSO);
 
-        RefreshButtonState(dataSO.cardDetails, dataSO.unitIdentity.spawnLevel, dataSO.unitIdentity.faction);
-        UpdateProgressBar(dataSO.unitIdentity.spawnLevel, dataSO.unitIdentity.faction);
+        RefreshButtonState();
+        UpdateProgressBar();
     }
     #endregion
 
     #region InitializeStatBlocks
 
-    private void SetCommonBuildingStats(bool purchased, BuildingUpgradeData stats)
+    private void SetCommonBuildingStats(bool canUpgrade, BuildingUpgradeData currentStats, BuildingUpgradeData nextStats)
     {
-        statBlocks[0].EnableBlock(purchased);
-        statBlocks[0].SetValues("Max Health", $"{stats.buildingBasicStats.maxHealth}", "+500");
+        var currentHealth = currentStats.buildingBasicStats.maxHealth;
+        var healthChange = Mathf.Abs(nextStats.buildingBasicStats.maxHealth - currentStats.buildingBasicStats.maxHealth);
+        statBlocks[0].EnableBlock(canUpgrade);
+        statBlocks[0].SetValues("Max Health", currentHealth, healthChange);
         statBlocks[0].SetIcon(healthIcon);
 
-        statBlocks[1].EnableBlock(purchased);
-        statBlocks[1].SetValues("Armor", $"{stats.buildingBasicStats.armor}", "+50");
+        var currentArmor = currentStats.buildingBasicStats.armor;
+        var armorChange = Mathf.Abs(nextStats.buildingBasicStats.armor - currentStats.buildingBasicStats.armor);
+        statBlocks[1].EnableBlock(canUpgrade);
+        statBlocks[1].SetValues("Armor", currentArmor, armorChange);
         statBlocks[1].SetIcon(armorIcon);
 
-        statBlocks[2].EnableBlock(purchased);
-        statBlocks[2].SetValues("Build Time", $"{stats.buildingBuildTime}", "-0.1");
+        var currentBuildTime = currentStats.buildingBuildTime;
+        var buildTimeChange = Mathf.Abs(nextStats.buildingBuildTime - currentStats.buildingBuildTime);
+        statBlocks[2].EnableBlock(canUpgrade);
+        statBlocks[2].SetValues("Build Time", currentBuildTime, buildTimeChange);
         statBlocks[2].SetIcon(buildTimeIcon);
     }
 
@@ -333,132 +295,244 @@ public class UpgradePopUpPanel : MonoBehaviour
 
     internal void InitializeStatBlocks(BuildingDataSO buildingData)
     {
-        int spawnLevel = buildingData.buildingIdentity.spawnLevel;
-        cardLevel.SetText($"Level : {spawnLevel + 1}");
+        cardLevelText.SetText($"Level {cardSpawnLevel + 1}");
 
-        bool purchased = buildingData.cardDetails.purchased;
+        bool canUpgrade = buildingData.cardDetails.cardState == CardState.Purchased && cardSpawnLevel < GameData.GameMaxObjectLevel;
 
-        if (buildingData is OffenseBuildingDataSO offenseBuilding)
+        switch (buildingData)
         {
-            OffenseBuildingUpgradeData upgradeData = offenseBuilding.offenseBuildingUpgradeData[spawnLevel];
+            case OffenseBuildingDataSO offenseBuilding:
+                {
+                    var currentLevelData = offenseBuilding.offenseBuildingUpgradeData[cardSpawnLevel];
+                    OffenseBuildingUpgradeData nextLevelData = new();
 
-            SetCommonBuildingStats(purchased, upgradeData);
-            DisableBlocksFrom(3);
-        }
-        else if (buildingData is MainBuildingDataSO mainBuilding)
-        {
-            MainBuildingUpgradeData upgradeData = mainBuilding.mainBuildingUpgradeData[spawnLevel];
+                    if (cardSpawnLevel + 1 < offenseBuilding.offenseBuildingUpgradeData.Count)
+                        nextLevelData = offenseBuilding.offenseBuildingUpgradeData[cardSpawnLevel + 1];
 
-            SetCommonBuildingStats(purchased, upgradeData);
+                    SetCommonBuildingStats(canUpgrade, currentLevelData, nextLevelData);
 
-            statBlocks[2].SetValues("Deck Size", $"{upgradeData.maxDeckEquipCount}", "+1");
-            statBlocks[2].SetIcon(deckIcon);
+                    var currentMaxUnits = currentLevelData.maxSpawnableUnits;
+                    var maxUnitsChange = Mathf.Abs(nextLevelData.maxSpawnableUnits - currentLevelData.maxSpawnableUnits);
+                    statBlocks[3].EnableBlock(canUpgrade);
+                    statBlocks[3].SetValues("Max Units", currentMaxUnits, maxUnitsChange);
+                    statBlocks[3].SetIcon(populationIcon);
 
-            statBlocks[3].EnableBlock(purchased);
-            statBlocks[3].SetValues("Max Population", $"{upgradeData.maxPopulation}", "+5");
-            statBlocks[3].SetIcon(populationIcon);
+                    DisableBlocksFrom(4);
+                }
+                break;
+            case MainBuildingDataSO mainBuilding:
+                {
+                    var currentLevelData = mainBuilding.mainBuildingUpgradeData[cardSpawnLevel];
+                    MainBuildingUpgradeData nextLevelData = new();
 
-            statBlocks[4].EnableBlock(purchased);
-            statBlocks[4].SetValues("Start Resources", $"{upgradeData.starterResources}", "+100");
-            statBlocks[4].SetIcon(resourceIcon);
+                    if (cardSpawnLevel + 1 < mainBuilding.mainBuildingUpgradeData.Count)
+                        nextLevelData = mainBuilding.mainBuildingUpgradeData[cardSpawnLevel + 1];
 
-            DisableBlocksFrom(5);
-        }
-        else if (buildingData is DefenseBuildingDataSO defenseBuilding)
-        {
-            DefenseBuildingUpgradeData upgradeData = defenseBuilding.defenseBuildingUpgradeData[spawnLevel];
+                    SetCommonBuildingStats(canUpgrade, currentLevelData, nextLevelData);
 
-            SetCommonBuildingStats(purchased, upgradeData);
+                    var currentDeckSize = currentLevelData.maxDeckEquipCount;
+                    var deckSizeChange = Mathf.Abs(nextLevelData.maxDeckEquipCount - currentLevelData.maxDeckEquipCount);
+                    statBlocks[2].EnableBlock(canUpgrade);
+                    statBlocks[2].SetValues("Deck Size", currentDeckSize, deckSizeChange);
+                    statBlocks[2].SetIcon(deckIcon);
 
-            if (defenseBuilding.defenseType == ScenarioDefenseType.Wall)
-            {
-                DisableBlocksFrom(3);
-                return;
-            }
+                    var currentMaxPopulation = currentLevelData.maxPopulation;
+                    var maxPopulationChange = Mathf.Abs(nextLevelData.maxPopulation - currentLevelData.maxPopulation);
+                    statBlocks[3].EnableBlock(canUpgrade);
+                    statBlocks[3].SetValues("Max Population", currentMaxPopulation, maxPopulationChange);
+                    statBlocks[3].SetIcon(populationIcon);
 
-            statBlocks[3].EnableBlock(purchased);
-            statBlocks[3].SetValues("Damage", $"{upgradeData.defenseAttackStats.damage}", "+5");
-            statBlocks[3].SetIcon(damageIcon);
+                    var currentStartResources = currentLevelData.starterResources;
+                    var startResourcesChange = Mathf.Abs(nextLevelData.starterResources - currentLevelData.starterResources);
+                    statBlocks[4].EnableBlock(canUpgrade);
+                    statBlocks[4].SetValues("Start Resources", currentStartResources, startResourcesChange);
+                    statBlocks[4].SetIcon(resourceIcon);
 
-            statBlocks[4].EnableBlock(purchased);
-            statBlocks[4].SetValues("Fire Rate", $"{upgradeData.defenseAttackStats.fireRate}", "-0.1");
-            statBlocks[4].SetIcon(fireRateIcon);
+                    DisableBlocksFrom(5);
+                }
+                break;
 
-            statBlocks[5].EnableBlock(purchased);
-            statBlocks[5].SetValues("Attack Range", $"{upgradeData.defenseRangeStats.attackRange}", "+0.1");
-            statBlocks[5].SetIcon(attackRangeIcon);
+            case DefenseBuildingDataSO defenseBuilding:
+                {
+                    var currentLevelData = defenseBuilding.defenseBuildingUpgradeData[cardSpawnLevel];
+                    DefenseBuildingUpgradeData nextLevelData = new();
 
-            DisableBlocksFrom(6);
-        }
-        else if (buildingData is ResourceBuildingDataSO resourceBuilding)
-        {
-            ResourceBuildingUpgradeData upgradeData = resourceBuilding.resourceBuildingUpgradeData[spawnLevel];
+                    if (cardSpawnLevel + 1 < defenseBuilding.defenseBuildingUpgradeData.Count)
+                        nextLevelData = defenseBuilding.defenseBuildingUpgradeData[cardSpawnLevel + 1];
 
-            SetCommonBuildingStats(purchased, upgradeData);
+                    SetCommonBuildingStats(canUpgrade, currentLevelData, nextLevelData);
 
-            statBlocks[3].EnableBlock(purchased);
-            statBlocks[3].SetValues("Resource Per Tick", $"{upgradeData.resourceAmountPerBatch}", "+1");
-            statBlocks[3].SetIcon(resourceBuilding.buildingIcon);
+                    if (defenseBuilding.defenseType == ScenarioDefenseType.Wall)
+                    {
+                        DisableBlocksFrom(3);
+                        break;
+                    }
 
-            statBlocks[4].EnableBlock(purchased);
-            statBlocks[4].SetValues("Resource Capacity", $"{upgradeData.resourceAmountCapacity}", "+1");
-            statBlocks[4].SetIcon(capacityIcon);
+                    var currentUnitDamage = currentLevelData.defenseAttackStats.damage;
+                    var unitDamageChange = Mathf.Abs(nextLevelData.defenseAttackStats.damage - currentLevelData.defenseAttackStats.damage);
+                    statBlocks[3].EnableBlock(canUpgrade);
+                    statBlocks[3].SetValues("Damage", currentUnitDamage, unitDamageChange);
+                    statBlocks[3].SetIcon(damageIcon);
 
-            DisableBlocksFrom(5);
+                    var currentBuildingDamage = currentLevelData.defenseAttackStats.buildingDamage;
+                    var buildingDamageChange = Mathf.Abs(nextLevelData.defenseAttackStats.buildingDamage - currentLevelData.defenseAttackStats.buildingDamage);
+                    statBlocks[4].EnableBlock(canUpgrade);
+                    statBlocks[4].SetValues("Building Damage", currentBuildingDamage, buildingDamageChange);
+                    statBlocks[4].SetIcon(damageIcon);
+
+                    var currentFireRate = currentLevelData.defenseAttackStats.fireRate;
+                    var fireRateChange = Mathf.Abs(nextLevelData.defenseAttackStats.fireRate - currentLevelData.defenseAttackStats.fireRate);
+                    statBlocks[5].EnableBlock(canUpgrade);
+                    statBlocks[5].SetValues("Fire Rate", currentFireRate, fireRateChange);
+                    statBlocks[5].SetIcon(fireRateIcon);
+
+                    var currentRange = currentLevelData.defenseRangeStats.attackRange;
+                    var rangeChange = Mathf.Abs(nextLevelData.defenseRangeStats.attackRange - currentLevelData.defenseRangeStats.attackRange);
+                    statBlocks[6].EnableBlock(canUpgrade);
+                    statBlocks[6].SetValues("Attack Range", currentRange, rangeChange);
+                    statBlocks[6].SetIcon(attackRangeIcon);
+
+                    DisableBlocksFrom(7);
+                }
+                break;
+
+            case ResourceBuildingDataSO resourceBuilding:
+                {
+                    var currentLevelData = resourceBuilding.resourceBuildingUpgradeData[cardSpawnLevel];
+                    ResourceBuildingUpgradeData nextLevelData = new();
+
+                    if (cardSpawnLevel + 1 < resourceBuilding.resourceBuildingUpgradeData.Count)
+                        nextLevelData = resourceBuilding.resourceBuildingUpgradeData[cardSpawnLevel + 1];
+
+                    SetCommonBuildingStats(canUpgrade, currentLevelData, nextLevelData);
+
+                    var currentResourceGenerationAmount = currentLevelData.resourceAmountPerBatch;
+                    var resourceGenerationAmountChange = Mathf.Abs(nextLevelData.resourceAmountPerBatch - currentLevelData.resourceAmountPerBatch);
+                    statBlocks[3].EnableBlock(canUpgrade);
+                    statBlocks[3].SetValues("Amount", currentResourceGenerationAmount, resourceGenerationAmountChange);
+                    statBlocks[3].SetIcon(resourceBuilding.buildingIcon);
+
+                    var currentResourceCapacity = currentLevelData.resourceAmountCapacity;
+                    var resourceCapacityChange = Mathf.Abs(nextLevelData.resourceAmountCapacity - currentLevelData.resourceAmountCapacity);
+                    statBlocks[4].EnableBlock(canUpgrade);
+                    statBlocks[4].SetValues("Capacity", currentResourceCapacity, resourceCapacityChange);
+                    statBlocks[4].SetIcon(capacityIcon);
+
+                    DisableBlocksFrom(5);
+                }
+                break;
         }
     }
 
     internal void InitializeStatBlocks(UnitProduceStatsSO unitData)
     {
-        int spawnLevel = unitData.unitIdentity.spawnLevel;
-        cardLevel.SetText($"Level : {spawnLevel + 1}");
+        cardLevelText.SetText($"Level {cardSpawnLevel + 1}");
 
-        bool purchased = unitData.cardDetails.purchased;
-        UnitUpgradeData upgradeData = unitData.unitUpgradeData[spawnLevel];
+        UnitUpgradeData currentLevelData = unitData.unitUpgradeData[cardSpawnLevel];
+        UnitUpgradeData nextLevelData = new();
 
-        statBlocks[0].EnableBlock(purchased);
-        statBlocks[0].SetValues("Max Health", $"{upgradeData.unitBasicStats.maxHealth}", "+500");
+        bool canUpgrade = unitData.cardDetails.cardState == CardState.Purchased && cardSpawnLevel < GameData.GameMaxObjectLevel;
+
+        if (cardSpawnLevel + 1 < unitData.unitUpgradeData.Length)
+            nextLevelData = unitData.unitUpgradeData[cardSpawnLevel + 1];
+
+        var currentHealth = currentLevelData.unitBasicStats.maxHealth;
+        var healthChange = Mathf.Abs(nextLevelData.unitBasicStats.maxHealth - currentLevelData.unitBasicStats.maxHealth);
+        statBlocks[0].EnableBlock(canUpgrade);
+        statBlocks[0].SetValues("Max Health", currentHealth, healthChange);
         statBlocks[0].SetIcon(healthIcon);
 
-        statBlocks[1].EnableBlock(purchased);
-        statBlocks[1].SetValues("Armor", $"{upgradeData.unitBasicStats.armor}", "+50");
+        var currentArmor = currentLevelData.unitBasicStats.armor;
+        var armorChange = Mathf.Abs(nextLevelData.unitBasicStats.armor - currentLevelData.unitBasicStats.armor);
+        statBlocks[1].EnableBlock(canUpgrade);
+        statBlocks[1].SetValues("Armor", currentArmor, armorChange);
         statBlocks[1].SetIcon(armorIcon);
 
-        statBlocks[2].EnableBlock(purchased);
-        statBlocks[2].SetValues("Build Time", $"{upgradeData.unitBuildTime}", "-0.1");
+        var currentBuildTime = currentLevelData.unitSpawnTime;
+        var buildTimeChange = Mathf.Abs(nextLevelData.unitSpawnTime - currentLevelData.unitSpawnTime);
+        statBlocks[2].EnableBlock(canUpgrade);
+        statBlocks[2].SetValues("Spawn Time", currentBuildTime, buildTimeChange);
         statBlocks[2].SetIcon(buildTimeIcon);
 
-        statBlocks[3].EnableBlock(purchased);
-        statBlocks[3].SetValues("Speed", $"{upgradeData.unitMobilityStats.moveSpeed}", "+5");
+        var currentMoveSpeed = currentLevelData.unitMobilityStats.moveSpeed;
+        var moveSpeedChange = Mathf.Abs(nextLevelData.unitMobilityStats.moveSpeed - currentLevelData.unitMobilityStats.moveSpeed);
+        statBlocks[3].EnableBlock(canUpgrade);
+        statBlocks[3].SetValues("Speed", currentMoveSpeed, moveSpeedChange);
         statBlocks[3].SetIcon(speedIcon);
 
-        statBlocks[4].EnableBlock(purchased);
-        statBlocks[4].SetValues("Unit Damage", $"{upgradeData.unitAttackStats.damage}", "+5");
+        var currentUnitDamage = currentLevelData.unitAttackStats.damage;
+        var unitDamageChange = Mathf.Abs(nextLevelData.unitAttackStats.damage - currentLevelData.unitAttackStats.damage);
+        statBlocks[4].EnableBlock(canUpgrade);
+        statBlocks[4].SetValues("Unit Damage", currentUnitDamage, unitDamageChange);
         statBlocks[4].SetIcon(damageIcon);
 
-        statBlocks[5].EnableBlock(purchased);
-        statBlocks[5].SetValues("Building Damage", $"{upgradeData.unitAttackStats.buildingDamage}", "+5");
+        var currentBuildingDamage = currentLevelData.unitAttackStats.buildingDamage;
+        var buildingDamageChange = Mathf.Abs(nextLevelData.unitAttackStats.buildingDamage - currentLevelData.unitAttackStats.buildingDamage);
+        statBlocks[5].EnableBlock(canUpgrade);
+        statBlocks[5].SetValues("Building Damage", currentBuildingDamage, buildingDamageChange);
         statBlocks[5].SetIcon(damageIcon);
 
-        statBlocks[6].EnableBlock(purchased);
-        statBlocks[6].SetValues("Fire Rate", $"{upgradeData.unitAttackStats.fireRate}", "-0.1");
+        var currentFireRate = currentLevelData.unitAttackStats.fireRate;
+        var fireRateChange = Mathf.Abs(nextLevelData.unitAttackStats.fireRate - currentLevelData.unitAttackStats.fireRate);
+        statBlocks[6].EnableBlock(canUpgrade);
+        statBlocks[6].SetValues("Fire Rate", currentFireRate, fireRateChange);
         statBlocks[6].SetIcon(fireRateIcon);
 
-        statBlocks[7].EnableBlock(purchased);
-        statBlocks[7].SetValues("Attack Range", $"{upgradeData.unitRangeStats.attackRange}", "+0.1");
+        var currentRange = currentLevelData.unitRangeStats.attackRange;
+        var rangeChange = Mathf.Abs(nextLevelData.unitRangeStats.attackRange - currentLevelData.unitRangeStats.attackRange);
+        statBlocks[7].EnableBlock(canUpgrade);
+        statBlocks[7].SetValues("Attack Range", currentRange, rangeChange);
         statBlocks[7].SetIcon(attackRangeIcon);
     }
     #endregion
 
-    protected void ToggleTypeIcon(GameObject icon)
+    #region Helper Functions
+    private void RefreshButtonState()
+    {
+        switch (currentCardState)
+        {
+            case CardState.Locked:
+                actionButton.gameObject.SetActive(false);
+                return;
+            case CardState.Unlocked:
+                actionButton.gameObject.SetActive(true);
+                buttonLabel.SetText("Purchase");
+                break;
+            case CardState.Purchased:
+                actionButton.gameObject.SetActive(true);
+                buttonLabel.SetText("Upgrade");
+                UpdateCostDisplay(currentUpgradeCard.cardUpgradeCost);
+                actionButton.interactable = userData.Diamonds >= currentUpgradeCard.cardUpgradeCost && currentFragments >= currentUpgradeCard.cardFragmentCost;
+                break;
+        }
+
+        if (cardSpawnLevel + 1 == GameData.GameMaxObjectLevel)
+        {
+            buttonLabel.SetText("Max Level");
+            actionButton.interactable = false;
+        }
+    }
+
+    private void UpdateProgressBar()
+    {
+        levelProgressFill.fillAmount = (float)currentFragments / currentUpgradeCard.cardFragmentCost;
+        levelProgressText.SetText($"{currentFragments}/{currentUpgradeCard.cardFragmentCost}");
+    }
+
+    private void UpdateCostDisplay(int cost)
+    {
+        actionGemCostText.SetText($"{cost}");
+    }
+    private void ToggleTypeIcon(GameObject icon)
     {
         buildingTypeIcon.gameObject.SetActive(false);
         unitTypeIcon.gameObject.SetActive(false);
         icon.SetActive(true);
     }
-
     public void SetSelectedUpgradeCard(UpgradeCard card)
     {
         currentUpgradeCard = card;
     }
+    #endregion
+
 }

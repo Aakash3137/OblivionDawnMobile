@@ -8,11 +8,12 @@ public class AllUnitData : ScriptableObject
 {
     public List<UnitProduceStatsSO> allUnitsSO;
 
-    [field: SerializeField] public List<Unit> allUnits { get; internal set; }
+    public List<Unit> allUnits { get; internal set; }
 
     private void OnValidate()
     {
         Populate();
+        SortUnitData();
     }
 
     public void Populate()
@@ -28,6 +29,22 @@ public class AllUnitData : ScriptableObject
         }
 
         AddUnitsDataSO();
+    }
+
+    private void SortUnitData()
+    {
+        allUnitsSO.Sort(CompareUnitSO);
+    }
+
+    private static int CompareUnitSO(UnitProduceStatsSO a, UnitProduceStatsSO b)
+    {
+        int order = a.unitIdentity.faction.CompareTo(b.unitIdentity.faction);
+
+        // if(both are same then compare by UnitType)
+        if (order == 0)
+            order = a.unitType.CompareTo(b.unitType);
+
+        return order;
     }
 
     private void AddUnitsDataSO()

@@ -7,10 +7,14 @@ public class RangeEffect : TileEffect
 
     public override void ApplyVisuals(Tile tile)
     {
+        if (tile == null)
+            return;
+
         if (vfxPrefab != null)
         {
             var vfx = Instantiate(vfxPrefab, tile.transform.position, Quaternion.identity, tile.transform);
             vfx.transform.localPosition = Vector3.up * yOffset;
+            tile.tileEffectPrefab = vfx;
         }
     }
 

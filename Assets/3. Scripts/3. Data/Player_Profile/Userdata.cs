@@ -72,7 +72,7 @@ public class Userdata : ScriptableObject
 
         OnFragmentsChanged?.Invoke(faction);
     }
-    public int GetFragment(int index) => fragments[index];
+    public int GetFragment(FactionName faction) => fragments[(int)faction];
 
     public void ResetData()
     {

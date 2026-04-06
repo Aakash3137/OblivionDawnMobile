@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79f103686d77cff44a321384f3a45c43, type: 3}
   m_Name: Futuristic Food
   m_EditorClassIdentifier: 
+  gameBuildingName: 280
   buildingIdentity:
     name: Health Drink
     spawnLevel: 0
     faction: 2
-    populationCost: 0
     priority: 0
   buildingType: 3
   buildingVisuals:
@@ -33,10 +33,11 @@ MonoBehaviour:
     resourceAmount: 33
   buildingIcon: {fileID: 21300000, guid: d729abe723c2b334db7a892ab4203ae4, type: 3}
   cardDetails:
-    factionUnlocked: 0
-    isUnlocked: 1
-    purchased: 1
-    minCityCenterLevel: 0
+    cardState: 2
+    minBuildingLevel: 0
+    purchaseCost: 20
+    upgradeCostMultiplier: 1
+    fragmentCostMultiplier: 1
   hasUpkeep: 0
   upKeepCost:
   - resourceType: 0
@@ -50,12 +51,183 @@ MonoBehaviour:
   <upKeepTime>k__BackingField: 5
   resourceType: 0
   resourceBuildingUpgradeData:
-  - buildingLevel: 0
+  - buildingLevel: 1
     buildingBasicStats:
       maxHealth: 1500
-      armor: 0
+      armor: 30
     buildingBuildTime: 5
     resourceAmountPerBatch: 5
-    <resourceTimeToProduce>k__BackingField: 5
+    <resourceTimeToProduce>k__BackingField: 0
     resourceAmountCapacity: 50
-    resourceGenerationRate: 5
+    resourceGenerationRate: 0
+  - buildingLevel: 2
+    buildingBasicStats:
+      maxHealth: 1680
+      armor: 31.8
+    buildingBuildTime: 5
+    resourceAmountPerBatch: 5
+    <resourceTimeToProduce>k__BackingField: 0
+    resourceAmountCapacity: 50
+    resourceGenerationRate: 0
+  - buildingLevel: 3
+    buildingBasicStats:
+      maxHealth: 1860
+      armor: 33.6
+    buildingBuildTime: 5
+    resourceAmountPerBatch: 5
+    <resourceTimeToProduce>k__BackingField: 0
+    resourceAmountCapacity: 50
+    resourceGenerationRate: 0
+  - buildingLevel: 4
+    buildingBasicStats:
+      maxHealth: 2040
+      armor: 35.41
+    buildingBuildTime: 5
+    resourceAmountPerBatch: 5
+    <resourceTimeToProduce>k__BackingField: 0
+    resourceAmountCapacity: 60
+    resourceGenerationRate: 0
+  - buildingLevel: 5
+    buildingBasicStats:
+      maxHealth: 2220
+      armor: 37.2
+    buildingBuildTime: 5
+    resourceAmountPerBatch: 5
+    <resourceTimeToProduce>k__BackingField: 0
+    resourceAmountCapacity: 60
+    resourceGenerationRate: 0
+  - buildingLevel: 6
+    buildingBasicStats:
+      maxHealth: 2400
+      armor: 39
+    buildingBuildTime: 5
+    resourceAmountPerBatch: 6
+    <resourceTimeToProduce>k__BackingField: 0
+    resourceAmountCapacity: 60
+    resourceGenerationRate: 0
+  - buildingLevel: 7
+    buildingBasicStats:
+      maxHealth: 2580
+      armor: 40.8
+    buildingBuildTime: 5
+    resourceAmountPerBatch: 6
+    <resourceTimeToProduce>k__BackingField: 0
+    resourceAmountCapacity: 60
+    resourceGenerationRate: 0
+  - buildingLevel: 8
+    buildingBasicStats:
+      maxHealth: 2760
+      armor: 42.6
+    buildingBuildTime: 5
+    resourceAmountPerBatch: 6
+    <resourceTimeToProduce>k__BackingField: 0
+    resourceAmountCapacity: 70
+    resourceGenerationRate: 0
+  - buildingLevel: 9
+    buildingBasicStats:
+      maxHealth: 2940
+      armor: 44.4
+    buildingBuildTime: 5
+    resourceAmountPerBatch: 6
+    <resourceTimeToProduce>k__BackingField: 0
+    resourceAmountCapacity: 70
+    resourceGenerationRate: 0
+  - buildingLevel: 10
+    buildingBasicStats:
+      maxHealth: 3120
+      armor: 46.2
+    buildingBuildTime: 4.85
+    resourceAmountPerBatch: 6
+    <resourceTimeToProduce>k__BackingField: 0
+    resourceAmountCapacity: 70
+    resourceGenerationRate: 0
+  - buildingLevel: 11
+    buildingBasicStats:
+      maxHealth: 3300
+      armor: 48
+    buildingBuildTime: 4.85
+    resourceAmountPerBatch: 6
+    <resourceTimeToProduce>k__BackingField: 0
+    resourceAmountCapacity: 70
+    resourceGenerationRate: 0
+  - buildingLevel: 12
+    buildingBasicStats:
+      maxHealth: 3480
+      armor: 49.8
+    buildingBuildTime: 4.85
+    resourceAmountPerBatch: 7
+    <resourceTimeToProduce>k__BackingField: 0
+    resourceAmountCapacity: 80
+    resourceGenerationRate: 0
+  - buildingLevel: 13
+    buildingBasicStats:
+      maxHealth: 3660
+      armor: 51.6
+    buildingBuildTime: 4.85
+    resourceAmountPerBatch: 7
+    <resourceTimeToProduce>k__BackingField: 0
+    resourceAmountCapacity: 80
+    resourceGenerationRate: 0
+  - buildingLevel: 14
+    buildingBasicStats:
+      maxHealth: 3840
+      armor: 53.4
+    buildingBuildTime: 4.85
+    resourceAmountPerBatch: 7
+    <resourceTimeToProduce>k__BackingField: 0
+    resourceAmountCapacity: 80
+    resourceGenerationRate: 0
+  - buildingLevel: 15
+    buildingBasicStats:
+      maxHealth: 4020
+      armor: 55.2
+    buildingBuildTime: 4.85
+    resourceAmountPerBatch: 7
+    <resourceTimeToProduce>k__BackingField: 0
+    resourceAmountCapacity: 80
+    resourceGenerationRate: 0
+  - buildingLevel: 16
+    buildingBasicStats:
+      maxHealth: 4200
+      armor: 57
+    buildingBuildTime: 4.85
+    resourceAmountPerBatch: 7
+    <resourceTimeToProduce>k__BackingField: 0
+    resourceAmountCapacity: 90
+    resourceGenerationRate: 0
+  - buildingLevel: 17
+    buildingBasicStats:
+      maxHealth: 4380
+      armor: 58.8
+    buildingBuildTime: 4.85
+    resourceAmountPerBatch: 7
+    <resourceTimeToProduce>k__BackingField: 0
+    resourceAmountCapacity: 90
+    resourceGenerationRate: 0
+  - buildingLevel: 18
+    buildingBasicStats:
+      maxHealth: 4560
+      armor: 60.6
+    buildingBuildTime: 4.85
+    resourceAmountPerBatch: 8
+    <resourceTimeToProduce>k__BackingField: 0
+    resourceAmountCapacity: 90
+    resourceGenerationRate: 0
+  - buildingLevel: 19
+    buildingBasicStats:
+      maxHealth: 4740
+      armor: 62.4
+    buildingBuildTime: 4.85
+    resourceAmountPerBatch: 8
+    <resourceTimeToProduce>k__BackingField: 0
+    resourceAmountCapacity: 90
+    resourceGenerationRate: 0
+  - buildingLevel: 20
+    buildingBasicStats:
+      maxHealth: 4920
+      armor: 64.2
+    buildingBuildTime: 4.7
+    resourceAmountPerBatch: 8
+    <resourceTimeToProduce>k__BackingField: 0
+    resourceAmountCapacity: 100
+    resourceGenerationRate: 0

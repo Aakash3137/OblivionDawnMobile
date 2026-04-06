@@ -6,6 +6,9 @@ public static class GameData
     public static FactionName playerFaction = FactionName.Futuristic;
     public static FactionName enemyFaction;
 
+    public static readonly int GameMaxDeckSize = 8;
+    public static readonly int GameMaxPopulation = 40;
+    public static int GameMaxObjectLevel = 20;
 
     // Game mode info
     public static string GameModeType;

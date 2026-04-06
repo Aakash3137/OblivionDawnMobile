@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 109fcb5c7bddc85438ecbc29d244cf82, type: 3}
   m_Name: Galvadore AOERanged Spawner
   m_EditorClassIdentifier: 
+  gameBuildingName: 303
   buildingIdentity:
     name: Galvadore MeleeBuilding
     spawnLevel: 0
@@ -32,10 +33,11 @@ MonoBehaviour:
     resourceAmount: 12
   buildingIcon: {fileID: -2026953437, guid: c57feff7fce94a94c8b1cc7b508083df, type: 3}
   cardDetails:
-    factionUnlocked: 0
-    isUnlocked: 1
-    purchased: 1
+    cardState: 2
     minBuildingLevel: 0
+    purchaseCost: 20
+    upgradeCostMultiplier: 1
+    fragmentCostMultiplier: 1
   hasUpkeep: 1
   upKeepCost:
   - resourceType: 0
@@ -50,10 +52,123 @@ MonoBehaviour:
   offenseType: 2
   unitPrefab: {fileID: 4092004499000924797, guid: 82944feb5a636ca4dbf8ec45a74d3bfe, type: 3}
   offenseBuildingUpgradeData:
-  - buildingLevel: 0
+  - buildingLevel: 1
     buildingBasicStats:
       maxHealth: 1500
-      armor: 0
+      armor: 30
     buildingBuildTime: 5
-    unitSpawnTime: 30
+    maxSpawnableUnits: 4
+  - buildingLevel: 2
+    buildingBasicStats:
+      maxHealth: 1680
+      armor: 31.8
+    buildingBuildTime: 5
+    maxSpawnableUnits: 4
+  - buildingLevel: 3
+    buildingBasicStats:
+      maxHealth: 1860
+      armor: 33.6
+    buildingBuildTime: 5
+    maxSpawnableUnits: 4
+  - buildingLevel: 4
+    buildingBasicStats:
+      maxHealth: 2040
+      armor: 35.41
+    buildingBuildTime: 5
+    maxSpawnableUnits: 4
+  - buildingLevel: 5
+    buildingBasicStats:
+      maxHealth: 2220
+      armor: 37.2
+    buildingBuildTime: 5
+    maxSpawnableUnits: 4
+  - buildingLevel: 6
+    buildingBasicStats:
+      maxHealth: 2400
+      armor: 39
+    buildingBuildTime: 5
+    maxSpawnableUnits: 4
+  - buildingLevel: 7
+    buildingBasicStats:
+      maxHealth: 2580
+      armor: 40.8
+    buildingBuildTime: 5
+    maxSpawnableUnits: 4
+  - buildingLevel: 8
+    buildingBasicStats:
+      maxHealth: 2760
+      armor: 42.6
+    buildingBuildTime: 5
+    maxSpawnableUnits: 4
+  - buildingLevel: 9
+    buildingBasicStats:
+      maxHealth: 2940
+      armor: 44.4
+    buildingBuildTime: 5
+    maxSpawnableUnits: 4
+  - buildingLevel: 10
+    buildingBasicStats:
+      maxHealth: 3120
+      armor: 46.2
+    buildingBuildTime: 4.85
+    maxSpawnableUnits: 4
+  - buildingLevel: 11
+    buildingBasicStats:
+      maxHealth: 3300
+      armor: 48
+    buildingBuildTime: 4.85
+    maxSpawnableUnits: 4
+  - buildingLevel: 12
+    buildingBasicStats:
+      maxHealth: 3480
+      armor: 49.8
+    buildingBuildTime: 4.85
+    maxSpawnableUnits: 4
+  - buildingLevel: 13
+    buildingBasicStats:
+      maxHealth: 3660
+      armor: 51.6
+    buildingBuildTime: 4.85
+    maxSpawnableUnits: 4
+  - buildingLevel: 14
+    buildingBasicStats:
+      maxHealth: 3840
+      armor: 53.4
+    buildingBuildTime: 4.85
+    maxSpawnableUnits: 4
+  - buildingLevel: 15
+    buildingBasicStats:
+      maxHealth: 4020
+      armor: 55.2
+    buildingBuildTime: 4.85
+    maxSpawnableUnits: 4
+  - buildingLevel: 16
+    buildingBasicStats:
+      maxHealth: 4200
+      armor: 57
+    buildingBuildTime: 4.85
+    maxSpawnableUnits: 4
+  - buildingLevel: 17
+    buildingBasicStats:
+      maxHealth: 4380
+      armor: 58.8
+    buildingBuildTime: 4.85
+    maxSpawnableUnits: 4
+  - buildingLevel: 18
+    buildingBasicStats:
+      maxHealth: 4560
+      armor: 60.6
+    buildingBuildTime: 4.85
+    maxSpawnableUnits: 4
+  - buildingLevel: 19
+    buildingBasicStats:
+      maxHealth: 4740
+      armor: 62.4
+    buildingBuildTime: 4.85
+    maxSpawnableUnits: 4
+  - buildingLevel: 20
+    buildingBasicStats:
+      maxHealth: 4920
+      armor: 64.2
+    buildingBuildTime: 4.7
     maxSpawnableUnits: 4

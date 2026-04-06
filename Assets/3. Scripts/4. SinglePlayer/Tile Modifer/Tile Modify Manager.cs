@@ -77,9 +77,14 @@ public class TileModifyManager : MonoBehaviour
 
             for (int j = 0; j < randomTiles.Count; j++)
             {
-                ApplyTileEffects(highPriorityEffect, randomTiles[j]);
+                highPriorityEffect.ApplyVisuals(randomTiles[j]);
+                randomTiles[j].tileEffectType = data.tileEffectType;
+                for (int k = 0; k < tileEffectList.Count; k++)
+                {
+                    randomTiles[j].tileEffects.Add(tileEffectList[k]);
+                }
 
-                if (data.isObstacle)
+                if (randomTiles[j] != null && data.isObstacle)
                 {
                     var navMeshObstacle = randomTiles[j].AddComponent<NavMeshObstacle>();
                     navMeshObstacle.enabled = true;
@@ -98,7 +103,12 @@ public class TileModifyManager : MonoBehaviour
                 else
                     randomTile = cgmInstance.GetRandomTile(Side.Enemy, data.minDistanceFromMainBuilding);
 
-                ApplyTileEffects(highPriorityEffect, randomTile);
+                highPriorityEffect.ApplyVisuals(randomTile);
+                randomTile.tileEffectType = data.tileEffectType;
+                for (int k = 0; k < tileEffectList.Count; k++)
+                {
+                    randomTile.tileEffects.Add(tileEffectList[k]);
+                }
 
                 if (randomTile != null && data.isObstacle)
                 {
@@ -108,38 +118,6 @@ public class TileModifyManager : MonoBehaviour
                     navMeshObstacle.center = Vector3.up * 2f;
                 }
             }
-        }
-    }
-
-    private void ApplyTileEffects(TileEffect effect, Tile tile)
-    {
-        if (effect is BasicStatsEffect basicStatsEffect)
-        {
-            basicStatsEffect.ApplyVisuals(tile);
-        }
-        else if (effect is DamageEffect damageEffect)
-        {
-            damageEffect.ApplyVisuals(tile);
-        }
-        else if (effect is RangeEffect rangeEffect)
-        {
-            rangeEffect.ApplyVisuals(tile);
-        }
-        else if (effect is UnitProductionEffect unitProductionEffect)
-        {
-            unitProductionEffect.ApplyVisuals(tile);
-        }
-        else if (effect is ResourceProductionEffect resourceProductionEffect)
-        {
-            resourceProductionEffect.ApplyVisuals(tile);
-        }
-        else if (effect is WaterEffect waterEffect)
-        {
-            waterEffect.ApplyVisuals(tile);
-        }
-        else if (effect is LavaEffect lavaEffect)
-        {
-            lavaEffect.ApplyVisuals(tile);
         }
     }
 
@@ -189,10 +167,10 @@ public class TileModificationData
 {
     public TileEffectType tileEffectType;
     public int tileCount;
-    [ReadOnly]public int clusterSize;
+    [ReadOnly] public int clusterSize;
     public int minDistanceFromMainBuilding;
     public bool isGrouped;
     public bool isObstacle;
 }
 
-public enum TileEffectType { OffenseTile, DefenseTile, ResourceTile, WaterTile, LavaTile }
+public enum TileEffectType { NONE, OffenseTile, DefenseTile, ResourceTile, WaterTile, LavaTile }

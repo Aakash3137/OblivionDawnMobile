@@ -15,7 +15,7 @@ public class DeckSelectionManager : MonoBehaviour
     [Space(10)]
     [SerializeField] private SelectedCard selectedCardPrefab;
     [SerializeField] private Transform selectedCardsContainer;
-    [SerializeField] private int maxCardCount = 8;
+    private int maxCardCount = GameData.GameMaxDeckSize;
 
     [Space(10)]
     [ReadOnly][SerializeField] private FactionDeckData[] allFactionsDeckData;
@@ -222,8 +222,7 @@ public class DeckSelectionManager : MonoBehaviour
             selectedCards[i].transform.SetSiblingIndex(i);
     }
 
-    private static int GetTypeOrder(ScriptableObject so) =>
-        so is UnitProduceStatsSO ? 0 : 1;
+    private static int GetTypeOrder(ScriptableObject so) => so is UnitProduceStatsSO ? 0 : 1;
 
     private static int CompareBySO(ScriptableObject a, ScriptableObject b)
     {

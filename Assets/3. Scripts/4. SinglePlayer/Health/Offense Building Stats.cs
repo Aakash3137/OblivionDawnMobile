@@ -6,6 +6,7 @@ public class OffenseBuildingStats : BuildingStats
 {
     public ScenarioOffenseType offenseType { get; private set; }
     public OffenseBuildingUpgradeData offenseBuildingData { get; private set; }
+    public override TileEffectType compatibleTileEffectType => TileEffectType.OffenseTile;
     private CubeGridManager cgmInstance;
 
     // private CharacterDatabase characterDatabase => CharacterDatabase.Instance;
@@ -13,10 +14,10 @@ public class OffenseBuildingStats : BuildingStats
     [ReadOnly]
     public List<UnitStats> producedUnits = new List<UnitStats>();
     [SerializeField, ReadOnly] private UnitStats unit;
+    [SerializeField, ReadOnly] private float unitSpawnTime;
     private Vector2Int currentGrid;
 
     private Tile nearestTile;
-    private float unitSpawnTime;
     private bool canMaintain => CanMaintain();
     [field: SerializeField, ReadOnly] public bool isProducingUnits { get; private set; }
     private int maxSpawnableUnits;
@@ -34,9 +35,11 @@ public class OffenseBuildingStats : BuildingStats
 
             buildCost = offenseBuildingSO.buildingBuildCost;
 
-            unitSpawnTime = offenseBuildingData.unitSpawnTime;
-
-            unit = offenseBuildingSO.unitPrefab;
+            if (side != Side.Player)
+            {
+                unitSpawnTime = unit.unitProduceSO.unitUpgradeData[0].unitSpawnTime;
+                unit = offenseBuildingSO.unitPrefab;
+            }
 
             basicStats = offenseBuildingData.buildingBasicStats;
 
@@ -52,7 +55,6 @@ public class OffenseBuildingStats : BuildingStats
         base.Initialize();
 
         currentGrid = CubeGridManager.Instance.WorldToGrid(currentTile.transform.position);
-
     }
 
     internal override async Awaitable InitializeOnBuilt()
@@ -136,7 +138,7 @@ public class OffenseBuildingStats : BuildingStats
 
     public float GetUnitSpawnTime()
     {
-        return offenseBuildingData.unitSpawnTime;
+        return unitSpawnTime;
     }
 
     internal override void Die()
@@ -146,8 +148,9 @@ public class OffenseBuildingStats : BuildingStats
         KillCounterManager.Instance.AddOffenseBuildingDestroyedData(offenseType, side);
     }
 
-    public void SetUnitPrefab(UnitStats prefab)
+    public void SetUnitPrefab(UnitStats prefab, float spawnTime)
     {
         unit = prefab;
+        unitSpawnTime = spawnTime;
     }
 }
