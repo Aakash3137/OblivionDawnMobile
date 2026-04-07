@@ -212,12 +212,14 @@ MonoBehaviour:
   <basicStats>k__BackingField:
     maxHealth: 0
     armor: 0
-  <currentHealth>k__BackingField: 0
+  CurrentHealth: 0
+  RepairObj: {fileID: 6814711368792010979}
   <side>k__BackingField: 0
   <buildingStatsSO>k__BackingField: {fileID: 11400000, guid: 6973122b3e7120448bfb9e0044806029, type: 2}
   <currentTile>k__BackingField: {fileID: 0}
   producedUnits: []
   unit: {fileID: 0}
+  unitSpawnTime: 0
   <isProducingUnits>k__BackingField: 0
 --- !u!114 &-8601235731716320567
 MonoBehaviour:
@@ -301,6 +303,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1807120803253265653}
     m_Modifications:
+    - target: {fileID: 2221734474531310529, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3525362685811643254, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
+      propertyPath: StatsData
+      value: 
+      objectReference: {fileID: 6654904274989017988}
     - target: {fileID: 3644381699479357817, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
       propertyPath: m_PresetInfoIsWorld
       value: 1
@@ -385,6 +395,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7012988750971218072, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
+      propertyPath: m_Size.x
+      value: 0.747632
+      objectReference: {fileID: 0}
+    - target: {fileID: 7012988750971218072, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
+      propertyPath: m_Size.y
+      value: 0.74176186
+      objectReference: {fileID: 0}
+    - target: {fileID: 7012988750971218072, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
+      propertyPath: m_Offset.x
+      value: -0.00537169
+      objectReference: {fileID: 0}
+    - target: {fileID: 7012988750971218072, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
+      propertyPath: m_Offset.y
+      value: 0.006098002
+      objectReference: {fileID: 0}
+    - target: {fileID: 7329119518391652968, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7567502504324445106, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
       propertyPath: m_Name
       value: Offense Building World Canvas
@@ -399,3 +429,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4770809539800998566, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
   m_PrefabInstance: {fileID: 7961851000234550165}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6814711368792010979 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3525362685811643254, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
+  m_PrefabInstance: {fileID: 7961851000234550165}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2354eaf7accc6b42b7cad91bb64509b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
