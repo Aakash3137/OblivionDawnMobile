@@ -59,7 +59,10 @@ public class MainDefenseUnit : MonoBehaviour
         secondaryTarget = new GameObject[turretBuilding.Length];
 
         for (int i = 0; i < turretBuilding.Length; i++)
+        {
             targetCheckIntervals[i] = Random.Range(0.5f, 1.2f);
+            attackTimer[i] = mainData.mainAttackStats.fireRate;
+        }
     }
 
     private void Update()
@@ -86,6 +89,15 @@ public class MainDefenseUnit : MonoBehaviour
 
             if (target[i] == null)
                 return;
+
+            float distance = Vector3.Distance(transform.position, target[i].transform.position);
+
+            if (distance > mainData.mainRangeStats.attackRange)
+            {
+                attackTimer[i] = mainData.mainAttackStats.fireRate;
+                target[i] = null;
+                return;
+            }
 
             attackTimer[i] += Time.deltaTime;
 
