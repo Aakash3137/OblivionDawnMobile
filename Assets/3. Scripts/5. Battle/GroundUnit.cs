@@ -668,6 +668,7 @@ public class GroundUnit : MonoBehaviour
             if (mod.isUnitDamage)
                 baseDamage += mod.amount;
         }
+        Debug.Log("UnitDamage Increased to :" + baseDamage + "  from  " + unitData.unitAttackStats.damage + "  base damage");
         return baseDamage;
     }
     
@@ -679,6 +680,7 @@ public class GroundUnit : MonoBehaviour
             if (!mod.isUnitDamage)
                 baseDamage += mod.amount;
         }
+        Debug.Log("BuildingDamage Increased to :" + baseDamage + "  from  " + unitData.unitAttackStats.buildingDamage + "  base damage");
         return baseDamage;
     }
 
