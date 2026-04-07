@@ -175,7 +175,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e2b48899215c0e438c75307d31cd01d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allNeighbors: 1
   neighborTiles: []
 --- !u!114 &6370108711702563515
 MonoBehaviour:
@@ -209,18 +208,18 @@ MonoBehaviour:
     name: 
     spawnLevel: 0
     faction: 0
-    isUnique: 0
     priority: 0
   <basicStats>k__BackingField:
     maxHealth: 0
     armor: 0
-  <currentHealth>k__BackingField: 0
+  CurrentHealth: 0
+  RepairObj: {fileID: 1018548669444035113}
   <side>k__BackingField: 0
   <buildingStatsSO>k__BackingField: {fileID: 11400000, guid: 687a969e0c1d1854abe740fcd476859a, type: 2}
   <currentTile>k__BackingField: {fileID: 0}
   producedUnits: []
   unit: {fileID: 0}
-  <isProducing>k__BackingField: 0
+  <isProducingUnits>k__BackingField: 0
 --- !u!114 &6847755428989222692
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -303,6 +302,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1807120803253265653}
     m_Modifications:
+    - target: {fileID: 3525362685811643254, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
+      propertyPath: StatsData
+      value: 
+      objectReference: {fileID: 440087453954508992}
     - target: {fileID: 3644381699479357817, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
       propertyPath: m_PresetInfoIsWorld
       value: 1
@@ -396,6 +399,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
+--- !u!114 &1018548669444035113 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3525362685811643254, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
+  m_PrefabInstance: {fileID: 4525561483287904607}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2354eaf7accc6b42b7cad91bb64509b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &9005888426065716217 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4770809539800998566, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}

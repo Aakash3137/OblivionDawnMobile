@@ -17,6 +17,7 @@ public class ProgressManager : MonoBehaviour
 
     public virtual void UpdateFillAmount(float amount)
     {
+//        Debug.Log("Update Fill Amount with " + amount);
         amount = Mathf.Clamp01(amount);
         fillImage.fillAmount = amount;
     }

@@ -212,7 +212,8 @@ MonoBehaviour:
   <basicStats>k__BackingField:
     maxHealth: 0
     armor: 0
-  <currentHealth>k__BackingField: 0
+  CurrentHealth: 0
+  RepairObj: {fileID: 3008809841613818184}
   <side>k__BackingField: 0
   <buildingStatsSO>k__BackingField: {fileID: 11400000, guid: 87815d4fe1b975f4f8f4b722fa307d25, type: 2}
   <currentTile>k__BackingField: {fileID: 0}
@@ -301,10 +302,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1807120803253265653}
     m_Modifications:
-    - target: {fileID: 3644381699479357817, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
-      propertyPath: m_PresetInfoIsWorld
-      value: 1
-      objectReference: {fileID: 0}
+    - target: {fileID: 3525362685811643254, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
+      propertyPath: StatsData
+      value: 
+      objectReference: {fileID: -1173357006952606888}
     - target: {fileID: 4770809539800998566, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -394,6 +395,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
+--- !u!114 &3008809841613818184 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3525362685811643254, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
+  m_PrefabInstance: {fileID: 1814363730976119358}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2354eaf7accc6b42b7cad91bb64509b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &6564202944572242072 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4770809539800998566, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
