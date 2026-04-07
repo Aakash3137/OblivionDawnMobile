@@ -568,6 +568,7 @@ GameObject:
   - component: {fileID: 4022108238406871403}
   - component: {fileID: 7416070766645631762}
   - component: {fileID: 3178270743560080631}
+  - component: {fileID: 6079641224854450303}
   m_Layer: 0
   m_Name: Aircraft
   m_TagString: Untagged
@@ -679,7 +680,8 @@ MonoBehaviour:
   <basicStats>k__BackingField:
     maxHealth: 0
     armor: 0
-  <currentHealth>k__BackingField: 0
+  CurrentHealth: 0
+  RepairObj: {fileID: 0}
   <side>k__BackingField: 0
   unitProduceSO: {fileID: 11400000, guid: 29cecefd816eac14bad5daea5ebad5a3, type: 2}
   canFly: 0
@@ -690,6 +692,7 @@ MonoBehaviour:
     bankAngle: 0
     evadeRadius: 0
     attackAngleTolerance: 0
+  <gameUnitName>k__BackingField: 0
   unitUpkeepCost: []
 --- !u!114 &7416070766645631762
 MonoBehaviour:
@@ -752,6 +755,18 @@ MonoBehaviour:
   detectionTarget: {fileID: 0}
   replyTarget: {fileID: 0}
   airTarget: {fileID: 0}
+--- !u!114 &6079641224854450303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7509741216450697401}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6d89967eacfb4f45ad507e125ac0d17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7737019781438290032
 GameObject:
   m_ObjectHideFlags: 0

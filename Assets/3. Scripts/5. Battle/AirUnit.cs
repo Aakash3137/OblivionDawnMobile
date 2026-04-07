@@ -80,6 +80,10 @@ public class AirUnit : MonoBehaviour
     private bool targetLocked = false;
     public Stats airTarget;
     
+    //Abilities
+    private float baseMoveSpeed;
+    private Dictionary<AbilityEffect, float> speedMultipliers = new Dictionary<AbilityEffect, float>();
+    
     protected virtual void Start()
     {
         unitStats = GetComponent<UnitStats>();
@@ -89,7 +93,8 @@ public class AirUnit : MonoBehaviour
         BattleUnitRegistry.Units.Add(unitStats);
         
         // Initialize stats
-        moveSpeed = unitData.unitMobilityStats.moveSpeed;
+        baseMoveSpeed = unitData.unitMobilityStats.moveSpeed;
+        RecalculateSpeed();
         AttackRange = unitData.unitRangeStats.attackRange;
         DetectionRange = unitData.unitRangeStats.detectionRange;
         burstCooldown = unitData.unitAttackStats.fireRate;
@@ -621,6 +626,39 @@ public class AirUnit : MonoBehaviour
     }
     
     #region Abilities
+    
+    public void AddSpeedMultiplier(AbilityEffect source, float multiplier)
+    {
+        Debug.Log($"[AirUnit] {gameObject.name} - Adding speed multiplier: {multiplier}x (Base: {baseMoveSpeed})");
+    
+        speedMultipliers[source] = multiplier;
+        RecalculateSpeed();
+    }
+
+    public void RemoveSpeedModifier(AbilityEffect source)
+    {
+        if (speedMultipliers.ContainsKey(source))
+        {
+            Debug.Log($"[AirUnit] {gameObject.name} - Removing speed multiplier");
+            speedMultipliers.Remove(source);
+            RecalculateSpeed();
+        }
+    }
+
+    private void RecalculateSpeed()
+    {
+        float finalSpeed = baseMoveSpeed;
+
+        foreach (var multiplier in speedMultipliers.Values)
+        {
+            finalSpeed *= multiplier;
+        }
+
+        moveSpeed = finalSpeed;
+
+        Debug.Log($"[AirUnit] {gameObject.name} - Speed recalculated: {finalSpeed:F2} (Base: {baseMoveSpeed}, Multipliers: {speedMultipliers.Count})");
+    }
+    
     
     private Dictionary<AbilityEffect, (float amount, bool isUnitDamage)> damageModifiers = new Dictionary<AbilityEffect, (float, bool)>();
     

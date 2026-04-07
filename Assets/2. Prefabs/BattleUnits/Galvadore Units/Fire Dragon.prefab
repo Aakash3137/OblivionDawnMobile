@@ -7994,6 +7994,7 @@ GameObject:
   - component: {fileID: 7223045065685987591}
   - component: {fileID: 9213242400949643966}
   - component: {fileID: 867161035127034676}
+  - component: {fileID: 6380965669213020784}
   m_Layer: 0
   m_Name: Fire Dragon
   m_TagString: Untagged
@@ -8100,12 +8101,12 @@ MonoBehaviour:
     name: 
     spawnLevel: 0
     faction: 0
-    isUnique: 0
     priority: 0
   <basicStats>k__BackingField:
     maxHealth: 0
     armor: 0
-  <currentHealth>k__BackingField: 0
+  CurrentHealth: 0
+  RepairObj: {fileID: 0}
   <side>k__BackingField: 0
   unitProduceSO: {fileID: 11400000, guid: 11122cc73490b274199a1a546e7d17af, type: 2}
   canFly: 0
@@ -8116,6 +8117,8 @@ MonoBehaviour:
     bankAngle: 0
     evadeRadius: 0
     attackAngleTolerance: 0
+  <gameUnitName>k__BackingField: 0
+  unitUpkeepCost: []
 --- !u!114 &9213242400949643966
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8142,7 +8145,13 @@ MonoBehaviour:
   invulnerableDuringTakeoff: 1
   separationRadius: 1.5
   separationStrength: 2
+  target: {fileID: 0}
+  primaryTarget: {fileID: 0}
+  detectionTarget: {fileID: 0}
+  replyTarget: {fileID: 0}
+  airTarget: {fileID: 0}
   particleDamageEmitter: {fileID: 867161035127034676}
+  fireDuration: 1.5
 --- !u!114 &867161035127034676
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8160,6 +8169,18 @@ MonoBehaviour:
   damagePerSecond: 100
   damageMultiplier: 1
   damagePerParticle: 0
+--- !u!114 &6380965669213020784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1520344984127084345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6d89967eacfb4f45ad507e125ac0d17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1536657000286296307
 GameObject:
   m_ObjectHideFlags: 0

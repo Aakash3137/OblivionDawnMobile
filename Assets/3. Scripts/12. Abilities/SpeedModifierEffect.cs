@@ -7,23 +7,31 @@ public class SpeedModifierEffect : AbilityEffect
 
     public override void Apply(Stats target)
     {
-
-        if (!target.TryGetComponent<GroundUnit>(out var unit))
+        if (target.TryGetComponent<GroundUnit>(out var groundUnit))
         {
+            groundUnit.AddSpeedMultiplier(this, speedMultiplier);
             return;
         }
 
-        unit.AddSpeedMultiplier(this, speedMultiplier);
+        if (target.TryGetComponent<AirUnit>(out var airUnit))
+        {
+            airUnit.AddSpeedMultiplier(this, speedMultiplier);
+            return;
+        }
     }
 
     public override void Remove(Stats target)
     {
-
-        if (!target.TryGetComponent<GroundUnit>(out var unit))
+        if (target.TryGetComponent<GroundUnit>(out var groundUnit))
         {
+            groundUnit.RemoveSpeedModifier(this);
             return;
         }
 
-        unit.RemoveSpeedModifier(this);
+        if (target.TryGetComponent<AirUnit>(out var airUnit))
+        {
+            airUnit.RemoveSpeedModifier(this);
+            return;
+        }
     }
 }
