@@ -174,7 +174,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e2b48899215c0e438c75307d31cd01d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allNeighbors: 1
   neighborTiles: []
 --- !u!114 &3970550755597021386
 MonoBehaviour:
@@ -208,12 +207,12 @@ MonoBehaviour:
     name: 
     spawnLevel: 0
     faction: 0
-    populationCost: 0
     priority: 0
   <basicStats>k__BackingField:
     maxHealth: 0
     armor: 0
-  <currentHealth>k__BackingField: 0
+  CurrentHealth: 0
+  RepairObj: {fileID: 5163431436859498399}
   <side>k__BackingField: 0
   <buildingStatsSO>k__BackingField: {fileID: 11400000, guid: 8e1e0b5acfa435847b1662020dd01c2a, type: 2}
   <currentTile>k__BackingField: {fileID: 0}
@@ -527,6 +526,10 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: f3274a9dcaf0e4f498090804f289ba59, type: 3}
+    - target: {fileID: 8356634902823395247, guid: 74ecb513f07c2124c8c5d43bf706458d, type: 3}
+      propertyPath: StatsData
+      value: 
+      objectReference: {fileID: 3792255330925078135}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -537,3 +540,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3828384782369519359, guid: 74ecb513f07c2124c8c5d43bf706458d, type: 3}
   m_PrefabInstance: {fileID: 3769665324491931696}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5163431436859498399 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8356634902823395247, guid: 74ecb513f07c2124c8c5d43bf706458d, type: 3}
+  m_PrefabInstance: {fileID: 3769665324491931696}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2354eaf7accc6b42b7cad91bb64509b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

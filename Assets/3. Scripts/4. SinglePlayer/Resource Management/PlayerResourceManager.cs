@@ -1,4 +1,5 @@
 using Sirenix.OdinInspector;
+using UnityEngine;
 
 public class PlayerResourceManager : ResourceManager
 {
@@ -29,6 +30,18 @@ public class PlayerResourceManager : ResourceManager
         startingResources[2].resourceAmount = 999;
         startingResources[3].resourceAmount = 999;
 
+        SetResources(startingResources);
+    }
+
+    public void Updateresources(float Value, BuildCost[] costs)
+    {
+        Debug.Log("Update Resources");
+        for(int i = 0; i < 4; i++) 
+        {
+            int AMOUNT =  (int)(Value * costs[i].resourceAmount / 100f);
+            Debug.Log("Amount Added " + AMOUNT);
+            startingResources[i].resourceAmount -= AMOUNT;
+        }
         SetResources(startingResources);
     }
     #endregion
