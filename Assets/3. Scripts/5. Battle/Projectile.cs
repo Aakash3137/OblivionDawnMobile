@@ -54,7 +54,7 @@ public class Projectile : MonoBehaviour
         }
     }
 
-    public void Initialize(Stats target, float unitDamage,float buildingDamage, ProjectileDataSO projectileData, Side side)
+    public void Initialize(Stats target, float unitDamage, float buildingDamage, ProjectileDataSO projectileData, Side side)
     {
         targetUnit = target;
         ShooterSide = side;
@@ -442,7 +442,7 @@ public class Projectile : MonoBehaviour
 
         if (definition.hitVFX != null)
         {
-            GameObject vfx = Instantiate(definition.hitVFX, hitPoint, Quaternion.identity);
+            GameObject vfx = Instantiate(definition.hitVFX, hitPoint, definition.hitVFX.transform.rotation);
             Destroy(vfx, 5f);
         }
 

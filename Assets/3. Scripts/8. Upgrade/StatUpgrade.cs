@@ -88,9 +88,10 @@ public static class StatUpgrade
         var damage = baseUpgradeData.unitAttackStats.damage;
         var buildingDamage = baseUpgradeData.unitAttackStats.buildingDamage;
         var fireRate = baseUpgradeData.unitAttackStats.fireRate;
-        var moveSpeed = baseUpgradeData.unitMobilityStats.moveSpeed;
-        var attackRange = baseUpgradeData.unitRangeStats.attackRange;
 
+        var moveSpeed = baseUpgradeData.unitMobilityStats.moveSpeed;
+
+        var attackRange = baseUpgradeData.unitRangeStats.attackRange;
         var detectionRange = baseUpgradeData.unitRangeStats.detectionRange;
         var minRange = baseUpgradeData.unitRangeStats.minAttackRange;
 
@@ -152,6 +153,14 @@ public static class StatUpgrade
         var populationRewardTimesTriggered = MaxLevel / maxPopulationInterval;
         maxPopulationStep = Mathf.CeilToInt((float)populationNeededForMaxLevel / populationRewardTimesTriggered);
 
+        var damage = baseUpgradeData.mainAttackStats.damage;
+        var buildingDamage = baseUpgradeData.mainAttackStats.buildingDamage;
+        var fireRate = baseUpgradeData.mainAttackStats.fireRate;
+
+        var attackRange = baseUpgradeData.mainRangeStats.attackRange;
+        var detectionRange = baseUpgradeData.mainRangeStats.detectionRange;
+        var minRange = baseUpgradeData.mainRangeStats.minAttackRange;
+
         MainBuildingUpgradeData mainBuildingUpgradeData = new()
         {
             buildingLevel = spawnLevel + 1,
@@ -163,6 +172,19 @@ public static class StatUpgrade
             maxDeckEquipCount = IntegerStepUpgrade(maxDeckSize, maxDeckSizeStep, spawnLevel, maxDeckEquipCountClamp, maxDeckSizeInterval),
             maxPopulation = IntegerStepUpgrade(maxPopulation, maxPopulationStep, spawnLevel, maxPopulationClamp, maxPopulationInterval),
             starterResources = IntegerPercentUpgrade(startResources, starterResourcesChangePercent, spawnLevel, starterResourcesInterval)
+            ,
+            mainAttackStats = new()
+            {
+                damage = FloatPercentUpgrade(damage, DamageChangePercent, spawnLevel),
+                buildingDamage = FloatPercentUpgrade(buildingDamage, DamageChangePercent, spawnLevel),
+                fireRate = fireRate
+            },
+            mainRangeStats = new()
+            {
+                attackRange = FloatPercentUpgrade(attackRange, AttackRangeChangePercent, spawnLevel, RangeChangeInterval),
+                detectionRange = detectionRange,
+                minAttackRange = minRange
+            }
         };
 
         return mainBuildingUpgradeData;

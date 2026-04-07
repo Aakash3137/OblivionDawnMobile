@@ -1,8 +1,7 @@
-using System.Collections;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-[RequireComponent(typeof(WeaponManager), typeof(DefenseBuildingStats))]
+[RequireComponent(typeof(ProjectileShooter))]
 public class DefenseUnit : MonoBehaviour
 {
     [Space(20)]
@@ -44,7 +43,7 @@ public class DefenseUnit : MonoBehaviour
         defenseBuildingSO = defenseStats.GetBuildingSO();
         defenseData = defenseStats.GetBuildingData();
         forward = transform.forward;
-        
+
         BattleUnitRegistry.DefenseUnits.Add(defenseStats);
 
         if (defenseBuilding == null)
