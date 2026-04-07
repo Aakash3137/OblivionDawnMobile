@@ -26,6 +26,7 @@ public class ResourceManager : MonoBehaviour
     public Action OnResourcesChanged;
     public Action GlobalResourceTick;
 
+
     private void Start()
     {
         InitializeResources(startingResources);

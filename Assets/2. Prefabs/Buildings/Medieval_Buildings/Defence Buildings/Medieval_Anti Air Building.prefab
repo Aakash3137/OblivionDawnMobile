@@ -377,8 +377,7 @@ MonoBehaviour:
   <basicStats>k__BackingField:
     maxHealth: 0
     armor: 0
-  CurrentHealth: 0
-  RepairObj: {fileID: 8271602813084654044}
+  <currentHealth>k__BackingField: 0
   <side>k__BackingField: 0
   <buildingStatsSO>k__BackingField: {fileID: 11400000, guid: c1e84b945efeee1468a674f4d6ba1d94, type: 2}
   <currentTile>k__BackingField: {fileID: 0}
@@ -413,6 +412,7 @@ MonoBehaviour:
   narrowAngleBonus: 30
   wideAngleBonus: 20
   peripheralAngleBonus: 10
+  checkRadiusOffset: 2.5
   defenseBuilding: {fileID: 0}
   <target>k__BackingField: {fileID: 0}
   <primaryTarget>k__BackingField: {fileID: 0}
@@ -1104,10 +1104,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Defense Building World Canvas
       objectReference: {fileID: 0}
-    - target: {fileID: 6477420605472307398, guid: ceaccfc72e49830479863294dd97d8a5, type: 3}
-      propertyPath: StatsData
-      value: 
-      objectReference: {fileID: -3211350180019929072}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1118,14 +1114,3 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 487449239260110395, guid: ceaccfc72e49830479863294dd97d8a5, type: 3}
   m_PrefabInstance: {fileID: 3111645771497251098}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8271602813084654044 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6477420605472307398, guid: ceaccfc72e49830479863294dd97d8a5, type: 3}
-  m_PrefabInstance: {fileID: 3111645771497251098}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2354eaf7accc6b42b7cad91bb64509b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
