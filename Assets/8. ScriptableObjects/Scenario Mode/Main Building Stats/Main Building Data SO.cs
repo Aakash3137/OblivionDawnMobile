@@ -5,10 +5,10 @@ using System.Collections.Generic;
 [CreateAssetMenu(fileName = "Building Data SO", menuName = "Scenario Stats/Main Building Data")]
 public class MainBuildingDataSO : BuildingDataSO
 {
+    public bool factionUnlocked;
+    public VisionAngles mainVisionAngles;
     [Space(20)]
     public List<MainBuildingUpgradeData> mainBuildingUpgradeData;
-    public bool factionUnlocked;
-
 
     internal override void ValidateBase()
     {

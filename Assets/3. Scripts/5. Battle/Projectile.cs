@@ -54,7 +54,7 @@ public class Projectile : MonoBehaviour
         }
     }
 
-    public void Initialize(Stats target, float unitDamage,float buildingDamage, ProjectileDataSO projectileData, Side side)
+    public void Initialize(Stats target, float unitDamage, float buildingDamage, ProjectileDataSO projectileData, Side side)
     {
         targetUnit = target;
         ShooterSide = side;
@@ -382,7 +382,7 @@ public class Projectile : MonoBehaviour
                     2f,
                     groundMask))
             {
-                OnHit(hit.point, false);
+                OnHit(hit, false);
             }
         }
     }
@@ -416,7 +416,7 @@ public class Projectile : MonoBehaviour
             // 1️⃣ GROUND HIT
             if (((1 << hit.collider.gameObject.layer) & groundMask) != 0)
             {
-                OnHit(hit.point, false);
+                OnHit(hit, false);
                 return;
             }
 
@@ -427,7 +427,7 @@ public class Projectile : MonoBehaviour
             {
                 targetUnit = unit;
                 targetCollider = hit.collider;
-                OnHit(hit.point, true);
+                OnHit(hit, true);
                 return;
             }
 
@@ -436,13 +436,17 @@ public class Projectile : MonoBehaviour
         }
     }
 
-    void OnHit(Vector3 hitPoint, bool hitTarget)
+    void OnHit(RaycastHit rayHit, bool hitTarget)
     {
+        Vector3 hitPoint = rayHit.point;
+
+        Quaternion rotation = Quaternion.LookRotation(rayHit.normal);
+
         hasHit = true;
 
         if (definition.hitVFX != null)
         {
-            GameObject vfx = Instantiate(definition.hitVFX, hitPoint, Quaternion.identity);
+            GameObject vfx = Instantiate(definition.hitVFX, hitPoint, rotation);
             Destroy(vfx, 5f);
         }
 

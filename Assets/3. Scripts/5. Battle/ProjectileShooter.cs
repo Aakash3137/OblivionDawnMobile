@@ -5,7 +5,7 @@ public class ProjectileShooter : MonoBehaviour
 {
     [Header("Weapon")]
     public List<Transform> muzzlePoints = new List<Transform>();
-    
+
     public ProjectileDefinition projectile;
     private float unitDamage;
     private float buildingDamage;
@@ -17,7 +17,7 @@ public class ProjectileShooter : MonoBehaviour
     private Side projectileSide;
     private Stats shooterStats;
 
-    void Start() 
+    void Start()
     {
         shooterStats = GetComponent<Stats>();
         if (TryGetComponent<UnitStats>(out var unitStats))
@@ -38,30 +38,23 @@ public class ProjectileShooter : MonoBehaviour
         projectileSide = shooterStats.side;
     }
 
-    public void Fire(Stats target)
+    public void Fire(Stats target, Transform firePoint = null)
     {
+        if (firePoint != null)
+        {
+            muzzlePoints = new()
+            {
+                firePoint
+            };
+        }
+
         if (target == null || projectile == null || muzzlePoints.Count == 0)
             return;
-        
-        //Abilities that modify damage
-        float finalUnitDamage = unitDamage;
-        float finalBuildingDamage = buildingDamage;
 
-        if (TryGetComponent<GroundUnit>(out var groundUnit))
-        {
-            finalUnitDamage = groundUnit.GetModifiedUnitDamage();
-            finalBuildingDamage = groundUnit.GetModifiedBuildingDamage();
-        }
-        if (TryGetComponent<AirUnit>(out var airUnit))
-        {
-            finalUnitDamage = airUnit.GetModifiedUnitDamage();
-            finalBuildingDamage = airUnit.GetModifiedBuildingDamage();
-        }
-        
         int muzzleCount = muzzlePoints.Count;
 
-        float dividedUnitDamage = finalUnitDamage / muzzleCount;
-        float dividedBuildingDamage = finalBuildingDamage / muzzleCount;
+        float dividedUnitDamage = unitDamage / muzzleCount;
+        float dividedBuildingDamage = buildingDamage / muzzleCount;
 
         if (projectile.projectileType == ProjectileType.Missile)
         {
