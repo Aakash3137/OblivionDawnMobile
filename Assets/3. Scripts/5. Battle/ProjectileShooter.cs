@@ -25,10 +25,15 @@ public class ProjectileShooter : MonoBehaviour
             unitDamage = unitStats.unitData.unitAttackStats.damage;
             buildingDamage = unitStats.unitData.unitAttackStats.buildingDamage;
         }
-        else if(TryGetComponent<DefenseBuildingStats>(out var buildingStats))
+        else if (TryGetComponent<DefenseBuildingStats>(out var buildingStats))
         {
             unitDamage = buildingStats.defenseBuildingData.defenseAttackStats.damage;
             buildingDamage = buildingStats.defenseBuildingData.defenseAttackStats.buildingDamage;
+        }
+        else if (TryGetComponent<MainBuildingStats>(out var mainStats))
+        {
+            unitDamage = mainStats.mainBuildingData.mainAttackStats.damage;
+            buildingDamage = mainStats.mainBuildingData.mainAttackStats.buildingDamage;
         }
         projectileSide = shooterStats.side;
     }
@@ -38,22 +43,56 @@ public class ProjectileShooter : MonoBehaviour
         if (target == null || projectile == null || muzzlePoints.Count == 0)
             return;
         
-        int muzzleCount = muzzlePoints.Count;
-        
-        float dividedUnitDamage = unitDamage / muzzleCount;
-        float dividedBuildingDamage = buildingDamage / muzzleCount;
-        
-        if (projectile.projectileType == ProjectileType.Missile && GetComponent<UnitStats>().unitProduceSO.unitIdentity.faction == FactionName.Futuristic)
+        //Abilities that modify damage
+        float finalUnitDamage = unitDamage;
+        float finalBuildingDamage = buildingDamage;
+
+        if (TryGetComponent<GroundUnit>(out var groundUnit))
         {
-            if (projectileSide == Side.Player)
-            {
-                projectile.projectileType = ProjectileType.Missile_Blue;
-            }
-            else
-            {
-                projectile.projectileType = ProjectileType.Missile_Red;
-            }
+            finalUnitDamage = groundUnit.GetModifiedUnitDamage();
+            finalBuildingDamage = groundUnit.GetModifiedBuildingDamage();
+        }
+        if (TryGetComponent<AirUnit>(out var airUnit))
+        {
+            finalUnitDamage = airUnit.GetModifiedUnitDamage();
+            finalBuildingDamage = airUnit.GetModifiedBuildingDamage();
+        }
         
+        int muzzleCount = muzzlePoints.Count;
+
+        float dividedUnitDamage = finalUnitDamage / muzzleCount;
+        float dividedBuildingDamage = finalBuildingDamage / muzzleCount;
+
+        if (projectile.projectileType == ProjectileType.Missile)
+        {
+            if (TryGetComponent<BuildingStats>(out var buildingStats))
+            {
+                if (buildingStats.buildingStatsSO.buildingIdentity.faction == FactionName.Futuristic)
+                {
+                    if (projectileSide == Side.Player)
+                    {
+                        projectile.projectileType = ProjectileType.Missile_Blue;
+                    }
+                    else
+                    {
+                        projectile.projectileType = ProjectileType.Missile_Red;
+                    }
+                }
+            }
+            else if (TryGetComponent<UnitStats>(out var unitStats))
+            {
+                if (unitStats.unitProduceSO.unitIdentity.faction == FactionName.Futuristic)
+                {
+                    if (projectileSide == Side.Player)
+                    {
+                        projectile.projectileType = ProjectileType.Missile_Blue;
+                    }
+                    else
+                    {
+                        projectile.projectileType = ProjectileType.Missile_Red;
+                    }
+                }
+            }
         }
 
         foreach (Transform muzzle in muzzlePoints)

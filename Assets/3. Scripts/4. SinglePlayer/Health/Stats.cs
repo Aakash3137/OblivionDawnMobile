@@ -1,5 +1,6 @@
 using System;
 using Sirenix.OdinInspector;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Stats : MonoBehaviour
@@ -11,8 +12,18 @@ public class Stats : MonoBehaviour
     [field: SerializeField, ReadOnly]
     public BasicStats basicStats { get; protected set; }
 
-    [field: SerializeField, ReadOnly]
-    public float currentHealth { get; protected set; }
+    [SerializeField] private float CurrentHealth ;
+
+    public float currentHealth
+    {
+        get => CurrentHealth ;
+        set
+        {
+            CurrentHealth  = value;
+            EnableRepairButton();
+        }
+    }
+    public RepairButtonHandler RepairObj;
 
     [field: SerializeField, ReadOnly]
     public Side side { get; protected set; }
@@ -32,6 +43,7 @@ public class Stats : MonoBehaviour
     public virtual bool CanFly => false;
 
     public Action onDieEvent;
+    private float TempCurrentHealth = 0;
 
 
     private void Awake()
@@ -45,16 +57,31 @@ public class Stats : MonoBehaviour
 
         // else
         //Debug.Log($"<color=#FFC0CB>{name} missing HealthBar. Assign the script.</color>");
-
     }
     internal virtual void Initialize()
     {
-        currentHealth = basicStats.maxHealth;
+        TempCurrentHealth = currentHealth = basicStats.maxHealth;
+        Debug.Log($"<color=green> <size=16>Initial Health: {basicStats.maxHealth} </size></color>");
 
         if (healthBar != null)
             healthBar.UpdateFillAmount(currentHealth / basicStats.maxHealth);
 
         ApplyMaterial();
+    }
+
+    private void EnableRepairButton()
+    {   
+        if(RepairObj == null )
+            return;
+
+        if(!RepairObj.IsReady && side != Side.Player)
+            return;
+
+        if(currentHealth < basicStats.maxHealth/2)
+        {
+            Debug.Log("<color=yellow>Enable repairing Button</color>");
+            RepairObj.PlayShow();
+        }
     }
 
     private void ApplyMaterial()
@@ -77,9 +104,11 @@ public class Stats : MonoBehaviour
                         gameObject.layer = LayerMask.NameToLayer("PlayerAir");
                     else
                         gameObject.layer = LayerMask.NameToLayer("PlayerGround");
+                    
                     if (visuals.playerUnitMaterial != null)
                         renderer.sharedMaterial = visuals.playerUnitMaterial;
                     break;
+
                 case Side.Enemy:
 
                     if (CanFly)
@@ -104,7 +133,8 @@ public class Stats : MonoBehaviour
 
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, basicStats.maxHealth);
-
+        // Debug.Log("Current Health: " + currentHealth+ " Who is "+identity.name);
+        
         if (healthBar != null)
         {
             healthBar.UpdateHealthBar();
@@ -122,6 +152,7 @@ public class Stats : MonoBehaviour
         {
             GroundUnit groundUnit = GetComponent<GroundUnit>();
             DefenseUnit defenseUnit = GetComponent<DefenseUnit>();
+            
             if (groundUnit != null)
             {
                 groundUnit.SetReplyTarget(attacker);
@@ -131,10 +162,21 @@ public class Stats : MonoBehaviour
                 defenseUnit.SetReplyTarget(attacker);
             }
         }
-
+        Debug.Log("Object => " + RepairObj + "On "+ gameObject.name);
         if (currentHealth <= 0)
         {
             Die();
+        }
+        else if(currentHealth <= TempCurrentHealth/2 && currentHealth > 0 && side == Side.Player)
+        {
+            if(RepairObj == null)
+                return;
+
+            if(!RepairObj.IsReady)
+                return;
+
+            RepairObj.PlayShow();
+            Debug.Log($"<color=red>Your Health is too low {currentHealth} Repair Health Now</color>");
         }
     }
 
@@ -160,12 +202,31 @@ public class Stats : MonoBehaviour
     [Button]
     public virtual void ResetHealth()
     {
+        Debug.Log("Reset Health");
         currentHealth = basicStats.maxHealth;
-
+        Debug.Log("Reset Health: " + currentHealth);
         if (healthBar != null)
             healthBar.UpdateFillAmount(currentHealth / basicStats.maxHealth);
     }
-
+    # region Repair
+      [Button]
+    public void HealthRepair()
+    {
+        Debug.Log("Health Repair");
+        // float temp = PlayerResourceManager.Instance.globalTickTime/2;
+        float AddOnHealth = basicStats.maxHealth - currentHealth;
+        Debug.Log($"Add On Health:  {AddOnHealth}");
+        float DecreaseByPercent = AddOnHealth* 100 / basicStats.maxHealth;
+        Debug.Log($"Decrease Percent: {DecreaseByPercent}");
+        if(this is BuildingStats building)
+        {
+            BuildingDataSO dataSO = building.buildingStatsSO;
+            PlayerResourceManager.Instance.Updateresources(DecreaseByPercent, dataSO.buildingBuildCost);
+        }        
+        ResetHealth();
+        Debug.Log("Health Repairing Startt");
+    }
+    #endregion
     [Button]
     public void DealDamage(float amount = 50f)
     {
