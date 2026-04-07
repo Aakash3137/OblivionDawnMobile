@@ -78,6 +78,7 @@ public class UnitStats : Stats
         }
 
         base.Initialize();
+        AbilityManager.Instance?.OnUnitSpawned(this);
 
         unitPool = GameObject.FindWithTag("UnitPool");
 
@@ -101,6 +102,8 @@ public class UnitStats : Stats
 
         if (hasUpkeep)
             InitializeUnitUpkeep();
+        
+
     }
 
     public void FireWeapon()
@@ -149,6 +152,8 @@ public class UnitStats : Stats
     internal override void Die()
     {
         base.Die();
+        AbilityManager.Instance?.OnUnitDied(this);
+        
         spawnerBuilding.producedUnits.Remove(this);
         KillCounterManager.Instance.AddUnitKillData(unitType, side);
     }
