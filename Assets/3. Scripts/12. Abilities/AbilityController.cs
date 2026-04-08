@@ -21,7 +21,7 @@ public class AbilityController : MonoBehaviour
             return;
         }
 
-        Debug.Log($"[AbilityController] Initializing {abilities.Count} abilities for {gameObject.name}");
+        //Debug.Log($"[AbilityController] Initializing {abilities.Count} abilities for {gameObject.name}");
 
         // Apply passive abilities immediately
         foreach (var ability in abilities)
@@ -36,7 +36,7 @@ public class AbilityController : MonoBehaviour
     
     public void ActivateAbility(AbilitySO ability)
     {
-        Debug.Log($"[AbilityController] Activating ability {ability.abilityName} on {gameObject.name}");
+       // Debug.Log($"[AbilityController] Activating ability {ability.abilityName} on {gameObject.name}");
         ApplyAbility(ability);
     }
 
@@ -48,7 +48,7 @@ public class AbilityController : MonoBehaviour
             return;
         }
 
-        Debug.Log($"[AbilityController] Applying {ability.effects.Count} effects from {ability.abilityName}");
+       // Debug.Log($"[AbilityController] Applying {ability.effects.Count} effects from {ability.abilityName}");
 
         foreach (var effect in ability.effects)
         {
@@ -58,7 +58,7 @@ public class AbilityController : MonoBehaviour
                 continue;
             }
 
-            Debug.Log($"[AbilityController] Applying effect: {effect.GetType().Name}");
+           // Debug.Log($"[AbilityController] Applying effect: {effect.GetType().Name}");
             effect.Apply(owner);
         }
 
