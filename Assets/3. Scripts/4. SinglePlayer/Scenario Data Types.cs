@@ -67,6 +67,7 @@ public enum GameUnitName
     MortarTeam,
     SpecialForces,
     MLRS,
+    BomberAircraft,
 
     // Futuristic Faction Units
     Mech = 200, PlasmaTurret, Drone, GuidedMissile,

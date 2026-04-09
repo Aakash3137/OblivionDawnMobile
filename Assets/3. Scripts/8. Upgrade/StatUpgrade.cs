@@ -312,12 +312,12 @@ public static class StatUpgrade
         {
             int timesFired = (currentLevel + 1) / intervalChange;
             float result = initialValue + initialValue * changePercent * PERCENT * timesFired;
-            return CeilToTwoDecimals(result);
+            return RoundToTwoDecimals(result);
         }
         else
         {
             float result = initialValue + initialValue * changePercent * PERCENT * currentLevel;
-            return CeilToTwoDecimals(result);
+            return RoundToTwoDecimals(result);
         }
     }
 
@@ -349,9 +349,9 @@ public static class StatUpgrade
 
     }
 
-    private static float CeilToTwoDecimals(float value)
+    private static float RoundToTwoDecimals(float value)
     {
-        return Mathf.Ceil(value * 100f) / 100f;
+        return Mathf.Round(value * 100f) / 100f;
     }
 
 #endif

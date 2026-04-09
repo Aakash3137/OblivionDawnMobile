@@ -65,6 +65,8 @@ public class UnitProduceStatsSO : ScriptableObject
 
         canFly = unitType == ScenarioUnitType.Air;
 
+        unitIdentity.name = gameUnitName.ToString();
+
         unitIdentity.spawnLevel = Mathf.Clamp(unitIdentity.spawnLevel, 0, unitUpgradeData.Length - 1);
 
         if (!hasUpkeep)

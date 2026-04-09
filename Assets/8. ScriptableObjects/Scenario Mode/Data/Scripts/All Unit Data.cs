@@ -44,6 +44,10 @@ public class AllUnitData : ScriptableObject
         if (order == 0)
             order = a.unitType.CompareTo(b.unitType);
 
+        // if(both are same then compare by scriptable Object name)
+        if (order == 0)
+            order = a.name.CompareTo(b.name);
+
         return order;
     }
 
