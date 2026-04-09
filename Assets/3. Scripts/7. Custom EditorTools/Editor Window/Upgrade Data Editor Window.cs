@@ -147,7 +147,7 @@ public class UpgradeDataEditorWindow : EditorWindow
             instance.Q<ObjectField>("Spawner").BindProperty(serializedObject.FindProperty($"spawnerBuilding"));
             instance.Q<IntegerField>("Population").BindProperty(serializedObject.FindProperty($"populationCost"));
             instance.Q<EnumField>("CardState").BindProperty(serializedObject.FindProperty($"cardDetails.cardState"));
-            instance.Q<IntegerField>("minBuildingLevel").BindProperty(serializedObject.FindProperty($"cardDetails.minBuildingLevel"));
+            instance.Q<IntegerField>("minBuildingLevel").BindProperty(serializedObject.FindProperty($"cardDetails.deltaLevel"));
             instance.Q<IntegerField>("purchaseCost").BindProperty(serializedObject.FindProperty($"cardDetails.purchaseCost"));
             instance.Q<FloatField>("upgradeCostMultiplier").BindProperty(serializedObject.FindProperty($"cardDetails.upgradeCostMultiplier"));
             instance.Q<FloatField>("fragmentCostMultiplier").BindProperty(serializedObject.FindProperty($"cardDetails.fragmentCostMultiplier"));
@@ -215,7 +215,7 @@ public class UpgradeDataEditorWindow : EditorWindow
             instance.Q<ObjectField>("Icon").BindProperty(serializedObject.FindProperty($"buildingIcon"));
             instance.Q<IntegerField>("Population").BindProperty(serializedObject.FindProperty($"populationCost"));
             instance.Q<EnumField>("CardState").BindProperty(serializedObject.FindProperty($"cardDetails.cardState"));
-            instance.Q<IntegerField>("minBuildingLevel").BindProperty(serializedObject.FindProperty($"cardDetails.minBuildingLevel"));
+            instance.Q<IntegerField>("minBuildingLevel").BindProperty(serializedObject.FindProperty($"cardDetails.deltaLevel"));
             instance.Q<IntegerField>("purchaseCost").BindProperty(serializedObject.FindProperty($"cardDetails.purchaseCost"));
             instance.Q<FloatField>("upgradeCostMultiplier").BindProperty(serializedObject.FindProperty($"cardDetails.upgradeCostMultiplier"));
             instance.Q<FloatField>("fragmentCostMultiplier").BindProperty(serializedObject.FindProperty($"cardDetails.fragmentCostMultiplier"));
@@ -290,7 +290,7 @@ public class UpgradeDataEditorWindow : EditorWindow
             instance.Q<EnumField>("Type").BindProperty(serializedObject.FindProperty($"offenseType"));
             instance.Q<ObjectField>("Icon").BindProperty(serializedObject.FindProperty($"buildingIcon"));
             instance.Q<EnumField>("CardState").BindProperty(serializedObject.FindProperty($"cardDetails.cardState"));
-            instance.Q<IntegerField>("minBuildingLevel").BindProperty(serializedObject.FindProperty($"cardDetails.minBuildingLevel"));
+            instance.Q<IntegerField>("minBuildingLevel").BindProperty(serializedObject.FindProperty($"cardDetails.deltaLevel"));
             instance.Q<IntegerField>("purchaseCost").BindProperty(serializedObject.FindProperty($"cardDetails.purchaseCost"));
             instance.Q<FloatField>("upgradeCostMultiplier").BindProperty(serializedObject.FindProperty($"cardDetails.upgradeCostMultiplier"));
             instance.Q<FloatField>("fragmentCostMultiplier").BindProperty(serializedObject.FindProperty($"cardDetails.fragmentCostMultiplier"));
@@ -362,7 +362,7 @@ public class UpgradeDataEditorWindow : EditorWindow
             instance.Q<EnumField>("Type").BindProperty(serializedObject.FindProperty($"resourceType"));
             instance.Q<ObjectField>("Icon").BindProperty(serializedObject.FindProperty($"buildingIcon"));
             instance.Q<EnumField>("CardState").BindProperty(serializedObject.FindProperty($"cardDetails.cardState"));
-            instance.Q<IntegerField>("minBuildingLevel").BindProperty(serializedObject.FindProperty($"cardDetails.minBuildingLevel"));
+            instance.Q<IntegerField>("minBuildingLevel").BindProperty(serializedObject.FindProperty($"cardDetails.deltaLevel"));
             instance.Q<IntegerField>("purchaseCost").BindProperty(serializedObject.FindProperty($"cardDetails.purchaseCost"));
             instance.Q<FloatField>("upgradeCostMultiplier").BindProperty(serializedObject.FindProperty($"cardDetails.upgradeCostMultiplier"));
             instance.Q<FloatField>("fragmentCostMultiplier").BindProperty(serializedObject.FindProperty($"cardDetails.fragmentCostMultiplier"));
@@ -436,7 +436,7 @@ public class UpgradeDataEditorWindow : EditorWindow
             instance.Q<ObjectField>("Icon").BindProperty(serializedObject.FindProperty($"buildingIcon"));
             instance.Q<Toggle>("FactionUnlocked").BindProperty(serializedObject.FindProperty($"factionUnlocked"));
             instance.Q<EnumField>("CardState").BindProperty(serializedObject.FindProperty($"cardDetails.cardState"));
-            instance.Q<IntegerField>("minBuildingLevel").BindProperty(serializedObject.FindProperty($"cardDetails.minBuildingLevel"));
+            instance.Q<IntegerField>("minBuildingLevel").BindProperty(serializedObject.FindProperty($"cardDetails.deltaLevel"));
             instance.Q<IntegerField>("purchaseCost").BindProperty(serializedObject.FindProperty($"cardDetails.purchaseCost"));
             instance.Q<FloatField>("upgradeCostMultiplier").BindProperty(serializedObject.FindProperty($"cardDetails.upgradeCostMultiplier"));
             instance.Q<FloatField>("fragmentCostMultiplier").BindProperty(serializedObject.FindProperty($"cardDetails.fragmentCostMultiplier"));

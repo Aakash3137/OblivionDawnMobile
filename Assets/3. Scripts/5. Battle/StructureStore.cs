@@ -22,7 +22,8 @@ public struct Identity
 public class CardDetails
 {
     public CardState cardState;
-    public int minBuildingLevel;
+    [Header("Allowed extra levels beyond the city center level.")]
+    public int deltaLevel;
     public int purchaseCost;
     public float upgradeCostMultiplier;
     public float fragmentCostMultiplier;
