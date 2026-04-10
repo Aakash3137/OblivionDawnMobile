@@ -30,6 +30,8 @@ public class BuildingDataSO : ScriptableObject
         for (int j = 0; j < buildingBuildCost.Length; j++)
             buildingBuildCost[j].resourceType = (ScenarioResourceType)enumValues.GetValue(j);
 
+        cardDetails.deltaLevel = Mathf.Clamp(cardDetails.deltaLevel, 1, GameData.GameMaxObjectLevel);
+
         if (!hasUpkeep)
             return;
 
