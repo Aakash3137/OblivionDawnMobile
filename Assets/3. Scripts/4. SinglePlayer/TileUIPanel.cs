@@ -53,7 +53,7 @@ public class TileUIPanel : MonoBehaviour
         buildPanel.HideBuildPanel(canvasGroup);
     }
 
-    public void PlaceBuilding(BuildingStats buildingPrefab)
+    public void PlaceBuilding(BuildingStats buildingPrefab, UnitProduceStatsSO unitSO = null)
     {
         if (currentTile == null || buildingPrefab == null || buildingPrefab == null) return;
         if (currentTile.hasBuilding) return;
@@ -73,6 +73,9 @@ public class TileUIPanel : MonoBehaviour
         Vector3 spawnPos = currentTile.transform.position + Vector3.up * 2f;
 
         placedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
+
+        if (placedBuilding is OffenseBuildingStats offenseBuilding)
+            offenseBuilding.SetUnitPrefab(CharacterDatabase.Instance.GetUnitPrefab(unitSO), unitSO.GetUnitSpawnTime());
 
         // This will set current tile and owner side order is important
         placedBuilding.SetBuildingTile(currentTile);

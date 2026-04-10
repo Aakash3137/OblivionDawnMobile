@@ -27,8 +27,10 @@ public class UpgradeCard : MonoBehaviour
     public int cardUpgradeCost { get; private set; }
     public int cardFragmentCost { get; private set; }
 
+
     private FactionName cardFaction;
     private int currentFragments => userData.GetFragment(cardFaction);
+    public bool isUpgradable => userData.Diamonds >= cardUpgradeCost && currentFragments >= cardFragmentCost;
 
     private void Awake()
     {
