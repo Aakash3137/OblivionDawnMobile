@@ -10,4 +10,3 @@ public enum AIPersonalityEnum
     Goat,
     Rabbit
 }
-
