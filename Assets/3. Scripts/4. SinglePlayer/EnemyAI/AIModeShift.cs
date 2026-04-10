@@ -1,47 +1,68 @@
 using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
 using System.Collections.Generic;
 
-[System.Serializable]
-public class PersonalityButton
+public enum Difficulty
 {
-    public AIPersonalityEnum personality;
-    public Button button;
+    Easy,
+    Medium,
+    Hard
+}
+
+public enum PlayStyle
+{
+    Attack,
+    Defence,
+    Mix
 }
 
 public class AIModeShift : MonoBehaviour
 {
-    [Header("Personality Buttons")]
-    public List<PersonalityButton> personalityButtons; // each button tagged with its enum
+    [Header("TMP Dropdowns")]
+    public TMP_Dropdown difficultyDropdown; // Easy, Medium, Hard
+    public TMP_Dropdown styleDropdown;      // Attack, Defence, Mix
+
+    private Dictionary<(PlayStyle, Difficulty), AIPersonalityEnum> personalityMap;
+
+    private void Awake()
+    {
+        // Mapping setup
+        personalityMap = new Dictionary<(PlayStyle, Difficulty), AIPersonalityEnum>
+        {
+            {(PlayStyle.Attack, Difficulty.Easy), AIPersonalityEnum.Tiger_Spark},
+            {(PlayStyle.Attack, Difficulty.Medium), AIPersonalityEnum.Lion_Heart},
+            {(PlayStyle.Attack, Difficulty.Hard), AIPersonalityEnum.Dragon_Flare},
+
+            {(PlayStyle.Defence, Difficulty.Easy), AIPersonalityEnum.Baffalo_Defense},
+            {(PlayStyle.Defence, Difficulty.Medium), AIPersonalityEnum.Rhino_Charge},
+            {(PlayStyle.Defence, Difficulty.Hard), AIPersonalityEnum.Elephant_Stance},
+
+            {(PlayStyle.Mix, Difficulty.Easy), AIPersonalityEnum.Rabbit},
+            {(PlayStyle.Mix, Difficulty.Medium), AIPersonalityEnum.Goat},
+            {(PlayStyle.Mix, Difficulty.Hard), AIPersonalityEnum.Wolf_Pack},
+        };
+    }
 
     private void Start()
     {
-        foreach (var pb in personalityButtons)
-        {
-            AIPersonalityEnum captured = pb.personality;
-            pb.button.onClick.AddListener(() => SelectPersonality(captured));
-        }
+        difficultyDropdown.onValueChanged.AddListener(OnSelectionChanged);
+        styleDropdown.onValueChanged.AddListener(OnSelectionChanged);
 
-        // Default = Dragon_Flare
-        SelectPersonality(AIPersonalityEnum.Dragon_Flare);
+        UpdatePersonality();
     }
 
-    void SelectPersonality(AIPersonalityEnum selected)
+    void OnSelectionChanged(int index)
     {
+        UpdatePersonality();
+    }
+
+    void UpdatePersonality()
+    {
+        Difficulty difficulty = (Difficulty)difficultyDropdown.value;
+        PlayStyle style = (PlayStyle)styleDropdown.value;
+
+        AIPersonalityEnum selected = personalityMap[(style, difficulty)];
+
         MenuManager.Instance.SetPersonality(selected);
-
-        foreach (var pb in personalityButtons)
-        {
-            SetButtonAlpha(pb.button, pb.personality == selected ? 1f : 0.4f);
-        }
-    }
-
-    void SetButtonAlpha(Button button, float alpha)
-    {
-        ColorBlock colors = button.colors;
-        Color normal = colors.normalColor;
-        normal.a = alpha;
-        colors.normalColor = normal;
-        button.colors = colors;
     }
 }
