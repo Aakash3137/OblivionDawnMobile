@@ -48,9 +48,6 @@ public class CameraPanningPerspective : MonoBehaviour
 
     void Update()
     {
-        if (AbilityTargetingSystem.IsTargetingActive)
-            return;
-        
         PanCamera();
         ZoomCamera();
         ResetCamera();
@@ -67,13 +64,10 @@ public class CameraPanningPerspective : MonoBehaviour
     // -------------------------
     void PanCamera()
     {
-        if (AbilityTargetingSystem.IsTargetingActive)
-        {
-            IsDragging = false;
-            return;
-        }
-
         if (IsPointerOverUI())
+            return;
+        
+        if (AbilityTargetingSystem.IsTargetingActive)
             return;
 
         // Mobile: one-finger pan
@@ -133,8 +127,6 @@ public class CameraPanningPerspective : MonoBehaviour
     // --------------------------------------------------
     private void ZoomCamera()
     {
-        if (AbilityTargetingSystem.IsTargetingActive)
-            return;
         
         if (cam == null)
             return;
