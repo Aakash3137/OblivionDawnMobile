@@ -105,7 +105,6 @@ MonoBehaviour:
   neutralBuildingsData: []
   UniversalAbilityContainer: {fileID: 0}
   AllSpeedReduction: {fileID: 11400000, guid: 9ad0d301ca37c474e96ab4560dcc0d96, type: 2}
-  AllHealAbility: {fileID: 0}
 --- !u!114 &4157594653003389439
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127,27 +126,31 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 43aae886f4ec007479deb0baab9e2b31, type: 2}
   - {fileID: 11400000, guid: 9dfe4d24af8c09f48a46537741b82de6, type: 2}
   tileModificationData:
+  - tileEffectType: 6
+    tileCount: 2
+    clusterSize: 1
+    minDistanceFromMainBuilding: 0
+    isGrouped: 0
+    isObstacle: 0
+    inCorners: 1
   - tileEffectType: 4
-    tileCount: 8
-    clusterSize: 4
+    tileCount: 12
+    clusterSize: 6
     minDistanceFromMainBuilding: 2
     isGrouped: 1
     isObstacle: 1
+    inCorners: 0
   - tileEffectType: 5
-    tileCount: 6
-    clusterSize: 3
-    minDistanceFromMainBuilding: 4
-    isGrouped: 1
-    isObstacle: 1
-  - tileEffectType: 4
-    tileCount: 6
-    clusterSize: 3
+    tileCount: 8
+    clusterSize: 4
     minDistanceFromMainBuilding: 3
     isGrouped: 1
     isObstacle: 1
-  - tileEffectType: 3
-    tileCount: 6
-    clusterSize: 3
-    minDistanceFromMainBuilding: 5
+    inCorners: 0
+  - tileEffectType: 6
+    tileCount: 10
+    clusterSize: 5
+    minDistanceFromMainBuilding: 4
     isGrouped: 0
     isObstacle: 0
+    inCorners: 0

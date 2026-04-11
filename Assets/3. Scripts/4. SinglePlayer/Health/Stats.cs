@@ -61,7 +61,7 @@ public class Stats : MonoBehaviour
     internal virtual void Initialize()
     {
         TempCurrentHealth = currentHealth = basicStats.maxHealth;
-//        Debug.Log($"<color=green> <size=16>Initial Health: {basicStats.maxHealth} </size></color>");
+        //        Debug.Log($"<color=green> <size=16>Initial Health: {basicStats.maxHealth} </size></color>");
 
         if (healthBar != null)
             healthBar.UpdateFillAmount(currentHealth / basicStats.maxHealth);
@@ -132,8 +132,10 @@ public class Stats : MonoBehaviour
         }
 
         amount = Mathf.Max(0, amount - basicStats.armor);
+
         if (amount == 0)
             Debug.Log("<size=16> Armor is high cannot take damage</size>");
+
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, basicStats.maxHealth);
         // Debug.Log("Current Health: " + currentHealth+ " Who is "+identity.name);
@@ -165,7 +167,7 @@ public class Stats : MonoBehaviour
                 defenseUnit.SetReplyTarget(attacker);
             }
         }
-       // Debug.Log("Object => " + RepairObj + "On "+ gameObject.name);
+        // Debug.Log("Object => " + RepairObj + "On "+ gameObject.name);
         if (currentHealth <= 0)
         {
             Die();
@@ -191,14 +193,16 @@ public class Stats : MonoBehaviour
             gemSpawner.SpawnGem();*/
     }
 
-    public void BuffBasicStats(float buffPercent)
+    public void BuffBasicStats(float buffStrength)
     {
-        Debug.Log($"Applying Health Buff currentMaxHealth: {currentHealth}, maxHealth: {basicStats.maxHealth}, buffPercent: {buffPercent}");
-        var tempBasicStats = basicStats;
-        tempBasicStats.maxHealth += basicStats.maxHealth * buffPercent * 0.01f;
-        tempBasicStats.armor += basicStats.armor * buffPercent * 0.01f;
-        currentHealth = tempBasicStats.maxHealth;
-        basicStats = tempBasicStats;
+        Debug.Log($"Applying Health Buff currentMaxHealth: {currentHealth}, maxHealth: {basicStats.maxHealth}, buffPercent: {buffStrength}");
+        BasicStats buffedBasicStats = new()
+        {
+            maxHealth = basicStats.maxHealth * buffStrength,
+            armor = basicStats.armor
+        };
+        basicStats = buffedBasicStats;
+        currentHealth = basicStats.maxHealth;
         Debug.Log($"Applied Health Buff currentMaxHealth: {currentHealth}, maxHealth: {basicStats.maxHealth}");
     }
 
@@ -211,27 +215,35 @@ public class Stats : MonoBehaviour
         if (healthBar != null)
             healthBar.UpdateFillAmount(currentHealth / basicStats.maxHealth);
     }
-    # region Repair
-      [Button]
+    #region Repair
+    [Button]
     public void HealthRepair()
     {
-        Debug.Log("Health Repair");
-        // float temp = PlayerResourceManager.Instance.globalTickTime/2;
-        float AddOnHealth = basicStats.maxHealth - currentHealth;
-        Debug.Log($"Add On Health:  {AddOnHealth}");
-        float DecreaseByPercent = AddOnHealth * 100 / basicStats.maxHealth;
-        Debug.Log($"Decrease Percent: {DecreaseByPercent}");
+        float missingHealthRatio = (basicStats.maxHealth - currentHealth) / basicStats.maxHealth;
+
         if (this is BuildingStats building)
         {
-            BuildingDataSO dataSO = building.buildingStatsSO;
-            PlayerResourceManager.Instance.Updateresources(DecreaseByPercent, dataSO.buildingBuildCost);
+            var buildCost = building.buildingStatsSO.buildingBuildCost;
+
+            var repairCost = new BuildCost[buildCost.Length];
+
+            for (int i = 0; i < buildCost.Length; i++)
+            {
+                repairCost[i] = new()
+                {
+                    resourceType = buildCost[i].resourceType,
+                    resourceAmount = Mathf.CeilToInt(buildCost[i].resourceAmount * missingHealthRatio)
+                };
+            }
+
+            if (!building.rmInstance.HasResources(repairCost))
+                return;
+
+            building.rmInstance.SpendResources(repairCost);
         }
+
         ResetHealth();
-        Debug.Log("Health Repairing Startt");
     }
-
-    
-
     #endregion
     [Button]
     public void DealDamage(float amount = 50f)
@@ -242,7 +254,7 @@ public class Stats : MonoBehaviour
     [Button]
     public virtual void Kill()
     {
-        TakeDamage(currentHealth);
+        TakeDamage(currentHealth + basicStats.armor);
     }
     [Button]
     public void SetDamageImmunity(bool immune)

@@ -80,6 +80,7 @@ public class TileUIPanel : MonoBehaviour
         // This will set current tile and owner side order is important
         placedBuilding.SetBuildingTile(currentTile);
         placedBuilding.Initialize();
+        // Initialize tile buff after all values are set
         currentTile.InitializeTileBuffs();
 
         // Fade out build panel

@@ -68,12 +68,12 @@ public class Tile : MonoBehaviour
 
     public void InitializeTileBuffs()
     {
-        if (currentBuilding.compatibleTileEffectType != tileEffectType)
-        {
-            if (tileEffectPrefab != null)
-                tileEffectPrefab.SetActive(false);
-            return;
-        }
+        // if (currentBuilding.compatibleTileEffectType != tileEffectType)
+        // {
+        //     if (tileEffectPrefab != null)
+        //         tileEffectPrefab.SetActive(false);
+        //     return;
+        // }
 
         for (int i = 0; i < tileEffects.Count; i++)
         {
@@ -136,12 +136,12 @@ public class Tile : MonoBehaviour
 
     public void Occupy(Side side)
     {
-        if(ownerSide != Side.Player && ownerSide != Side.Enemy)
+        if (ownerSide != Side.Player && ownerSide != Side.Enemy)
             return;
-        
+
         if (ownerSide == side)
             return;
-        
+
         ChangeSide(side);
         cgmInstance.TileOccupied(side, this);
         // Change previous side only when occupying
