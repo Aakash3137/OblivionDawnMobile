@@ -61,7 +61,7 @@ public class Stats : MonoBehaviour
     internal virtual void Initialize()
     {
         TempCurrentHealth = currentHealth = basicStats.maxHealth;
-        Debug.Log($"<color=green> <size=16>Initial Health: {basicStats.maxHealth} </size></color>");
+//        Debug.Log($"<color=green> <size=16>Initial Health: {basicStats.maxHealth} </size></color>");
 
         if (healthBar != null)
             healthBar.UpdateFillAmount(currentHealth / basicStats.maxHealth);
@@ -79,7 +79,7 @@ public class Stats : MonoBehaviour
 
         if (currentHealth < basicStats.maxHealth / 2)
         {
-            Debug.Log("<color=yellow>Enable repairing Button</color>");
+            // Debug.Log("<color=yellow>Enable repairing Button</color>");
             RepairObj.PlayShow();
         }
     }
@@ -165,7 +165,7 @@ public class Stats : MonoBehaviour
                 defenseUnit.SetReplyTarget(attacker);
             }
         }
-        Debug.Log("Object => " + RepairObj + "On " + gameObject.name);
+       // Debug.Log("Object => " + RepairObj + "On "+ gameObject.name);
         if (currentHealth <= 0)
         {
             Die();
@@ -179,7 +179,7 @@ public class Stats : MonoBehaviour
                 return;
 
             RepairObj.PlayShow();
-            Debug.Log($"<color=red>Your Health is too low {currentHealth} Repair Health Now</color>");
+            // Debug.Log($"<color=red>Your Health is too low {currentHealth} Repair Health Now</color>");
         }
     }
 
@@ -211,8 +211,8 @@ public class Stats : MonoBehaviour
         if (healthBar != null)
             healthBar.UpdateFillAmount(currentHealth / basicStats.maxHealth);
     }
-    #region Repair
-    [Button]
+    # region Repair
+      [Button]
     public void HealthRepair()
     {
         Debug.Log("Health Repair");
@@ -229,6 +229,9 @@ public class Stats : MonoBehaviour
         ResetHealth();
         Debug.Log("Health Repairing Startt");
     }
+
+    
+
     #endregion
     [Button]
     public void DealDamage(float amount = 50f)
