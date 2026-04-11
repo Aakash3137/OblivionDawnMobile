@@ -211,7 +211,7 @@ public class AttributeData
 }
 
 [System.Serializable]
-public class AbilityData
+public partial class AbilityData
 {
     public bool UnlockStatus;
     public string AbilityName;
