@@ -62,4 +62,15 @@ public class DefenseBuildingStats : BuildingStats
     {
         currentHealth = health;
     }
+    public void BuffDamageStats(float buffStrength)
+    {
+        AttackStats buffedAttackStats = new()
+        {
+            damage = attackStats.damage * buffStrength,
+            buildingDamage = attackStats.buildingDamage * buffStrength,
+            fireRate = attackStats.fireRate,
+        };
+
+        attackStats = buffedAttackStats;
+    }
 }

@@ -153,4 +153,11 @@ public class OffenseBuildingStats : BuildingStats
         unit = prefab;
         unitSpawnTime = spawnTime;
     }
+
+    public void BuffUnitProduction(float buffStrength)
+    {
+        Debug.Log($"Applying Unit Production Buff currentSpawnTime: {unitSpawnTime}");
+        unitSpawnTime = unitSpawnTime / buffStrength;
+        Debug.Log($"Applied Unit Production Buff currentSpawnTime: {unitSpawnTime}");
+    }
 }

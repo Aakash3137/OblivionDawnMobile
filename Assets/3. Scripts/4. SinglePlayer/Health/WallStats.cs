@@ -41,17 +41,17 @@ public class WallStats : Stats
 
     public override void TakeDamage(float amount, Stats stat)
     {
-        var damage = amount;
+        base.TakeDamage(amount);
 
-        if (amount <= currentHealth)
-            wallParent.DamageWall(amount);
+        var damage = Mathf.Max(0, amount - basicStats.armor);
+
+        if (damage <= currentHealth)
+            wallParent.DamageWall(damage);
         else
         {
             damage = currentHealth;
             wallParent.DamageWall(damage);
         }
-
-        base.TakeDamage(damage);
     }
 
     public override void ResetHealth()
