@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1515060391574531892
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3910530915395985735}
+  m_Layer: 0
+  m_Name: EffectPlace
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3910530915395985735
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1515060391574531892}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.142, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1807120803253265653}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3026721181737617176
 GameObject:
   m_ObjectHideFlags: 0
@@ -124,6 +155,7 @@ Transform:
   - {fileID: 7633336001778662003}
   - {fileID: 2744090075142055788}
   - {fileID: 4854190834079431544}
+  - {fileID: 3910530915395985735}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &6473091735761712175
@@ -219,6 +251,7 @@ MonoBehaviour:
   <currentTile>k__BackingField: {fileID: 0}
   producedUnits: []
   unit: {fileID: 0}
+  unitSpawnTime: 0
   <isProducingUnits>k__BackingField: 0
 --- !u!114 &-5704572815166906137
 MonoBehaviour:
@@ -244,6 +277,18 @@ PrefabInstance:
       propertyPath: StatsData
       value: 
       objectReference: {fileID: -8976530165009927266}
+    - target: {fileID: 3525362685811643254, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
+      propertyPath: EffectPlace
+      value: 
+      objectReference: {fileID: 3910530915395985735}
+    - target: {fileID: 3525362685811643254, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
+      propertyPath: _wallPrefab
+      value: 
+      objectReference: {fileID: 698741203513538792, guid: 5d3b8a68633834a4f996c92a5a4789d4, type: 3}
+    - target: {fileID: 3525362685811643254, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
+      propertyPath: BuildingHelper
+      value: 
+      objectReference: {fileID: 5551679913311386414}
     - target: {fileID: 3644381699479357817, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
       propertyPath: m_PresetInfoIsWorld
       value: 1
