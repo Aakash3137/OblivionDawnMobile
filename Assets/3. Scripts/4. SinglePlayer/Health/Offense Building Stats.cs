@@ -37,8 +37,8 @@ public class OffenseBuildingStats : BuildingStats
 
             if (side != Side.Player)
             {
-                unitSpawnTime = unit.unitProduceSO.unitUpgradeData[0].unitSpawnTime;
                 unit = offenseBuildingSO.unitPrefab;
+                unitSpawnTime = unit.unitProduceSO.unitUpgradeData[0].unitSpawnTime;
             }
 
             basicStats = offenseBuildingData.buildingBasicStats;
