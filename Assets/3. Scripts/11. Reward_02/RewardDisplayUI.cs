@@ -35,13 +35,17 @@ public class RewardDisplayUI : MonoBehaviour
         gameObject.SetActive(true);
 
         // Set data
-        icon.sprite = reward.rewardData.icon;
+        if(reward.rewardData.rewardType == RewardType02.Fragment || reward.rewardData.rewardType == RewardType02.Unit)
+            icon.sprite = reward.rewardData.GetIcon(reward.faction);
+        else
+            icon.sprite = reward.rewardData.icon;
+
         nameText.text = reward.rewardData.rewardName;
         //set alpha of nameText to 0
         nameText.color = new Color(nameText.color.r, nameText.color.g, nameText.color.b, 0f);
         amountText.color = new Color(amountText.color.r, amountText.color.g, amountText.color.b, 0f);
         
-        amountText.text = "x" + reward.amount;
+        amountText.text = "+" + reward.amount;
 
         // Start animation
         StartCoroutine(PlayAnimation());

@@ -4,6 +4,21 @@ using TMPro;
 using UnityEngine;
 
 
+// [SerializeField] private PlayerLevelData playerLevelData;
+// [SerializeField] private Userdata userData;
+
+// public void LevelUp()
+// {
+//     userData.Level++;
+
+//     var bundle = playerLevelData.GetRewardForLevel(userData.Level);
+
+//     if (bundle != null)
+//     {
+//         RewardManager.Instance.ClaimReward(bundle);
+//     }
+// }
+
 [CreateAssetMenu(fileName = "Userdata", menuName = "Userdata", order = 0)]
 public class Userdata : ScriptableObject
 {
@@ -19,6 +34,7 @@ public class Userdata : ScriptableObject
     [SerializeField] private int diamonds = 0;
     [SerializeField] private int mapShards = 0;
     [SerializeField, ReadOnly] private int[] fragments = new int[4];
+
     public Action<FactionName> OnFragmentsChanged;
     public Action OnDiamondsChanged;
     public Action OnMapShardsChanged;

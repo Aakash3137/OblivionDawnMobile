@@ -21,6 +21,8 @@ public class UiHomePanelScript : MonoBehaviour
     [SerializeField] private TMP_Text LevelNotTxt;
     // [SerializeField] private TMP_Text CoinsTxt;
     [SerializeField] private TMP_Text DiamondsTxt;
+    [SerializeField] private TMP_Text MapShardsText;
+
     [SerializeField] private Image UserPic;
     [SerializeField] Button RewardButton;
 
@@ -39,6 +41,13 @@ public class UiHomePanelScript : MonoBehaviour
 
     #region  LifeCycle
 
+    void Start()
+    {
+        DiamondsTxt.text = PlayerData.Diamonds.ToString();
+        startPos = RewardButton.transform.localPosition;
+        MapShardsText.text = PlayerData.MapShards.ToString();
+    }
+
     private void OnEnable()
     {
         _Data.PlayerXP+=1;
@@ -56,6 +65,7 @@ public class UiHomePanelScript : MonoBehaviour
         if (PlayerData != null)
         {
             PlayerData.OnDiamondsChanged += UpdateDiamondUI;
+            PlayerData.OnMapShardsChanged += UpdateMapShardUI;
         }
         //DiamondsTxt.text = PlayerData.Diamonds.ToString();
 
@@ -64,12 +74,13 @@ public class UiHomePanelScript : MonoBehaviour
 
     private void UpdateDiamondUI()
     {
+        
         DiamondsTxt.text = PlayerData.Diamonds.ToString();
     }
 
-    void Start()
+        private void UpdateMapShardUI()
     {
-        startPos = RewardButton.transform.localPosition;
+        MapShardsText.text = PlayerData.MapShards.ToString();
     }
 
     void Update()

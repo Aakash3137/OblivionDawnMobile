@@ -44,9 +44,27 @@ public class RewardManager : MonoBehaviour
                 userData.MapShards += reward.amount;
                 break;
 
+            case RewardType02.Unit:
+                GrantUnitReward(reward);
+                break;
+
             default:
                 Debug.LogWarning("Unhandled reward type: " + reward.rewardData.rewardType);
                 break;
+        }
+    }
+
+    private void GrantUnitReward(RewardInstance reward)
+    {
+        if (reward.rewardData is UnitRewardData unitReward)
+        {
+            unitReward.UnlockUnit();
+
+            Debug.Log($"Unlocked Unit: {unitReward.itemData.itemName}");
+        }
+        else
+        {
+            Debug.LogError("RewardData is not UnitRewardData!");
         }
     }
 
