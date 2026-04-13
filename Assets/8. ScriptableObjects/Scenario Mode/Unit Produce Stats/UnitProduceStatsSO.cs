@@ -68,7 +68,6 @@ public class UnitProduceStatsSO : ScriptableObject
         unitIdentity.name = gameUnitName.ToString();
 
         unitIdentity.spawnLevel = Mathf.Clamp(unitIdentity.spawnLevel, 0, unitUpgradeData.Length - 1);
-        cardDetails.deltaLevel = Mathf.Clamp(cardDetails.deltaLevel, 1, GameData.GameMaxObjectLevel);
 
         if (!hasUpkeep)
             return;

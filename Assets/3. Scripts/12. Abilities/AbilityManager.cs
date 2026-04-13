@@ -19,7 +19,6 @@ public class AbilityManager : MonoBehaviour
 
     private HashSet<GameUnitName> processedUnits = new HashSet<GameUnitName>();
 
-    //  NEW (safe tracking)
     private Dictionary<AbilitySO, GameUnitName> abilityOwnerMap = new Dictionary<AbilitySO, GameUnitName>();
 
     private void Awake()
@@ -37,7 +36,6 @@ public class AbilityManager : MonoBehaviour
         while (true)
         {
             InitializeAbilityButtons();  
-
             yield return new WaitForSeconds(0.5f);
         }
     }
@@ -55,15 +53,34 @@ public class AbilityManager : MonoBehaviour
             }
             else
             {
+                cooldownTimers[ability] = 0f;
                 RestoreButton(ability);
+                
+                if (AbilitySetController.Instance != null)
+                    AbilitySetController.Instance.OnAbilityCooldownEnded();
             }
         }
+
+
+        var finished = keys.Where(a => cooldownTimers.ContainsKey(a) && cooldownTimers[a] <= 0f).ToList();
+        foreach (var a in finished)
+            cooldownTimers.Remove(a);
+    }
+    
+    public bool IsOnCooldown(AbilitySO ability)
+    {
+        return cooldownTimers.TryGetValue(ability, out float t) && t > 0f;
     }
 
+    public AbilitySO GetAbility(Button btn)
+    {
+        if (btn == null) return null;
+        AbilityButtonLink link = btn.GetComponent<AbilityButtonLink>();
+        return link != null ? link.ability : null;
+    }
 
     public void OnUnitSpawned(UnitStats unit)
     {
-        //  ONLY PLAYER UNITS
         if (unit.side != Side.Player)
             return;
         
@@ -101,7 +118,6 @@ public class AbilityManager : MonoBehaviour
                 bool exists = BattleUnitRegistry.PlayerUnits
                     .Any(u => u != null && u.gameUnitName == unit.gameUnitName);
 
-                //  Only disable if REALLY no units left
                 if (!exists && abilityButtonMap[ability].gameObject.activeSelf)
                 {
                     DisableButtonCompletely(ability);
@@ -111,8 +127,6 @@ public class AbilityManager : MonoBehaviour
 
         processedUnits.Remove(unit.gameUnitName);
     }
-    
-    // =========================================================
 
     public void ActivateAbility(AbilitySO ability)
     {
@@ -164,8 +178,6 @@ public class AbilityManager : MonoBehaviour
         return targets;
     }
 
-    // =========================================================
-
     private void InitializeAbilityButtons()
     {
         foreach (var unit in BattleUnitRegistry.PlayerUnits)
@@ -193,7 +205,6 @@ public class AbilityManager : MonoBehaviour
         }
     }
 
-
     private void CreateAbilityButton(AbilitySO ability)
     {
         if (abilityButtonPrefab == null || abilitiesContainer == null)
@@ -207,6 +218,10 @@ public class AbilityManager : MonoBehaviour
         if (buttonImage != null && ability.abilityIcon != null)
             buttonImage.sprite = ability.abilityIcon;
 
+        AbilityButtonLink link = buttonObj.GetComponent<AbilityButtonLink>();
+        if (link != null)
+            link.ability = ability;
+        
         if (button != null)
         {
             button.onClick.AddListener(() => ActivateAbility(ability));
@@ -216,26 +231,7 @@ public class AbilityManager : MonoBehaviour
             AbilityButtons.Add(button);
         }
     }
-
-    //     KEEP SPECIAL ABILITY (UNCHANGED)
-    public void AddSpecialAbility(AbilitySO ability)
-    {
-        if (ability == null) return;
-        if (ability.abilityType != AbilityType.Active) return;
-
-        if (abilityButtonMap.ContainsKey(ability))
-        {
-            EnableButton(ability);
-            return;
-        }
-
-        CreateAbilityButton(ability);
-    }
-
-    // =========================================================
-    // UI
-    // =========================================================
-
+    
     private void DisableButton(AbilitySO ability)
     {
         if (abilityButtonMap.TryGetValue(ability, out Button button))
@@ -251,20 +247,6 @@ public class AbilityManager : MonoBehaviour
 
     private void RestoreButton(AbilitySO ability)
     {
-        /*
-        // 🔥 FIX: use REAL CHECK instead of counters
-        if (abilityOwnerMap.ContainsKey(ability))
-        {
-            var owner = abilityOwnerMap[ability];
-
-            bool exists = BattleUnitRegistry.PlayerUnits
-                .Any(u => u != null && u.gameUnitName == owner);
-
-            if (!exists)
-                return;
-        }
-        */
-
         if (abilityButtonMap.TryGetValue(ability, out Button button))
             button.interactable = true;
 
@@ -302,7 +284,5 @@ public class AbilityManager : MonoBehaviour
 
     private void UpdateButtonCooldown(AbilitySO ability)
     {
-        // optional visuals
-        
     }
 }

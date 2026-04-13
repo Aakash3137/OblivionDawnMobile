@@ -37,8 +37,8 @@ public class OffenseBuildingStats : BuildingStats
 
             if (side != Side.Player)
             {
-                unitSpawnTime = unit.unitProduceSO.unitUpgradeData[0].unitSpawnTime;
                 unit = offenseBuildingSO.unitPrefab;
+                unitSpawnTime = unit.unitProduceSO.unitUpgradeData[0].unitSpawnTime;
             }
 
             basicStats = offenseBuildingData.buildingBasicStats;
@@ -152,5 +152,12 @@ public class OffenseBuildingStats : BuildingStats
     {
         unit = prefab;
         unitSpawnTime = spawnTime;
+    }
+
+    public void BuffUnitProduction(float buffStrength)
+    {
+        Debug.Log($"Applying Unit Production Buff currentSpawnTime: {unitSpawnTime}");
+        unitSpawnTime = unitSpawnTime / buffStrength;
+        Debug.Log($"Applied Unit Production Buff currentSpawnTime: {unitSpawnTime}");
     }
 }

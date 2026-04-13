@@ -4,6 +4,9 @@ using UnityEngine;
 public class RangeEffect : TileEffect
 {
     [field: SerializeField] public GameObject vfxPrefab { get; private set; }
+    [field: SerializeField] public GameObject cornerVfxPrefab { get; private set; }
+    [field: SerializeField] public float buffStrength { get; private set; }
+    [field: SerializeField] public float cornerBuffStrength { get; private set; }
 
     public override void ApplyVisuals(Tile tile)
     {
@@ -20,6 +23,12 @@ public class RangeEffect : TileEffect
 
     public override void ApplyEffect(Tile tile)
     {
+        if (tile == null || !tile.hasBuilding)
+            return;
 
+        var building = tile.currentBuilding as DefenseBuildingStats;
+
+        if (building == null)
+            return;
     }
 }

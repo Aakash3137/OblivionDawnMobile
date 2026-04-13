@@ -322,6 +322,7 @@ Transform:
   - {fileID: 1191400395699768540}
   - {fileID: 2744090075142055788}
   - {fileID: 6227447527841120206}
+  - {fileID: 1297203564699808977}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &6473091735761712175
@@ -967,6 +968,37 @@ Transform:
   - {fileID: 4501944826781961171}
   m_Father: {fileID: 1833380556265790221}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8451815698377305956
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1297203564699808977}
+  m_Layer: 0
+  m_Name: EffectPlace
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1297203564699808977
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8451815698377305956}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.142, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1807120803253265653}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8634861345007986086
 GameObject:
   m_ObjectHideFlags: 0
@@ -1172,12 +1204,29 @@ PrefabInstance:
       propertyPath: m_Name
       value: Defense Building World Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 6106941269027859910, guid: ceaccfc72e49830479863294dd97d8a5, type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6477420605472307398, guid: ceaccfc72e49830479863294dd97d8a5, type: 3}
       propertyPath: StatsData
       value: 
       objectReference: {fileID: -3211350180019929072}
+    - target: {fileID: 6477420605472307398, guid: ceaccfc72e49830479863294dd97d8a5, type: 3}
+      propertyPath: EffectPlace
+      value: 
+      objectReference: {fileID: 1297203564699808977}
+    - target: {fileID: 6477420605472307398, guid: ceaccfc72e49830479863294dd97d8a5, type: 3}
+      propertyPath: _wallPrefab
+      value: 
+      objectReference: {fileID: 698741203513538792, guid: 5d3b8a68633834a4f996c92a5a4789d4, type: 3}
+    - target: {fileID: 6477420605472307398, guid: ceaccfc72e49830479863294dd97d8a5, type: 3}
+      propertyPath: BuildingHelper
+      value: 
+      objectReference: {fileID: 5551679913311386414}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 995791501414135871, guid: ceaccfc72e49830479863294dd97d8a5, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ceaccfc72e49830479863294dd97d8a5, type: 3}

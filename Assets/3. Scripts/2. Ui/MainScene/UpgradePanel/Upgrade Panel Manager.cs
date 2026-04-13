@@ -10,6 +10,8 @@ public class UpgradePanelManager : MonoBehaviour
     [SerializeField] private AllUnitData allUnitData;
     [Space(10)]
     [SerializeField] private UpgradeCard upgradeCardPrefab;
+    [SerializeField] private Userdata userData;
+    [SerializeField] private GameObject notifyObject;
     [Space(10)]
     public FactionCardPanel[] factionCardPanels;
 
@@ -32,6 +34,8 @@ public class UpgradePanelManager : MonoBehaviour
         }
 
         upgradePanelNavigation = GetComponent<UpgradePanelNavigation>();
+
+        userData.OnFragmentsChanged += UpgradeAvailable;
 
         mainBuildingScriptables = allBuildingData.mainBuildingSO;
         buildingScriptables = allBuildingData.allBuildingsSO;
@@ -101,6 +105,26 @@ public class UpgradePanelManager : MonoBehaviour
             }
         }
 
+    }
+
+    private void UpgradeAvailable(FactionName faction = FactionName.Medieval)
+    {
+        foreach (var panel in factionCardPanels)
+        {
+            foreach (var cardPanel in panel.cardPanels)
+                foreach (var card in cardPanel.allCards)
+                    if (card.isUpgradable)
+                    {
+                        notifyObject.SetActive(true);
+                        return;
+                    }
+        }
+
+        notifyObject.SetActive(false);
+    }
+    private void OnDisable()
+    {
+        UpgradeAvailable();
     }
 }
 

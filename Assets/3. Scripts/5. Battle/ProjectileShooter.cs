@@ -27,13 +27,13 @@ public class ProjectileShooter : MonoBehaviour
         }
         else if (TryGetComponent<DefenseBuildingStats>(out var buildingStats))
         {
-            unitDamage = buildingStats.defenseBuildingData.defenseAttackStats.damage;
-            buildingDamage = buildingStats.defenseBuildingData.defenseAttackStats.buildingDamage;
+            unitDamage = buildingStats.attackStats.damage;
+            buildingDamage = buildingStats.attackStats.buildingDamage;
         }
         else if (TryGetComponent<MainBuildingStats>(out var mainStats))
         {
-            unitDamage = mainStats.mainBuildingData.mainAttackStats.damage;
-            buildingDamage = mainStats.mainBuildingData.mainAttackStats.buildingDamage;
+            unitDamage = mainStats.attackStats.damage;
+            buildingDamage = mainStats.attackStats.buildingDamage;
         }
         projectileSide = shooterStats.side;
     }

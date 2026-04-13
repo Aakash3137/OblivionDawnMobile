@@ -37,11 +37,7 @@ public class GameManager : MonoBehaviour
     public Tile enemyTile { get; private set; }
     public Transform playerSpawnPoint { get; private set; }
     public Transform enemySpawnPoint { get; private set; }
-
-    //Universal Abilities
-    public GameObject UniversalAbilityContainer;
-    public AbilitySO AllSpeedReduction;
-
+    
     void Awake()
     {
         if (Instance == null)
@@ -109,16 +105,6 @@ public class GameManager : MonoBehaviour
 
             //Initialize if scriptable object is not null
             // buildingStats.Initialize();
-        }
-    }
-    
-    //Abilities Section
-    void ReduceAllUnitSpeed()
-    {
-        if (AllSpeedReduction != null)
-        {
-            Debug.Log("Speed reduction ON for next 15sec for every unit in game");
-            AbilityManager.Instance.AddSpecialAbility(AllSpeedReduction);
         }
     }
     

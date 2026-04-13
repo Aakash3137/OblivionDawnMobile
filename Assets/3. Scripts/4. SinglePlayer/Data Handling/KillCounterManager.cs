@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class KillCounterManager : MonoBehaviour
@@ -21,6 +22,7 @@ public class KillCounterManager : MonoBehaviour
     public int playerTotalUnitKills;
     public int enemyTotalUnitKills;
 
+    public static event Action<UnitProduceStatsSO, Side> OnUnitKilled;
 
     private void Awake()
     {
@@ -34,8 +36,10 @@ public class KillCounterManager : MonoBehaviour
         enemyKills = new KillData();
     }
 
-    public void AddUnitKillData(ScenarioUnitType offenseType, Side side)
+    public void AddUnitKillData(UnitProduceStatsSO unitStatsSO, Side side)
     {
+        ScenarioUnitType offenseType = unitStatsSO.unitType;
+
         switch (side)
         {
             case Side.Player:
@@ -56,6 +60,7 @@ public class KillCounterManager : MonoBehaviour
                 }
                 enemyTotalUnitKills++;
                 break;
+
             case Side.Enemy:
                 switch (offenseType)
                 {
@@ -75,6 +80,8 @@ public class KillCounterManager : MonoBehaviour
                 playerTotalUnitKills++;
                 break;
         }
+
+        OnUnitKilled?.Invoke(unitStatsSO, side);
     }
 
     public void AddBuildingDestroyedData(ScenarioBuildingType buildingType, Side side)

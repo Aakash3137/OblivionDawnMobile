@@ -48,7 +48,7 @@ public class UpgradePopUpPanel : MonoBehaviour
     [SerializeField] private Sprite resourceIcon;
     #endregion
 
-    private UnitProduceStatsSO currentUnitData;
+    private UnitProduceStatsSO currentUnitSO;
     private BuildingDataSO currentBuildingSO;
 
     private CanvasGroup canvasGroup;
@@ -91,10 +91,10 @@ public class UpgradePopUpPanel : MonoBehaviour
     }
     private void OnClickAction()
     {
-        if (currentBuildingSO == null && currentUnitData == null)
+        if (currentBuildingSO == null && currentUnitSO == null)
             return;
 
-        var cardDetails = currentBuildingSO == null ? currentUnitData.cardDetails : currentBuildingSO.cardDetails;
+        var cardDetails = currentBuildingSO == null ? currentUnitSO.cardDetails : currentBuildingSO.cardDetails;
 
         var cardState = cardDetails.cardState;
 
@@ -121,7 +121,7 @@ public class UpgradePopUpPanel : MonoBehaviour
 
         currentUpgradeCard = null;
         currentBuildingSO = null;
-        currentUnitData = null;
+        currentUnitSO = null;
         cardDeltaLevel = 0;
     }
 
@@ -147,8 +147,8 @@ public class UpgradePopUpPanel : MonoBehaviour
         }
         else
         {
-            currentUnitData.cardDetails.cardState = currentCardState;
-            InitializeStatBlocks(currentUnitData);
+            currentUnitSO.cardDetails.cardState = currentCardState;
+            InitializeStatBlocks(currentUnitSO);
         }
 
         RefreshButtonState();
@@ -169,7 +169,7 @@ public class UpgradePopUpPanel : MonoBehaviour
             // compare with player level for main buildings
             // var playerLevel = ;
 
-            // if (mainSpawnLevel >= playerLevel + cardDeltaLevel)
+            // if (mainSpawnLevel >= playerLevel + cardDeltaLevel )
             // {
             //     Debug.Log("<font=18>Main building level is too low");
             //     return;
@@ -193,12 +193,20 @@ public class UpgradePopUpPanel : MonoBehaviour
         if (currentBuildingSO != null)
         {
             currentBuildingSO.buildingIdentity.spawnLevel = cardSpawnLevel;
+#if UNITY_EDITOR
+            UnityEditor.EditorUtility.SetDirty(currentBuildingSO);
+            UnityEditor.AssetDatabase.SaveAssets();
+#endif
             InitializeStatBlocks(currentBuildingSO);
         }
         else
         {
-            currentUnitData.unitIdentity.spawnLevel = cardSpawnLevel;
-            InitializeStatBlocks(currentUnitData);
+            currentUnitSO.unitIdentity.spawnLevel = cardSpawnLevel;
+#if UNITY_EDITOR
+            UnityEditor.EditorUtility.SetDirty(currentUnitSO);
+            UnityEditor.AssetDatabase.SaveAssets();
+#endif
+            InitializeStatBlocks(currentUnitSO);
         }
 
         currentUpgradeCard.RefreshCardCosts();
@@ -217,7 +225,7 @@ public class UpgradePopUpPanel : MonoBehaviour
         buildingTypeText.SetText($"{dataSO.buildingType}");
 
         currentBuildingSO = dataSO;
-        currentUnitData = null;
+        currentUnitSO = null;
 
         currentCardFaction = dataSO.buildingIdentity.faction;
         currentCardState = dataSO.cardDetails.cardState;
@@ -246,7 +254,7 @@ public class UpgradePopUpPanel : MonoBehaviour
         cardImage.sprite = dataSO.unitIcon;
         unitTypeText.SetText(dataSO.unitType.ToString());
 
-        currentUnitData = dataSO;
+        currentUnitSO = dataSO;
         currentBuildingSO = null;
 
         currentCardFaction = dataSO.unitIdentity.faction;
@@ -511,8 +519,7 @@ public class UpgradePopUpPanel : MonoBehaviour
                 }
                 buttonLabel.SetText("Upgrade");
                 UpdateCostDisplay(currentUpgradeCard.cardUpgradeCost);
-                bool canUpgrade = userData.Diamonds >= currentUpgradeCard.cardUpgradeCost && currentFragments >= currentUpgradeCard.cardFragmentCost;
-                actionButton.interactable = canUpgrade;
+                actionButton.interactable = currentUpgradeCard.isUpgradable;
                 break;
         }
     }

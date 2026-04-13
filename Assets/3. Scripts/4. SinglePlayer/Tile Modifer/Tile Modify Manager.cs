@@ -15,6 +15,7 @@ public class TileModifyManager : MonoBehaviour
     private List<TileEffect> offenseTileEffects = new List<TileEffect>();
     private List<TileEffect> defenseTileEffects = new List<TileEffect>();
     private List<TileEffect> resourceTileEffects = new List<TileEffect>();
+    private List<TileEffect> buildingTileEffects = new List<TileEffect>();
     private List<TileEffect> waterTileEffects = new List<TileEffect>();
     private List<TileEffect> lavaTileEffects = new List<TileEffect>();
 
@@ -37,15 +38,24 @@ public class TileModifyManager : MonoBehaviour
             switch (data.tileEffectType)
             {
                 case TileEffectType.OffenseTile:
-                    GenerateTileEffects(offenseTileEffects, data);
+                    if (!data.inCorners)
+                        GenerateTileEffects(offenseTileEffects, data);
+                    else
+                        GenerateInCorner(offenseTileEffects, data);
                     break;
 
                 case TileEffectType.DefenseTile:
-                    GenerateTileEffects(defenseTileEffects, data);
+                    if (!data.inCorners)
+                        GenerateTileEffects(defenseTileEffects, data);
+                    else
+                        GenerateInCorner(defenseTileEffects, data);
                     break;
 
                 case TileEffectType.ResourceTile:
-                    GenerateTileEffects(resourceTileEffects, data);
+                    if (!data.inCorners)
+                        GenerateTileEffects(resourceTileEffects, data);
+                    else
+                        GenerateInCorner(resourceTileEffects, data);
                     break;
 
                 case TileEffectType.WaterTile:
@@ -54,6 +64,13 @@ public class TileModifyManager : MonoBehaviour
 
                 case TileEffectType.LavaTile:
                     GenerateTileEffects(lavaTileEffects, data);
+                    break;
+
+                case TileEffectType.BuildingTile:
+                    if (!data.inCorners)
+                        GenerateTileEffects(buildingTileEffects, data);
+                    else
+                        GenerateInCorner(buildingTileEffects, data);
                     break;
             }
         }
@@ -97,7 +114,8 @@ public class TileModifyManager : MonoBehaviour
         {
             for (int j = 0; j < data.tileCount; j++)
             {
-                Tile randomTile = null;
+                Tile randomTile;
+
                 if (j % 2 == 0)
                     randomTile = cgmInstance.GetRandomTile(Side.Player, data.minDistanceFromMainBuilding);
                 else
@@ -121,6 +139,42 @@ public class TileModifyManager : MonoBehaviour
         }
     }
 
+    // temporary purpose -> Later Implement area based tile selection for better work flow
+    private void GenerateInCorner(List<TileEffect> tileEffectList, TileModificationData data)
+    {
+        TileEffect highPriorityEffect = tileEffectList[0];
+        for (int i = 0; i < tileEffectList.Count; i++)
+        {
+            if (tileEffectList[i].visualPriority > highPriorityEffect.visualPriority)
+                highPriorityEffect = tileEffectList[i];
+        }
+
+        for (int j = 0; j < data.tileCount; j++)
+        {
+            Tile randomTile;
+
+            if (j % 2 == 0)
+                randomTile = cgmInstance.GetRandomCornerTile(Side.Player, 2, 5);
+            else
+                randomTile = cgmInstance.GetRandomCornerTile(Side.Enemy, 2, 5);
+
+            highPriorityEffect.ApplyVisuals(randomTile);
+            randomTile.tileEffectType = data.tileEffectType;
+            for (int k = 0; k < tileEffectList.Count; k++)
+            {
+                randomTile.tileEffects.Add(tileEffectList[k]);
+            }
+
+            if (randomTile != null && data.isObstacle)
+            {
+                var navMeshObstacle = randomTile.AddComponent<NavMeshObstacle>();
+                navMeshObstacle.enabled = true;
+                navMeshObstacle.carving = true;
+                navMeshObstacle.center = Vector3.up * 2f;
+            }
+        }
+
+    }
     private void PopulateTileEffects()
     {
         foreach (var effect in allTileEffects)
@@ -128,19 +182,21 @@ public class TileModifyManager : MonoBehaviour
             switch (effect)
             {
                 case BasicStatsEffect:
-                    offenseTileEffects.Add(effect);
-                    defenseTileEffects.Add(effect);
+                    // offenseTileEffects.Add(effect);
+                    // defenseTileEffects.Add(effect);
                     resourceTileEffects.Add(effect);
                     break;
                 case DamageEffect:
                 case RangeEffect:
-                    offenseTileEffects.Add(effect);
+                    buildingTileEffects.Add(effect);
                     defenseTileEffects.Add(effect);
                     break;
                 case UnitProductionEffect:
+                    buildingTileEffects.Add(effect);
                     offenseTileEffects.Add(effect);
                     break;
                 case ResourceProductionEffect:
+                    buildingTileEffects.Add(effect);
                     resourceTileEffects.Add(effect);
                     break;
                 case WaterEffect:
@@ -171,6 +227,7 @@ public class TileModificationData
     public int minDistanceFromMainBuilding;
     public bool isGrouped;
     public bool isObstacle;
+    public bool inCorners;
 }
 
-public enum TileEffectType { NONE, OffenseTile, DefenseTile, ResourceTile, WaterTile, LavaTile }
+public enum TileEffectType { NONE, OffenseTile, DefenseTile, ResourceTile, WaterTile, LavaTile, BuildingTile }

@@ -266,6 +266,10 @@ public class CubeGridManager : MonoBehaviour
     {
         return Mathf.Max(Mathf.Abs(a.x - b.x), Mathf.Abs(a.y - b.y));
     }
+    public int ManhattanDistance(Vector2Int a, Vector2Int b)
+    {
+        return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
+    }
     #endregion
 
     public Tile GetRandomTile(Side side, int minDistance)
@@ -283,6 +287,46 @@ public class CubeGridManager : MonoBehaviour
         if (eligible.Count == 0)
         {
             Debug.LogWarning($"GetRandomTile: No eligible {side} tiles beyond minDistance {minDistance}.");
+            return null;
+        }
+
+        var picked = eligible[UnityEngine.Random.Range(0, eligible.Count)];
+        tileEffectTiles.Add(picked);
+        return picked;
+    }
+    public Tile GetRandomCornerTile(Side side, int minDistance, int maxDistance)
+    {
+        var tiles = side == Side.Player ? playerTiles : enemyTiles;
+
+        // The 4 corners of the grid
+        Vector2Int[] corners = new Vector2Int[]
+        {
+            new Vector2Int(gridSize.x - 1, 0),
+            new Vector2Int(0, gridSize.y - 1),
+        };
+
+        var eligible = new List<Tile>();
+
+        foreach (var tile in tiles)
+        {
+            if (tileEffectTiles.Contains(tile))
+                continue;
+
+            // Tile must be within [minDistance, maxDistance] from ANY corner
+            foreach (var corner in corners)
+            {
+                int dist = CubeDistance(tile.coord, corner);
+                if (dist >= minDistance && dist < maxDistance)
+                {
+                    eligible.Add(tile);
+                    break; // Don't double-add if near multiple corners
+                }
+            }
+        }
+
+        if (eligible.Count == 0)
+        {
+            Debug.LogWarning($"GetRandomCornerTile: No eligible {side} tiles in distance range [{minDistance}, {maxDistance}] from corners.");
             return null;
         }
 
@@ -406,6 +450,25 @@ public class CubeGridManager : MonoBehaviour
         }
 
         return result;
+    }
+
+    public bool IsCornerTile(Tile tile)
+    {
+        int maxDistance = 8;
+        Vector2Int[] corners = new Vector2Int[]
+        {
+            new Vector2Int(gridSize.x - 1, 0),
+            new Vector2Int(0, gridSize.y - 1),
+        };
+
+        foreach (var corner in corners)
+        {
+            int dist = ManhattanDistance(tile.coord, corner);
+            if (dist <= maxDistance)
+                return true;
+        }
+
+        return false;
     }
 
     public Tile GetNearestOpenTile(Vector2Int currentGrid, Side side, Vector3 currentPosition, int range = 10)

@@ -7,7 +7,7 @@ public class BuildingPlacementHelper : MonoBehaviour
     private Vector2Int currentCoord;
     private CubeGridManager cgmInstance;
     [SerializeField] private List<Tile> neighborTiles = new List<Tile>();
-    private Tile currentTile;
+    internal Tile currentTile;
 
 
     private void Awake()

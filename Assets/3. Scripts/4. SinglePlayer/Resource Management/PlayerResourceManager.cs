@@ -32,17 +32,5 @@ public class PlayerResourceManager : ResourceManager
 
         SetResources(startingResources);
     }
-
-    public void Updateresources(float Value, BuildCost[] costs)
-    {
-        Debug.Log("Update Resources");
-        for(int i = 0; i < 4; i++) 
-        {
-            int AMOUNT =  (int)(Value * costs[i].resourceAmount / 100f);
-            Debug.Log("Amount Added " + AMOUNT);
-            startingResources[i].resourceAmount -= AMOUNT;
-        }
-        SetResources(startingResources);
-    }
     #endregion
 }
