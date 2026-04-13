@@ -236,8 +236,8 @@ public class Stats : MonoBehaviour
                 };
             }
 
-            if (!building.rmInstance.HasResources(repairCost))
-                return;
+            // if (!building.rmInstance.HasResources(repairCost))
+            //     return;
 
             building.rmInstance.SpendResources(repairCost);
         }

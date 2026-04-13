@@ -383,13 +383,18 @@ public class AbilitySetController : MonoBehaviour
     {
         if (btn == null) return;
 
+        if (!fillOk)
+        {
+            btn.interactable = false;
+            return;
+        }
+
         AbilitySO ability = AbilityManager.Instance != null
             ? AbilityManager.Instance.GetAbility(btn)
             : null;
 
         bool onCooldown = ability != null && AbilityManager.Instance.IsOnCooldown(ability);
-
-        btn.interactable = fillOk && !onCooldown;
+        btn.interactable = !onCooldown;
     }
 
     public void OnSpecialAbilityUsed()
