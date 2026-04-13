@@ -23,7 +23,7 @@ public class RepairButtonHandler : MonoBehaviour
     private float CoolDownTimer = 15f;
     [Header ("UI")]
     [SerializeField] private RectTransform rect;
-    [SerializeField] private Button Repairbtn;
+    [SerializeField] private Image Repairbtn;
 
     [Header ("Data")]
     [SerializeField] internal Stats StatsData;
@@ -35,9 +35,10 @@ public class RepairButtonHandler : MonoBehaviour
     private float _wallYOffset = 1f;
 
     [SerializeField] private WallParent _wallPrefab, CurrentWall;
-    private BuildingStats placedBuilding;
+    private Transform placedBuilding;
     private bool _mainWallPlaced = false;
     public BuildingPlacementHelper BuildingHelper;
+    Tile[] adjacentTiles;
 
     [Header ("Effects")]
     public GameObject GlowEffectPrefab;
@@ -51,8 +52,10 @@ public class RepairButtonHandler : MonoBehaviour
     void Start()
     {
         CheckIFEnemy();
-        Repairbtn.onClick.RemoveAllListeners();
-        Repairbtn.onClick.AddListener(OnClickRepairBtn);
+        placedBuilding = StatsData.transform;
+        CurrentWall = StatsData.GetComponentInChildren<WallParent>();
+        // Repairbtn.onClick.RemoveAllListeners();
+        // Repairbtn.onClick.AddListener(OnClickRepairBtn);
     }
 
     private void OnMouseDown() 
@@ -128,6 +131,7 @@ public class RepairButtonHandler : MonoBehaviour
         Debug.Log("On Click Repair Button");
         StatsData.HealthRepair();
         Repairbtn.gameObject.SetActive(false);
+        // PlaceWalls();
         StartCoroutine(CoolDownTimerStart());
     }
 
@@ -145,14 +149,16 @@ public class RepairButtonHandler : MonoBehaviour
     #region Repair Wall
     private void PlaceWalls()
     {
+        
+
         currentTile = BuildingHelper.currentTile;
         Vector3 _currentTileCords = currentTile.transform.position;
         var cgmInstance = CubeGridManager.Instance;
         Vector2Int currentGrid = cgmInstance.WorldToGrid(_currentTileCords);
  
         List<Vector2Int> adjacentTileCords = cgmInstance.GetCardinalNeighbors(currentGrid);
-
-        Tile[] adjacentTiles = new Tile[4]; 
+        
+        adjacentTiles = new Tile[4]; 
  
         adjacentTiles[0] = cgmInstance.GetTile(adjacentTileCords[0]);
         adjacentTiles[1] = cgmInstance.GetTile(adjacentTileCords[1]);
@@ -168,7 +174,13 @@ public class RepairButtonHandler : MonoBehaviour
 
         for (int i = 0; i < adjacentTiles.Length; i++)
         {
-            if (adjacentTiles[i] == null || adjacentTiles[i].ownerSide == Side.Enemy)
+            if (adjacentTiles[i] == null)
+            {
+                Debug.Log($"Tiles not available at {i} => {adjacentTiles[i]}");
+                continue;
+            }
+            
+            if(adjacentTiles[i].ownerSide == Side.Enemy)
                 continue;
 
             if (adjacentTiles[i].hasBuilding)
@@ -177,19 +189,15 @@ public class RepairButtonHandler : MonoBehaviour
                 {
                     case 0:
                         CurrentWall.DisableWall(0);
-                        // adjacentTiles[i].GetOccupant().GetComponentInChildren<WallParent>()?.DisableWall(1);
                         break;
                     case 1:
                         CurrentWall.DisableWall(1);
-                        // adjacentTiles[i].GetOccupant().GetComponentInChildren<WallParent>()?.DisableWall(0);
                         break;
                     case 2:
                         CurrentWall.DisableWall(2);
-                        // adjacentTiles[i].GetOccupant().GetComponentInChildren<WallParent>()?.DisableWall(3);
                         break;
                     case 3:
                         CurrentWall.DisableWall(3);
-                        // adjacentTiles[i].GetOccupant().GetComponentInChildren<WallParent>()?.DisableWall(2);
                         break;
                 }
             }
@@ -236,4 +244,10 @@ public static class InputHelper
 #endif
         return EventSystem.current.IsPointerOverGameObject();
     }
+}
+
+public enum ObjectType
+{
+    Remove,
+    Repair
 }

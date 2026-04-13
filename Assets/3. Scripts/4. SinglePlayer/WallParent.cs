@@ -4,7 +4,7 @@ using UnityEngine;
 public class WallParent : MonoBehaviour
 {
     [Header("Assign in Inspector")]
-    [SerializeField] private WallStats[] wallStats;
+    [SerializeField] internal WallStats[] wallStats;
     [ReadOnly]
     public float wallMaxHealth;
     [ReadOnly]
@@ -74,8 +74,10 @@ public class WallParent : MonoBehaviour
 
     private void HandleWallDestroy()
     {
+        Debug.Log("Handle Destroy has been called");
         if (wallCurrentHealth <= 0)
         {
+            Debug.Log("Wall Current Health: "+ wallCurrentHealth);
             Destroy(gameObject);
 
             if (defenseWall != null && defenseWall.defenseType == ScenarioDefenseType.Wall)
@@ -83,6 +85,11 @@ public class WallParent : MonoBehaviour
                 defenseWall.Die();
             }
         }
+    }
+
+    public void RepairHealth()
+    {
+        healthBar = GetComponentInChildren<HealthProgress>();
     }
 
     public void EnableWall(int index)
