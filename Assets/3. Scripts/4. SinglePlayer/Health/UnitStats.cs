@@ -155,7 +155,7 @@ public class UnitStats : Stats
         AbilityManager.Instance?.OnUnitDied(this);
         
         spawnerBuilding.producedUnits.Remove(this);
-        KillCounterManager.Instance.AddUnitKillData(unitType, side);
+        KillCounterManager.Instance.AddUnitKillData(unitProduceSO, side);
     }
 
     private void OnDestroy()

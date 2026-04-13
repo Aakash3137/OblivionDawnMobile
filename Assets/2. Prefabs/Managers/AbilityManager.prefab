@@ -70,11 +70,18 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 8192
-  vfxPrefab: {fileID: 6974084246394710616, guid: b202acbc71e0a8242a574cbd85ce4cc6, type: 3}
+  abilities:
+  - type: 1
+    vfxPrefab: {fileID: 6974084246394710616, guid: b202acbc71e0a8242a574cbd85ce4cc6, type: 3}
+    targetSprite: {fileID: 21300000, guid: e4457571f125c0f428ee9f91f92835e3, type: 3}
+    damage: 1000
+    damageArea: 10
+  - type: 2
+    vfxPrefab: {fileID: 6581819978879567992, guid: cc85d6b4e88da7b4c96ccec701015bad, type: 3}
+    targetSprite: {fileID: 21300000, guid: 834445ca7ddd20042ae383c9a475d6d2, type: 3}
+    damage: 1000
+    damageArea: 8
+  currentAbilityType: 1
   dragScript: {fileID: 0}
-  damage: 1000
-  damageArea: 10
   lastRayOrigin: {x: 0, y: 0, z: 0}
   lastRayHitPoint: {x: 0, y: 0, z: 0}
-  defaultRayOrigin: {x: 0, y: 0, z: 0}
-  defaultRayHitPoint: {x: 0, y: 0, z: 0}

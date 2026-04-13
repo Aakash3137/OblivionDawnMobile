@@ -54,8 +54,7 @@ public class BuildingButtonsManager : MonoBehaviour
             var sprite = UnitsSO[i].unitIcon;
 
             button.Initialize(prefab, sprite);
-
-            prefab.SetUnitPrefab(characterDatabase.GetUnitPrefab(UnitsSO[i]), UnitsSO[i].GetUnitSpawnTime());
+            button.unitSO = UnitsSO[i];
         }
 
         for (int i = 0; i < defenseSO.Count; i++)

@@ -14,6 +14,7 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     private CostPanelManager costPanelManager;
 
     private BuildCost[] cachedCosts;
+    public UnitProduceStatsSO unitSO;
 
     private void Awake()
     {
@@ -56,7 +57,7 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         if (prmInstance == null)
             prmInstance = PlayerResourceManager.Instance;
 
-        tileUIPanel.PlaceBuilding(buildingPrefab);
+        tileUIPanel.PlaceBuilding(buildingPrefab, unitSO);
 
         if (cachedCosts != null && !prmInstance.HasResources(cachedCosts))
         {

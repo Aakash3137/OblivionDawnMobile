@@ -39,6 +39,10 @@ public class Userdata : ScriptableObject
         {
             diamonds = value;
             UpdateCurrencyUI();
+#if UNITY_EDITOR
+            UnityEditor.EditorUtility.SetDirty(this);
+            UnityEditor.AssetDatabase.SaveAssets();
+#endif
             OnDiamondsChanged?.Invoke();
         }
     }
@@ -71,6 +75,10 @@ public class Userdata : ScriptableObject
         fragments[(int)faction] -= amount;
 
         OnFragmentsChanged?.Invoke(faction);
+#if UNITY_EDITOR
+        UnityEditor.EditorUtility.SetDirty(this);
+        UnityEditor.AssetDatabase.SaveAssets();
+#endif
     }
     public int GetFragment(FactionName faction) => fragments[(int)faction];
 

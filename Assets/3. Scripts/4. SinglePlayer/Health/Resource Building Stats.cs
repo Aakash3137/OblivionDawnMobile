@@ -107,9 +107,9 @@ public class ResourceBuildingStats : BuildingStats
     {
         rmInstance.DecreaseResourcesCap(resourceType, resourceBuildingData.resourceAmountCapacity);
     }
-    public void BuffResourceProduction(float buffPercent)
+    public void BuffResourceProduction(float buffStrength)
     {
-        generationAmount += Mathf.FloorToInt(generationAmount * buffPercent * 0.01f);
+        generationAmount = generationAmount * (int)buffStrength;
         generationRate = generationAmount;
     }
 

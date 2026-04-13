@@ -3,6 +3,7 @@ using UnityEngine;
 public class MainBuildingStats : BuildingStats
 {
     public MainBuildingUpgradeData mainBuildingData { get; private set; }
+    public AttackStats attackStats { get; private set; }
 
     internal override void Initialize()
     {
@@ -13,6 +14,7 @@ public class MainBuildingStats : BuildingStats
             mainBuildingData = mainBuildingStats.mainBuildingUpgradeData[identity.spawnLevel];
             basicStats = mainBuildingData.buildingBasicStats;
             buildTime = mainBuildingData.buildingBuildTime;
+            attackStats = mainBuildingData.mainAttackStats;
         }
         else
         {

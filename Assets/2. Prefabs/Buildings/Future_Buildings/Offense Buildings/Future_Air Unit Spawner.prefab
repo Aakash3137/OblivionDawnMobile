@@ -124,6 +124,7 @@ Transform:
   - {fileID: 7633336001778662003}
   - {fileID: 2744090075142055788}
   - {fileID: 6564202944572242072}
+  - {fileID: 6554601693641129418}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &6473091735761712175
@@ -219,6 +220,7 @@ MonoBehaviour:
   <currentTile>k__BackingField: {fileID: 0}
   producedUnits: []
   unit: {fileID: 0}
+  unitSpawnTime: 0
   <isProducingUnits>k__BackingField: 0
 --- !u!114 &3572568324727550575
 MonoBehaviour:
@@ -232,6 +234,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd86b6216a32ed04a869483ef87f6485, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &6848282101997847289
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6554601693641129418}
+  m_Layer: 0
+  m_Name: EffectPlace
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6554601693641129418
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6848282101997847289}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.142, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1807120803253265653}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1512948493298473283
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -306,6 +339,14 @@ PrefabInstance:
       propertyPath: StatsData
       value: 
       objectReference: {fileID: -1173357006952606888}
+    - target: {fileID: 3525362685811643254, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
+      propertyPath: EffectPlace
+      value: 
+      objectReference: {fileID: 6554601693641129418}
+    - target: {fileID: 3525362685811643254, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
+      propertyPath: BuildingHelper
+      value: 
+      objectReference: {fileID: 5551679913311386414}
     - target: {fileID: 4770809539800998566, guid: fdaca80d5eb4f1a4c8851ddf8b1a6685, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

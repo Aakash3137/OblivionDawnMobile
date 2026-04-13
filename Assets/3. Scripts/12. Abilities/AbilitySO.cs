@@ -8,6 +8,7 @@ public class AbilitySO : ScriptableObject
     public string abilityName;
     public AbilityType abilityType;
     public Sprite abilityIcon;
+    public int abilityCost;
     
     [Header("Scope")]
     public AbilityScope abilityScope = AbilityScope.Personal;  // Personal by default

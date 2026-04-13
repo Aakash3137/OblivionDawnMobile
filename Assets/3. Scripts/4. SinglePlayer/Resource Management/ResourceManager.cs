@@ -128,6 +128,8 @@ public class ResourceManager : MonoBehaviour
 
         OnResourcesChanged?.Invoke();
     }
+
+    // distribute resources evenly then redistribute overflow from capped slots into uncapped slots
     public void BalanceResources()
     {
         int totalAmount = 0;

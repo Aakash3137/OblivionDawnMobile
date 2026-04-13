@@ -54,6 +54,10 @@ public class DeckSelectionManager : MonoBehaviour
 
         // copy the reference for allFactionsDeckData to one in SO
         allFactionsDeckData = decSelectionDataSO.allFactionsDeckData;
+#if UNITY_EDITOR
+        UnityEditor.EditorUtility.SetDirty(decSelectionDataSO);
+        UnityEditor.AssetDatabase.SaveAssets();
+#endif
     }
 
     public void GenerateCards()
