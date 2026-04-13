@@ -17,9 +17,11 @@ public class Userdata : ScriptableObject
     [Header("Game Data")]
     [SerializeField] private int coins = 0;
     [SerializeField] private int diamonds = 0;
+    [SerializeField] private int mapShards = 0;
     [SerializeField, ReadOnly] private int[] fragments = new int[4];
     public Action<FactionName> OnFragmentsChanged;
     public Action OnDiamondsChanged;
+    public Action OnMapShardsChanged;
 
     public int Level = 0;
     public int Coins
@@ -40,6 +42,17 @@ public class Userdata : ScriptableObject
             diamonds = value;
             UpdateCurrencyUI();
             OnDiamondsChanged?.Invoke();
+        }
+    }
+
+    public int MapShards
+    {
+        get => mapShards;
+        set
+        {
+            mapShards = value;
+            UpdateCurrencyUI();
+            OnMapShardsChanged?.Invoke();
         }
     }
 

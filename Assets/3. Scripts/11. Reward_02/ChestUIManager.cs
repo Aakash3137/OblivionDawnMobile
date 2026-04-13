@@ -8,6 +8,7 @@ public class ChestUIManager : MonoBehaviour
     private bool nextPressed = false;
 
     [Header("UI Panels")]
+    public GameObject summaryPanel;
     public GameObject chestPanel;
     public GameObject rewardsPanel;
 
@@ -21,6 +22,9 @@ public class ChestUIManager : MonoBehaviour
 
     [Header("Chest Reference")]
     public Transform chestTransform;
+
+    [Header("Summary UI")]
+    public RewardSummaryUI summaryUI;
 
     private RewardBundle currentBundle;
     private bool isProcessing = false;
@@ -101,12 +105,28 @@ public class ChestUIManager : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
 
-        CloseRewardsPanel();
+        ShowSummary();
+
+        // CloseRewardsPanel();
+    }
+
+    private void ShowSummary()
+    {
+        rewardsPanel.SetActive(false);
+
+        summaryPanel.SetActive(true);
+        summaryUI.ShowSummary(currentBundle);
     }
 
     public void OnNextPressed()
     {
         nextPressed = true;
+    }
+
+    public void OnSummaryOkPressed()
+    {
+        summaryPanel.SetActive(false);
+        CloseRewardsPanel();
     }
 
     private void CloseRewardsPanel()

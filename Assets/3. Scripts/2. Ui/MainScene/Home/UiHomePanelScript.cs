@@ -53,9 +53,18 @@ public class UiHomePanelScript : MonoBehaviour
         }
 
         LevelNotTxt.text = PlayerData.Level.ToString("00");
-        DiamondsTxt.text = PlayerData.Diamonds.ToString();
+        if (PlayerData != null)
+        {
+            PlayerData.OnDiamondsChanged += UpdateDiamondUI;
+        }
+        //DiamondsTxt.text = PlayerData.Diamonds.ToString();
 
         RewardButton.onClick.AddListener(ShowRewardPanel);
+    }
+
+    private void UpdateDiamondUI()
+    {
+        DiamondsTxt.text = PlayerData.Diamonds.ToString();
     }
 
     void Start()

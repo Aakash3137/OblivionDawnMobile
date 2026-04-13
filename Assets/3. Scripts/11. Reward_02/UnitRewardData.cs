@@ -7,6 +7,6 @@ public class UnitRewardData : RewardData02
 
     public override void Grant(int amount)
     {
-        PlayerInventory.Instance.AddUnit(unitID, amount);
+        //ADD LOGIC OF UNLOCKING UNITS HERE
     }
 }

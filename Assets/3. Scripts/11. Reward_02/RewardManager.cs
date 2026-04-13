@@ -5,6 +5,9 @@ public class RewardManager : MonoBehaviour
 {
     public static RewardManager Instance;
 
+    [Header("Core Data")]
+    public Userdata userData;   // Assign in inspector
+
     private void Awake()
     {
         Instance = this;
@@ -13,7 +16,6 @@ public class RewardManager : MonoBehaviour
     public void ClaimReward(RewardBundle bundle)
     {
         Debug.Log("Claiming reward bundle with " + bundle.rewards.Count + " rewards.");
-        
         ChestUIManager.Instance.OpenChest(bundle);
     }
 
@@ -21,7 +23,31 @@ public class RewardManager : MonoBehaviour
     {
         foreach (var reward in rewards)
         {
-            reward.rewardData.Grant(reward.amount);
+            GrantSingleReward(reward);
         }
     }
+
+    private void GrantSingleReward(RewardInstance reward)
+    {
+        switch (reward.rewardData.rewardType)
+        {
+            case RewardType02.Gem:
+                userData.Diamonds += reward.amount;
+                break;
+
+            case RewardType02.Fragment:
+                // Assuming reward has faction info
+                userData.AddFragments(reward.faction, reward.amount);
+                break;
+
+            case RewardType02.MapShard:
+                userData.MapShards += reward.amount;
+                break;
+
+            default:
+                Debug.LogWarning("Unhandled reward type: " + reward.rewardData.rewardType);
+                break;
+        }
+    }
+
 }
