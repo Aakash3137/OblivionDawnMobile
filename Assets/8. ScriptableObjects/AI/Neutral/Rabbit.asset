@@ -20,10 +20,18 @@ MonoBehaviour:
   mistakeProbability: 0.5
   tacticalDiscipline: 0.5
   tacticalPrecision: 0.05
-  reduceSpawningTime: 1
+  useSmartWallStrategy: 0
+  playStyle: 2
+  reduceSpawningTime: 0
   maxOffenseBuilding: 5
   reduceSpawnTime: 10
   maxEnemyBuildings: 150
+  combatType: 2
+  attackConfidence: 1
+  retreatThreshold: 0.6
+  stanceCooldown: 10
+  balancedResourceStart: 1
+  balancedResourceTarget: 3
   resourceTypeWeights:
   - 0.25
   - 0.25
@@ -73,6 +81,11 @@ MonoBehaviour:
       amount: 1
       UnitsSpawnLevel: 0
       weight: 0.33
+    - building: {fileID: 11400000, guid: 7d1df64078e19284ca99907ec2c3f5b4, type: 2}
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.33
   - faction: 1
     unitSelections:
     - unit: {fileID: 11400000, guid: 29cecefd816eac14bad5daea5ebad5a3, type: 2}
@@ -95,6 +108,41 @@ MonoBehaviour:
       amount: 1
       UnitsSpawnLevel: 0
       weight: 0.25
+    - unit: {fileID: 11400000, guid: 180968fc827d7e34692da509449356ef, type: 2}
+      selected: 0
+      amount: 0
+      UnitsSpawnLevel: 0
+      weight: 0.25
+    - unit: {fileID: 11400000, guid: aed68b42b625f564cbebfb5090cedb48, type: 2}
+      selected: 0
+      amount: 0
+      UnitsSpawnLevel: 0
+      weight: 0.25
+    - unit: {fileID: 11400000, guid: 81d0ed5fb61b4d948a659135d23ee56e, type: 2}
+      selected: 0
+      amount: 0
+      UnitsSpawnLevel: 0
+      weight: 0.25
+    - unit: {fileID: 11400000, guid: b5dde0f72ccddda4d87ff00e73d2d873, type: 2}
+      selected: 0
+      amount: 0
+      UnitsSpawnLevel: 0
+      weight: 0.25
+    - unit: {fileID: 11400000, guid: aca6020449a92df498342d0c86a09708, type: 2}
+      selected: 0
+      amount: 0
+      UnitsSpawnLevel: 0
+      weight: 0.25
+    - unit: {fileID: 11400000, guid: 113c8b200d9a485439fae3a9972f358b, type: 2}
+      selected: 0
+      amount: 0
+      UnitsSpawnLevel: 0
+      weight: 0.25
+    - unit: {fileID: 11400000, guid: 6a6cbd85d9ec2b24b9d4ae7c60bbc41b, type: 2}
+      selected: 0
+      amount: 0
+      UnitsSpawnLevel: 0
+      weight: 0.25
     defenseBuildingSelections:
     - building: {fileID: 11400000, guid: 108e62337b6a9614f9ed3b79441cf14d, type: 2}
       selected: 1
@@ -107,6 +155,11 @@ MonoBehaviour:
       UnitsSpawnLevel: 0
       weight: 0.33
     - building: {fileID: 11400000, guid: e1efa2bbd30093a43afaef8f6aa09ff9, type: 2}
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.33
+    - building: {fileID: 11400000, guid: 52cc45759eece90429b7915561628162, type: 2}
       selected: 1
       amount: 1
       UnitsSpawnLevel: 0
@@ -145,6 +198,11 @@ MonoBehaviour:
       UnitsSpawnLevel: 0
       weight: 0.33
     - building: {fileID: 11400000, guid: 36ab49ce3b9dd2844954bb3454db579e, type: 2}
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.33
+    - building: {fileID: 11400000, guid: 12cdba9447ca8a440aaf0f238f14c6b4, type: 2}
       selected: 1
       amount: 1
       UnitsSpawnLevel: 0
@@ -188,6 +246,11 @@ MonoBehaviour:
       UnitsSpawnLevel: 0
       weight: 0.33
     - building: {fileID: 11400000, guid: 35c4e91f6a9d3ac41be1428683945b85, type: 2}
+      selected: 1
+      amount: 1
+      UnitsSpawnLevel: 0
+      weight: 0.33
+    - building: {fileID: 11400000, guid: 86cac165ddfec4040a279803b41c98ca, type: 2}
       selected: 1
       amount: 1
       UnitsSpawnLevel: 0

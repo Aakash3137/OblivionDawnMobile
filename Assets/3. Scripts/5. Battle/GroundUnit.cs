@@ -162,6 +162,15 @@ public class GroundUnit : MonoBehaviour
         }
     }
     
+    //Get Unit Stance
+    UnitStance GetMyStance()
+    {
+        if (unitSide == Side.Player)
+            return GameManager.Instance.unitStance;
+
+        return EnemyAIHandler.Instance.CurrentEnemyStance;
+    }
+    
     private void HandleState()
     {
         if (target == null)
@@ -170,6 +179,8 @@ public class GroundUnit : MonoBehaviour
             return;
         }
 
+        UnitStance stance = GetMyStance(); 
+        
         float distance = Vector3.Distance(transform.position, target.transform.position);
         
         // Account for collider sizes
@@ -185,29 +196,19 @@ public class GroundUnit : MonoBehaviour
         switch (currentState)
         {
             case UnitState.Idle:
-                switch (GameManager.Instance.unitStance)
-                {
-                    case UnitStance.Attacking:
-                        ChangeState(UnitState.MovingToPrimary);
-                        break;
-                    case UnitStance.Defending:
-                        if (unitSide != Side.Enemy)
-                            ChangeState(UnitState.Defending);
-                        else
-                            ChangeState(UnitState.MovingToPrimary);
-                        break;
-                }
+                if (stance == UnitStance.Attacking)
+                    ChangeState(UnitState.MovingToPrimary);
+                else
+                    ChangeState(UnitState.Defending);
                 break;
 
             case UnitState.MovingToPrimary:
-                if (GameManager.Instance.unitStance == UnitStance.Defending)
+                if (stance == UnitStance.Defending)
                 {
-                    if (unitSide != Side.Enemy)
-                    {
-                        ChangeState(UnitState.Defending);
-                        return;
-                    }
+                    ChangeState(UnitState.Defending);
+                    return;
                 }
+
                 if (detectionTarget != null)
                 {
                     ChangeState(UnitState.Chasing);
@@ -223,14 +224,12 @@ public class GroundUnit : MonoBehaviour
                 break;
 
             case UnitState.Chasing:
-                if (GameManager.Instance.unitStance == UnitStance.Defending)
+                if (stance == UnitStance.Defending)
                 {
-                    if (unitSide != Side.Enemy)
-                    {
-                        ChangeState(UnitState.Defending);
-                        return;
-                    }
+                    ChangeState(UnitState.Defending);
+                    return;
                 }
+
                 if (withinAttackRange)
                 {
                     ChangeState(UnitState.Attacking);
@@ -238,15 +237,16 @@ public class GroundUnit : MonoBehaviour
                 }
 
                 MoveToTarget();
-                ApplySeparation();  
+                ApplySeparation();
                 break;
 
             case UnitState.Defending:
-                if (GameManager.Instance.unitStance == UnitStance.Attacking)
+                if (stance == UnitStance.Attacking)
                 {
                     ChangeState(UnitState.MovingToPrimary);
                     return;
                 }
+
                 if (withinAttackRange)
                     Attack();
 
@@ -254,14 +254,12 @@ public class GroundUnit : MonoBehaviour
                 break;
 
             case UnitState.Attacking:
-                if (GameManager.Instance.unitStance == UnitStance.Defending)
+                if (stance == UnitStance.Defending)
                 {
-                    if (unitSide != Side.Enemy)
-                    {
-                        ChangeState(UnitState.Defending);
-                        return;
-                    }
+                    ChangeState(UnitState.Defending);
+                    return;
                 }
+
                 if (effectiveDistance > AttackRange + 0.5f)
                 {
                     ChangeState(UnitState.Chasing);

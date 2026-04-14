@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public enum BuildingCategory
@@ -14,6 +15,8 @@ public enum BuildingCategory
 
 public class EnemyAIHandler : MonoBehaviour
 {
+    public static EnemyAIHandler Instance { get; private set; }
+    
     [Header("References")]
     [SerializeField]
     private EnemyModeSwitch enemyModeSwitch;
@@ -43,6 +46,17 @@ public class EnemyAIHandler : MonoBehaviour
     [Header("READ ONLY")][SerializeField] private int unitBuilt = 0;
     [SerializeField] private int resourceBuilt = 0;
     [SerializeField] private int defenseBuilt = 0;
+    [SerializeField] private int wallsBuilt = 0;
+    [SerializeField] private int nonWallDefenseBuilt = 0;
+
+    // New Wall Strategy
+    private int initialWallsTarget = 12; // 10-15 walls
+    private int emergencyWallsTarget = 5; // 4-6 walls
+    private bool initialWallPhaseDone = false;
+    private bool emergencyWallTriggered = false;
+    private bool emergencyWallPhaseDone = false;
+    private int emergencyWallsBuilt = 0;
+    private float lastUnitRatio = 1f;
 
     // Resource need tracking
     [SerializeField] private float[] resourceNeedPercentages = new float[4]; // % out of 100 for each resource
@@ -56,9 +70,27 @@ public class EnemyAIHandler : MonoBehaviour
     //Resource build economical
     [SerializeField] private int earlyResourceTarget = 2;
     private bool earlyEconomyComplete = false;
-
+    
+    // Enemy Stance variable
+    public UnitStance CurrentEnemyStance { get; private set; } = UnitStance.Defending;
+    private float lastStanceChangeTime = -999f;
+    public Image StanceImg;
+    public Sprite AttackSprite;
+    public Sprite DefendSprite;
+    
+    // Emergency control
+    private bool emergencyUnlocked = false;
+    private bool emergencyUsedOnce = false;
+    private float lastEmergencyTime = -999f;
+    [SerializeField] private float emergencyCooldown = 120f; 
+    
     private void Awake()
     {
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
+        
         GameData.enemyFaction = enemyFactionName;
     }
 
@@ -78,6 +110,12 @@ public class EnemyAIHandler : MonoBehaviour
 
         //Setting spawn interval
         currentSpawnInterval = currentPersonality.spawnInterval;
+
+        // Randomize wall targets
+        initialWallsTarget = Random.Range(10, 16); // 10-15
+        emergencyWallsTarget = Random.Range(4, 7); // 4-6
+        
+        Debug.Log($"[EnemyAI][Wall] Initialized - Initial walls target: {initialWallsTarget}, Emergency walls target: {emergencyWallsTarget}");
 
         enemyMainBuildingTransform = GameManager.Instance.enemySpawnPoint;
         playerMainBuildingTransform = GameManager.Instance.playerSpawnPoint;
@@ -100,6 +138,18 @@ public class EnemyAIHandler : MonoBehaviour
         {
             spawnTimer = 0f;
             TrySpawnBuilding();
+        }
+        
+        UpdateCombatStance();
+        
+        if (!emergencyUnlocked)
+        {
+            if (KillCounterManager.Instance != null &&
+                KillCounterManager.Instance.enemyTotalUnitKills > 5)
+            {
+                emergencyUnlocked = true;
+                Debug.Log("[EnemyAI][Wall] Emergency system UNLOCKED (mid game reached)");
+            }
         }
     }
 
@@ -170,6 +220,83 @@ public class EnemyAIHandler : MonoBehaviour
         return true;
     }
 
+    #region WallStrategy
+    
+    bool HasWallInDeck()
+    {
+        var deck = GetCurrentFactionDeck();
+        if (deck == null)
+        {
+            Debug.LogWarning("[EnemyAI][Wall] GetCurrentFactionDeck returned null!");
+            return false;
+        }
+
+        foreach (var entry in deck.defenseBuildingSelections)
+        {
+            if (!entry.selected) continue;
+
+            var building = CharacterDatabase.Instance.GetDefenseBuildingPrefab(entry.building);
+            if (building == null) continue;
+
+            // Check if it's a wall using DefenseBuildingDataSO
+            if (entry.building != null && entry.building.defenseType == ScenarioDefenseType.Wall)
+            {
+                Debug.Log($"[EnemyAI][Wall] Found wall in deck: {entry.building.name}");
+                return true;
+            }
+        }
+
+        Debug.LogWarning("[EnemyAI][Wall] No wall found in deck!");
+        return false;
+    }
+    
+    BuildingStats GetWallBuilding()
+    {
+        var deck = GetCurrentFactionDeck();
+        if (deck == null) return null;
+
+        foreach (var entry in deck.defenseBuildingSelections)
+        {
+            if (!entry.selected) continue;
+
+            var building = CharacterDatabase.Instance.GetDefenseBuildingPrefab(entry.building);
+            if (building == null) continue;
+
+            // Check if it's a wall using DefenseBuildingDataSO
+            if (entry.building != null && entry.building.defenseType == ScenarioDefenseType.Wall)
+            {
+                Debug.Log($"[EnemyAI][Wall] Returning wall building: {building.name}");
+                return building;
+            }
+        }
+
+        Debug.LogWarning("[EnemyAI][Wall] GetWallBuilding returned null!");
+        return null;
+    }
+    BuildingStats GetNonWallDefenseBuilding()
+    {
+        var deck = GetCurrentFactionDeck();
+        if (deck == null) return null;
+
+        List<BuildingStats> options = new List<BuildingStats>();
+        List<float> weights = new List<float>();
+
+        foreach (var entry in deck.defenseBuildingSelections)
+        {
+            if (!entry.selected || entry.amount <= 0) continue;
+
+            var building = CharacterDatabase.Instance.GetDefenseBuildingPrefab(entry.building);
+            if (building == null || building is WallStats) continue;
+
+            options.Add(building);
+            weights.Add(entry.weight);
+        }
+
+        return GetWeightedRandom(options.ToArray(), weights.ToArray());
+    }
+    
+    #endregion
+
     void TrySpawnBuilding()
     {
         if (totalBuildingsSpawned >= currentPersonality.maxEnemyBuildings)
@@ -199,7 +326,7 @@ public class EnemyAIHandler : MonoBehaviour
 
         if (useOptimalTile && currentPersonality.tacticalPrecision > 0f)
         {
-            selectedTile = SelectBestTileForCategory(category);
+            selectedTile = SelectBestTileForCategory(category, buildingPrefab);
         }
         else
         {
@@ -223,6 +350,7 @@ public class EnemyAIHandler : MonoBehaviour
             if (IsEarlyEconomyComplete())
             {
                 earlyEconomyComplete = true;
+                Debug.Log("[EnemyAI][Economy] Early economy phase complete!");
             }
             else
             {
@@ -231,11 +359,135 @@ public class EnemyAIHandler : MonoBehaviour
             }
         }
 
+        bool isDefensiveStyle =
+            currentPersonality.playStyle == PlayStyle.Defence ||
+            currentPersonality.playStyle == PlayStyle.Mix;
+
+        bool isAttackStyle = 
+             currentPersonality.playStyle == PlayStyle.Attack;
+
+        bool canUseWalls =
+             currentPersonality.useSmartWallStrategy &&
+             HasWallInDeck();
+
+        Debug.Log($"[EnemyAI][Wall] PlayStyle: {currentPersonality.playStyle}, useSmartWallStrategy: {currentPersonality.useSmartWallStrategy}, canUseWalls: {canUseWalls}");
+
+        int myUnits = BattleUnitRegistry.EnemyUnits.Count;
+        int playerUnits = Mathf.Max(1, BattleUnitRegistry.PlayerUnits.Count);
+        float ratio = (float)myUnits / playerUnits;
+
+        // EMERGENCY SYSTEM (FIXED)
+
+        // RESET if situation improved
+        if (ratio > 0.6f && emergencyWallTriggered)
+        {
+            emergencyWallTriggered = false;
+            emergencyWallPhaseDone = false;
+            Debug.Log("[EnemyAI][Wall] Emergency wall mode reset (ratio improved)");
+        }
+
+        
+        bool canTriggerEmergency =
+            emergencyUnlocked &&
+            canUseWalls &&
+            ratio < 0.4f &&
+            !emergencyWallTriggered;
+
+        // Cooldown check
+        if (emergencyUsedOnce)
+        {
+            if (Time.time - lastEmergencyTime < emergencyCooldown)
+            {
+                canTriggerEmergency = false;
+            }
+        }
+        
+        // TRIGGER
+        if (canTriggerEmergency)
+        {
+            emergencyWallTriggered = true;
+            emergencyWallPhaseDone = false;
+            emergencyWallsBuilt = 0;
+
+            emergencyUsedOnce = true;
+            lastEmergencyTime = Time.time;
+
+            Debug.Log($"[EnemyAI][Wall] Emergency wall mode TRIGGERED! Ratio: {ratio:F2}");
+        }
+
+        // EXECUTE
+        if (emergencyWallTriggered && !emergencyWallPhaseDone)
+        {
+            if (emergencyWallsBuilt < emergencyWallsTarget)
+            {
+                emergencyWallsBuilt++;
+                category = BuildingCategory.Defense;
+                Debug.Log($"[EnemyAI][Wall] Building emergency wall {emergencyWallsBuilt}/{emergencyWallsTarget}");
+                return GetWallBuilding();
+            }
+            else
+            {
+                emergencyWallPhaseDone = true;
+                emergencyWallTriggered = false;
+                Debug.Log("[EnemyAI][Wall] Emergency wall phase COMPLETE!");
+            }
+        }
+
+        // DEFENSIVE / MIX WALL PHASE
+
+        if (isDefensiveStyle && canUseWalls)
+        {
+            if (!initialWallPhaseDone)
+            {
+                if (wallsBuilt < initialWallsTarget)
+                {
+                    category = BuildingCategory.Defense;
+                    Debug.Log($"[EnemyAI][Wall] Building initial wall {wallsBuilt + 1}/{initialWallsTarget}");
+                    return GetWallBuilding();
+                }
+                else
+                {
+                    initialWallPhaseDone = true;
+                    Debug.Log($"[EnemyAI][Wall] Initial wall phase COMPLETE! Built {wallsBuilt} walls");
+                }
+            }
+        }
+
+        //ATTACK STYLE WALL UNLOCK (FIXED)
+
+        if (isAttackStyle && canUseWalls && !initialWallPhaseDone)
+        {
+            // unlock walls after some progress
+            if (totalBuildingsSpawned > 6)
+            {
+                initialWallPhaseDone = true;
+                Debug.Log("[EnemyAI][Wall] Attack style - walls unlocked after 6 buildings");
+            }
+        }
+
+        //ATTACK STYLE MIX (50/50)
+
+        if (isAttackStyle && canUseWalls && initialWallPhaseDone)
+        {
+            if (Random.value < 0.5f)
+            {
+                category = BuildingCategory.Defense;
+                Debug.Log("[EnemyAI][Wall] Attack style - building wall (50% chance)");
+                return GetWallBuilding();
+            }
+            else
+            {
+                category = BuildingCategory.Unit;
+                return GetWeightedUnitBuilding();
+            }
+        }
+
+        // DEFAULT WEIGHT SYSTEM
+        
         float unit = currentPersonality.unitBuildingWeight;
         float resource = currentPersonality.resourceBuildingWeight;
         float defense = currentPersonality.defenseBuildingWeight;
 
-        // Step 1: Normalize weights automatically
         float totalWeight = unit + resource + defense;
 
         if (totalWeight <= 0f)
@@ -248,19 +500,13 @@ public class EnemyAIHandler : MonoBehaviour
         resource /= totalWeight;
         defense /= totalWeight;
 
-        // Step 2: Calculate targets based on ratio
         int totalSoFar = unitBuilt + resourceBuilt + defenseBuilt + 1;
 
-        float unitTarget = totalSoFar * unit;
-        float resourceTarget = totalSoFar * resource;
-        float defenseTarget = totalSoFar * defense;
-
-        float unitDeficit = unitTarget - unitBuilt;
-        float resourceDeficit = resourceTarget - resourceBuilt;
-        float defenseDeficit = defenseTarget - defenseBuilt;
+        float unitDeficit = (totalSoFar * unit) - unitBuilt;
+        float resourceDeficit = (totalSoFar * resource) - resourceBuilt;
+        float defenseDeficit = (totalSoFar * defense) - defenseBuilt;
 
         // ================= Resource-aware check =================
-        // If any resource is below minResourcePercent, force a resource building
         var enemyRM = GetComponent<EnemyResourceManager>();
         if (enemyRM != null && enemyRM.currentResources != null && enemyRM.currentResources.Length >= 4)
         {
@@ -683,7 +929,7 @@ public class EnemyAIHandler : MonoBehaviour
     }
 
     Tile SelectBestTileForCategory(
-        BuildingCategory category)
+        BuildingCategory category, BuildingStats buildingPrefab = null)
     {
         if (spawnableTiles.Count == 0)
             return null;
@@ -696,6 +942,8 @@ public class EnemyAIHandler : MonoBehaviour
 
         Vector3 dirToPlayer =
             (playerPos - enemyPos).normalized;
+
+        bool isWall = buildingPrefab != null && buildingPrefab is WallStats;
 
         Tile bestTile = null;
         float bestScore = float.MinValue;
@@ -711,19 +959,27 @@ public class EnemyAIHandler : MonoBehaviour
 
             float score = 0f;
 
-            switch (category)
+            if (isWall && currentPersonality.useSmartWallStrategy)
             {
-                case BuildingCategory.Defense:
-                    score = forwardness;
-                    break;
+                // Walls always go to frontline (middle area toward player)
+                score = forwardness;
+            }
+            else
+            {
+                switch (category)
+                {
+                    case BuildingCategory.Defense:
+                        score = forwardness;
+                        break;
 
-                case BuildingCategory.Resource:
-                    score = -forwardness;
-                    break;
+                    case BuildingCategory.Resource:
+                        score = -forwardness;
+                        break;
 
-                case BuildingCategory.Unit:
-                    score = 0f;
-                    break;
+                    case BuildingCategory.Unit:
+                        score = 0f;
+                        break;
+                }
             }
 
             score =
@@ -743,7 +999,72 @@ public class EnemyAIHandler : MonoBehaviour
 
     #endregion
 
+    #region CombatStance
 
+    void UpdateCombatStance()
+    {
+        if (Time.time - lastStanceChangeTime < currentPersonality.stanceCooldown)
+            return;
+
+        int myUnits = BattleUnitRegistry.EnemyUnits.Count;
+        int enemyUnits = BattleUnitRegistry.PlayerUnits.Count;
+
+        if (enemyUnits == 0) enemyUnits = 1; // safety
+
+        float ratio = (float)myUnits / enemyUnits;
+
+        UnitStance newStance = CurrentEnemyStance;
+
+        switch (currentPersonality.combatType)
+        {
+            case AICombatType.Aggressive:
+                newStance = ratio > currentPersonality.retreatThreshold
+                    ? UnitStance.Attacking
+                    : UnitStance.Defending;
+                break;
+
+            case AICombatType.Defensive:
+                newStance = ratio > currentPersonality.attackConfidence
+                    ? UnitStance.Attacking
+                    : UnitStance.Defending;
+                break;
+
+            case AICombatType.Balanced:
+                newStance = ratio > 1f
+                    ? UnitStance.Attacking
+                    : UnitStance.Defending;
+                break;
+        }
+
+        // OPTIONAL: if player has no units → always attack
+        if (BattleUnitRegistry.PlayerUnits.Count == 0)
+            newStance = UnitStance.Attacking;
+
+        if (newStance != CurrentEnemyStance)
+        {
+            CurrentEnemyStance = newStance;
+            lastStanceChangeTime = Time.time;
+
+            if (StanceImg != null)
+            {
+                if (CurrentEnemyStance == UnitStance.Attacking)
+                {
+                    StanceImg.sprite = AttackSprite;
+                }
+                else
+                {
+                    StanceImg.sprite = DefendSprite;
+                }
+               
+            }
+
+            Debug.Log($"[EnemyAI] Stance → {CurrentEnemyStance} (Ratio: {ratio:F2})");
+        }
+    }
+
+    #endregion
+    
+    
     // ============== SPAWNING METHOD ==============
 
     void SpawnBuilding(Tile tile, BuildingStats buildingPrefab, BuildingCategory category)
@@ -783,10 +1104,22 @@ public class EnemyAIHandler : MonoBehaviour
                     break;
                 case BuildingCategory.Defense:
                     defenseBuilt++;
+                    var defenseSO = buildingPrefab.buildingStatsSO as DefenseBuildingDataSO;
+
+                    if (defenseSO != null && defenseSO.defenseType == ScenarioDefenseType.Wall)
+                    {
+                        wallsBuilt++;
+                        //Debug.Log($"[AI FIX] Counted as WALL via SO. wallsBuilt = {wallsBuilt}");
+                    }
+                    else
+                    {
+                        nonWallDefenseBuilt++;
+                        //Debug.Log("[AI FIX] Counted as NON-WALL");
+                    }
                     break;
             }
 
-            Debug.Log($"[EnemyAI] Spawned {buildingPrefab.name}. Total: {totalBuildingsSpawned}");
+           // Debug.Log($"[EnemyAI] Spawned {buildingPrefab.name}. Total: {totalBuildingsSpawned}");
         }
     }
 

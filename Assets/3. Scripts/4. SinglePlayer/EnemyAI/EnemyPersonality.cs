@@ -22,6 +22,10 @@ public class EnemyPersonality : ScriptableObject
     [Header("Map Knowledge")]
     [Range(0, 1)] public float tacticalDiscipline = 0.8f;
     [Range(0, 1)] public float tacticalPrecision = 0.8f;
+    
+    [Header("Wall Strategy")]
+    public bool useSmartWallStrategy = false;
+    public PlayStyle playStyle = PlayStyle.Mix;
 
     [Header("Limits")]
     public bool reduceSpawningTime = false;
@@ -29,6 +33,18 @@ public class EnemyPersonality : ScriptableObject
     public float reduceSpawnTime = 10f;
     
     public int maxEnemyBuildings = 150;
+    
+    [Header("Combat Behavior")]
+    public AICombatType combatType;
+
+// When to attack
+    [Range(0f, 2f)] public float attackConfidence = 1.2f;
+
+// When to retreat
+    [Range(0f, 2f)] public float retreatThreshold = 0.8f;
+
+// Minimum time before switching again
+    public float stanceCooldown = 10f;
     
     [Header("Economy")]
     public bool balancedResourceStart = true;
@@ -48,7 +64,9 @@ public class EnemyPersonality : ScriptableObject
     public AllBuildingData allBuildingData;
 
     public List<FactionDeckSelection> factionDeckSelections = new List<FactionDeckSelection>();
-
+    
+ 
+    
     private void OnValidate()
     {
         SyncDeck();

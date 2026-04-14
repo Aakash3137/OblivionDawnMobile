@@ -11,3 +11,9 @@ public enum AIPersonalityEnum
     Rabbit
 }
 
+public enum AICombatType
+{
+    Defensive,
+    Aggressive,
+    Balanced
+}
