@@ -26,15 +26,13 @@ public class AllBuildingData : ScriptableObject
 
         allBuildingsSO.Sort(CompareBuildingSO);
     }
-#if UNITY_EDITOR
     private void OnValidate()
     {
-        if (Application.isPlaying) return;
+        //  need this for editor mode Upgrade Data Editor Window
         Populate();
         ValidateBase();
         allBuildingsSO.Sort(CompareBuildingSO);
     }
-#endif
 
     public void Populate()
     {

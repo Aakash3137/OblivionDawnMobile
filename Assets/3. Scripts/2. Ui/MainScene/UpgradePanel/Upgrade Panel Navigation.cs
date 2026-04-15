@@ -100,7 +100,7 @@ public class UpgradePanelNavigation : MonoBehaviour
 
         UpdateFragmentsCount(selectedFaction);
 
-        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
+        AudioManager.Play(GameAudioType.ButtonClick);
     }
 
     private void ToggleFactionPanel(FactionName faction)

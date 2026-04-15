@@ -10,8 +10,14 @@ public class AllUnitData : ScriptableObject
 
     public List<Unit> allUnits { get; internal set; }
 
+    private void Awake()
+    {
+        Populate();
+        SortUnitData();
+    }
     private void OnValidate()
     {
+        //  need this for editor mode Upgrade Data Editor Window
         Populate();
         SortUnitData();
     }
@@ -96,16 +102,16 @@ public class AllUnitData : ScriptableObject
 public class Unit
 {
     public FactionName faction;
-    public List<UnitProduceStatsSO> airUnits;
     public List<UnitProduceStatsSO> meleeUnits;
-    public List<UnitProduceStatsSO> aoeRangedUnits;
     public List<UnitProduceStatsSO> rangedUnits;
+    public List<UnitProduceStatsSO> aoeRangedUnits;
+    public List<UnitProduceStatsSO> airUnits;
 
     public Unit()
     {
-        airUnits = new List<UnitProduceStatsSO>();
-        meleeUnits = new List<UnitProduceStatsSO>();
-        aoeRangedUnits = new List<UnitProduceStatsSO>();
-        rangedUnits = new List<UnitProduceStatsSO>();
+        airUnits = new();
+        meleeUnits = new();
+        aoeRangedUnits = new();
+        rangedUnits = new();
     }
 }
