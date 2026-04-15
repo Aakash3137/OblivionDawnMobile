@@ -31,8 +31,9 @@ public class AbilitySetController : MonoBehaviour
     private Button currentCost4;
 
     private float currentFill = 0f;
-    
-    
+
+    private bool ignoreKillFill = false;
+
     private void Awake()
     {
         Instance = this;
@@ -90,7 +91,6 @@ public class AbilitySetController : MonoBehaviour
         }
     }
 
-    
     private void RefreshPools()
     {
         allButtons = new List<Button>(AbilityManager.Instance.AbilityButtons);
@@ -133,7 +133,6 @@ public class AbilitySetController : MonoBehaviour
         }
     }
 
-    
     private void SetupInitialButtons()
     {
         currentCost1 = PickAndShow(abilitiesCost1, slotCost1, null);
@@ -317,7 +316,6 @@ public class AbilitySetController : MonoBehaviour
         UpdateUnlocks();
     }
 
-    
     private void SubscribeAllPoolListeners()
     {
         foreach (var btn in allButtons)
@@ -337,10 +335,11 @@ public class AbilitySetController : MonoBehaviour
         }
     }
 
-  
     private void HandleUnitKilled(UnitProduceStatsSO unitStats, Side deadUnitSide)
     {
         if (deadUnitSide != Side.Enemy) return;
+
+        if (ignoreKillFill) return;
 
         int amount = unitStats.populationCost * 3;
         AddFill(amount);
@@ -367,7 +366,6 @@ public class AbilitySetController : MonoBehaviour
             fillBar.fillAmount = currentFill / 100f;
     }
 
-   
     private void UpdateUnlocks()
     {
         SetSlotInteractable(currentCost1, currentFill >= 20);
@@ -399,8 +397,18 @@ public class AbilitySetController : MonoBehaviour
 
     public void OnSpecialAbilityUsed()
     {
+        ignoreKillFill = true;
+
         currentFill = 0f;
         UpdateFillUI();
         UpdateUnlocks();
+
+        StartCoroutine(ResetIgnoreKillFill());
+    }
+
+    private IEnumerator ResetIgnoreKillFill()
+    {
+        yield return new WaitForSeconds(0.5f);
+        ignoreKillFill = false;
     }
 }
