@@ -1,13 +1,27 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 
 [CreateAssetMenu(fileName = "LevelData", menuName = "Data/Level Data")]
 public class LevelData : ScriptableObject
 {
+    [Header("Progression")]
     [SerializeField] private List<XP_Required> xpRequirements;
+
+    [System.Serializable]
+    public class LevelTrack
+    {
+        public List<TrackEntry> entries;
+    }
+    
+
+    [Header("References")]
     [SerializeField] private PlayerLevelData playerLevelData;
     [SerializeField] private Userdata _Data;
+
+    [Header("Track UI")]
+    [SerializeField] private TrackEntryUI trackEntryPrefab;
+    [SerializeField] private List<LevelTrack> trackEntriesPerLevel;
 
     public int _XP;
 
@@ -15,8 +29,7 @@ public class LevelData : ScriptableObject
     public class XP_Required
     {
         public int level;
-        public int requiredXP;
-
+        public int xpRequired;
     }
 
     public int PlayerXP
@@ -35,7 +48,7 @@ public class LevelData : ScriptableObject
 
         for (int i = 0; i < xpRequirements.Count; i++)
         {
-            if (xpRequirements[i].requiredXP <= PlayerXP)
+            if (xpRequirements[i].xpRequired <= PlayerXP)
                 currentLevel++;
         }
 
@@ -49,51 +62,48 @@ public class LevelData : ScriptableObject
 
     public void GenrateLevel(LevelBox prefab, Transform parent)
     {
-        for (int i = 0; i < xpRequirements.Count; i++)
+        if (xpRequirements.Count == 0)
+            return;
+
+        // 🔹 LEVEL 1
+        CreateLevelBox(prefab, parent, 1);
+
+        // 🔹 LOOP
+        for (int i = 1; i < xpRequirements.Count; i++)
         {
             int level = i + 1;
 
-            LevelBox box = Instantiate(prefab, parent);
-            box.LevelNoTxt.text = level.ToString();
-            box.gameObject.name = "Level_" + level;
-
-            bool isLocked = level > _Data.Level;
-            box.LockImage.gameObject.SetActive(isLocked);
-
-            var entry = playerLevelData.GetEntry(level);
-            if (entry == null || entry.rewardBundle == null)
-                continue;
-
-            foreach (var reward in entry.rewardBundle.rewards)
+            // 🔸 Entries BETWEEN levels (display only)
+            if (trackEntriesPerLevel != null && i - 1 < trackEntriesPerLevel.Count)
             {
-                RewardBox rBox = box.SetReward(reward, box.transform);
+                var levelTrack = trackEntriesPerLevel[i - 1];
+                var entries = levelTrack.entries;
 
-                bool isClaimed = entry.isClaimed;
-
-                rBox.ClaimButton.interactable = !isLocked && !isClaimed;
-
-                int capturedLevel = level; // fix closure issue
-
-                rBox.ClaimButton.onClick.AddListener(() =>
+                if (entries != null)
                 {
-                    OnClaimReward(capturedLevel, entry, rBox);
-                });
+                    foreach (var entry in entries)
+                    {
+                        TrackEntryUI ui = Instantiate(trackEntryPrefab, parent);
+
+                        bool isLocked = level > _Data.Level;
+                        ui.Init(entry, isLocked);
+                    }
+                }
             }
+
+            // 🔸 Next level box
+            CreateLevelBox(prefab, parent, level);
         }
     }
 
-    private void OnClaimReward(int level, LevelRewardEntry entry, RewardBox box)
+    private void CreateLevelBox(LevelBox prefab, Transform parent, int level)
     {
-        if (entry.isClaimed)
-            return;
+        LevelBox box = Instantiate(prefab, parent);
 
-        Debug.Log($"Claiming reward for level {level}");
+        bool isLocked = level > _Data.Level;
+        var entry = playerLevelData.GetEntry(level);
 
-        // Trigger reward flow (UI + grant handled inside)
-        RewardManager.Instance.ClaimReward(entry.rewardBundle);
-
-        // Mark claimed AFTER triggering
-        entry.isClaimed = true;
-        box.ClaimButton.interactable = false;
+        box.Init(level, isLocked, entry);
+        box.gameObject.name = "Level_" + level;
     }
 }
