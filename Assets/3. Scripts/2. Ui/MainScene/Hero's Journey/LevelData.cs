@@ -5,110 +5,95 @@ using System;
 [CreateAssetMenu(fileName = "LevelData", menuName = "Data/Level Data")]
 public class LevelData : ScriptableObject
 {
-    [SerializeField] private List<LevelInfo> levels;
+    [SerializeField] private List<XP_Required> xpRequirements;
+    [SerializeField] private PlayerLevelData playerLevelData;
+    [SerializeField] private Userdata _Data;
+
     public int _XP;
+
+    [Serializable]
+    public class XP_Required
+    {
+        public int level;
+        public int requiredXP;
+
+    }
+
     public int PlayerXP
     {
         get => _XP;
         set
         {
-            _XP = value; 
+            _XP = value;
             SetLevel();
         }
     }
-    [SerializeField] private Userdata _Data;
 
     public void SetLevel()
     {
-        int temp =0;
-        foreach (var level in levels)
+        int currentLevel = 0;
+
+        for (int i = 0; i < xpRequirements.Count; i++)
         {
-            if(level.XP_Required <= PlayerXP)
-            {
-                level.IsLocked = false;
-                temp += 1;
-            }
-            else
-            {
-                level.IsLocked = true;
-            }
+            if (xpRequirements[i].requiredXP <= PlayerXP)
+                currentLevel++;
         }
 
-        _Data.Level = temp;
+        _Data.Level = currentLevel;
     }
 
-    public void SetXP(int Amount)
+    public void SetXP(int amount)
     {
-        PlayerXP += Amount;
+        PlayerXP += amount;
     }
 
-    public void GenrateLevel(LevelBox _Prefab, Transform _Parent)
+    public void GenrateLevel(LevelBox prefab, Transform parent)
     {
-        int temp = PlayerXP;
-        for(int i = 0; i < levels.Count; i++)
+        for (int i = 0; i < xpRequirements.Count; i++)
         {
-            LevelBox _Box = Instantiate(_Prefab, _Parent);
-            _Box.LevelNoTxt.text = (i + 1).ToString();
-            _Box.gameObject.name = "Level_" + (i + 1).ToString();
+            int level = i + 1;
 
-            if(levels[i].IsLocked)
-            {
-                _Box.LockImage.gameObject.SetActive(true);
-            }
-            else
-            {
-                _Box.LockImage.gameObject.SetActive(false);
-            }
+            LevelBox box = Instantiate(prefab, parent);
+            box.LevelNoTxt.text = level.ToString();
+            box.gameObject.name = "Level_" + level;
 
-            foreach (var item in levels[i].Rewards)
+            bool isLocked = level > _Data.Level;
+            box.LockImage.gameObject.SetActive(isLocked);
+
+            var entry = playerLevelData.GetEntry(level);
+            if (entry == null || entry.rewardBundle == null)
+                continue;
+
+            foreach (var reward in entry.rewardBundle.rewards)
             {
-                RewardBox R_Box = _Box.SetReward(item, _Box.transform);
-                R_Box.ClaimButton.interactable = !levels[i].IsLocked;
-                item.RewardStatus = levels[i].IsLocked ? false : true;
-                item._Box = R_Box;
-                R_Box.ClaimButton.onClick.AddListener(() => 
+                RewardBox rBox = box.SetReward(reward, box.transform);
+
+                bool isClaimed = entry.isClaimed;
+
+                rBox.ClaimButton.interactable = !isLocked && !isClaimed;
+
+                int capturedLevel = level; // fix closure issue
+
+                rBox.ClaimButton.onClick.AddListener(() =>
                 {
-                    OnClaimReward(item);
+                    OnClaimReward(capturedLevel, entry, rBox);
                 });
             }
         }
     }
 
-    private void OnClaimReward(RewardData reward)
+    private void OnClaimReward(int level, LevelRewardEntry entry, RewardBox box)
     {
-        if(reward.RewardStatus)
+        if (entry.isClaimed)
             return;
 
-        Debug.Log("Claiming Reward");
+        Debug.Log($"Claiming reward for level {level}");
 
-        reward.RewardStatus = true;
-        reward._Box.ClaimButton.interactable = false;
-        if(reward.RewardType == RewardItem.Gems)
-        {
-            _Data.Diamonds += reward.RewardAmount;
-        }
-        else if(reward.RewardType == RewardItem.Fragments)
-        {
-            _Data.Coins += reward.RewardAmount;
-        }
+        // Trigger reward flow (UI + grant handled inside)
+        RewardManager.Instance.ClaimReward(entry.rewardBundle);
+
+        // Mark claimed AFTER triggering
+        entry.isClaimed = true;
+        box.ClaimButton.interactable = false;
     }
 }
- 
-[Serializable]
-public class LevelInfo
-{
-    public bool IsLocked;
-    public int XP_Required;
-    public List<RewardData> Rewards;
-}
-
-[Serializable]
-public class RewardData
-{
-    public int RewardAmount;
-    public Sprite RewardIcon;
-    public RewardItem RewardType;
-    public bool RewardStatus;
-    public RewardBox _Box;
-}
-

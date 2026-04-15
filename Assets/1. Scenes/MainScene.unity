@@ -1449,7 +1449,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2941269843819051660, guid: b9c6b2786948f8f41a055b0eae69d795, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2941269843819051660, guid: b9c6b2786948f8f41a055b0eae69d795, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -1458,14 +1458,14 @@ PrefabInstance:
     - target: {fileID: 2941269843819051660, guid: b9c6b2786948f8f41a055b0eae69d795, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1843710412}
+      objectReference: {fileID: 1843710416}
     - target: {fileID: 2941269843819051660, guid: b9c6b2786948f8f41a055b0eae69d795, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2941269843819051660, guid: b9c6b2786948f8f41a055b0eae69d795, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: AddXP
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 2941269843819051660, guid: b9c6b2786948f8f41a055b0eae69d795, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
@@ -1581,7 +1581,7 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 6665006929216381186, guid: b9c6b2786948f8f41a055b0eae69d795, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1843710412}
+      addedObject: {fileID: 1843710416}
   m_SourcePrefab: {fileID: 100100000, guid: b9c6b2786948f8f41a055b0eae69d795, type: 3}
 --- !u!1 &179001423
 GameObject:
@@ -5268,7 +5268,7 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8750944253059695045, guid: b9c6b2786948f8f41a055b0eae69d795, type: 3}
   m_PrefabInstance: {fileID: 177933189}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1843710412
+--- !u!114 &1843710416
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5277,12 +5277,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1843710406}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f8a923dc177c6741864051fcc338efc, type: 3}
+  m_Script: {fileID: 11500000, guid: f7751ba51a0fae749986a14819edc132, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  userData: {fileID: 11400000, guid: c341c53291f48f745b1f609fb4520aee, type: 2}
-  levelData: {fileID: 11400000, guid: ef84d008c5be62745bc4a0858c5f4566, type: 2}
-  xpToAdd: 100
+  xpAmount: 100
+  levelData: {fileID: 11400000, guid: c2cec64e52f275040b4dcb0d063a2fa7, type: 2}
 --- !u!1 &1909365243
 GameObject:
   m_ObjectHideFlags: 0
@@ -7029,6 +7028,10 @@ PrefabInstance:
     - target: {fileID: 8605339067375716782, guid: b915db7ca455a6a449cf8c5d596b5954, type: 3}
       propertyPath: m_Sprite
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8605339067375716782, guid: b915db7ca455a6a449cf8c5d596b5954, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8753862234869720935, guid: b915db7ca455a6a449cf8c5d596b5954, type: 3}
       propertyPath: m_IsActive

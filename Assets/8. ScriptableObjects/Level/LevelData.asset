@@ -12,117 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfcd64411eae889498a8955c180caf7c, type: 3}
   m_Name: LevelData
   m_EditorClassIdentifier: 
-  levels:
-  - IsLocked: 1
-    XP_Required: 500
-    Rewards:
-    - RewardAmount: 40
-      RewardIcon: {fileID: 21300000, guid: e0e4806ee3f03904eaedbca66615778d, type: 3}
-      RewardType: 0
-      RewardStatus: 1
-      _Box: {fileID: 0}
-  - IsLocked: 1
-    XP_Required: 700
-    Rewards:
-    - RewardAmount: 45
-      RewardIcon: {fileID: 21300000, guid: 38190622f7804480fbac3cc97f2018a9, type: 3}
-      RewardType: 0
-      RewardStatus: 1
-      _Box: {fileID: 0}
-    - RewardAmount: 50
-      RewardIcon: {fileID: 21300000, guid: b0956cca599e3c044846f95d4d298b95, type: 3}
-      RewardType: 0
-      RewardStatus: 1
-      _Box: {fileID: 0}
-  - IsLocked: 1
-    XP_Required: 900
-    Rewards:
-    - RewardAmount: 60
-      RewardIcon: {fileID: 21300000, guid: de4e3d643b44841a5b180cfde792a43d, type: 3}
-      RewardType: 0
-      RewardStatus: 1
-      _Box: {fileID: 0}
-  - IsLocked: 1
-    XP_Required: 1150
-    Rewards:
-    - RewardAmount: 65
-      RewardIcon: {fileID: 21300000, guid: 3cfd057e6a5ce264ab14f20afc5cb40a, type: 3}
-      RewardType: 0
-      RewardStatus: 0
-      _Box: {fileID: 0}
-    - RewardAmount: 70
-      RewardIcon: {fileID: 21300000, guid: 041f842c0a5bc1f479bca5071b29638a, type: 3}
-      RewardType: 0
-      RewardStatus: 0
-      _Box: {fileID: 0}
-    - RewardAmount: 75
-      RewardIcon: {fileID: 21300000, guid: b0956cca599e3c044846f95d4d298b95, type: 3}
-      RewardType: 0
-      RewardStatus: 0
-      _Box: {fileID: 0}
-  - IsLocked: 1
-    XP_Required: 1400
-    Rewards:
-    - RewardAmount: 80
-      RewardIcon: {fileID: 21300000, guid: e0e4806ee3f03904eaedbca66615778d, type: 3}
-      RewardType: 0
-      RewardStatus: 0
-      _Box: {fileID: 0}
-  - IsLocked: 1
-    XP_Required: 1750
-    Rewards:
-    - RewardAmount: 90
-      RewardIcon: {fileID: 21300000, guid: 699804dbae43643a68acf065922f928c, type: 3}
-      RewardType: 0
-      RewardStatus: 0
-      _Box: {fileID: 0}
-  - IsLocked: 1
-    XP_Required: 2100
-    Rewards:
-    - RewardAmount: 95
-      RewardIcon: {fileID: 21300000, guid: 3cfd057e6a5ce264ab14f20afc5cb40a, type: 3}
-      RewardType: 0
-      RewardStatus: 0
-      _Box: {fileID: 0}
-    - RewardAmount: 100
-      RewardIcon: {fileID: 21300000, guid: 87fd9d21846a2485eb9e163bc8e8f61e, type: 3}
-      RewardType: 0
-      RewardStatus: 0
-      _Box: {fileID: 0}
-  - IsLocked: 1
-    XP_Required: 2350
-    Rewards:
-    - RewardAmount: 125
-      RewardIcon: {fileID: 21300000, guid: fb537e15bd0dacc48b4bfa33deddde8b, type: 3}
-      RewardType: 0
-      RewardStatus: 0
-      _Box: {fileID: 0}
-  - IsLocked: 1
-    XP_Required: 2700
-    Rewards:
-    - RewardAmount: 150
-      RewardIcon: {fileID: 21300000, guid: de4e3d643b44841a5b180cfde792a43d, type: 3}
-      RewardType: 0
-      RewardStatus: 0
-      _Box: {fileID: 0}
-  - IsLocked: 1
-    XP_Required: 2900
-    Rewards:
-    - RewardAmount: 130
-      RewardIcon: {fileID: 21300000, guid: 3cfd057e6a5ce264ab14f20afc5cb40a, type: 3}
-      RewardType: 0
-      RewardStatus: 0
-      _Box: {fileID: 0}
-    - RewardAmount: 140
-      RewardIcon: {fileID: 21300000, guid: 041f842c0a5bc1f479bca5071b29638a, type: 3}
-      RewardType: 0
-      RewardStatus: 0
-      _Box: {fileID: 0}
-    - RewardAmount: 150
-      RewardIcon: {fileID: 21300000, guid: e0e4806ee3f03904eaedbca66615778d, type: 3}
-      RewardType: 0
-      RewardStatus: 0
-      _Box: {fileID: 0}
-  LevelDetails: {fileID: 21300000, guid: 50b70655ed6e97f4f9e995a8cfd4a0cb, type: 3}
-  _XP: 1000
+  xpRequirements:
+  - level: 1
+    requiredXP: 0
+  - level: 2
+    requiredXP: 100
+  - level: 3
+    requiredXP: 500
+  - level: 4
+    requiredXP: 1200
+  - level: 5
+    requiredXP: 2000
+  - level: 6
+    requiredXP: 2800
+  - level: 7
+    requiredXP: 3400
+  - level: 8
+    requiredXP: 4400
+  - level: 9
+    requiredXP: 5200
+  - level: 10
+    requiredXP: 6000
+  playerLevelData: {fileID: 11400000, guid: c7a670085709e224c90d9711fa563fff, type: 2}
   _Data: {fileID: 11400000, guid: c341c53291f48f745b1f609fb4520aee, type: 2}
+  _XP: 0

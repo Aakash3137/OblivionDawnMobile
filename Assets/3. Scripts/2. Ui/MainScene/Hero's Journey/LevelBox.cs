@@ -11,12 +11,17 @@ public class LevelBox : MonoBehaviour
     [SerializeField] internal TMP_Text LevelNoTxt;
     [SerializeField] internal Image LockImage;
 
-    public RewardBox SetReward(RewardData reward, Transform _Parent)
+    public RewardBox SetReward(RewardInstance reward, Transform _Parent)
     {
         RewardBox R_Box = Instantiate(RewardBoxPrefab, _Parent);
-        R_Box.RewardIcon.sprite = reward.RewardIcon;
-        R_Box.RewardNameTxt.text = reward.RewardType.ToString();
-        R_Box.ClaimButton.interactable = !reward.RewardStatus;
+
+        // NEW system mapping
+        R_Box.RewardIcon.sprite = reward.rewardData.icon;
+        R_Box.RewardNameTxt.text = reward.rewardData.rewardType.ToString();
+
+        // Do NOT control interactable here anymore
+        // (handled in LevelData based on lock + claim state)
+
         return R_Box;
     }
 }
