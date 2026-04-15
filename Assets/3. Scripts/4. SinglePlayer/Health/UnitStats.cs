@@ -19,24 +19,26 @@ public class UnitStats : Stats
     [ShowIf(nameof(canFly)), ReadOnly]
     public FlyStats unitFlyStats;
     public override bool CanFly => canFly;
-    
+
     private AbilityController abilityController;
     [field: SerializeField, ReadOnly]
     public GameUnitName gameUnitName { get; private set; }
-    
-    
+
+
     public BuildCost[] unitUpkeepCost;
     public OffenseBuildingStats spawnerBuilding { private get; set; }
     public UnitUpgradeData unitData { get; private set; }
 
     private ResourceManager rmInstance;
     private bool hasUpkeep;
-    
+
 
     internal override void Initialize()
     {
+        GameplayRegistry.UnitsDictionary[side].Add(this);
+
         gameUnitName = unitProduceSO.gameUnitName;
-        
+
         identity = unitProduceSO.unitIdentity;
         unitData = unitProduceSO.unitUpgradeData[identity.spawnLevel];
         basicStats = unitData.unitBasicStats;
@@ -53,22 +55,22 @@ public class UnitStats : Stats
         unitAttackTargets = unitProduceSO.unitAttackTargets;
 
         unitType = unitProduceSO.unitType;
-        
+
         abilityController = GetComponent<AbilityController>();
 
         if (abilityController != null)
         {
-           // Debug.Log($"[UnitStats] {gameObject.name} - Found AbilityController, initializing with {(unitProduceSO.abilities != null ? unitProduceSO.abilities.Count : 0)} abilities");
+            // Debug.Log($"[UnitStats] {gameObject.name} - Found AbilityController, initializing with {(unitProduceSO.abilities != null ? unitProduceSO.abilities.Count : 0)} abilities");
             abilityController.Initialize(unitProduceSO.abilities);
         }
         else
         {
-           // Debug.LogWarning($"[UnitStats] {gameObject.name} - No AbilityController component found!");
+            // Debug.LogWarning($"[UnitStats] {gameObject.name} - No AbilityController component found!");
         }
 
-// assign name
+        // assign name
         gameUnitName = unitProduceSO.gameUnitName;
-        
+
         if (canFly)
             unitFlyStats = unitProduceSO.unitFlyStats;
 
@@ -102,7 +104,7 @@ public class UnitStats : Stats
 
         if (hasUpkeep)
             InitializeUnitUpkeep();
-        
+
 
     }
 
@@ -152,8 +154,9 @@ public class UnitStats : Stats
     internal override void Die()
     {
         base.Die();
+        GameplayRegistry.UnitsDictionary[side].Remove(this);
         AbilityManager.Instance?.OnUnitDied(this);
-        
+
         spawnerBuilding.producedUnits.Remove(this);
         KillCounterManager.Instance.AddUnitKillData(unitProduceSO, side);
     }

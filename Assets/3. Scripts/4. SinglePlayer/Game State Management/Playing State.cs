@@ -4,7 +4,7 @@ public class PlayingState : GameState
 {
     public override void OnStateEnter()
     {
-        AudioManager.TransitionAudio(GameAudioType.GameMusic);
+        AudioManager.Play(GameAudioType.GameMusic);
     }
     public override void OnStateExit()
     {

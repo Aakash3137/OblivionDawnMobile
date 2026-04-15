@@ -1,82 +1,58 @@
+using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Audio;
 
 [CreateAssetMenu(fileName = "AudioClipsSO", menuName = "Scriptable Objects/AudioClipsSO")]
-public class AudioClipsSO : ScriptableObject
+public class AudioClipsSO : SerializedScriptableObject
 {
-    public AudioList[] audioClips;
+    public Dictionary<GameAudioType, AudioDetails> audioDetails = new();
 
-    void OnValidate()
+    private void OnValidate()
     {
         var enumValues = System.Enum.GetValues(typeof(GameAudioType));
 
-        if (audioClips == null || audioClips.Length != enumValues.Length)
+        foreach (GameAudioType audioType in enumValues)
         {
-            var resized = new AudioList[enumValues.Length];
-
-            // Preserve existing data when resizing
-            if (audioClips != null)
+            if (!audioDetails.ContainsKey(audioType))
             {
-                for (int i = 0; i < Mathf.Min(audioClips.Length, resized.Length); i++)
+                audioDetails.Add(audioType, new()
                 {
-                    resized[i] = audioClips[i];
-                }
-            }
-
-            audioClips = resized;
-        }
-
-        for (int i = 0; i < enumValues.Length; i++)
-        {
-            audioClips[i].audioType = (GameAudioType)enumValues.GetValue(i);
-            audioClips[i].name = audioClips[i].audioType.ToString();
-        }
-    }
-
-    public AudioClip GetClip(GameAudioType type)
-    {
-        foreach (var list in audioClips)
-        {
-            if (list.audioType == type && list.clips != null && list.clips.Length > 0)
-                return list.clips[Random.Range(0, list.clips.Length)];
-        }
-
-        Debug.LogWarning($"[AudioClipsSO] No clips found for type: {type}");
-        return null;
-    }
-
-    public bool TryGetAudioList(GameAudioType type, out AudioList result)
-    {
-        foreach (var list in audioClips)
-        {
-            if (list.audioType == type)
-            {
-                result = list;
-                return true;
+                    audioClips = new()
+                });
             }
         }
-
-        result = default;
-        return false;
     }
 }
 
 [System.Serializable]
-public struct AudioList
+public struct AudioDetails
 {
-    [HideInInspector] public string name;
-    public GameAudioType audioType;
-    public AudioMixerGroup mixerGroup;
-    public AudioClip[] clips;
+    public AudioMixerGroup audioGroup;
+    public List<AudioClip> audioClips;
+    public bool loop;
+
+    public AudioClip GetRandomClip()
+    {
+        return audioClips[Random.Range(0, audioClips.Count)];
+    }
 }
 
 public enum GameAudioType
 {
-    NONE,
+    None = 0,
+    // UI
     ButtonClick,
     PlayButton,
     BackButton,
-    MenuMusic,
+
+    // Music
+    MenuMusic = 21,
     GameMusic,
-    BattleMusic
+
+    // SFX
+    ResourceTick = 41,
+    BattleSFX,
+    ResourceSFX,
+    MainSFX,
 }

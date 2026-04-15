@@ -5,18 +5,18 @@ using UnityEngine.UI;
 
 public class JourneyManager : MonoBehaviour
 {
-    [Header ("UI Element")]
+    [Header("UI Element")]
     [SerializeField] internal Button cross_button;
     [SerializeField] private LevelBox levelBoxPrefab;
     [SerializeField] private Transform LevelParent;
 
-    [Header ("Data")]
+    [Header("Data")]
     [SerializeField] LevelData LevelsData;
 
-#region LifeCycle
+    #region LifeCycle
     void OnEnable()
     {
-        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
+        AudioManager.Play(GameAudioType.ButtonClick);
         StartCoroutine(InitJourney());
     }
 
@@ -28,13 +28,13 @@ public class JourneyManager : MonoBehaviour
 
     private void OnDisable()
     {
-        AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
+        AudioManager.Play(GameAudioType.ButtonClick);
     }
 
-#endregion
+    #endregion
 
 
-#region Init
+    #region Init
 
     IEnumerator InitJourney()
     {
@@ -46,18 +46,18 @@ public class JourneyManager : MonoBehaviour
         LayoutRebuilder.ForceRebuildLayoutImmediate(LevelParent.GetComponent<RectTransform>());
     }
 
-#endregion
+    #endregion
 
-#region UI
+    #region UI
     public void OnClickShowHomePage()
     {
         HomeUIManager.Instance.ShowPanel(PanelName.Home);
         //AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
-    
+
     private void CreateLevelBox()
     {
         LevelsData.GenrateLevel(levelBoxPrefab, LevelParent);
     }
-#endregion
+    #endregion
 }

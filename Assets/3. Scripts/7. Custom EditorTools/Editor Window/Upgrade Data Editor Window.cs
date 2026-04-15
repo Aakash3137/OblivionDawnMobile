@@ -273,7 +273,8 @@ public class UpgradeDataEditorWindow : EditorWindow
         offenseFieldHeader.style.display = DisplayStyle.Flex;
 
         var offenseSO = allBuildingData.offenseBuildingsSO;
-        FactionName prevFactionName = 0;
+        // Starting with Medieval
+        FactionName prevFactionName = FactionName.Medieval;
 
         foreach (var offense in offenseSO)
         {
@@ -307,6 +308,7 @@ public class UpgradeDataEditorWindow : EditorWindow
 
             instance.Q<Button>("select").clicked += () => OnClickSelect(offense);
 
+            // adding Space in between factions
             if (prevFactionName != offense.buildingIdentity.faction)
             {
                 selectScroll.Add(spacerVisualTree.CloneTree());
