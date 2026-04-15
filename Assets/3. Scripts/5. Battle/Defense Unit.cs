@@ -43,9 +43,6 @@ public class DefenseUnit : MonoBehaviour
         defenseBuildingSO = defenseStats.GetBuildingSO();
         defenseData = defenseStats.GetBuildingData();
         forward = transform.forward;
-
-        BattleUnitRegistry.DefenseUnits.Add(defenseStats);
-
         if (defenseBuilding == null)
             defenseBuilding = transform.GetChild(0).gameObject;
     }

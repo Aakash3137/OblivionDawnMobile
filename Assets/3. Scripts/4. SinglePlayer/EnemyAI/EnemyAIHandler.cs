@@ -420,8 +420,8 @@ public class EnemyAIHandler : MonoBehaviour
             currentPersonality.useSmartWallStrategy &&
             HasWallInDeck();
 
-        int myUnits = BattleUnitRegistry.EnemyUnits.Count;
-        int playerUnits = Mathf.Max(1, BattleUnitRegistry.PlayerUnits.Count);
+        int myUnits = GameplayRegistry.UnitsDictionary[Side.Enemy].Count;
+        int playerUnits = Mathf.Max(1, GameplayRegistry.UnitsDictionary[Side.Player].Count);
         float ratio = (float)myUnits / playerUnits;
 
         // EMERGENCY SYSTEM (TOP PRIORITY)
@@ -1173,8 +1173,8 @@ public class EnemyAIHandler : MonoBehaviour
         if (Time.time - lastStanceChangeTime < currentPersonality.stanceCooldown)
             return;
 
-        int myUnits = BattleUnitRegistry.EnemyUnits.Count;
-        int enemyUnits = Mathf.Max(1, BattleUnitRegistry.PlayerUnits.Count);
+        int myUnits = GameplayRegistry.UnitsDictionary[Side.Enemy].Count;
+        int enemyUnits = Mathf.Max(1, GameplayRegistry.UnitsDictionary[Side.Player].Count);
 
         float ratio = (float)myUnits / enemyUnits;
 
@@ -1196,7 +1196,7 @@ public class EnemyAIHandler : MonoBehaviour
         }
 
         // OPTIONAL: if player has no units → always attack
-        if (BattleUnitRegistry.PlayerUnits.Count == 0)
+        if (GameplayRegistry.UnitsDictionary[Side.Player].Count == 0)
             newStance = UnitStance.Attacking;
 
         // STATE UPDATE

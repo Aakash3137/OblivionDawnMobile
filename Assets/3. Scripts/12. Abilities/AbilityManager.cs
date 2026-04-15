@@ -114,8 +114,8 @@ public class AbilityManager : MonoBehaviour
             if (pair.Value == unit.gameUnitName)
             {
                 AbilitySO ability = pair.Key;
-
-                bool exists = BattleUnitRegistry.PlayerUnits
+                
+                bool exists = GameplayRegistry.UnitsDictionary[Side.Player]
                     .Any(u => u != null && u.gameUnitName == unit.gameUnitName);
 
                 if (!exists && abilityButtonMap[ability].gameObject.activeSelf)
@@ -149,8 +149,9 @@ public class AbilityManager : MonoBehaviour
         List<AbilityController> targets = new List<AbilityController>();
 
         List<UnitStats> unitsToCheck = ability.abilityScope == AbilityScope.Personal
-            ? (ability.casterSide == Side.Player ? BattleUnitRegistry.PlayerUnits : BattleUnitRegistry.EnemyUnits)
-            : BattleUnitRegistry.Units;
+            ? GameplayRegistry.UnitsDictionary[ability.casterSide] 
+            // get unit stats of all sides from dictionary 
+            : GameplayRegistry.UnitsDictionary.Values.SelectMany(x=>x).ToList();
 
         foreach (var unit in unitsToCheck)
         {
@@ -180,7 +181,7 @@ public class AbilityManager : MonoBehaviour
 
     private void InitializeAbilityButtons()
     {
-        foreach (var unit in BattleUnitRegistry.PlayerUnits)
+        foreach (var unit in GameplayRegistry.UnitsDictionary[Side.Player])
         {
             if (unit == null) continue;
 

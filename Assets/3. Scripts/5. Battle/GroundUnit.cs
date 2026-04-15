@@ -80,9 +80,6 @@ public class GroundUnit : MonoBehaviour
         unitStats = GetComponent<UnitStats>();
         unitProduceSO = unitStats.unitProduceSO;
         unitData = unitProduceSO.unitUpgradeData[unitStats.identity.spawnLevel];
-
-        BattleUnitRegistry.Units.Add(unitStats);
-
         // Initialize stats
         baseMoveSpeed = unitData.unitMobilityStats.moveSpeed;
         RecalculateSpeed();
@@ -589,19 +586,6 @@ public class GroundUnit : MonoBehaviour
             animator.SetBool("Fire", false);
     }
 
-    private void OnDestroy()
-    {
-        BattleUnitRegistry.Units.Remove(unitStats);
-
-        foreach (var unit in BattleUnitRegistry.Units)
-        {
-            if (unit != null && unit.TryGetComponent<GroundUnit>(out var groundUnit) && groundUnit.target == gameObject)
-            {
-                groundUnit.target = null;
-            }
-        }
-    }
-
     #region Abilities
 
     public void AddSpeedMultiplier(AbilityEffect source, float multiplier)
@@ -688,23 +672,17 @@ public class GroundUnit : MonoBehaviour
 
     public static bool AnyPlayerAlive()
     {
-        foreach (var unit in BattleUnitRegistry.Units)
-        {
-            if (unit != null && unit.side == Side.Player)
-                return true;
-        }
-
+        if(GameplayRegistry.UnitsDictionary[Side.Player].Count > 0)
+            return true;
+        
         return false;
     }
 
     public static bool AnyEnemyAlive()
     {
-        foreach (var unit in BattleUnitRegistry.Units)
-        {
-            if (unit != null && unit.side == Side.Enemy)
-                return true;
-        }
-
+        if(GameplayRegistry.UnitsDictionary[Side.Enemy].Count > 0)
+            return true;
+        
         return false;
     }
 
