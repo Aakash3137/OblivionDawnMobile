@@ -1,45 +1,39 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Rewards/Unit Reward")]
+[CreateAssetMenu(menuName = "Rewards/Attack Unit Reward")]
 public class UnitRewardData : RewardData02
 {
-    public ItemData itemData;
+    public UnitProduceStatsSO unitData;
 
     public override Sprite GetIcon(FactionName faction = default)
     {
-        return itemData != null ? itemData.icon : null;
+        return unitData != null ? unitData.unitIcon : null;
     }
-
 
     public void UnlockUnit()
-    {
-        if (itemData == null)
         {
-            Debug.LogError("ItemData is NULL");
-            return;
-        }
+            if (unitData == null)
+            {
+                Debug.LogError("UnitProduceStatsSO is NULL!");
+                return;
+            }
 
-        // 🔥 Detect type automatically
-        if (itemData.ItemSo != null)
-        {
-            itemData.ItemSo.cardDetails.cardState = CardState.Unlocked;
-            Debug.Log($"Unlocked ATTACK Unit: {itemData.itemName}");
+            if (unitData.cardDetails == null)
+            {
+                Debug.LogError($"CardDetails missing for {unitData.name}");
+                return;
+            }
+
+            if (unitData.cardDetails.cardState == CardState.Unlocked)
+            {
+                Debug.Log($"{unitData.name} already unlocked");
+                return;
+            }
+
+            unitData.cardDetails.cardState = CardState.Unlocked;
+
+            Debug.Log($"✅ Unlocked Unit: {unitData.gameUnitName}");
         }
-        else if (itemData.DefenseSo != null)
-        {
-            itemData.DefenseSo.cardDetails.cardState = CardState.Unlocked;
-            Debug.Log($"Unlocked DEFENSE Unit: {itemData.itemName}");
-        }
-        else if (itemData.BuildingSO != null)
-        {
-            itemData.BuildingSO.cardDetails.cardState = CardState.Unlocked;
-            Debug.Log($"Unlocked BUILDING: {itemData.itemName}");
-        }
-        else
-        {
-            Debug.LogError($"No valid SO assigned in ItemData: {itemData.itemName}");
-        }
-    }
 
     public override void Grant(int amount)
     {

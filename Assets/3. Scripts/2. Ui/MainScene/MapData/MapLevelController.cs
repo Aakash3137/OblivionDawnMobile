@@ -18,5 +18,5 @@ public class MapData
 {
     public int LevelNo;
     public bool RewardStatus = false;
-    public RewardData rewardData;
+    //public RewardData rewardData;
 }

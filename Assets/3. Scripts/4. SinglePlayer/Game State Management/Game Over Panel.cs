@@ -10,8 +10,9 @@ public class GameOverPanel : MonoBehaviour
     [SerializeField] private TMP_Text subTitleText;
     [SerializeField] private TMP_Text XP_Text;
     private GameStateManager gmInstance;
-    [SerializeField] private LevelData LevelsData;
+    [SerializeField] private Userdata LevelsData;
 
+    [SerializeField] private PlayerLevelData playerLevelData;
 
     private void Start()
     {
@@ -30,7 +31,9 @@ public class GameOverPanel : MonoBehaviour
         {
             subTitleText.text = "Victory";
         }
-        LevelsData.SetXP(XPCalculator.Instance.total_XP);
+
+        //LevelsData.AddXP(XPCalculator.Instance.total_XP);
+
         XP_Text.text = "XP + " + XPCalculator.Instance.total_XP;
     }
 

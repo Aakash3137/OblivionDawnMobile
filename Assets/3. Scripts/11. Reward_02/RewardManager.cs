@@ -59,12 +59,6 @@ public class RewardManager : MonoBehaviour
         if (reward.rewardData is UnitRewardData unitReward)
         {
             unitReward.UnlockUnit();
-
-            Debug.Log($"Unlocked Unit: {unitReward.itemData.itemName}");
-        }
-        else
-        {
-            Debug.LogError("RewardData is not UnitRewardData!");
         }
     }
 

@@ -6,7 +6,6 @@ using System;
 public class LevelData : ScriptableObject
 {
     [SerializeField] private List<LevelInfo> levels;
-    [SerializeField] private Sprite LevelDetails;
     public int _XP;
     public int PlayerXP
     {
