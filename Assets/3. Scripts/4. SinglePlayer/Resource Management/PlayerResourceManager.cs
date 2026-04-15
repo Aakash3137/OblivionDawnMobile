@@ -30,7 +30,20 @@ public class PlayerResourceManager : ResourceManager
         startingResources[2].resourceAmount = 999;
         startingResources[3].resourceAmount = 999;
 
-        SetResources(startingResources);
+         SetResources(startingResources);
+    }
+
+    public void Updateresources(float Value, BuildCost[] costs)
+    {
+        Debug.Log("Update Resources");
+        // for(int i = 0; i < 4; i++) 
+        // {
+        //     Debug.Log($"Resource: Before {costs[i].resourceType} updated. New amount: {startingResources[i].resourceAmount}");
+        //     int AMOUNT =  (int)(Value * costs[i].resourceAmount / 100f);
+        //     startingResources[i].resourceAmount -= AMOUNT;
+        //     Debug.Log($"Resource {costs[i].resourceType} updated. New amount: {startingResources[i].resourceAmount} Next Amount To Deduct: {(int)(Value * costs[i].resourceAmount / 100f)}");
+        // }
+        SpendResources(costs);
     }
     #endregion
 }
