@@ -36,6 +36,7 @@ public class EnemyPersonality : ScriptableObject
     
     [Header("Combat Behavior")]
     public AICombatType combatType;
+    [Range(0f, 2f)] public float ComparisonMatchValue = 1f;
 
 // When to attack
     [Range(0f, 2f)] public float attackConfidence = 1.2f;

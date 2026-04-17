@@ -16,7 +16,7 @@ MonoBehaviour:
   unitBuildingWeight: 0.15
   resourceBuildingWeight: 0.45
   defenseBuildingWeight: 0.4
-  spawnInterval: 3
+  spawnInterval: 0.5
   mistakeProbability: 0.3
   tacticalDiscipline: 0.6
   tacticalPrecision: 0.4
@@ -27,6 +27,7 @@ MonoBehaviour:
   reduceSpawnTime: 10
   maxEnemyBuildings: 150
   combatType: 0
+  ComparisonMatchValue: 1
   attackConfidence: 1
   retreatThreshold: 0.6
   stanceCooldown: 10
@@ -191,22 +192,22 @@ MonoBehaviour:
       selected: 1
       amount: 1
       UnitsSpawnLevel: 0
-      weight: 0.33
+      weight: 0.2
     - building: {fileID: 11400000, guid: 79385e38203689e40b3020b5c70991be, type: 2}
       selected: 1
       amount: 1
       UnitsSpawnLevel: 0
-      weight: 0.33
+      weight: 0.1
     - building: {fileID: 11400000, guid: 36ab49ce3b9dd2844954bb3454db579e, type: 2}
       selected: 1
       amount: 1
       UnitsSpawnLevel: 0
-      weight: 0.33
+      weight: 0.5
     - building: {fileID: 11400000, guid: 12cdba9447ca8a440aaf0f238f14c6b4, type: 2}
       selected: 1
       amount: 1
       UnitsSpawnLevel: 0
-      weight: 0.33
+      weight: 0.2
   - faction: 3
     unitSelections:
     - unit: {fileID: 11400000, guid: 11122cc73490b274199a1a546e7d17af, type: 2}

@@ -617,7 +617,7 @@ public class GroundUnit : MonoBehaviour
 
         moveSpeed = finalSpeed;
 
-        Debug.Log($"[GroundUnit] {gameObject.name} - Speed recalculated: {finalSpeed:F2} (Base: {baseMoveSpeed}, Multipliers: {speedMultipliers.Count})");
+       // Debug.Log($"[GroundUnit] {gameObject.name} - Speed recalculated: {finalSpeed:F2} (Base: {baseMoveSpeed}, Multipliers: {speedMultipliers.Count})");
 
         if (agent != null)
         {
