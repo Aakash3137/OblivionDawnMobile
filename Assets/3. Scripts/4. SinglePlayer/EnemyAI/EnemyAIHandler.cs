@@ -381,24 +381,8 @@ public class EnemyAIHandler : MonoBehaviour
 
     bool DoesPlayerHaveAirUnits()
     {
-        if (GameplayRegistry.OffenseDictionary == null || !GameplayRegistry.OffenseDictionary.ContainsKey(Side.Player))
-            return false;
-
-        var playerBuildings = GameplayRegistry.OffenseDictionary[Side.Player];
-        
-        foreach (var building in playerBuildings)
-        {
-            if (building == null) continue;
-
-            var offenseSO = building.buildingStatsSO as OffenseBuildingDataSO;
-            if (offenseSO != null && offenseSO.unitPrefab != null && offenseSO.unitPrefab.unitProduceSO != null)
-            {
-                if (offenseSO.unitPrefab.unitProduceSO.unitType == ScenarioUnitType.Air)
-                {
-                    return true;
-                }
-            }
-        }
+        if (GameplayRegistry.GetOffense(Side.Player, ScenarioOffenseType.AirBuilding).Count > 0)
+            return true;
 
         return false;
     }
@@ -1180,61 +1164,6 @@ public class EnemyAIHandler : MonoBehaviour
         }
 
         return bestTile ?? SelectRandomSpawnableTile();
-    }
-
-    #endregion
-
-    #region CombatStance
-
-    void UpdateCombatStance()
-    {
-        if (Time.time - lastStanceChangeTime < currentPersonality.stanceCooldown)
-            return;
-
-        int myUnits = GameplayRegistry.UnitsDictionary[Side.Enemy].Count;
-        int enemyUnits = Mathf.Max(1, GameplayRegistry.UnitsDictionary[Side.Player].Count);
-
-        float ratio = (float)myUnits / enemyUnits;
-
-        UnitStance newStance = UnitStance.Attacking;
-
-        // ️ DEFAULT: ALWAYS ATTACK (90% CASE)
-        bool shouldDefend =
-            myUnits < 3 || // too weak
-            ratio < 0.3f; // heavily outnumbered
-
-        //  ONLY EMERGENCY DEFENSE (10% CASE)
-        if (shouldDefend)
-        {
-            newStance = UnitStance.Attacking;
-        }
-        else
-        {
-            newStance = UnitStance.Attacking;
-        }
-
-        // OPTIONAL: if player has no units → always attack
-        /*
-        if (GameplayRegistry.UnitsDictionary[Side.Player].Count == 0)
-            newStance = UnitStance.Attacking;
-            */
-
-        // STATE UPDATE
-        /*if (newStance != CurrentEnemyStance)
-        {
-            CurrentEnemyStance = newStance;
-            lastStanceChangeTime = Time.time;
-
-            if (StanceImg != null)
-            {
-                StanceImg.sprite =
-                    (CurrentEnemyStance == UnitStance.Attacking)
-                        ? AttackSprite
-                        : DefendSprite;
-            }
-
-            Debug.Log($"[EnemyAI] Stance → {CurrentEnemyStance} (Ratio: {ratio:F2})");
-        }*/
     }
 
     #endregion
