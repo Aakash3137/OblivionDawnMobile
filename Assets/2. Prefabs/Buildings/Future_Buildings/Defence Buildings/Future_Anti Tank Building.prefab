@@ -63,6 +63,41 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1807120803253265653}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3261659810262200756
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7336837245878717767}
+  m_Layer: 5
+  m_Name: RepairParentNew
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &7336837245878717767
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3261659810262200756}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7704460978680587045}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: -1}
+  m_SizeDelta: {x: 0.75, y: 0.75}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &3345709832372946888
 GameObject:
   m_ObjectHideFlags: 0
@@ -363,6 +398,8 @@ MonoBehaviour:
   <buildTime>k__BackingField: 0
   progress: {fileID: 0}
   buildingProgress: {fileID: 0}
+  GlowEffectPlace: {fileID: 3847791479648122424}
+  RepairEffectPlace: {fileID: 7336837245878717767}
 --- !u!114 &3889891532586361358
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1088,7 +1125,10 @@ PrefabInstance:
       objectReference: {fileID: 5551679913311386414}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 487449239260110395, guid: ceaccfc72e49830479863294dd97d8a5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7336837245878717767}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ceaccfc72e49830479863294dd97d8a5, type: 3}
 --- !u!114 &3876492381365175768 stripped

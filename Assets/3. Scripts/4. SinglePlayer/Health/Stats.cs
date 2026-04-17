@@ -79,9 +79,16 @@ public class Stats : MonoBehaviour
 
         if (currentHealth < basicStats.maxHealth / 2)
         {
-            // Debug.Log("<color=yellow>Enable repairing Button</color>");
-            RepairObj.PlayShow();
+           //callRepair();
+            // RepairObj.PlayShow();
         }
+    }
+
+    void callRepair()
+    {
+        BuildingSkeleton building = GetComponent<BuildingSkeleton>();
+            if (building != null)
+                RepairManager.Instance.OnClickRepairBtnOpen(building.RepairEffectPlace, building.RepairEffectPlace, this, true);
     }
 
     private void ApplyMaterial()
@@ -133,8 +140,8 @@ public class Stats : MonoBehaviour
 
         amount = Mathf.Max(0, amount - basicStats.armor);
 
-        if (amount == 0)
-            Debug.Log("<size=16> Armor is high cannot take damage</size>");
+       // if (amount == 0)
+            //Debug.Log("<size=16> Armor is high cannot take damage</size>");
 
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, basicStats.maxHealth);
@@ -180,7 +187,7 @@ public class Stats : MonoBehaviour
             if (!RepairObj.IsReady)
                 return;
 
-            RepairObj.PlayShow();
+            // callRepair();
             // Debug.Log($"<color=red>Your Health is too low {currentHealth} Repair Health Now</color>");
         }
     }

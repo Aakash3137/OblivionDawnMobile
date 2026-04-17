@@ -23,7 +23,7 @@ public class RepairButtonHandler : MonoBehaviour
     private float CoolDownTimer = 15f;
     [Header ("UI")]
     [SerializeField] private RectTransform rect;
-    [SerializeField] private Image Repairbtn;
+    [SerializeField] internal Button Repairbtn;
 
     [Header ("Data")]
     [SerializeField] internal Stats StatsData;
@@ -45,8 +45,8 @@ public class RepairButtonHandler : MonoBehaviour
     public Transform EffectPlace;
     void OnEnable()
     {
-        PlayHide();
         IsReady = true;
+       PlayHide();
     }
 
     void Start()
@@ -54,8 +54,6 @@ public class RepairButtonHandler : MonoBehaviour
         CheckIFEnemy();
         placedBuilding = StatsData.transform;
         CurrentWall = StatsData.GetComponentInChildren<WallParent>();
-        // Repairbtn.onClick.RemoveAllListeners();
-        // Repairbtn.onClick.AddListener(OnClickRepairBtn);
     }
 
     private void OnMouseDown() 
@@ -71,11 +69,11 @@ public class RepairButtonHandler : MonoBehaviour
 
     public void PlayShow()
     {
-        if(!CheckIFEnemy() || !IsReady)
+       if(!CheckIFEnemy() || !IsReady)
             return;
         
-        // Debug.Log("Play Show");
-        Repairbtn.gameObject.SetActive(true);
+       // Debug.Log("Play Show");
+       Repairbtn.gameObject.SetActive(true);
        StartCoroutine(Animate(showPosition, showScale));
     }
 
@@ -129,8 +127,14 @@ public class RepairButtonHandler : MonoBehaviour
            return;
 
         Debug.Log("On Click Repair Button");
+        if(StatsData.currentHealth > StatsData.basicStats.maxHealth/2)
+        {
+            Debug.Log("Health is above 50% cannot repair");
+            return;
+        }
+
         StatsData.HealthRepair();
-        Repairbtn.gameObject.SetActive(false);
+        PlayHide();
         // PlaceWalls();
         StartCoroutine(CoolDownTimerStart());
     }
@@ -149,8 +153,6 @@ public class RepairButtonHandler : MonoBehaviour
     #region Repair Wall
     private void PlaceWalls()
     {
-        
-
         currentTile = BuildingHelper.currentTile;
         Vector3 _currentTileCords = currentTile.transform.position;
         var cgmInstance = CubeGridManager.Instance;
