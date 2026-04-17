@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class BuildingSkeleton : MonoBehaviour
@@ -11,6 +12,8 @@ public class BuildingSkeleton : MonoBehaviour
     [SerializeField] BuildingProgress buildingProgress;
     public GameObject graphicObject { get; private set; }
     private GameObject constructionIcon;
+
+    [SerializeField] internal Transform GlowEffectPlace, RepairEffectPlace;
 
     private async Awaitable Awake()
     {
@@ -37,17 +40,14 @@ public class BuildingSkeleton : MonoBehaviour
         {
             if (component is BuildingPlacementHelper)
                 continue;
-
             if (component != this)
                 component.enabled = false;
-
             if (component is BuildingStats buildingStats)
             {
                 buildTime = buildingStats.buildTime;
                 side = buildingStats.side;
             }
         }
-
         buildingProgress = GetComponentInChildren<BuildingProgress>();
         buildingProgress.Initialize();
     }
@@ -70,4 +70,29 @@ public class BuildingSkeleton : MonoBehaviour
 
         graphicObject.SetActive(true);
     }
+
+#region Click Event
+    RepairButtonHandler RepairObj = null;
+    void OnMouseDown()
+    {
+        Debug.Log("Clicked on " + gameObject.name);
+        RepairObj = RepairManager.Instance.OnClickRepairBtnOpen(RepairEffectPlace, RepairEffectPlace, GenericComponents[2].GetComponent<Stats>(), false);
+
+        if(RepairObj == null)
+            return;
+        
+        if(GenericComponents[2].GetComponent<Stats>().currentHealth > GenericComponents[2].GetComponent<Stats>().basicStats.maxHealth/2)
+            RepairObj.Repairbtn.interactable = false;
+           else
+             RepairObj.Repairbtn.interactable = true;
+
+        // StartCoroutine(CoolDownTimerStart());
+    }
+
+    IEnumerator CoolDownTimerStart()
+    {
+        yield return new WaitForSeconds(3f);
+        RepairManager.Instance.OnClickRepairBtnClose();
+    }
+    #endregion
 }
