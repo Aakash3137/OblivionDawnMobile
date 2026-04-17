@@ -38,10 +38,6 @@ public class GameManager : MonoBehaviour
     public Tile enemyTile { get; private set; }
     public Transform playerSpawnPoint { get; private set; }
     public Transform enemySpawnPoint { get; private set; }
-    private GameAudioType prevAudioType;
-
-    Transform cubeTransform;
-    Vector3 size;
 
     void Awake()
     {
@@ -61,13 +57,7 @@ public class GameManager : MonoBehaviour
         enemySpawnPoint = enemyTile.transform;
 
         SpawnMainBuilding();
-        //SpawnNeutralBuildings();        
-
-
-        cubeTransform = Camera.main.transform.GetChild(0);
-        // size is half-extents → divide by 2 for actual size
-        size = cubeTransform.localScale * 0.5f;
-        _ = InitDynamicSFX();
+        //SpawnNeutralBuildings();
     }
 
     private void SpawnMainBuilding()
@@ -118,72 +108,6 @@ public class GameManager : MonoBehaviour
             //Initialize if scriptable object is not null
             // buildingStats.Initialize();
         }
-    }
-
-    private async Awaitable InitDynamicSFX()
-    {
-        while (gameObject.activeInHierarchy)
-        {
-            await Awaitable.WaitForSecondsAsync(0.2f, destroyCancellationToken);
-            PlayDynamicSFX();
-        }
-    }
-
-    private void PlayDynamicSFX()
-    {
-        Collider[] hits = new Collider[50];
-        LayerMask layerMask = LayerMask.GetMask("PlayerAir", "PlayerGround", "EnemyAir", "EnemyGround");
-
-        int count = Physics.OverlapBoxNonAlloc(cubeTransform.position, size, hits, Quaternion.identity, layerMask);
-
-        GameAudioType currentAudioType = GetAudioType(hits, count);
-
-        if (currentAudioType == prevAudioType) return;
-
-        if (prevAudioType != GameAudioType.None)
-            // AudioManager.TryStop(prevAudioType);
-
-            if (currentAudioType != GameAudioType.None)
-            {
-                AudioManager.Play(currentAudioType);
-                prevAudioType = currentAudioType;
-                Debug.Log($"<size=20> Playing {currentAudioType} </size>");
-            }
-    }
-
-    private GameAudioType GetAudioType(Collider[] hits, int count)
-    {
-        int battleUnits = 0;
-        int resourceUnits = 0;
-        bool hasMainBuilding = false;
-
-        for (int i = 0; i < count; i++)
-        {
-            if (hits[i].TryGetComponent(out UnitStats _) || hits[i].TryGetComponent(out DefenseBuildingStats _))
-                battleUnits++;
-            else if (hits[i].TryGetComponent(out ResourceBuildingStats _))
-                resourceUnits++;
-            else if (hits[i].TryGetComponent(out MainBuildingStats _))
-                hasMainBuilding = true;
-        }
-
-        if (battleUnits >= 2) return GameAudioType.BattleSFX;
-
-        if (resourceUnits >= 2) return GameAudioType.ResourceSFX;
-
-        if (hasMainBuilding) return GameAudioType.MainSFX;
-
-        return GameAudioType.None;
-    }
-
-    void OnDrawGizmos()
-    {
-        if (cubeTransform == null) return;
-
-        Gizmos.color = Color.red;
-        Gizmos.matrix = Matrix4x4.TRS(cubeTransform.position, Quaternion.identity, Vector3.one);
-        Gizmos.DrawWireCube(Vector3.zero, size * 2f);
-        Gizmos.matrix = Matrix4x4.identity; // reset after
     }
 }
 

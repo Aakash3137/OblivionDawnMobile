@@ -39,8 +39,8 @@ public class ResourceManager : MonoBehaviour
         {
             await Awaitable.WaitForSecondsAsync(globalTickTime, destroyCancellationToken);
 
-            if (this is PlayerResourceManager playerResourceManager && GameplayRegistry.ResourceDictionary[Side.Player].Count > 0)
-                AudioManager.Play(GameAudioType.ResourceTick);
+            if (this is PlayerResourceManager playerResourceManager && GameplayRegistry.GetResource(Side.Player).Count > 0)
+                AudioManager.PlayOneShot(GameAudioType.ResourceTick);
 
             GlobalResourceTick?.Invoke();
         }

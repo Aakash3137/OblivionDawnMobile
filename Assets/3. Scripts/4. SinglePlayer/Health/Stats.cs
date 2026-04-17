@@ -44,6 +44,7 @@ public class Stats : MonoBehaviour
 
     public Action onDieEvent;
     private float TempCurrentHealth = 0;
+    [field: SerializeField] public AudioDetails audioDetails { get; private set; }
 
 
     private void Awake()

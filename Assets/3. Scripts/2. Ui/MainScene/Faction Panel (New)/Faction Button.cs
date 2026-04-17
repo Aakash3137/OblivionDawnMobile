@@ -20,6 +20,6 @@ public class FactionButton : MonoBehaviour
         GameData.playerFaction = faction;
 
         GameStateManager.Instance.ChangeState(GameStateEnum.LOADING);
-        AudioManager.Play(GameAudioType.ButtonClick);
+        AudioManager.PlayOneShot(GameAudioType.ButtonClick);
     }
 }

@@ -4,7 +4,7 @@ public class MainMenuState : GameState
 {
     public override void OnStateEnter()
     {
-        AudioManager.Play(GameAudioType.MenuMusic);
+        AudioManager.PlayInLoop(GameAudioType.MenuMusic);
     }
 
     public override void OnStateExit()

@@ -318,8 +318,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.326395, y: 1.0753529, z: 2.314416}
-  m_Center: {x: -0.003665924, y: -0.21232355, z: -0.076815605}
+  m_Size: {x: 1.326395, y: 1.1222024, z: 2.314416}
+  m_Center: {x: -0.003665924, y: -0.5060339, z: -0.076815605}
 --- !u!195 &922063141728500303
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -329,7 +329,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 1477878312184650337}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 1
+  m_Radius: 1.39
   m_Speed: 2
   m_Acceleration: 8
   avoidancePriority: 40
@@ -338,10 +338,10 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 2
+  m_Height: 0.98
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 2
+  m_ObstacleAvoidanceType: 4
 --- !u!95 &4419862221594325289
 Animator:
   serializedVersion: 7
@@ -384,8 +384,14 @@ MonoBehaviour:
   <basicStats>k__BackingField:
     maxHealth: 0
     armor: 0
-  <currentHealth>k__BackingField: 0
+  CurrentHealth: 0
+  RepairObj: {fileID: 0}
   <side>k__BackingField: 0
+  <audioDetails>k__BackingField:
+    mixerGroup: {fileID: -7748447255699636736, guid: 211f46fc758270549a0781600f615ab9, type: 2}
+    audioClips:
+    - {fileID: 8300000, guid: d8cece8f10be084468e3749b69524881, type: 3}
+    loop: 1
   unitProduceSO: {fileID: 11400000, guid: c9f894773f0214a48a740032bd85dbd2, type: 2}
   canFly: 0
   unitFlyStats:
