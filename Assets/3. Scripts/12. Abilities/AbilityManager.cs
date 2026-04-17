@@ -35,7 +35,7 @@ public class AbilityManager : MonoBehaviour
     {
         while (true)
         {
-            InitializeAbilityButtons();  
+            InitializeAbilityButtons();
             yield return new WaitForSeconds(0.5f);
         }
     }
@@ -55,7 +55,7 @@ public class AbilityManager : MonoBehaviour
             {
                 cooldownTimers[ability] = 0f;
                 RestoreButton(ability);
-                
+
                 if (AbilitySetController.Instance != null)
                     AbilitySetController.Instance.OnAbilityCooldownEnded();
             }
@@ -66,7 +66,7 @@ public class AbilityManager : MonoBehaviour
         foreach (var a in finished)
             cooldownTimers.Remove(a);
     }
-    
+
     public bool IsOnCooldown(AbilitySO ability)
     {
         return cooldownTimers.TryGetValue(ability, out float t) && t > 0f;
@@ -83,7 +83,7 @@ public class AbilityManager : MonoBehaviour
     {
         if (unit.side != Side.Player)
             return;
-        
+
         if (unit.unitProduceSO.abilities == null) return;
 
         foreach (var ability in unit.unitProduceSO.abilities)
@@ -108,14 +108,14 @@ public class AbilityManager : MonoBehaviour
     {
         if (unit.side != Side.Player)
             return;
-        
+
         foreach (var pair in abilityOwnerMap)
         {
             if (pair.Value == unit.gameUnitName)
             {
                 AbilitySO ability = pair.Key;
-                
-                bool exists = GameplayRegistry.UnitsDictionary[Side.Player]
+
+                bool exists = GameplayRegistry.GetUnits(Side.Player)
                     .Any(u => u != null && u.gameUnitName == unit.gameUnitName);
 
                 if (!exists && abilityButtonMap[ability].gameObject.activeSelf)
@@ -149,9 +149,8 @@ public class AbilityManager : MonoBehaviour
         List<AbilityController> targets = new List<AbilityController>();
 
         List<UnitStats> unitsToCheck = ability.abilityScope == AbilityScope.Personal
-            ? GameplayRegistry.UnitsDictionary[ability.casterSide] 
-            // get unit stats of all sides from dictionary 
-            : GameplayRegistry.UnitsDictionary.Values.SelectMany(x=>x).ToList();
+            ? GameplayRegistry.GetUnits(ability.casterSide)
+             : GameplayRegistry.AllUnits;
 
         foreach (var unit in unitsToCheck)
         {
@@ -181,7 +180,7 @@ public class AbilityManager : MonoBehaviour
 
     private void InitializeAbilityButtons()
     {
-        foreach (var unit in GameplayRegistry.UnitsDictionary[Side.Player])
+        foreach (var unit in GameplayRegistry.GetUnits(Side.Player))
         {
             if (unit == null) continue;
 
@@ -222,7 +221,7 @@ public class AbilityManager : MonoBehaviour
         AbilityButtonLink link = buttonObj.GetComponent<AbilityButtonLink>();
         if (link != null)
             link.ability = ability;
-        
+
         if (button != null)
         {
             button.onClick.AddListener(() => ActivateAbility(ability));
@@ -232,7 +231,7 @@ public class AbilityManager : MonoBehaviour
             AbilityButtons.Add(button);
         }
     }
-    
+
     private void DisableButton(AbilitySO ability)
     {
         if (abilityButtonMap.TryGetValue(ability, out Button button))

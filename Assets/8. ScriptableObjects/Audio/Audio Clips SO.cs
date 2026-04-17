@@ -28,12 +28,17 @@ public class AudioClipsSO : SerializedScriptableObject
 [System.Serializable]
 public struct AudioDetails
 {
-    public AudioMixerGroup audioGroup;
+    public AudioMixerGroup mixerGroup;
     public List<AudioClip> audioClips;
     public bool loop;
 
     public AudioClip GetRandomClip()
     {
+        if (audioClips == null || audioClips.Count == 0)
+        {
+            Debug.LogWarning("[AudioDetails] audioClips list is empty.");
+            return null;
+        }
         return audioClips[Random.Range(0, audioClips.Count)];
     }
 }
@@ -52,7 +57,4 @@ public enum GameAudioType
 
     // SFX
     ResourceTick = 41,
-    BattleSFX,
-    ResourceSFX,
-    MainSFX,
 }

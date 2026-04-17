@@ -69,18 +69,7 @@ public class BuildingStats : Stats
         await Awaitable.WaitForSecondsAsync(buildTime, destroyCancellationToken);
         hasBuilt = true;
 
-        switch (this)
-        {
-            case ResourceBuildingStats resourceBuildingStats:
-                GameplayRegistry.ResourceDictionary[side].Add(resourceBuildingStats);
-                break;
-            case OffenseBuildingStats offenseBuildingStats:
-                GameplayRegistry.OffenseDictionary[side].Add(offenseBuildingStats);
-                break;
-            case DefenseBuildingStats defenseBuildingStats:
-                GameplayRegistry.DefenseDictionary[side].Add(defenseBuildingStats);
-                break;
-        }
+        GameplayRegistry.Register(this);
 
         if (hasUpkeep)
         {
@@ -158,20 +147,9 @@ public class BuildingStats : Stats
 
     internal override void Die()
     {
-        base.Die();
+        GameplayRegistry.Unregister(this);
 
-        switch (this)
-        {
-            case ResourceBuildingStats resourceBuildingStats:
-                GameplayRegistry.ResourceDictionary[side].Remove(resourceBuildingStats);
-                break;
-            case OffenseBuildingStats offenseBuildingStats:
-                GameplayRegistry.OffenseDictionary[side].Remove(offenseBuildingStats);
-                break;
-            case DefenseBuildingStats defenseBuildingStats:
-                GameplayRegistry.DefenseDictionary[side].Remove(defenseBuildingStats);
-                break;
-        }
+        base.Die();
 
         if (hasBuilt && hasUpkeep && decreasedGeneration)
             IncreaseGenerationRate();

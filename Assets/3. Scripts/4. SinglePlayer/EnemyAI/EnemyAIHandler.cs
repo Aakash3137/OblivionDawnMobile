@@ -17,7 +17,8 @@ public class EnemyAIHandler : MonoBehaviour
 {
     public static EnemyAIHandler Instance { get; private set; }
 
-    [Header("References")] [SerializeField]
+    [Header("References")]
+    [SerializeField]
     private EnemyModeSwitch enemyModeSwitch;
 
     [SerializeField] private EnemyBuildPanel enemyBuildPanel;
@@ -42,7 +43,7 @@ public class EnemyAIHandler : MonoBehaviour
     private int resourceBuildingIndex = 0;
     private bool allResourcesCovered = false;
 
-    [Header("READ ONLY")] [SerializeField] private int unitBuilt = 0;
+    [Header("READ ONLY")][SerializeField] private int unitBuilt = 0;
     [SerializeField] private int resourceBuilt = 0;
     [SerializeField] private int defenseBuilt = 0;
     [SerializeField] private int wallsBuilt = 0;
@@ -65,7 +66,7 @@ public class EnemyAIHandler : MonoBehaviour
     // Resource building tracking
     private int[] resourceBuildingCounts = new int[4];
     private bool balancedPhaseComplete = false;
-    
+
     // RESOURCE IMBALANCE CONTROL 
     private bool resourceCorrectionActive = false;
     private float resourceCorrectionEndTime = 0f;
@@ -100,7 +101,7 @@ public class EnemyAIHandler : MonoBehaviour
     private const int MAX_FAIL_BEFORE_RESOURCE = 2;
     private BuildingCategory lastFailedCategory;
 
-// ===== EMERGENCY STATE =====
+    // ===== EMERGENCY STATE =====
     enum EmergencyState
     {
         None,
@@ -420,8 +421,8 @@ public class EnemyAIHandler : MonoBehaviour
             currentPersonality.useSmartWallStrategy &&
             HasWallInDeck();
 
-        int myUnits = GameplayRegistry.UnitsDictionary[Side.Enemy].Count;
-        int playerUnits = Mathf.Max(1, GameplayRegistry.UnitsDictionary[Side.Player].Count);
+        int myUnits = GameplayRegistry.GetUnits(Side.Enemy).Count;
+        int playerUnits = Mathf.Max(1, GameplayRegistry.GetUnits(Side.Player).Count);
         float ratio = (float)myUnits / playerUnits;
 
         // EMERGENCY SYSTEM (TOP PRIORITY)
@@ -562,28 +563,28 @@ public class EnemyAIHandler : MonoBehaviour
             return GetNonWallDefenseBuilding();
         }
 
-// OUTER RATIO CONTROL (5:5)
+        // OUTER RATIO CONTROL (5:5)
 
         int totalCombat = unitBuilt + defenseBuilt;
         int totalRes = resourceBuilt;
 
         int totalAll = totalCombat + totalRes + 1;
 
-// target 50% resources
+        // target 50% resources
         float targetRes = totalAll * 0.5f;
         float targetCombat = totalAll * 0.5f;
 
         float resDeficit = targetRes - totalRes;
         float combatDeficit = targetCombat - totalCombat;
 
-// If too many resources → force combat
+        // If too many resources → force combat
         if (totalRes > totalCombat + 1)
         {
             category = (Random.value < 0.6f) ? BuildingCategory.Unit : BuildingCategory.Defense;
             return category == BuildingCategory.Unit ? GetWeightedUnitBuilding() : GetWeightedDefenseBuilding();
         }
 
-// If too many combat → allow resource
+        // If too many combat → allow resource
         if (totalCombat > totalRes + 2)
         {
             category = BuildingCategory.Resource;
@@ -788,7 +789,7 @@ public class EnemyAIHandler : MonoBehaviour
                 return buildings[index];
             }
         }
-        
+
         // ================= BALANCED START =================
         if (currentPersonality.balancedResourceStart && !balancedPhaseComplete)
         {
@@ -820,7 +821,7 @@ public class EnemyAIHandler : MonoBehaviour
             return buildings[targetIndex];
         }
 
-        
+
         // ================= NORMAL AI =================
         // Recheck resource needs every 10 seconds
         if (timeSinceLastAnalysis >= RECHECK_INTERVAL)
@@ -1173,8 +1174,8 @@ public class EnemyAIHandler : MonoBehaviour
         if (Time.time - lastStanceChangeTime < currentPersonality.stanceCooldown)
             return;
 
-        int myUnits = GameplayRegistry.UnitsDictionary[Side.Enemy].Count;
-        int enemyUnits = Mathf.Max(1, GameplayRegistry.UnitsDictionary[Side.Player].Count);
+        int myUnits = GameplayRegistry.GetUnits(Side.Enemy).Count;
+        int enemyUnits = Mathf.Max(1, GameplayRegistry.GetUnits(Side.Player).Count);
 
         float ratio = (float)myUnits / enemyUnits;
 
@@ -1196,7 +1197,7 @@ public class EnemyAIHandler : MonoBehaviour
         }
 
         // OPTIONAL: if player has no units → always attack
-        if (GameplayRegistry.UnitsDictionary[Side.Player].Count == 0)
+        if (GameplayRegistry.GetUnits(Side.Player).Count == 0)
             newStance = UnitStance.Attacking;
 
         // STATE UPDATE
@@ -1323,7 +1324,7 @@ public class EnemyAIHandler : MonoBehaviour
             }
         }
     }
-    
+
     // ============== PUBLIC METHODS ==============
 
     public void SetPersonality(EnemyPersonality personality)

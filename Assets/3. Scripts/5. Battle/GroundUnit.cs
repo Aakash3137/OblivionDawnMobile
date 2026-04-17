@@ -60,7 +60,7 @@ public class GroundUnit : MonoBehaviour
     internal float peripheralAngleBonus = 1f;
 
     private UnitState currentState;
-    
+
     private AttackTargets attackTargets;
     private Side unitSide;
 
@@ -74,7 +74,7 @@ public class GroundUnit : MonoBehaviour
     //Abilities
     private float baseMoveSpeed;
     private Dictionary<AbilityEffect, float> speedMultipliers = new Dictionary<AbilityEffect, float>();
-    
+
     private void Start()
     {
         unitStats = GetComponent<UnitStats>();
@@ -110,13 +110,13 @@ public class GroundUnit : MonoBehaviour
         FindDetectionTarget();
         ArrangeRotation();
     }
-    
+
     private void Update()
     {
         HandleTargetDetection();
         HandleState();
     }
-    
+
     private void HandleTargetDetection()
     {
         targetCheckTimer += Time.deltaTime;
@@ -130,7 +130,7 @@ public class GroundUnit : MonoBehaviour
             ResolveFinalTarget();
         }
     }
-    
+
     private void ResolveFinalTarget()
     {
         // If reply target was destroyed (Missing), clear it
@@ -139,8 +139,8 @@ public class GroundUnit : MonoBehaviour
 
         if (!detectionTarget)
             detectionTarget = null;
-        
-        
+
+
         if (replyTarget != null && CanAttackTarget(replyTarget) && !IsInsideMinRange(replyTarget))
         {
             target = replyTarget.gameObject;
@@ -158,7 +158,7 @@ public class GroundUnit : MonoBehaviour
             target = null;
         }
     }
-    
+
     //Get Unit Stance
     UnitStance GetMyStance()
     {
@@ -167,7 +167,7 @@ public class GroundUnit : MonoBehaviour
 
         return EnemyAIHandler.Instance.CurrentEnemyStance;
     }
-    
+
     private void HandleState()
     {
         if (target == null)
@@ -176,18 +176,18 @@ public class GroundUnit : MonoBehaviour
             return;
         }
 
-        UnitStance stance = GetMyStance(); 
-        
+        UnitStance stance = GetMyStance();
+
         float distance = Vector3.Distance(transform.position, target.transform.position);
-        
+
         // Account for collider sizes
         float targetRadius = 0f;
         if (target.TryGetComponent<Collider>(out var targetCollider))
             targetRadius = targetCollider.bounds.extents.magnitude;
-        
+
         float myRadius = hitCollider != null ? hitCollider.bounds.extents.magnitude : 0f;
         float effectiveDistance = distance - targetRadius - myRadius;
-        
+
         bool withinAttackRange = effectiveDistance <= AttackRange || (agent.hasPath && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance);
 
         switch (currentState)
@@ -332,7 +332,7 @@ public class GroundUnit : MonoBehaviour
     }
 
     #region UTDS (Unit Target Detection System)
-    
+
 
     private void SetPrimaryTarget()
     {
@@ -342,12 +342,12 @@ public class GroundUnit : MonoBehaviour
             primaryTarget = GameManager.Instance.PlayerMainBuilding;
     }
 
-    
+
     private void FindDetectionTarget()
     {
         Collider[] hits = new Collider[32];
         LayerMask enemyLayerMask = GetEnemyLayerMask();
-        
+
         int count = Physics.OverlapSphereNonAlloc(
             transform.position,
             DetectionRange,
@@ -372,7 +372,7 @@ public class GroundUnit : MonoBehaviour
 
             if (candidate == unitStats || candidate.side == unitSide)
                 continue;
-            
+
 
             float distance = GetAdjustedDistance(candidate);
 
@@ -380,9 +380,9 @@ public class GroundUnit : MonoBehaviour
             if (distance < MinAttackRange)
                 continue;
 
-            
+
             //  FIRST PRIORITY: Units
-            if (candidate is UnitStats )
+            if (candidate is UnitStats)
             {
                 if (distance < closestUnitDist)
                 {
@@ -423,13 +423,13 @@ public class GroundUnit : MonoBehaviour
         if (closestUnit != null)
             detectionTarget = closestUnit;
         else if (closestDefense != null)
-            detectionTarget =  closestDefense;
+            detectionTarget = closestDefense;
         else if (closestWall != null)
             detectionTarget = closestWall;
         else
             detectionTarget = closestBuilding;
     }
-    
+
     private float GetAdjustedDistance(Stats target)
     {
         float distance = Vector3.Distance(transform.position, target.transform.position);
@@ -449,7 +449,7 @@ public class GroundUnit : MonoBehaviour
         else
             return attackTargets.canAttackGround;
     }
-    
+
     #endregion
 
 
@@ -530,7 +530,7 @@ public class GroundUnit : MonoBehaviour
     {
         if (target == null)
         {
-          //  GameDebug.Log($"[{name}] Attack: Target is NULL");
+            //  GameDebug.Log($"[{name}] Attack: Target is NULL");
             attackTimer = 0f;
             return;
         }
@@ -563,11 +563,11 @@ public class GroundUnit : MonoBehaviour
             Stats enemy = target.GetComponent<Stats>();
             if (enemy == null)
             {
-              //  GameDebug.Log($"[{name}] Attack: Target has no Stats component");
+                //  GameDebug.Log($"[{name}] Attack: Target has no Stats component");
                 return;
             }
 
-          //  GameDebug.Log($"[{name}] FIRING at {target.name}");
+            //  GameDebug.Log($"[{name}] FIRING at {target.name}");
             projectileShooter.Fire(enemy);
 
             if (animator != null)
@@ -624,15 +624,15 @@ public class GroundUnit : MonoBehaviour
             agent.speed = finalSpeed;
         }
     }
-    
+
     private Dictionary<AbilityEffect, (float amount, bool isUnitDamage)> damageModifiers = new Dictionary<AbilityEffect, (float, bool)>();
-    
+
     public void AddDamageModifier(AbilityEffect source, float amount, bool isUnitDamage)
     {
         damageModifiers[source] = (amount, isUnitDamage);
         Debug.Log($"[GroundUnit] {gameObject.name} - Added {(isUnitDamage ? "unit" : "building")} damage modifier: +{amount}");
     }
-    
+
     public void RemoveDamageModifier(AbilityEffect source)
     {
         if (damageModifiers.ContainsKey(source))
@@ -641,7 +641,7 @@ public class GroundUnit : MonoBehaviour
             Debug.Log($"[GroundUnit] {gameObject.name} - Removed damage modifier");
         }
     }
-    
+
     public float GetModifiedUnitDamage()
     {
         float baseDamage = unitData.unitAttackStats.damage;
@@ -653,7 +653,7 @@ public class GroundUnit : MonoBehaviour
         Debug.Log("UnitDamage Increased to :" + baseDamage + "  from  " + unitData.unitAttackStats.damage + "  base damage");
         return baseDamage;
     }
-    
+
     public float GetModifiedBuildingDamage()
     {
         float baseDamage = unitData.unitAttackStats.buildingDamage;
@@ -672,17 +672,17 @@ public class GroundUnit : MonoBehaviour
 
     public static bool AnyPlayerAlive()
     {
-        if(GameplayRegistry.UnitsDictionary[Side.Player].Count > 0)
+        if (GameplayRegistry.GetUnits(Side.Player).Count > 0)
             return true;
-        
+
         return false;
     }
 
     public static bool AnyEnemyAlive()
     {
-        if(GameplayRegistry.UnitsDictionary[Side.Enemy].Count > 0)
+        if (GameplayRegistry.GetUnits(Side.Enemy).Count > 0)
             return true;
-        
+
         return false;
     }
 

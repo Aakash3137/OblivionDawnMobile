@@ -44,7 +44,7 @@ public class DecManager : MonoBehaviour
     private void OnclickCloseBtn()
     {
         HomeUIManager.Instance.ShowPanel(PanelName.Home);
-        AudioManager.Play(GameAudioType.ButtonClick);
+        AudioManager.PlayOneShot(GameAudioType.ButtonClick);
     }
 
     // =========================
@@ -151,7 +151,7 @@ public class DecManager : MonoBehaviour
     {
         // selectionData.CurrentCategory = CurrentCategory = category;
         SelectCategory(category);
-        AudioManager.Play(GameAudioType.ButtonClick);
+        AudioManager.PlayOneShot(GameAudioType.ButtonClick);
     }
 
     private void SelectCategory(DecCategory category)

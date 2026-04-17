@@ -16,7 +16,7 @@ public class JourneyManager : MonoBehaviour
     #region LifeCycle
     void OnEnable()
     {
-        AudioManager.Play(GameAudioType.ButtonClick);
+        AudioManager.PlayOneShot(GameAudioType.ButtonClick);
         StartCoroutine(InitJourney());
     }
 
@@ -28,7 +28,7 @@ public class JourneyManager : MonoBehaviour
 
     private void OnDisable()
     {
-        AudioManager.Play(GameAudioType.ButtonClick);
+        AudioManager.PlayOneShot(GameAudioType.ButtonClick);
     }
 
     #endregion

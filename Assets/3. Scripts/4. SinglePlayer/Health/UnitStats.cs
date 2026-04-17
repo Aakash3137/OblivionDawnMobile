@@ -35,8 +35,6 @@ public class UnitStats : Stats
 
     internal override void Initialize()
     {
-        GameplayRegistry.UnitsDictionary[side].Add(this);
-
         gameUnitName = unitProduceSO.gameUnitName;
 
         identity = unitProduceSO.unitIdentity;
@@ -105,7 +103,7 @@ public class UnitStats : Stats
         if (hasUpkeep)
             InitializeUnitUpkeep();
 
-
+        GameplayRegistry.Register(this);
     }
 
     public void FireWeapon()
@@ -153,10 +151,11 @@ public class UnitStats : Stats
 
     internal override void Die()
     {
-        base.Die();
-        GameplayRegistry.UnitsDictionary[side].Remove(this);
-        AbilityManager.Instance?.OnUnitDied(this);
+        GameplayRegistry.Unregister(this);
 
+        base.Die();
+
+        AbilityManager.Instance?.OnUnitDied(this);
         spawnerBuilding.producedUnits.Remove(this);
         KillCounterManager.Instance.AddUnitKillData(unitProduceSO, side);
     }
