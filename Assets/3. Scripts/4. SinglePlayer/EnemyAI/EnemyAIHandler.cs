@@ -311,7 +311,7 @@ public class EnemyAIHandler : MonoBehaviour
             // Check if it's a wall using DefenseBuildingDataSO
             if (entry.building != null && entry.building.defenseType == ScenarioDefenseType.Wall)
             {
-                // Debug.Log($"[EnemyAI][Wall] Found wall in deck: {entry.building.name}");
+                Debug.Log($"[EnemyAI][Wall] Found wall in deck: {entry.building.name}");
                 return true;
             }
         }
