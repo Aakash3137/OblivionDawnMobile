@@ -115,13 +115,11 @@ public class ProjectileShooter : MonoBehaviour
 
             if (projectile.launchVFX != null)
             {
-                GameObject vfx = Instantiate(projectile.launchVFX, muzzle.position, proj.transform.rotation, proj.transform);
+                GameObject vfx = Instantiate(projectile.launchVFX, muzzle.position, proj.transform.rotation);
 
                 if (vfx.TryGetComponent<ProjectileMoveScript>(out var moveScript))
-                {
                     moveScript.shooterSide = projectileSide;
-                    moveScript.transform.parent = proj.transform;
-                }
+
                 ParticleSystem ps = vfx.GetComponent<ParticleSystem>();
                 var main = ps.main;
                 main.loop = false;
