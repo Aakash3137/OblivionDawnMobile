@@ -1,5 +1,4 @@
 using Sirenix.OdinInspector;
-using UnityEngine;
 
 public class PlayerResourceManager : ResourceManager
 {
@@ -30,7 +29,7 @@ public class PlayerResourceManager : ResourceManager
         startingResources[2].resourceAmount = 999;
         startingResources[3].resourceAmount = 999;
 
-         SetResources(startingResources);
+        SetResources(startingResources);
     }
     #endregion
 }

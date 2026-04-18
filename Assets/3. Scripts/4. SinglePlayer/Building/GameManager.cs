@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 public enum UnitStance
@@ -10,26 +9,19 @@ public enum UnitStance
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-
-    [Header("Data")]
-    public AllBuildingData allBuildingData;
-
     public UnitStance unitStance;
-
     [Header("Spawn points")]
     [field: SerializeField] public Vector2Int playerSpawnCoord { get; private set; }
     [field: SerializeField] public Vector2Int enemySpawnCoord { get; private set; }
 
-
-    public Transform obstaclePool;
-
-    public float yOffset = 2f;
+    public float buildingYOffset = 2f;
 
     public GameObject defaultObstacle;
     public NeutralBuildingsData[] neutralBuildingsData;
 
     internal Stats PlayerMainBuilding;
     internal Stats EnemyMainBuilding;
+    private Transform ObstaclesPool;
 
     private CubeGridManager cgmInstance => CubeGridManager.Instance;
 
@@ -46,9 +38,10 @@ public class GameManager : MonoBehaviour
         else
             Destroy(gameObject);
 
+        ObstaclesPool = GameObject.FindGameObjectWithTag("ObstaclesPool").transform;
     }
 
-    private void Start()
+    public void Initialize()
     {
         playerTile = cgmInstance.GetTile(playerSpawnCoord);
         enemyTile = cgmInstance.GetTile(enemySpawnCoord);
@@ -69,8 +62,8 @@ public class GameManager : MonoBehaviour
         var playerMainBuilding = charDb.mainBuildingPrefabs[(int)playerFaction];
         var enemyMainBuilding = charDb.mainBuildingPrefabs[(int)enemyFaction];
 
-        var playerBuilding = Instantiate(playerMainBuilding, playerSpawnPoint.position + Vector3.up * yOffset, Quaternion.identity);
-        var enemyBuilding = Instantiate(enemyMainBuilding, enemySpawnPoint.position + Vector3.up * yOffset, Quaternion.identity);
+        var playerBuilding = Instantiate(playerMainBuilding, playerSpawnPoint.position + Vector3.up * buildingYOffset, Quaternion.identity);
+        var enemyBuilding = Instantiate(enemyMainBuilding, enemySpawnPoint.position + Vector3.up * buildingYOffset, Quaternion.identity);
 
         playerBuilding.SetBuildingTile(playerTile);
         playerBuilding.Initialize();
@@ -97,8 +90,8 @@ public class GameManager : MonoBehaviour
             var pos = building.tileTransform.position + Vector3.up * building.yOffset;
             var neutralBuilding = Instantiate(prefab, pos, Quaternion.identity, building.tileTransform);
 
-            if (obstaclePool != null)
-                neutralBuilding.transform.parent = obstaclePool;
+            if (ObstaclesPool != null)
+                neutralBuilding.transform.parent = ObstaclesPool;
 
             BuildingStats buildingStats = neutralBuilding.GetComponent<BuildingStats>();
 

@@ -43,7 +43,7 @@ public class BuildingButtonsManager : MonoBehaviour
 
         var UnitsSO = deckSelectionData.GetUnitsSOInDeck(playerFaction);
         var defenseSO = deckSelectionData.GetDefensesSOInDeck(playerFaction);
-        var resourcesSO = allBuildingData.GetFactionResourceBuildingsSO(playerFaction);
+        var resourcesSO = allBuildingData.GetResourceBuildingsSO(playerFaction);
 
         for (int i = 0; i < UnitsSO.Count; i++)
         {

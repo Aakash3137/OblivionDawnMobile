@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ExitGames.Client.Photon.StructWrapping;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewEnemyPersonality", menuName = "AI/Enemy Personality")]
@@ -11,7 +12,7 @@ public class EnemyPersonality : ScriptableObject
     [Range(0f, 1f)] public float unitBuildingWeight = 0.5f;
     [Range(0f, 1f)] public float resourceBuildingWeight = 0.3f;
     [Range(0f, 1f)] public float defenseBuildingWeight = 0.2f;
-    
+
 
     [Header("Thinking")]
     public float spawnInterval = 5f;
@@ -22,7 +23,7 @@ public class EnemyPersonality : ScriptableObject
     [Header("Map Knowledge")]
     [Range(0, 1)] public float tacticalDiscipline = 0.8f;
     [Range(0, 1)] public float tacticalPrecision = 0.8f;
-    
+
     [Header("Wall Strategy")]
     public bool useSmartWallStrategy = false;
     public PlayStyle playStyle = PlayStyle.Mix;
@@ -31,43 +32,41 @@ public class EnemyPersonality : ScriptableObject
     public bool reduceSpawningTime = false;
     public int maxOffenseBuilding = 5;
     public float reduceSpawnTime = 10f;
-    
+
     public int maxEnemyBuildings = 150;
-    
+
     [Header("Combat Behavior")]
     public AICombatType combatType;
     [Range(0f, 2f)] public float ComparisonMatchValue = 1f;
 
-// When to attack
+    // When to attack
     [Range(0f, 2f)] public float attackConfidence = 1.2f;
 
-// When to retreat
+    // When to retreat
     [Range(0f, 2f)] public float retreatThreshold = 0.8f;
 
-// Minimum time before switching again
+    // Minimum time before switching again
     public float stanceCooldown = 10f;
-    
+
     [Header("Economy")]
     public bool balancedResourceStart = true;
     public int balancedResourceTarget = 3;
-    
+
     [Header("Resource Type Weights (Food, Gold, Metal, Power)")]
     public float[] resourceTypeWeights = new float[4] { 0.25f, 0.25f, 0.25f, 0.25f };
 
     [Header("Deck Selection")]
-    
+
     [Min(1)] public int maxDeckSlots = 8;
-    
+
     public bool isEnemyAwarenessEnabled = false;
     public bool AutoDeckSelection = false;
-    
+
     public AllUnitData allUnitData;
     public AllBuildingData allBuildingData;
 
     public List<FactionDeckSelection> factionDeckSelections = new List<FactionDeckSelection>();
-    
- 
-    
+
     private void OnValidate()
     {
         SyncDeck();
@@ -84,7 +83,7 @@ public class EnemyPersonality : ScriptableObject
             FactionDeckSelection block = factionDeckSelections.Find(f => f.faction == faction);
 
             if (block == null)
-            {  
+            {
                 block = new FactionDeckSelection();
                 block.faction = faction;
                 factionDeckSelections.Add(block);
@@ -97,15 +96,7 @@ public class EnemyPersonality : ScriptableObject
 
     void SyncUnits(FactionDeckSelection block)
     {
-        var factionData = allUnitData.allUnits.Find(u => u.faction == block.faction);
-        if (factionData == null) return;
-
-        List<UnitProduceStatsSO> allUnits = new List<UnitProduceStatsSO>();
-
-        if (factionData.airUnits != null) allUnits.AddRange(factionData.airUnits);
-        if (factionData.meleeUnits != null) allUnits.AddRange(factionData.meleeUnits);
-        if (factionData.rangedUnits != null) allUnits.AddRange(factionData.rangedUnits);
-        if (factionData.aoeRangedUnits != null) allUnits.AddRange(factionData.aoeRangedUnits);
+        List<UnitProduceStatsSO> allUnits = allUnitData.GetUnitsSO(block.faction);
 
         block.unitSelections.RemoveAll(u => !allUnits.Contains(u.unit));
 
@@ -127,15 +118,7 @@ public class EnemyPersonality : ScriptableObject
 
     void SyncDefense(FactionDeckSelection block)
     {
-        var factionData = allBuildingData.defenseBuildings.Find(b => b.faction == block.faction);
-        if (factionData == null) return;
-
-        List<DefenseBuildingDataSO> allBuildings = new List<DefenseBuildingDataSO>();
-
-        if (factionData.antiAirBuildings != null) allBuildings.AddRange(factionData.antiAirBuildings);
-        if (factionData.antiTankBuildings != null) allBuildings.AddRange(factionData.antiTankBuildings);
-        if (factionData.turretBuildings != null) allBuildings.AddRange(factionData.turretBuildings);
-        if (factionData.wallBuildings != null) allBuildings.AddRange(factionData.wallBuildings);
+        List<DefenseBuildingDataSO> allBuildings = allBuildingData.GetDefenseBuildingsSO(block.faction);
 
         block.defenseBuildingSelections.RemoveAll(b => !allBuildings.Contains(b.building));
 
@@ -175,7 +158,7 @@ public class EnemyPersonality : ScriptableObject
 
             if (total > maxDeckSlots)
             {
-                   ClampDeckAmounts(faction, total);
+                ClampDeckAmounts(faction, total);
             }
         }
     }
@@ -183,7 +166,7 @@ public class EnemyPersonality : ScriptableObject
     void ClampDeckAmounts(FactionDeckSelection faction, int currentTotal)
     {
         int excess = currentTotal - maxDeckSlots;
-        
+
         for (int i = faction.unitSelections.Count - 1; i >= 0 && excess > 0; i--)
         {
             var unit = faction.unitSelections[i];
@@ -194,7 +177,7 @@ public class EnemyPersonality : ScriptableObject
                 excess -= reduction;
             }
         }
-        
+
         for (int i = faction.defenseBuildingSelections.Count - 1; i >= 0 && excess > 0; i--)
         {
             var defense = faction.defenseBuildingSelections[i];

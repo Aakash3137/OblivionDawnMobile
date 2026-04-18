@@ -17,9 +17,11 @@ public class ProjectileShooter : MonoBehaviour
     private Side projectileSide;
     private Stats shooterStats;
 
+
     void Start()
     {
         shooterStats = GetComponent<Stats>();
+
         if (TryGetComponent<UnitStats>(out var unitStats))
         {
             unitDamage = unitStats.unitData.unitAttackStats.damage;
@@ -113,11 +115,13 @@ public class ProjectileShooter : MonoBehaviour
 
             if (projectile.launchVFX != null)
             {
-                GameObject vfx = Instantiate(projectile.launchVFX, muzzle.position, proj.transform.rotation);
+                GameObject vfx = Instantiate(projectile.launchVFX, muzzle.position, proj.transform.rotation, proj.transform);
 
                 if (vfx.TryGetComponent<ProjectileMoveScript>(out var moveScript))
+                {
                     moveScript.shooterSide = projectileSide;
-
+                    moveScript.transform.parent = proj.transform;
+                }
                 ParticleSystem ps = vfx.GetComponent<ParticleSystem>();
                 var main = ps.main;
                 main.loop = false;

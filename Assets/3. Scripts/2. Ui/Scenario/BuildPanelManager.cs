@@ -31,7 +31,8 @@ public class BuildPanelManager : MonoBehaviour
 
     public void CloseBuildPanel()
     {
-        tileUIPanel.Close();
+        if (tileUIPanel != null)
+            tileUIPanel.Close();
     }
 
     private void SetPanelPosition(Vector2 mousePosition)

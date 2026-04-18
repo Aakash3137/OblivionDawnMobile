@@ -1,19 +1,18 @@
-using UnityEngine;
-
 public static class GameData
 {
     public static Mode gameMode = Mode.None;
     public static FactionName playerFaction = FactionName.Futuristic;
     public static FactionName enemyFaction;
+    public static MapLevelData mapLevelData = null;
 
+    //  for Stat data
     public static readonly int GameMaxDeckSize = 8;
     public static readonly int GameMaxPopulation = 40;
     public static int GameMaxObjectLevel = 20;
 
-    // Game mode info
+
+    // should remove use of strings
     public static string GameModeType;
-
-
     public static string SelectedFactionName;
     public static MP_Faction SelectedMPFaction;
 }

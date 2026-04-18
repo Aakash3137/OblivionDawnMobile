@@ -129,7 +129,7 @@ public class UpgradeDataEditorWindow : EditorWindow
         if (unitFieldHeader != null)
             unitFieldHeader.style.display = DisplayStyle.Flex;
 
-        var unitSO = allUnitData.allUnitsSO;
+        var unitSO = allUnitData.AllUnitsSO;
         FactionName prevFactionName = 0;
 
         foreach (var unit in unitSO)
@@ -197,7 +197,7 @@ public class UpgradeDataEditorWindow : EditorWindow
         RefreshUI();
         defenseFieldHeader.style.display = DisplayStyle.Flex;
 
-        var defenseSO = allBuildingData.defenseBuildingsSO;
+        var defenseSO = allBuildingData.AllDefenseBuildingSO;
         FactionName prevFactionName = 0;
         foreach (var defense in defenseSO)
         {
@@ -272,7 +272,7 @@ public class UpgradeDataEditorWindow : EditorWindow
         RefreshUI();
         offenseFieldHeader.style.display = DisplayStyle.Flex;
 
-        var offenseSO = allBuildingData.offenseBuildingsSO;
+        var offenseSO = allBuildingData.AllOffenseBuildingSO;
         // Starting with Medieval
         FactionName prevFactionName = FactionName.Medieval;
 
@@ -346,7 +346,7 @@ public class UpgradeDataEditorWindow : EditorWindow
         RefreshUI();
         resourceFieldHeader.style.display = DisplayStyle.Flex;
 
-        var resourceSO = allBuildingData.resourceBuildingsSO;
+        var resourceSO = allBuildingData.AllResourceBuildingSO;
         FactionName prevFactionName = 0;
 
         foreach (var resource in resourceSO)
@@ -524,7 +524,7 @@ public class UpgradeDataEditorWindow : EditorWindow
         foreach (var main in allBuildingData.mainBuildingSO)
             main.buildingIdentity.spawnLevel = 0;
 
-        foreach (var unit in allUnitData.allUnitsSO)
+        foreach (var unit in allUnitData.AllUnitsSO)
             unit.unitIdentity.spawnLevel = 0;
 
         RefreshUI();

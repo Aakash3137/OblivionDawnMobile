@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ExitGames.Client.Photon.StructWrapping;
 using UnityEngine;
 
 public class DeckPanelManager : MonoBehaviour
@@ -30,8 +31,8 @@ public class DeckPanelManager : MonoBehaviour
         }
 
         cityCenterScriptables = allBuildingData.mainBuildingSO;
-        defenseScriptables = allBuildingData.defenseBuildingsSO;
-        unitScriptables = allUnitData.allUnitsSO;
+        defenseScriptables = allBuildingData.AllDefenseBuildingSO;
+        unitScriptables = allUnitData.AllUnitsSO;
     }
 
     private void OnEnable()
@@ -77,14 +78,14 @@ public class DeckPanelManager : MonoBehaviour
     {
         var defaultDeckCards = new List<ScriptableObject>
         {
-            allUnitData.allUnits[(int)faction].meleeUnits[0],
-            allUnitData.allUnits[(int)faction].rangedUnits[0],
-            allUnitData.allUnits[(int)faction].aoeRangedUnits[0],
-            allUnitData.allUnits[(int)faction].airUnits[0],
-            allBuildingData.defenseBuildings[(int)faction].wallBuildings[0],
-            allBuildingData.defenseBuildings[(int)faction].turretBuildings[0],
-            allBuildingData.defenseBuildings[(int)faction].antiTankBuildings[0],
-            allBuildingData.defenseBuildings[(int)faction].antiAirBuildings[0]
+            allUnitData.GetUnitsSO(faction ,ScenarioUnitType.Melee)[0],
+            allUnitData.GetUnitsSO(faction ,ScenarioUnitType.Ranged)[0],
+            allUnitData.GetUnitsSO(faction ,ScenarioUnitType.AOERanged)[0],
+            allUnitData.GetUnitsSO(faction ,ScenarioUnitType.Air)[0],
+            allBuildingData.GetDefenseBuildingsSO(faction, ScenarioDefenseType.Wall)[0],
+            allBuildingData.GetDefenseBuildingsSO(faction, ScenarioDefenseType.Turret)[0],
+            allBuildingData.GetDefenseBuildingsSO(faction, ScenarioDefenseType.AntiTank)[0],
+            allBuildingData.GetDefenseBuildingsSO(faction, ScenarioDefenseType.AntiAir)[0]
         };
 
         return defaultDeckCards;

@@ -39,7 +39,7 @@ public class EnemyBuildPanel : MonoBehaviour
 
     public void SetWall()
     {
-        _wallPrefab = allBuildingData.wallParentBuildings[(int)GameData.enemyFaction].wallParentBuilding;
+        _wallPrefab = allBuildingData.wallParentBuilding[GameData.enemyFaction];
     }
     public void PlaceEnemyAirBuilding()
     {

@@ -9,15 +9,12 @@ public class TileModifyManager : MonoBehaviour
 {
     [SerializeField] private TileEffect[] allTileEffects;
 
-    [Space(5)]
-    [SerializeField] private TileModificationData[] tileModificationData;
-
-    private List<TileEffect> offenseTileEffects = new List<TileEffect>();
-    private List<TileEffect> defenseTileEffects = new List<TileEffect>();
-    private List<TileEffect> resourceTileEffects = new List<TileEffect>();
-    private List<TileEffect> buildingTileEffects = new List<TileEffect>();
-    private List<TileEffect> waterTileEffects = new List<TileEffect>();
-    private List<TileEffect> lavaTileEffects = new List<TileEffect>();
+    private List<TileEffect> offenseTileEffects = new();
+    private List<TileEffect> defenseTileEffects = new();
+    private List<TileEffect> resourceTileEffects = new();
+    private List<TileEffect> buildingTileEffects = new();
+    private List<TileEffect> waterTileEffects = new();
+    private List<TileEffect> lavaTileEffects = new();
 
 
     private GameManager gmInstance => GameManager.Instance;
@@ -27,13 +24,10 @@ public class TileModifyManager : MonoBehaviour
     {
         PopulateTileEffects();
     }
-    private void Start()
+
+    public void Initialize(MapLevelData mapLevelData)
     {
-        GenerateTileModificationVisuals();
-    }
-    private void GenerateTileModificationVisuals()
-    {
-        foreach (var data in tileModificationData)
+        foreach (var data in mapLevelData.tileModificationData)
         {
             switch (data.tileEffectType)
             {
@@ -206,14 +200,6 @@ public class TileModifyManager : MonoBehaviour
                     lavaTileEffects.Add(effect);
                     break;
             }
-        }
-    }
-
-    private void OnValidate()
-    {
-        for (int i = 0; i < tileModificationData.Length; i++)
-        {
-            tileModificationData[i].clusterSize = (int)(tileModificationData[i].tileCount * 0.5f);
         }
     }
 }
