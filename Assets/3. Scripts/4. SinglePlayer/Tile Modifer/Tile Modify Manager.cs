@@ -25,9 +25,9 @@ public class TileModifyManager : MonoBehaviour
         PopulateTileEffects();
     }
 
-    public void Initialize(MapLevelData mapLevelData)
+    public void Initialize(TileModificationData[] tileModificationData)
     {
-        foreach (var data in mapLevelData.tileModificationData)
+        foreach (var data in tileModificationData)
         {
             switch (data.tileEffectType)
             {

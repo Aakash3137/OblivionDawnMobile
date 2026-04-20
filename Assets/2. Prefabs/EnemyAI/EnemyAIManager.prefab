@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4628267504887400421}
   - component: {fileID: 4889353465733404802}
   - component: {fileID: 7730424683783505825}
+  - component: {fileID: 5149032548638407735}
   m_Layer: 0
   m_Name: EnemyAIManager
   m_TagString: Untagged
@@ -48,7 +49,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyModeSwitch: {fileID: 0}
   enemyBuildPanel: {fileID: 0}
-  factionData: {fileID: 11400000, guid: b4c4f87a58a4fc841b315c31d4d53920, type: 2}
   enemyFactionName: 2
   currentPersonality: {fileID: 11400000, guid: e50161e16bd2b4048a3d2f7b0d8a8911, type: 2}
   AIPersonalities:
@@ -182,3 +182,24 @@ MonoBehaviour:
     m_Bits: 256
   scanRadius: 150
   scanSamples: 100
+--- !u!114 &5149032548638407735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2011174489333044047}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 654cf6189acd6fb4091a5c75c9926917, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  factionAbilities: []
+  currentCharge: 0
+  maxCharge: 100
+  chargePerKill: 10
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  scanRadius: 100
+  scanSamples: 20

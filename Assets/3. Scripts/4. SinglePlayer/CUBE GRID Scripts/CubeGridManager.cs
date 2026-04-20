@@ -119,7 +119,7 @@ public class CubeGridManager : MonoBehaviour
             gameManager.Initialize();
 
         if (TryGetComponent(out tileModifyManager))
-            tileModifyManager.Initialize(mapLevelData);
+            tileModifyManager.Initialize(mapLevelData.tileModificationData);
     }
 
     // Only call when tile is getting occupied (changing sides)
