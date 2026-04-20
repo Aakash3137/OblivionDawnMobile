@@ -3,7 +3,8 @@ public static class GameData
     public static Mode gameMode = Mode.None;
     public static FactionName playerFaction = FactionName.Futuristic;
     public static FactionName enemyFaction;
-    public static MapLevelData mapLevelData = null;
+    public static int mapLevel = 1;
+    public static MapLevelDataSO mapLevelData = null;
 
     //  for Stat data
     public static readonly int GameMaxDeckSize = 8;
