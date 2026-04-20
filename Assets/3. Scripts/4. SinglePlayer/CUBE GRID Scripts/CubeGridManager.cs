@@ -105,7 +105,7 @@ public class CubeGridManager : MonoBehaviour
             Destroy(gameObject);
     }
 
-    public void Initialize(MapLevelData mapLevelData)
+    public void Initialize(MapLevelDataSO mapLevelData)
     {
         GenerateTiles(mapLevelData.tileMaterial);
 
