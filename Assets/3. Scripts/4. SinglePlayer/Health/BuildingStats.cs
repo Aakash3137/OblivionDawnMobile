@@ -36,7 +36,7 @@ public class BuildingStats : Stats
 
         if (visuals.playerUnitMaterial == null)
         {
-            Debug.Log($"<color=magenta>Assign materials for {name} on {buildingStatsSO.name} ScriptableObject</color>");
+            // Debug.Log($"<color=magenta>Assign materials for {name} on {buildingStatsSO.name} ScriptableObject</color>");
         }
 
         SetParent();

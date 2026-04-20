@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6861852375960143637}
   - component: {fileID: 4157594653003389439}
   - component: {fileID: 1532937327607212577}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Cube Grid Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -50,12 +50,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SerializedVersion: 0
   m_AgentTypeID: 0
-  m_CollectObjects: 0
+  m_CollectObjects: 2
   m_Size: {x: 10, y: 10, z: 10}
   m_Center: {x: 0, y: 2, z: 0}
   m_LayerMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 64
   m_UseGeometry: 0
   m_DefaultArea: 0
   m_GenerateLinks: 0
@@ -66,7 +66,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 862a05a8053e3c44787dd7865baca430, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: e1020ccecc6833c44844155520c9b986, type: 2}
   m_BuildHeightMesh: 0
 --- !u!114 &5675060887131865333
 MonoBehaviour:
@@ -96,12 +96,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa70e605184ee7b4ea92af1a72a20514, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allBuildingData: {fileID: 11400000, guid: 46347f96dd2847b40a2a617ce6aaecbc, type: 2}
   unitStance: 0
   <playerSpawnCoord>k__BackingField: {x: 2, y: 2}
   <enemySpawnCoord>k__BackingField: {x: 14, y: 14}
-  obstaclePool: {fileID: 0}
-  yOffset: 2
+  buildingYOffset: 2
   defaultObstacle: {fileID: 1152334100043379315, guid: 5d3464869a0287146919b75f975ae38b, type: 3}
   neutralBuildingsData: []
 --- !u!114 &4157594653003389439
@@ -139,12 +137,12 @@ MonoBehaviour:
     isGrouped: 1
     isObstacle: 1
     inCorners: 0
-  - tileEffectType: 3
+  - tileEffectType: 5
     tileCount: 6
     clusterSize: 3
     minDistanceFromMainBuilding: 5
-    isGrouped: 0
-    isObstacle: 0
+    isGrouped: 1
+    isObstacle: 1
     inCorners: 0
   - tileEffectType: 6
     tileCount: 2
@@ -165,86 +163,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c712eab59a70944eb3ced1a33a2b4ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes:
-    - Name: maxSFXperUnitType
-      Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[ScenarioUnitType, Assembly-CSharp],[System.Int32,
-        mscorlib]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[ScenarioUnitType,
-        Assembly-CSharp]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 4
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 0
-    - Name: $v
-      Entry: 3
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 1
-    - Name: $v
-      Entry: 3
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 2
-    - Name: $v
-      Entry: 3
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 3
-    - Name: $v
-      Entry: 3
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 

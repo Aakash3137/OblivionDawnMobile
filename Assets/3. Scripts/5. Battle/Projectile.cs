@@ -40,6 +40,7 @@ public class Projectile : MonoBehaviour
 
     public Material playerTrailMaterial;
     public Material enemyTrailMaterial;
+    private GameObject VFXPool;
 
     void Awake()
     {
@@ -52,83 +53,19 @@ public class Projectile : MonoBehaviour
                     t.material = new Material(t.material);
             }
         }
+        VFXPool = GameObject.FindGameObjectWithTag("VFXPool");
     }
 
-    public void Initialize(Stats target, float unitDamage, float buildingDamage, ProjectileDataSO projectileData, Side side)
+    public void Init(Stats target, float unitDmg, float buildingDmg, ProjectileDefinition def, Material trailMaterial, Side shooterSide, Stats shooter)
     {
         targetUnit = target;
-        ShooterSide = side;
-
-        targetCollider = target != null ? target.hitCollider : null;
-
-        this.unitDamage = unitDamage;
-        this.buildingDamage = buildingDamage;
-        speed = projectileData.projectileBasicStats.speed;
-        lifeTime = projectileData.projectileBasicStats.lifeTime;
-        projectileType = projectileData.projectileType;
-        motion = projectileData.projectileMotion;
-
-        timer = 0f;
-        hasHit = false;
-        startPosition = transform.position;
-
-        aimPoint = targetCollider != null
-            ? targetCollider.bounds.center
-            : transform.position + transform.forward * projectileData.projectileBasicStats.maxRange;
-        passedAimPoint = false;
-
-
-        //  LOCK TARGET POSITION ON FIRE
-        if (targetCollider != null)
-            fixedHitPoint = targetCollider.ClosestPoint(transform.position);
-        else
-            fixedHitPoint = transform.position + transform.forward * projectileData.projectileBasicStats.maxRange;
-
-
-        if (trails == null) return;
-
-        foreach (var t in trails)
-        {
-            t.enabled = projectileData.projectileVisuals.hasTrail;
-
-            if (!projectileData.projectileVisuals.hasTrail) continue;
-
-            t.sharedMaterial = (side == Side.Player) ? playerTrailMaterial : enemyTrailMaterial;
-
-            t.Clear();
-            t.emitting = false;
-
-            t.startColor = Color.white;
-            t.endColor = new Color(1, 1, 1, 0);
-            t.emitting = true;
-        }
-
-        definition = new ProjectileDefinition();
-
-        definition.isAreaDamage = projectileData.projectileAOE.isAOE;
-        definition.damageRadius = projectileData.projectileAOE.aoeRadius;
-        definition.maxRange = projectileData.projectileBasicStats.maxRange;
-        definition.speed = projectileData.projectileBasicStats.speed;
-        definition.lifeTime = projectileData.projectileBasicStats.lifeTime;
-        definition.projectileType = projectileData.projectileType;
-        definition.motion = projectileData.projectileMotion;
-        definition.hasTrail = projectileData.projectileVisuals.hasTrail;
-        definition.arcHeight = projectileData.projectileBasicStats.maxArcHeight;
-        definition.hitVFX = projectileData.projectileVisuals.hitVFX;
-
-        lastPosition = transform.position;
-    }
-
-    public void Init(Stats target, float unitDmg, float buildingDmg, ProjectileDefinition def, Material trailMaterial, Side shooterside, Stats shooter)
-    {
-        targetUnit = target;
-        ShooterSide = shooterside;
+        ShooterSide = shooterSide;
         shooterStats = shooter;
 
         targetCollider = target != null ? target.hitCollider : null;
 
-        this.unitDamage = unitDmg;
-        this.buildingDamage = buildingDmg;
+        unitDamage = unitDmg;
+        buildingDamage = buildingDmg;
         speed = def.speed;
         lifeTime = def.lifeTime;
         projectileType = def.projectileType;
@@ -446,7 +383,7 @@ public class Projectile : MonoBehaviour
 
         if (definition.hitVFX != null)
         {
-            GameObject vfx = Instantiate(definition.hitVFX, hitPoint, rotation);
+            GameObject vfx = Instantiate(definition.hitVFX, hitPoint, rotation, VFXPool.transform);
             Destroy(vfx, 5f);
         }
 

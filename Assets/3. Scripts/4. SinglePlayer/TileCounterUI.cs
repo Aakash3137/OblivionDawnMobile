@@ -1,6 +1,5 @@
 using UnityEngine;
 using TMPro;
-using Unity.VisualScripting;
 
 public class TileCounterUI : MonoBehaviour
 {
@@ -8,10 +7,8 @@ public class TileCounterUI : MonoBehaviour
     public TMP_Text playerText;
     public TMP_Text enemyText;
 
-
-    private async Awaitable OnEnable()
+    private void Start()
     {
-        await Awaitable.NextFrameAsync();
         CubeGridManager.Instance.onTileOccupied += UpdateUI;
     }
 
@@ -24,7 +21,7 @@ public class TileCounterUI : MonoBehaviour
             enemyText.SetText($"{enemyCount}");
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         if (CubeGridManager.Instance != null)
             CubeGridManager.Instance.onTileOccupied -= UpdateUI;

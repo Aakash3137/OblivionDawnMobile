@@ -1,41 +1,39 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
-using System.Threading.Tasks;
+using System;
+using Unity.AI.Navigation;
 
 public class CubeGridManager : MonoBehaviour
 {
     public static CubeGridManager Instance { get; private set; }
 
-    [SerializeField] private Tile tilePrefab;
-
     [Header("Grid Settings")]
-    [Tooltip("Size of each cube cell in world units")]
+    [SerializeField] private Tile tilePrefab;
     [SerializeField] private float cellSize = 2f;
     [SerializeField] private Vector2Int gridSize = new Vector2Int(17, 17);
-
     [Tooltip("Offset every 2nd row (like staggered grid)")]
-    [SerializeField] private bool useOffset = false;
+    [SerializeField] private bool useOffset;
 
     // Dictionary of all tiles keyed by (x,y)
     public Dictionary<Vector2Int, Tile> cubeTiles = new Dictionary<Vector2Int, Tile>();
-    private GameManager gmInstance => GameManager.Instance;
-
     private int enemyTilesCount => enemyTiles.Count;
     private int playerTilesCount => playerTiles.Count;
     private HashSet<Tile> playerTiles = new();
     private HashSet<Tile> enemyTiles = new();
     private HashSet<Tile> tileEffectTiles = new();
-    private Tile[] allTiles;
+    private List<Tile> allTiles = new();
 
-    public System.Action<int, int> onTileOccupied;
+    public Action<int, int> onTileOccupied;
 
+    private GameManager gameManager;
+    private TileModifyManager tileModifyManager;
+    public Action onTilesGenerated;
 
-    #region Tile Generation Editor only
+    #region Tile Generation
     [Button]
-    public void GenerateTiles()
+    public void GenerateTiles(Material tileMaterial)
     {
-#if UNITY_EDITOR
         DestroyTiles();
 
         int playerTileCount = 0;
@@ -60,19 +58,28 @@ public class CubeGridManager : MonoBehaviour
                 else if (diagSum > midSum)
                     side = Side.Enemy;
                 else
-                {
                     side = (x % 2 == 0) ? Side.Player : Side.Enemy;
+
+                allTiles.Add(spawnedTile);
+                spawnedTile.Initialize(side, new Vector2Int(x, y), tileMaterial);
+                RegisterTile(new Vector2Int(x, y), spawnedTile);
+                onTilesGenerated += spawnedTile.RefreshBorders;
+
+                if (side == Side.Player)
+                {
+                    playerTileCount++;
+                    playerTiles.Add(spawnedTile);
                 }
-
-                spawnedTile.InitializeSide(side);
-
-                if (side == Side.Player) playerTileCount++;
-                else enemyTileCount++;
+                else
+                {
+                    enemyTileCount++;
+                    enemyTiles.Add(spawnedTile);
+                }
             }
         }
 
-        Debug.Log($"Generated {playerTileCount} player tiles and {enemyTileCount} enemy tiles.");
-#endif
+        // Debug.Log($"Generated {playerTileCount} player tiles and {enemyTileCount} enemy tiles.");
+        onTilesGenerated?.Invoke();
     }
 
     [Button]
@@ -90,38 +97,29 @@ public class CubeGridManager : MonoBehaviour
     }
     #endregion
 
-    private async Awaitable Awake()
+    private void Awake()
     {
         if (Instance == null)
             Instance = this;
         else
             Destroy(gameObject);
+    }
 
-        allTiles = GetComponentsInChildren<Tile>();
+    public void Initialize(MapLevelData mapLevelData)
+    {
+        GenerateTiles(mapLevelData.tileMaterial);
 
-        for (int i = 0; i < allTiles.Length; i++)
-        {
-            var coords = WorldToGrid(allTiles[i].transform.position);
-            allTiles[i].Initialize(coords);
-            RegisterTile(coords, allTiles[i]);
-        }
-
-        foreach (var tile in allTiles)
-        {
-            if (tile.ownerSide == Side.Player)
-            {
-                playerTiles.Add(tile);
-            }
-            else if (tile.ownerSide == Side.Enemy)
-            {
-                enemyTiles.Add(tile);
-            }
-        }
+        var navMeshSUrface = GetComponent<NavMeshSurface>();
+        navMeshSUrface.BuildNavMesh();
 
         tileEffectTiles.Clear();
-
-        await Awaitable.WaitForSecondsAsync(0.1f, destroyCancellationToken);
         onTileOccupied?.Invoke(playerTilesCount, enemyTilesCount);
+
+        if (TryGetComponent(out gameManager))
+            gameManager.Initialize();
+
+        if (TryGetComponent(out tileModifyManager))
+            tileModifyManager.Initialize(mapLevelData);
     }
 
     // Only call when tile is getting occupied (changing sides)
@@ -275,7 +273,7 @@ public class CubeGridManager : MonoBehaviour
     public Tile GetRandomTile(Side side, int minDistance)
     {
         var tiles = side == Side.Player ? playerTiles : enemyTiles;
-        Vector2Int spawnCoord = side == Side.Player ? gmInstance.playerSpawnCoord : gmInstance.enemySpawnCoord;
+        Vector2Int spawnCoord = side == Side.Player ? gameManager.playerSpawnCoord : gameManager.enemySpawnCoord;
 
         var eligible = new List<Tile>();
         foreach (var tile in tiles)
@@ -360,8 +358,8 @@ public class CubeGridManager : MonoBehaviour
         bool IsBaseExcluded(Tile tile)
         {
             if (tileEffectTiles.Contains(tile)) return true;
-            if (CubeDistance(gmInstance.playerSpawnCoord, tile.coord) <= minDistance) return true;
-            if (CubeDistance(gmInstance.enemySpawnCoord, tile.coord) <= minDistance) return true;
+            if (CubeDistance(gameManager.playerSpawnCoord, tile.coord) <= minDistance) return true;
+            if (CubeDistance(gameManager.enemySpawnCoord, tile.coord) <= minDistance) return true;
             if (Mathf.Abs((tile.coord.x + tile.coord.y) - diagSum) == 0) return true;
             if (IsTooCloseToExistingClusters(tile)) return true;
             return false;
@@ -481,9 +479,9 @@ public class CubeGridManager : MonoBehaviour
         float temp = -1f;
 
         if (side == Side.Player)
-            enemyMainBuildingDirection = (gmInstance.enemySpawnPoint.position - currentPosition).normalized;
+            enemyMainBuildingDirection = (gameManager.enemySpawnPoint.position - currentPosition).normalized;
         else
-            enemyMainBuildingDirection = (gmInstance.playerSpawnPoint.position - currentPosition).normalized;
+            enemyMainBuildingDirection = (gameManager.playerSpawnPoint.position - currentPosition).normalized;
 
         for (int layer = 1; layer < range; layer++)
         {

@@ -11,16 +11,16 @@ public class ResourceManager : MonoBehaviour
     [Header("Set Starting Resources")]
     public BuildCost[] startingResources;
 
-    [Header("Current Resources"), ReadOnly]
+    [Header("Current Resources"), ReadOnly, HideInInspector]
     public BuildCost[] currentResources;
 
-    [Header("Max Resources (Capacity)"), ReadOnly]
+    [Header("Max Resources (Capacity)"), ReadOnly, HideInInspector]
     public BuildCost[] maxResources;
 
-    [Header("Generation Rates"), ReadOnly]
+    [Header("Generation Rates"), ReadOnly, HideInInspector]
     public BuildCost[] currentGenerationRates;
 
-    [Header("Resource Building Counts"), ReadOnly]
+    [Header("Resource Building Counts"), ReadOnly, HideInInspector]
     public int[] resourceBuildingCounts;
 
     public Action OnResourcesChanged;

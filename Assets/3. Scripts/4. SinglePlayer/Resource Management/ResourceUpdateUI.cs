@@ -1,4 +1,5 @@
 using System;
+using ExitGames.Client.Photon.StructWrapping;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -138,9 +139,9 @@ public class ResourceUpdateUI : MonoBehaviour
 
         resourceSprites = new Sprite[totalResources];
 
-        for (int i = 0; i < totalResources; i++)
+        foreach (var resource in ScenarioDataTypes._resourceEnumValues)
         {
-            resourceSprites[i] = allBuildingData.GetResourceBuildingSO(GameData.playerFaction, (ScenarioResourceType)i).buildingIcon;
+            resourceSprites[(int)resource] = allBuildingData.GetResourceBuildingsSO(GameData.playerFaction, resource)[0].buildingIcon;
         }
     }
 

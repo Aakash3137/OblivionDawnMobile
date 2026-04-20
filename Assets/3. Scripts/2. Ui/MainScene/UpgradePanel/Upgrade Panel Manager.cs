@@ -39,7 +39,7 @@ public class UpgradePanelManager : MonoBehaviour
 
         mainBuildingScriptables = allBuildingData.mainBuildingSO;
         buildingScriptables = allBuildingData.allBuildingsSO;
-        unitScriptables = allUnitData.allUnitsSO;
+        unitScriptables = allUnitData.AllUnitsSO;
 
         CreateBuildingCards();
         CreateUnitCards();

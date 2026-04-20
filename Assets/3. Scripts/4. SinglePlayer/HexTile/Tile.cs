@@ -18,45 +18,36 @@ public class Tile : MonoBehaviour
     [Header("Borders Right Left Up Down (East West North South) ")]
     [SerializeField] GameObject[] borders;
     [Space(5)]
-    [Header("Materials")]
-    public Material playerMaterial;
-    public Material enemyMaterial;
-    public Material neutralMaterial;
-    public Material neutralAllyMaterial;
-    public Material neutralEnemyMaterial;
 
     private Side previousSide = Side.Neutral;
-
     private CubeGridManager cgmInstance => CubeGridManager.Instance;
 
     [ReadOnly] public List<TileEffect> tileEffects = new();
     [ReadOnly] public TileEffectType tileEffectType;
     [ReadOnly] public GameObject tileEffectPrefab;
 
-
-    private void Start()
+    private void Awake()
     {
-        RefreshBorders();
+        if (meshObject == null)
+            meshObject = transform.GetChild(0).GetComponent<MeshRenderer>();
+
+        if (openTileVisual == null)
+            openTileVisual = transform.GetChild(1).gameObject;
     }
 
-#if UNITY_EDITOR
-    public void InitializeSide(Side side)
+    public void Initialize(Side side, Vector2Int coord, Material tileMaterial = null)
     {
-        // Only for editor to assign side to apply serialization of field is required
-        ChangeSide(side);
-        ApplyMaterials();
-    }
-#endif
-    public void Initialize(Vector2Int coord)
-    {
+        ownerSide = side;
+        if (meshObject != null && tileMaterial != null)
+        {
+            meshObject.sharedMaterial = tileMaterial;
+        }
         this.coord = coord;
     }
 
     public void ChangeSide(Side side)
     {
         ownerSide = side;
-
-        if (!Application.isPlaying) return;
 
         RefreshBorders();
 
@@ -68,34 +59,9 @@ public class Tile : MonoBehaviour
 
     public void InitializeTileBuffs()
     {
-        // if (currentBuilding.compatibleTileEffectType != tileEffectType)
-        // {
-        //     if (tileEffectPrefab != null)
-        //         tileEffectPrefab.SetActive(false);
-        //     return;
-        // }
-
         for (int i = 0; i < tileEffects.Count; i++)
         {
             tileEffects[i].ApplyEffect(this);
-        }
-    }
-
-    private void ApplyMaterials()
-    {
-        var material = ownerSide switch
-        {
-            Side.Player => playerMaterial,
-            Side.Enemy => enemyMaterial,
-            Side.Neutral => neutralMaterial,
-            Side.NeutralAlly => neutralAllyMaterial,
-            Side.NeutralEnemy => neutralEnemyMaterial,
-            _ => playerMaterial
-        };
-
-        if (meshObject != null)
-        {
-            meshObject.sharedMaterial = material;
         }
     }
 
@@ -188,5 +154,10 @@ public class Tile : MonoBehaviour
 
         if (openTileVisual == null)
             openTileVisual = transform.GetChild(1).gameObject;
+    }
+    private void OnDestroy()
+    {
+        if (cgmInstance != null)
+            cgmInstance.onTilesGenerated -= RefreshBorders;
     }
 }

@@ -1,7 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -17,11 +16,11 @@ public class EnemyAIHandler : MonoBehaviour
 {
     public static EnemyAIHandler Instance { get; private set; }
 
-    [Header("References")] [SerializeField]
+    [Header("References")]
+    [SerializeField]
     private EnemyModeSwitch enemyModeSwitch;
 
     [SerializeField] private EnemyBuildPanel enemyBuildPanel;
-    [SerializeField] private AllFactionsData factionData;
     [SerializeField] internal FactionName enemyFactionName;
     [SerializeField] private EnemyPersonality currentPersonality;
 
@@ -46,11 +45,11 @@ public class EnemyAIHandler : MonoBehaviour
     [SerializeField]
     private BuildingStats[] resourceTypeToBuilding = new BuildingStats[4];
 
-    [Header("READ ONLY")] [SerializeField] private int unitBuilt = 0;
-    [SerializeField] private int resourceBuilt = 0;
-    [SerializeField] private int defenseBuilt = 0;
-    [SerializeField] private int wallsBuilt = 0;
-    [SerializeField] private int nonWallDefenseBuilt = 0;
+    [SerializeField, ReadOnly] private int unitBuilt = 0;
+    [SerializeField, ReadOnly] private int resourceBuilt = 0;
+    [SerializeField, ReadOnly] private int defenseBuilt = 0;
+    [SerializeField, ReadOnly] private int wallsBuilt = 0;
+    [SerializeField, ReadOnly] private int nonWallDefenseBuilt = 0;
 
     // New Wall Strategy
     private int initialWallsTarget = 6; // 6-8 walls
@@ -69,7 +68,7 @@ public class EnemyAIHandler : MonoBehaviour
     // Resource building tracking
     private int[] resourceBuildingCounts = new int[4];
     private bool balancedPhaseComplete = false;
-    
+
     // RESOURCE IMBALANCE CONTROL 
     private bool resourceCorrectionActive = false;
     private float resourceCorrectionEndTime = 0f;
@@ -105,10 +104,10 @@ public class EnemyAIHandler : MonoBehaviour
     private int failedBuildAttempts = 0;
     private const int MAX_FAIL_BEFORE_RESOURCE = 2;
     private BuildingCategory lastFailedCategory;
-    
+
     private float nextRecheckTime = -999f;
 
-// ===== EMERGENCY STATE =====
+    // ===== EMERGENCY STATE =====
     enum EmergencyState
     {
         None,
@@ -360,7 +359,7 @@ public class EnemyAIHandler : MonoBehaviour
             if (!entry.selected || entry.amount <= 0) continue;
 
             var building = CharacterDatabase.Instance.GetDefenseBuildingPrefab(entry.building);
-            if (building == null || building is WallStats) continue;
+            if (building == null) continue;
 
             // Skip anti-air if player has no air units
             if (entry.building != null && entry.building.defenseType == ScenarioDefenseType.AntiAir)
@@ -600,7 +599,7 @@ public class EnemyAIHandler : MonoBehaviour
         category = BuildingCategory.Unit;
         return GetWeightedUnitBuilding();
     }
-    
+
     bool IsResourceLow()
     {
         var rm = GetComponent<EnemyResourceManager>();
@@ -614,7 +613,7 @@ public class EnemyAIHandler : MonoBehaviour
 
         return false;
     }
-    
+
     #region Personality Deck Access
 
     FactionDeckSelection GetCurrentFactionDeck()
@@ -692,7 +691,7 @@ public class EnemyAIHandler : MonoBehaviour
         // Calculate wall percentage - walls should not exceed 50% of total defense buildings
         int totalDefense = wallsBuilt + nonWallDefenseBuilt;
         bool blockWalls = false;
-        
+
         if (totalDefense > 0)
         {
             float wallPercentage = (float)wallsBuilt / totalDefense;
@@ -791,7 +790,7 @@ public class EnemyAIHandler : MonoBehaviour
                 return resourceTypeToBuilding[index];
             }
         }
-        
+
         // ================= BALANCED START =================
         if (currentPersonality.balancedResourceStart && !balancedPhaseComplete)
         {
@@ -823,7 +822,7 @@ public class EnemyAIHandler : MonoBehaviour
             return buildings[targetIndex];
         }
 
-        
+
         // ================= NORMAL AI =================
         // Recheck resource needs every 10 seconds
         if (timeSinceLastAnalysis >= RECHECK_INTERVAL)
@@ -1030,7 +1029,7 @@ public class EnemyAIHandler : MonoBehaviour
             return null;
         }
 
-        var deck = allBuildingData.GetFactionResourceBuildingsSO(enemyFactionName);
+        var deck = allBuildingData.GetResourceBuildingsSO(enemyFactionName);
 
         var buildings = new BuildingStats[deck.Count];
 
@@ -1272,7 +1271,7 @@ public class EnemyAIHandler : MonoBehaviour
             }
         }
     }
-    
+
     float GetResourcePressure()
     {
         var enemyRM = GetComponent<EnemyResourceManager>();
@@ -1290,7 +1289,7 @@ public class EnemyAIHandler : MonoBehaviour
 
         return totalResources / totalNeed;
     }
-    
+
     // ============== PUBLIC METHODS ==============
 
     public void SetPersonality(EnemyPersonality personality)

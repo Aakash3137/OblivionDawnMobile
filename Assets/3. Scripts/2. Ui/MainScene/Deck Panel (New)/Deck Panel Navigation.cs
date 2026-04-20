@@ -60,6 +60,9 @@ public class DeckPanelNavigation : MonoBehaviour
 
         dsmInstance.SetVariables();
         dsmInstance.RefreshSelectionCards();
+
+        AudioManager.PlayOneShot(GameAudioType.ButtonClick);
+
     }
 
     private void ToggleFactionPanel(FactionName faction)

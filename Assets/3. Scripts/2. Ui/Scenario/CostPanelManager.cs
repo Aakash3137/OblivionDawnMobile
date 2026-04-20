@@ -80,12 +80,11 @@ public class CostPanelManager : MonoBehaviour
     {
         FactionName currentFaction = GameData.playerFaction;
 
-        foodSprite = allBuildingData.GetResourceBuildingSO(currentFaction, ScenarioResourceType.Food).buildingIcon;
-        goldSprite = allBuildingData.GetResourceBuildingSO(currentFaction, ScenarioResourceType.Gold).buildingIcon;
-        metalSprite = allBuildingData.GetResourceBuildingSO(currentFaction, ScenarioResourceType.Metal).buildingIcon;
-        powerSprite = allBuildingData.GetResourceBuildingSO(currentFaction, ScenarioResourceType.Power).buildingIcon;
+        foodSprite = allBuildingData.GetResourceBuildingsSO(currentFaction, ScenarioResourceType.Food)[0].buildingIcon;
+        goldSprite = allBuildingData.GetResourceBuildingsSO(currentFaction, ScenarioResourceType.Gold)[0].buildingIcon;
+        metalSprite = allBuildingData.GetResourceBuildingsSO(currentFaction, ScenarioResourceType.Metal)[0].buildingIcon;
+        powerSprite = allBuildingData.GetResourceBuildingsSO(currentFaction, ScenarioResourceType.Power)[0].buildingIcon;
     }
-
     private void SetResourceSprites()
     {
         foodIconImage.sprite = foodSprite;

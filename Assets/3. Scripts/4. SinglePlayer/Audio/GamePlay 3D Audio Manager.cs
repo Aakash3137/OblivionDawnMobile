@@ -71,14 +71,14 @@ public class GamePlay3DAudioManager : MonoBehaviour
     }
 
     private void OnDestroy()
-    { 
+    {
         List<AudioSource> allSources = new();
 
         foreach (var kvp in audioSourcesPerUnitType)
         {
             allSources.AddRange(kvp.Value);
         }
-        
+
         foreach (var source in allSources)
         {
             AudioManager.threeDimensionalAudioPool.Release(source);

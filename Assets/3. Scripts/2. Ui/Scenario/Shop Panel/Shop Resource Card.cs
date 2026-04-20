@@ -20,7 +20,7 @@ public class ShopResourceCard : MonoBehaviour
 
     private void Start()
     {
-        resourceSO = allBuildingData.GetResourceBuildingSO(GameData.playerFaction, resourceType);
+        resourceSO = allBuildingData.GetResourceBuildingsSO(GameData.playerFaction, resourceType)[0];
 
         resourceImage.sprite = resourceSO.buildingIcon;
         resourceName.SetText($"{resourceSO.buildingIdentity.name}");
