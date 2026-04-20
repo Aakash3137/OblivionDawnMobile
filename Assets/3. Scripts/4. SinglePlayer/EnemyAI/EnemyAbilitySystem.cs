@@ -2,22 +2,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public class FactionAbilitySet
+{
+    public FactionName faction;
+    public List<SpecialAbilityData> abilities;
+}
+
 public class EnemyAbilitySystem : MonoBehaviour
 {
-    [Header("Abilities")]
-    public List<SpecialAbilityData> specialAbilities;
+    public List<FactionAbilitySet> factionAbilities;
 
-    [Header("Charge Settings")]
     public float currentCharge = 0f;
     public float maxCharge = 100f;
     public float chargePerKill = 5f;
 
-    [Header("Targeting")]
     public LayerMask playerLayer;
     public float scanRadius = 50f;
-    public int scanSamples = 20; // how many points AI checks
+    public int scanSamples = 20;
 
     private bool isCasting = false;
+    private int abilityIndex = 0;
 
     private void OnEnable()
     {
@@ -44,10 +49,9 @@ public class EnemyAbilitySystem : MonoBehaviour
 
     IEnumerator CastAbilityRoutine()
     {
-        Debug.Log("Enemy casting ability!");
         isCasting = true;
 
-        yield return new WaitForSeconds(Random.Range(1f, 2f)); // small delay (feels human)
+        yield return new WaitForSeconds(Random.Range(1f, 2f));
 
         SpecialAbilityData ability = PickAbility();
         if (ability == null)
@@ -67,35 +71,45 @@ public class EnemyAbilitySystem : MonoBehaviour
 
     SpecialAbilityData PickAbility()
     {
-        Debug.Log("Enemy Picking ability!");
-        if (specialAbilities.Count == 0) return null;
+        var abilities = GetCurrentFactionAbilities();
 
-        return specialAbilities[Random.Range(0, specialAbilities.Count)];
+        if (abilities == null || abilities.Count == 0)
+            return null;
+
+        abilityIndex = Mathf.Clamp(abilityIndex, 0, abilities.Count - 1);
+
+        SpecialAbilityData ability = abilities[abilityIndex];
+
+        if (abilities.Count > 1)
+            abilityIndex = (abilityIndex + 1) % abilities.Count;
+
+        return ability;
+    }
+
+    List<SpecialAbilityData> GetCurrentFactionAbilities()
+    {
+        foreach (var set in factionAbilities)
+        {
+            if (set.faction == GameData.enemyFaction)
+                return set.abilities;
+        }
+        return null;
     }
 
     Vector3 FindBestTargetPosition(float radius)
     {
-        Debug.Log("Enemy finding target for Ability usage! ");
         Collider[] allPlayers = Physics.OverlapSphere(transform.position, scanRadius, playerLayer);
 
         if (allPlayers.Length == 0)
             return transform.position;
 
-        Vector3 bestPos = allPlayers[0].transform.position;
+        Vector3 bestPos = transform.position;
         int maxHits = 0;
 
         foreach (var unit in allPlayers)
         {
             Vector3 center = unit.transform.position;
-            Collider[] nearby = Physics.OverlapSphere(center, radius, playerLayer);
-        
-            // Count only units, not buildings
-            int count = 0;
-            foreach (var col in nearby)
-            {
-                if (col.GetComponent<BuildingStats>() == null) // Exclude buildings
-                    count++;
-            }
+            int count = CountUnitsInRadius(center, radius);
 
             if (count > maxHits)
             {
@@ -104,19 +118,44 @@ public class EnemyAbilitySystem : MonoBehaviour
             }
         }
 
+        for (int i = 0; i < scanSamples; i++)
+        {
+            Vector3 randomPoint = transform.position + Random.insideUnitSphere * scanRadius;
+            randomPoint.y = transform.position.y;
+
+            int count = CountUnitsInRadius(randomPoint, radius);
+
+            if (count > maxHits)
+            {
+                maxHits = count;
+                bestPos = randomPoint;
+            }
+        }
+
         return bestPos;
+    }
+
+    int CountUnitsInRadius(Vector3 center, float radius)
+    {
+        Collider[] nearby = Physics.OverlapSphere(center, radius, playerLayer);
+
+        int count = 0;
+        foreach (var col in nearby)
+        {
+            if (col.GetComponent<BuildingStats>() == null)
+                count++;
+        }
+
+        return count;
     }
 
     void ExecuteAbility(SpecialAbilityData ability, Vector3 targetPos)
     {
-        Debug.Log("Enemy Executing Ability! ");
         targetPos += Vector3.up * 0.5f;
 
-        // VFX
         GameObject vfx = Instantiate(ability.vfxPrefab, targetPos, Quaternion.identity);
         Destroy(vfx, 5f);
 
-        // Damage
         Collider[] hits = Physics.OverlapSphere(targetPos, ability.damageArea);
 
         foreach (Collider col in hits)
@@ -142,7 +181,5 @@ public class EnemyAbilitySystem : MonoBehaviour
 
             stats.TakeDamage(finalDamage);
         }
-
-        Debug.Log($"Enemy used {ability.type} at {targetPos}");
     }
 }

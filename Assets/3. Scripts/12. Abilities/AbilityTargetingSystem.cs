@@ -3,6 +3,13 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
+[System.Serializable]
+public class PlayerFactionSpecialAbilitySet
+{
+    public FactionName faction;
+    public List<SpecialAbilityData> abilities;
+}
+
 public class AbilityTargetingSystem : MonoBehaviour
 {
     [Header("UI")]
@@ -19,8 +26,11 @@ public class AbilityTargetingSystem : MonoBehaviour
     public LayerMask groundLayer;
 
     [Header("Abilities")]
-    public List<SpecialAbilityData> abilities;
+    public List<PlayerFactionSpecialAbilitySet> factionAbilities;
     public SpecialAbilityType currentAbilityType;
+
+    private List<SpecialAbilityData> currentFactionAbilities = new List<SpecialAbilityData>();
+    private int abilityIndex = 0;
 
     private SpecialAbilityData currentAbility;
 
@@ -39,7 +49,6 @@ public class AbilityTargetingSystem : MonoBehaviour
 
     public static bool IsTargetingActive;
 
-
     void Start()
     {
         targetImageObj.SetActive(false);
@@ -48,9 +57,9 @@ public class AbilityTargetingSystem : MonoBehaviour
         setTargetButton.onClick.AddListener(OnSetTarget);
         launchButton.onClick.AddListener(OnLaunch);
 
-        SetAbility(currentAbilityType); 
+        LoadFactionAbilities();
+        SetNextAbility();
     }
-
 
     void Update()
     {
@@ -63,25 +72,40 @@ public class AbilityTargetingSystem : MonoBehaviour
         HandleOutsideClick();
     }
 
-
-    public void SetAbility(SpecialAbilityType type)
+    void LoadFactionAbilities()
     {
-        currentAbilityType = type;
-        currentAbility = abilities.Find(a => a.type == type);
+        currentFactionAbilities.Clear();
 
-        if (currentAbility == null)
+        foreach (var set in factionAbilities)
         {
-            Debug.LogError("Ability not found: " + type);
+            if (set.faction == GameData.playerFaction)
+            {
+                currentFactionAbilities = set.abilities;
+                break;
+            }
+        }
+    }
+
+    void SetNextAbility()
+    {
+        if (currentFactionAbilities == null || currentFactionAbilities.Count == 0)
+        {
+            currentAbility = null;
             return;
         }
 
-        
+        abilityIndex = Mathf.Clamp(abilityIndex, 0, currentFactionAbilities.Count - 1);
+
+        currentAbility = currentFactionAbilities[abilityIndex];
+        currentAbilityType = currentAbility.type;
+
+        if (currentFactionAbilities.Count > 1)
+            abilityIndex = (abilityIndex + 1) % currentFactionAbilities.Count;
+
         Image img = setTargetButton.GetComponent<Image>();
         if (img != null && currentAbility.targetSprite != null)
             img.sprite = currentAbility.targetSprite;
     }
-
-    
 
     void OnSetTarget()
     {
@@ -113,7 +137,6 @@ public class AbilityTargetingSystem : MonoBehaviour
     {
         justActivated = false;
     }
-    
 
     void OnLaunch()
     {
@@ -126,18 +149,17 @@ public class AbilityTargetingSystem : MonoBehaviour
 
         targetWorldPos += Vector3.up * 0.5f;
 
-        
         GameObject vfx = Instantiate(currentAbility.vfxPrefab, targetWorldPos, Quaternion.identity);
         Destroy(vfx, 5f);
 
         AbilitySetController.Instance.OnSpecialAbilityUsed();
-        
+
         ApplyDamage();
+
+        SetNextAbility();
 
         ResetAll();
     }
-
-
 
     void ApplyDamage()
     {
@@ -172,7 +194,6 @@ public class AbilityTargetingSystem : MonoBehaviour
         }
     }
 
-
     void ResetAll()
     {
         IsTargetingActive = false;
@@ -189,7 +210,6 @@ public class AbilityTargetingSystem : MonoBehaviour
 
         targetImage.anchoredPosition = Vector2.zero;
     }
-
 
     void InitializeDefaultRaycast()
     {

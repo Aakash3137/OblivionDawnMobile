@@ -4,19 +4,29 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
+[System.Serializable]
+public class PlayerFactionAbilitySet
+{
+    public FactionName faction;
+    public List<AbilitySO> abilities;
+}
+
 public class AbilitySetController : MonoBehaviour
 {
     public static AbilitySetController Instance { get; private set; }
 
-    [Header("Slots (Assign in Inspector)")]
     [SerializeField] private Transform slotCost1;
     [SerializeField] private Transform slotCost2;
     [SerializeField] private Transform slotCost3;
     [SerializeField] private Transform slotCost4;
 
-    [Header("UI")]
     [SerializeField] private Image fillBar;
     [SerializeField] private Button specialAbilityButton;
+
+    public List<PlayerFactionAbilitySet> factionAbilities;
+
+    private List<AbilitySO> currentFactionAbilities = new List<AbilitySO>();
+    private int abilityIndex = 0;
 
     private List<Button> allButtons = new List<Button>();
 
@@ -31,13 +41,14 @@ public class AbilitySetController : MonoBehaviour
     private Button currentCost4;
 
     private float currentFill = 0f;
-
     private bool ignoreKillFill = false;
+
+    private HashSet<Button> subscribedButtons = new HashSet<Button>();
 
     private void Awake()
     {
         Instance = this;
-        
+
         if (specialAbilityButton != null)
             specialAbilityButton.interactable = false;
     }
@@ -54,7 +65,22 @@ public class AbilitySetController : MonoBehaviour
 
     private void Start()
     {
+        LoadFactionAbilities();
         StartCoroutine(InitRoutine());
+    }
+
+    private void LoadFactionAbilities()
+    {
+        currentFactionAbilities.Clear();
+
+        foreach (var set in factionAbilities)
+        {
+            if (set.faction == GameData.playerFaction)
+            {
+                currentFactionAbilities = set.abilities;
+                break;
+            }
+        }
     }
 
     private IEnumerator InitRoutine()
@@ -75,7 +101,7 @@ public class AbilitySetController : MonoBehaviour
         specialAbilityButton.interactable = false;
 
         SetupInitialButtons();
-        
+
         if (specialAbilityButton != null)
             specialAbilityButton.interactable = false;
     }
@@ -107,6 +133,9 @@ public class AbilitySetController : MonoBehaviour
             AbilityButtonLink link = btn.GetComponent<AbilityButtonLink>();
             if (link == null || link.ability == null) continue;
 
+            if (!currentFactionAbilities.Contains(link.ability))
+                continue;
+
             switch (link.ability.abilityCost)
             {
                 case 1: abilitiesCost1.Add(btn); break;
@@ -124,7 +153,7 @@ public class AbilitySetController : MonoBehaviour
         foreach (var btn in allButtons)
         {
             if (btn == null) continue;
-            
+
             if (btn != currentCost1 && btn != currentCost2 &&
                 btn != currentCost3 && btn != currentCost4)
             {
@@ -184,6 +213,34 @@ public class AbilitySetController : MonoBehaviour
         UpdateUnlocks();
     }
 
+    private Button GetNextSequentialButton(List<Button> list, Button exclude)
+    {
+        if (currentFactionAbilities == null || currentFactionAbilities.Count == 0)
+            return null;
+
+        int checkedCount = 0;
+
+        while (checkedCount < currentFactionAbilities.Count)
+        {
+            AbilitySO targetAbility = currentFactionAbilities[abilityIndex];
+            abilityIndex = (abilityIndex + 1) % currentFactionAbilities.Count;
+            checkedCount++;
+
+            Button btn = list.FirstOrDefault(b =>
+            {
+                if (b == null || b == exclude) return false;
+                AbilitySO ab = AbilityManager.Instance.GetAbility(b);
+                if (ab == null) return false;
+                return ab == targetAbility && !AbilityManager.Instance.IsOnCooldown(ab);
+            });
+
+            if (btn != null)
+                return btn;
+        }
+
+        return null;
+    }
+
     private void TrySwapCooledDownSlot(List<Button> list, Transform slot, ref Button current)
     {
         if (current == null) return;
@@ -191,7 +248,7 @@ public class AbilitySetController : MonoBehaviour
         AbilitySO currentAbility = AbilityManager.Instance.GetAbility(current);
         if (currentAbility == null) return;
 
-        Button ready = FindReadyButton(list, current);
+        Button ready = GetNextSequentialButton(list, current);
         if (ready == null) return;
 
         foreach (var btn in list)
@@ -212,17 +269,10 @@ public class AbilitySetController : MonoBehaviour
     {
         if (list.Count == 0) return exclude;
 
-        Button chosen = FindReadyButton(list, exclude);
+        Button chosen = GetNextSequentialButton(list, exclude);
 
         if (chosen == null)
-        {
-            List<Button> fallback = list.Where(b => b != null && b != exclude).ToList();
-            if (fallback.Count == 0)
-                fallback = list.Where(b => b != null).ToList();
-
-            if (fallback.Count == 0) return exclude;
-            chosen = fallback[Random.Range(0, fallback.Count)];
-        }
+            return exclude;
 
         foreach (var btn in list)
         {
@@ -242,25 +292,14 @@ public class AbilitySetController : MonoBehaviour
 
     private Button FindReadyButton(List<Button> list, Button exclude)
     {
-        List<Button> ready = list.Where(b =>
-        {
-            if (b == null || b == exclude) return false;
-            AbilitySO ab = AbilityManager.Instance.GetAbility(b);
-            if (ab == null) return false;
-            return !AbilityManager.Instance.IsOnCooldown(ab);
-        }).ToList();
-
-        if (ready.Count == 0) return null;
-        return ready[Random.Range(0, ready.Count)];
+        return GetNextSequentialButton(list, exclude);
     }
-
-    private HashSet<Button> subscribedButtons = new HashSet<Button>();
 
     private void SubscribeClickListener(Button btn)
     {
         if (btn == null || subscribedButtons.Contains(btn)) return;
         subscribedButtons.Add(btn);
-        
+
         Button captured = btn;
         btn.onClick.AddListener(() => OnAbilityClicked(captured));
     }
@@ -287,7 +326,7 @@ public class AbilitySetController : MonoBehaviour
         if (list != null && slot != null)
         {
             Button ready = FindReadyButton(list, btn);
-            
+
             if (ready != null)
             {
                 foreach (var b in list)
@@ -300,7 +339,7 @@ public class AbilitySetController : MonoBehaviour
                 ready.transform.SetParent(slot, false);
                 ready.gameObject.SetActive(true);
                 RestoreButtonVisuals(ready);
-                
+
                 switch (cost)
                 {
                     case 1: currentCost1 = ready; break;
@@ -308,7 +347,7 @@ public class AbilitySetController : MonoBehaviour
                     case 3: currentCost3 = ready; break;
                     case 4: currentCost4 = ready; break;
                 }
-                
+
                 SubscribeClickListener(ready);
             }
         }
@@ -325,7 +364,7 @@ public class AbilitySetController : MonoBehaviour
     private void RestoreButtonVisuals(Button btn)
     {
         if (btn == null) return;
-        
+
         Image img = btn.GetComponent<Image>();
         if (img != null)
         {
@@ -338,7 +377,6 @@ public class AbilitySetController : MonoBehaviour
     private void HandleUnitKilled(UnitProduceStatsSO unitStats, Side deadUnitSide)
     {
         if (deadUnitSide != Side.Enemy) return;
-
         if (ignoreKillFill) return;
 
         int amount = unitStats.populationCost * 3;
