@@ -21,4 +21,10 @@ public class ItemData : ScriptableObject
     [SerializeField]internal UnitProduceStatsSO ItemSo;
     [SerializeField] internal DefenseBuildingDataSO DefenseSo;
     [SerializeField] internal ResourceBuildingDataSO BuildingSO;
+
+    void Start()
+    {
+        //change state of item canvas to unlocked
+        //ItemSo.cardDetails.cardState = CardState.Unlocked;
+    }
 }

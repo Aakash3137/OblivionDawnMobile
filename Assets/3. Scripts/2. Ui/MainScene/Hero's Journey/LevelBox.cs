@@ -1,22 +1,47 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Collections.Generic;
 
 public class LevelBox : MonoBehaviour
 {
-    [SerializeField] internal RewardBox RewardBoxPrefab;
-    [SerializeField] internal int RewardQuantity = 0;
-    [SerializeField] internal Image FillImage;
+    [Header("UI")]
     [SerializeField] internal TMP_Text LevelNoTxt;
     [SerializeField] internal Image LockImage;
+    [SerializeField] internal Button ClaimButton;
 
-    public RewardBox SetReward(RewardData reward, Transform _Parent)
+    private int level;
+    private bool isLocked;
+    private LevelRewardEntry rewardEntry;
+
+    public void Init(int levelNumber, bool locked, LevelRewardEntry entry)
     {
-        RewardBox R_Box = Instantiate(RewardBoxPrefab, _Parent);
-        R_Box.RewardIcon.sprite = reward.RewardIcon;
-        R_Box.RewardNameTxt.text = reward.RewardType.ToString();
-        R_Box.ClaimButton.interactable = !reward.RewardStatus;
-        return R_Box;
+        level = levelNumber;
+        isLocked = locked;
+        rewardEntry = entry;
+
+        LevelNoTxt.text = level.ToString();
+        LockImage.gameObject.SetActive(isLocked);
+
+        bool isClaimed = entry != null && entry.isClaimed;
+
+        ClaimButton.interactable = !isLocked && !isClaimed;
+
+        ClaimButton.onClick.RemoveAllListeners();
+        ClaimButton.onClick.AddListener(OnClaimClicked);
+    }
+
+    private void OnClaimClicked()
+    {
+        if (rewardEntry == null || rewardEntry.isClaimed)
+            return;
+
+        Debug.Log($"Claiming reward for level {level}");
+
+        // Trigger reward system
+        RewardManager.Instance.ClaimReward(rewardEntry.rewardBundle);
+
+        // Mark claimed
+        rewardEntry.isClaimed = true;
+        ClaimButton.interactable = false;
     }
 }

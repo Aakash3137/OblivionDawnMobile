@@ -1,115 +1,109 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 
 [CreateAssetMenu(fileName = "LevelData", menuName = "Data/Level Data")]
 public class LevelData : ScriptableObject
 {
-    [SerializeField] private List<LevelInfo> levels;
-    [SerializeField] private Sprite LevelDetails;
+    [Header("Progression")]
+    [SerializeField] private List<XP_Required> xpRequirements;
+
+    [System.Serializable]
+    public class LevelTrack
+    {
+        public List<TrackEntry> entries;
+    }
+    
+
+    [Header("References")]
+    [SerializeField] private PlayerLevelData playerLevelData;
+    [SerializeField] private Userdata _Data;
+
+    [Header("Track UI")]
+    [SerializeField] private TrackEntryUI trackEntryPrefab;
+    [SerializeField] private List<LevelTrack> trackEntriesPerLevel;
+
     public int _XP;
+
+    [Serializable]
+    public class XP_Required
+    {
+        public int level;
+        public int xpRequired;
+    }
+
     public int PlayerXP
     {
         get => _XP;
         set
         {
-            _XP = value; 
+            _XP = value;
             SetLevel();
         }
     }
-    [SerializeField] private Userdata _Data;
 
     public void SetLevel()
     {
-        int temp =0;
-        foreach (var level in levels)
+        int currentLevel = 0;
+
+        for (int i = 0; i < xpRequirements.Count; i++)
         {
-            if(level.XP_Required <= PlayerXP)
-            {
-                level.IsLocked = false;
-                temp += 1;
-            }
-            else
-            {
-                level.IsLocked = true;
-            }
+            if (xpRequirements[i].xpRequired <= PlayerXP)
+                currentLevel++;
         }
 
-        _Data.Level = temp;
+        _Data.Level = currentLevel;
     }
 
-    public void SetXP(int Amount)
+    public void SetXP(int amount)
     {
-        PlayerXP += Amount;
+        PlayerXP += amount;
     }
 
-    public void GenrateLevel(LevelBox _Prefab, Transform _Parent)
+    public void GenrateLevel(LevelBox prefab, Transform parent)
     {
-        int temp = PlayerXP;
-        for(int i = 0; i < levels.Count; i++)
-        {
-            LevelBox _Box = Instantiate(_Prefab, _Parent);
-            _Box.LevelNoTxt.text = (i + 1).ToString();
-            _Box.gameObject.name = "Level_" + (i + 1).ToString();
-
-            if(levels[i].IsLocked)
-            {
-                _Box.LockImage.gameObject.SetActive(true);
-            }
-            else
-            {
-                _Box.LockImage.gameObject.SetActive(false);
-            }
-
-            foreach (var item in levels[i].Rewards)
-            {
-                RewardBox R_Box = _Box.SetReward(item, _Box.transform);
-                R_Box.ClaimButton.interactable = !levels[i].IsLocked;
-                item.RewardStatus = levels[i].IsLocked ? false : true;
-                item._Box = R_Box;
-                R_Box.ClaimButton.onClick.AddListener(() => 
-                {
-                    OnClaimReward(item);
-                });
-            }
-        }
-    }
-
-    private void OnClaimReward(RewardData reward)
-    {
-        if(reward.RewardStatus)
+        if (xpRequirements.Count == 0)
             return;
 
-        Debug.Log("Claiming Reward");
+        // 🔹 LEVEL 1
+        CreateLevelBox(prefab, parent, 1);
 
-        reward.RewardStatus = true;
-        reward._Box.ClaimButton.interactable = false;
-        if(reward.RewardType == RewardItem.Gems)
+        // 🔹 LOOP
+        for (int i = 1; i < xpRequirements.Count; i++)
         {
-            _Data.Diamonds += reward.RewardAmount;
-        }
-        else if(reward.RewardType == RewardItem.Fragments)
-        {
-            _Data.Coins += reward.RewardAmount;
+            int level = i + 1;
+
+            // 🔸 Entries BETWEEN levels (display only)
+            if (trackEntriesPerLevel != null && i - 1 < trackEntriesPerLevel.Count)
+            {
+                var levelTrack = trackEntriesPerLevel[i - 1];
+                var entries = levelTrack.entries;
+
+                if (entries != null)
+                {
+                    foreach (var entry in entries)
+                    {
+                        TrackEntryUI ui = Instantiate(trackEntryPrefab, parent);
+
+                        bool isLocked = level > _Data.Level;
+                        ui.Init(entry, isLocked);
+                    }
+                }
+            }
+
+            // 🔸 Next level box
+            CreateLevelBox(prefab, parent, level);
         }
     }
-}
- 
-[Serializable]
-public class LevelInfo
-{
-    public bool IsLocked;
-    public int XP_Required;
-    public List<RewardData> Rewards;
-}
 
-[Serializable]
-public class RewardData
-{
-    public int RewardAmount;
-    public Sprite RewardIcon;
-    public RewardItem RewardType;
-    public bool RewardStatus;
-    public RewardBox _Box;
-}
+    private void CreateLevelBox(LevelBox prefab, Transform parent, int level)
+    {
+        LevelBox box = Instantiate(prefab, parent);
 
+        bool isLocked = level > _Data.Level;
+        var entry = playerLevelData.GetEntry(level);
+
+        box.Init(level, isLocked, entry);
+        box.gameObject.name = "Level_" + level;
+    }
+}

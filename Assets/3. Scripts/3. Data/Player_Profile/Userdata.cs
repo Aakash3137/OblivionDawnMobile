@@ -17,11 +17,53 @@ public class Userdata : ScriptableObject
     [Header("Game Data")]
     [SerializeField] private int coins = 0;
     [SerializeField] private int diamonds = 0;
+    [SerializeField] private int mapShards = 0;
     [SerializeField, ReadOnly] private int[] fragments = new int[4];
+
+    [Header("Progression")]
+    public PlayerLevelData levelData;
+    [SerializeField] private int xp = 0;
+    [SerializeField, ReadOnly] public int level = 0;
+
+    public Action<int> OnXPChanged;
+    public Action<int> OnLevelChanged;
+
+    
+    [Header("Daily Rewards")]
+    public int CurrentDay = 1;
+    public bool[] DayRewards = new bool[7];
+
+    [Header("Home Ui")]
+    public TMP_Text CoinTxt;
+    public TMP_Text DiamondTxt;
+
+
     public Action<FactionName> OnFragmentsChanged;
     public Action OnDiamondsChanged;
+    public Action OnMapShardsChanged;
+    public Action OnPlayerLevelChanged;
 
-    public int Level = 0;
+    //public int Level = 1;
+
+    public int XP
+    {
+        get => xp;
+        set
+        {
+            xp = value;
+            OnXPChanged?.Invoke(xp);
+        }
+    }
+
+    public int Level
+    {
+        get => level;
+        set
+        {
+            level = value;
+            OnPlayerLevelChanged?.Invoke();
+        }
+    }
     public int Coins
     {
         get => coins;
@@ -39,21 +81,22 @@ public class Userdata : ScriptableObject
         {
             diamonds = value;
             UpdateCurrencyUI();
-#if UNITY_EDITOR
-            UnityEditor.EditorUtility.SetDirty(this);
-            UnityEditor.AssetDatabase.SaveAssets();
-#endif
             OnDiamondsChanged?.Invoke();
         }
     }
 
-    [Header("Daily Rewards")]
-    public int CurrentDay = 1;
-    public bool[] DayRewards = new bool[7];
+    public int MapShards
+    {
+        get => mapShards;
+        set
+        {
+            mapShards = value;
+            UpdateCurrencyUI();
+            OnMapShardsChanged?.Invoke();
+        }
+    }
 
-    [Header("Home Ui")]
-    public TMP_Text CoinTxt;
-    public TMP_Text DiamondTxt;
+
 
     void UpdateCurrencyUI()
     {
@@ -63,6 +106,9 @@ public class Userdata : ScriptableObject
         if (DiamondTxt != null)
             DiamondTxt.text = Diamonds.ToString();
     }
+
+
+
     [Button]
     public void AddFragments(FactionName faction, int amount)
     {
@@ -70,6 +116,8 @@ public class Userdata : ScriptableObject
 
         OnFragmentsChanged?.Invoke(faction);
     }
+
+
     public void ConsumeFragments(FactionName faction, int amount)
     {
         fragments[(int)faction] -= amount;
@@ -80,6 +128,8 @@ public class Userdata : ScriptableObject
         UnityEditor.AssetDatabase.SaveAssets();
 #endif
     }
+
+
     public int GetFragment(FactionName faction) => fragments[(int)faction];
 
     public void ResetData()
@@ -89,7 +139,7 @@ public class Userdata : ScriptableObject
         ProfilePicture = null;
         GuestUser = false;
 
-        Level = 0;
+        //Level = 0;
         Coins = 0;
         Diamonds = 0;
         CurrentDay = 1;
