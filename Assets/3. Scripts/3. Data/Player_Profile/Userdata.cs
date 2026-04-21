@@ -51,6 +51,11 @@ public class Userdata : ScriptableObject
         set
         {
             xp = value;
+#if UNITY_EDITOR
+            UnityEditor.EditorUtility.SetDirty(this);
+            UnityEditor.AssetDatabase.SaveAssets();
+#endif
+
             OnXPChanged?.Invoke(xp);
         }
     }
@@ -61,6 +66,11 @@ public class Userdata : ScriptableObject
         set
         {
             level = value;
+#if UNITY_EDITOR
+            UnityEditor.EditorUtility.SetDirty(this);
+            UnityEditor.AssetDatabase.SaveAssets();
+#endif
+
             OnPlayerLevelChanged?.Invoke();
         }
     }
@@ -70,6 +80,11 @@ public class Userdata : ScriptableObject
         set
         {
             coins = value;
+#if UNITY_EDITOR
+            UnityEditor.EditorUtility.SetDirty(this);
+            UnityEditor.AssetDatabase.SaveAssets();
+#endif
+
             UpdateCurrencyUI();
         }
     }
@@ -81,6 +96,11 @@ public class Userdata : ScriptableObject
         {
             diamonds = value;
             UpdateCurrencyUI();
+#if UNITY_EDITOR
+            UnityEditor.EditorUtility.SetDirty(this);
+            UnityEditor.AssetDatabase.SaveAssets();
+#endif
+
             OnDiamondsChanged?.Invoke();
         }
     }
@@ -91,6 +111,10 @@ public class Userdata : ScriptableObject
         set
         {
             mapShards = value;
+#if UNITY_EDITOR
+            UnityEditor.EditorUtility.SetDirty(this);
+            UnityEditor.AssetDatabase.SaveAssets();
+#endif
             UpdateCurrencyUI();
             OnMapShardsChanged?.Invoke();
         }
