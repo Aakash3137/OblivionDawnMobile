@@ -170,6 +170,13 @@ public class AbilityTargetingSystem : MonoBehaviour
             Stats stats = col.GetComponent<Stats>();
             if (stats == null || stats.side != Side.Enemy)
                 continue;
+            
+            if (currentAbility.type == SpecialAbilityType.Lightning)
+            {
+                if (col.GetComponent<BuildingStats>() != null)
+                    continue;
+            }
+
 
             float distance = Vector3.Distance(targetWorldPos, col.transform.position);
             float finalDamage = 0f;

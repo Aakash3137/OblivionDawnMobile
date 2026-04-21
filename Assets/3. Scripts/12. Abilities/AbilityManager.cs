@@ -56,8 +56,8 @@ public class AbilityManager : MonoBehaviour
                 cooldownTimers[ability] = 0f;
                 RestoreButton(ability);
 
-                if (AbilitySetController.Instance != null)
-                    AbilitySetController.Instance.OnAbilityCooldownEnded();
+                //if (AbilitySetController.Instance != null)
+                    //AbilitySetController.Instance.OnAbilityCooldownEnded();
             }
         }
 
@@ -224,7 +224,7 @@ public class AbilityManager : MonoBehaviour
 
         if (button != null)
         {
-            button.onClick.AddListener(() => ActivateAbility(ability));
+            //button.onClick.AddListener(() => ActivateAbility(ability));
 
             abilityButtonMap[ability] = button;
             abilityImageMap[ability] = buttonImage;
