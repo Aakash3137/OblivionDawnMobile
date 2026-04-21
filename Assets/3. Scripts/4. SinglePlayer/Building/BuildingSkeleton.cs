@@ -71,7 +71,7 @@ public class BuildingSkeleton : MonoBehaviour
         graphicObject.SetActive(true);
     }
 
-#region Click Event
+#region Click Event & Repair
     RepairButtonHandler RepairObj = null;
     void OnMouseDown()
     {
@@ -81,6 +81,7 @@ public class BuildingSkeleton : MonoBehaviour
         if(RepairObj == null)
             return;
         
+        RepairObj.CurrentWall = GetWallParentFromBuilding(gameObject);
         if(GenericComponents[2].GetComponent<Stats>().currentHealth > GenericComponents[2].GetComponent<Stats>().basicStats.maxHealth/2)
             RepairObj.Repairbtn.interactable = false;
            else
@@ -93,6 +94,17 @@ public class BuildingSkeleton : MonoBehaviour
     {
         yield return new WaitForSeconds(3f);
         RepairManager.Instance.OnClickRepairBtnClose();
+    }
+
+    public static WallParent GetWallParentFromBuilding(GameObject building)
+    {
+        WallParent wallParent = building.GetComponentInChildren<WallParent>();
+        if (wallParent == null)
+        {
+            Debug.Log($"<color=yellow>No WallParent found in children of {building.name}</color>");
+            return null;
+        }
+        return wallParent;
     }
     #endregion
 }

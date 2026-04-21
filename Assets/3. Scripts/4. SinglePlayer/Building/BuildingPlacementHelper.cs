@@ -7,7 +7,7 @@ public class BuildingPlacementHelper : MonoBehaviour
     private Vector2Int currentCoord;
     private CubeGridManager cgmInstance;
     [SerializeField] private List<Tile> neighborTiles = new List<Tile>();
-    internal Tile currentTile;
+    internal static Tile currentTile;
 
 
     private void Awake()
@@ -41,7 +41,10 @@ public class BuildingPlacementHelper : MonoBehaviour
                 neighborTiles.Add(tile);
         }
     }
-
+    public static Tile GetTile()
+    {
+        return currentTile;
+    }
     public void ActivateNeighbors()
     {
         if (neighborTiles.Count == 0)

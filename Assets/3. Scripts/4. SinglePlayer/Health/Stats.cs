@@ -82,7 +82,21 @@ public class Stats : MonoBehaviour
         {
            //callRepair();
             // RepairObj.PlayShow();
+            FindRepairButton();
         }
+    }
+
+    void FindRepairButton()
+    {
+                RepairObj = GetComponentInChildren <RepairButtonHandler>();
+
+                if(RepairObj != null)
+                {
+                    if(currentHealth < basicStats.maxHealth/2)
+                    {
+                        RepairObj.Repairbtn.interactable = true;
+                    }
+                }
     }
 
     void callRepair()
