@@ -86,9 +86,6 @@ public class EnemyAIHandler : MonoBehaviour
     // Enemy Stance variable
     public UnitStance CurrentEnemyStance { get; private set; } = UnitStance.Attacking;
     private float lastStanceChangeTime = -999f;
-    public Image StanceImg;
-    public Sprite AttackSprite;
-    public Sprite DefendSprite;
 
     private bool defendLocked = false;
     private float lastDefendEnterTime = -999f;

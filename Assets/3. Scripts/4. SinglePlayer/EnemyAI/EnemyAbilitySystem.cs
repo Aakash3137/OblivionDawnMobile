@@ -17,13 +17,18 @@ public class EnemyAbilitySystem : MonoBehaviour
     public float maxCharge = 100f;
     public float chargePerKill = 5f;
 
+    [Header("Ability Choice Settings")]
+    [Range(0f, 100f)]
+    public float specialAbilityChance = 01f;
+
     public LayerMask playerLayer;
     public float scanRadius = 50f;
-    public int scanSamples = 20;
     [SerializeField] private Transform scanCenter;
     
     private bool isCasting = false;
     private int abilityIndex = 0;
+    private bool abilityQueued = false;
+    [SerializeField]private List<AbilitySO> enemyUnitAbilities = new List<AbilitySO>();
 
     private void OnEnable()
     {
@@ -42,8 +47,9 @@ public class EnemyAbilitySystem : MonoBehaviour
         currentCharge += stats.populationCost * chargePerKill;
         currentCharge = Mathf.Clamp(currentCharge, 0f, maxCharge);
 
-        if (currentCharge >= maxCharge && !isCasting)
+        if (!isCasting && currentCharge >= maxCharge)
         {
+            abilityQueued = true;
             StartCoroutine(CastAbilityRoutine());
         }
     }
@@ -54,23 +60,39 @@ public class EnemyAbilitySystem : MonoBehaviour
 
         yield return new WaitForSeconds(Random.Range(1f, 2f));
 
-        SpecialAbilityData ability = PickAbility();
-        if (ability == null)
+        float roll = Random.Range(0f, 100f);
+
+        bool trySpecial = currentCharge >= maxCharge && roll < specialAbilityChance;
+
+        if (trySpecial)
         {
-            isCasting = false;
-            yield break;
+            SpecialAbilityData specialAbility = PickSpecialAbility();
+
+            if (specialAbility != null)
+            {
+                Vector3 bestTarget = FindBestTargetPosition(specialAbility.damageArea);
+                ExecuteSpecialAbility(specialAbility, bestTarget);
+
+                currentCharge = 0f;
+            }
         }
+        else
+        {
+            AbilitySO unitAbility = PickUnitAbility();
 
-        Vector3 bestTarget = FindBestTargetPosition(ability.damageArea);
+            if (unitAbility != null)
+            {
+                ExecuteUnitAbility(unitAbility);
 
-        ExecuteAbility(ability, bestTarget);
-
-        currentCharge = 0f;
+                currentCharge -= unitAbility.abilityCost * 20f;
+                currentCharge = Mathf.Max(0f, currentCharge);
+            }
+        }
 
         isCasting = false;
     }
 
-    SpecialAbilityData PickAbility()
+    SpecialAbilityData PickSpecialAbility()
     {
         var abilities = GetCurrentFactionAbilities();
 
@@ -85,6 +107,44 @@ public class EnemyAbilitySystem : MonoBehaviour
             abilityIndex = (abilityIndex + 1) % abilities.Count;
 
         return ability;
+    }
+
+    AbilitySO PickUnitAbility()
+    {
+        CollectEnemyUnitAbilities();
+
+        if (enemyUnitAbilities.Count == 0)
+            return null;
+
+        List<AbilitySO> affordableAbilities = new List<AbilitySO>();
+        foreach (var ability in enemyUnitAbilities)
+        {
+            if (currentCharge >= ability.abilityCost * 20f)
+                affordableAbilities.Add(ability);
+        }
+
+        if (affordableAbilities.Count == 0)
+            return null;
+
+        return affordableAbilities[Random.Range(0, affordableAbilities.Count)];
+    }
+
+    void CollectEnemyUnitAbilities()
+    {
+        enemyUnitAbilities.Clear();
+
+        var enemyUnits = GameplayRegistry.GetUnits(Side.Enemy);
+        foreach (var unit in enemyUnits)
+        {
+            if (unit == null || unit.unitProduceSO == null || unit.unitProduceSO.abilities == null)
+                continue;
+
+            foreach (var ability in unit.unitProduceSO.abilities)
+            {
+                if (ability.abilityType == AbilityType.Active && !enemyUnitAbilities.Contains(ability))
+                    enemyUnitAbilities.Add(ability);
+            }
+        }
     }
 
     List<SpecialAbilityData> GetCurrentFactionAbilities()
@@ -117,7 +177,7 @@ public class EnemyAbilitySystem : MonoBehaviour
                 int count = CountUnitsInRadius(point, innerRadius);
 
                 //  draw every scan circle
-                DebugDrawCircle(point, innerRadius, Color.red);
+                //DebugDrawCircle(point, innerRadius, Color.red);
 
                 if (count > maxCount)
                 {
@@ -128,7 +188,7 @@ public class EnemyAbilitySystem : MonoBehaviour
         }
 
         //  highlight final best target
-        DebugDrawCircle(bestPos, innerRadius, Color.green);
+        //DebugDrawCircle(bestPos, innerRadius, Color.green);
 
         return bestPos;
     }
@@ -146,7 +206,7 @@ public class EnemyAbilitySystem : MonoBehaviour
         return count;
     }
 
-    void ExecuteAbility(SpecialAbilityData ability, Vector3 targetPos)
+    void ExecuteSpecialAbility(SpecialAbilityData ability, Vector3 targetPos)
     {
         targetPos += Vector3.up * 0.5f;
 
@@ -184,6 +244,50 @@ public class EnemyAbilitySystem : MonoBehaviour
 
             stats.TakeDamage(finalDamage);
         }
+    }
+
+    void ExecuteUnitAbility(AbilitySO ability)
+    {
+        List<AbilityController> targets = GetAbilityTargets(ability);
+
+        foreach (var controller in targets)
+        {
+            controller.ActivateAbility(ability);
+        }
+    }
+
+    List<AbilityController> GetAbilityTargets(AbilitySO ability)
+    {
+        List<AbilityController> targets = new List<AbilityController>();
+
+        List<UnitStats> unitsToCheck = ability.abilityScope == AbilityScope.Personal
+            ? GameplayRegistry.GetUnits(Side.Enemy)
+            : GameplayRegistry.AllUnits;
+
+        foreach (var unit in unitsToCheck)
+        {
+            if (unit == null) continue;
+            if (!unit.TryGetComponent(out AbilityController controller)) continue;
+
+            switch (ability.targetType)
+            {
+                case AbilityTargetType.All:
+                    targets.Add(controller);
+                    break;
+
+                case AbilityTargetType.UnitClass:
+                    if (unit.unitType == ability.targetUnitType)
+                        targets.Add(controller);
+                    break;
+
+                case AbilityTargetType.UnitName:
+                    if (unit.gameUnitName == ability.targetUnitName)
+                        targets.Add(controller);
+                    break;
+            }
+        }
+
+        return targets;
     }
     
     void DebugDrawCircle(Vector3 center, float radius, Color color)
