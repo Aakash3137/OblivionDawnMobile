@@ -48,7 +48,7 @@ public class RepairButtonHandler : MonoBehaviour
     {
         IsReady = true;
         PlayHide();
-        _wallPrefab = allBuildingData.wallParentBuildings[(int)GameData.playerFaction].wallParentBuilding;
+        _wallPrefab = allBuildingData.wallParentBuilding[GameData.playerFaction];
     }
 
     void Start()
