@@ -20,7 +20,8 @@ public class EnemyAbilitySystem : MonoBehaviour
     public LayerMask playerLayer;
     public float scanRadius = 50f;
     public int scanSamples = 20;
-
+    [SerializeField] private Transform scanCenter;
+    
     private bool isCasting = false;
     private int abilityIndex = 0;
 
@@ -96,45 +97,41 @@ public class EnemyAbilitySystem : MonoBehaviour
         return null;
     }
 
-    Vector3 FindBestTargetPosition(float radius)
+    Vector3 FindBestTargetPosition(float abilityRadius)
     {
-        Collider[] allPlayers = Physics.OverlapSphere(transform.position, scanRadius, playerLayer);
-
-        if (allPlayers.Length == 0)
+        if (scanCenter == null)
             return transform.position;
 
-        Vector3 bestPos = transform.position;
-        int maxHits = 0;
+        Vector3 bestPos = scanCenter.position;
+        int maxCount = 0;
 
-        foreach (var unit in allPlayers)
+        float innerRadius = abilityRadius * 0.5f;
+        float step = innerRadius;
+
+        for (float x = -scanRadius; x <= scanRadius; x += step)
         {
-            Vector3 center = unit.transform.position;
-            int count = CountUnitsInRadius(center, radius);
-
-            if (count > maxHits)
+            for (float z = -scanRadius; z <= scanRadius; z += step)
             {
-                maxHits = count;
-                bestPos = center;
+                Vector3 point = scanCenter.position + new Vector3(x, 0f, z);
+
+                int count = CountUnitsInRadius(point, innerRadius);
+
+                //  draw every scan circle
+                DebugDrawCircle(point, innerRadius, Color.red);
+
+                if (count > maxCount)
+                {
+                    maxCount = count;
+                    bestPos = point;
+                }
             }
         }
 
-        for (int i = 0; i < scanSamples; i++)
-        {
-            Vector3 randomPoint = transform.position + Random.insideUnitSphere * scanRadius;
-            randomPoint.y = transform.position.y;
-
-            int count = CountUnitsInRadius(randomPoint, radius);
-
-            if (count > maxHits)
-            {
-                maxHits = count;
-                bestPos = randomPoint;
-            }
-        }
+        //  highlight final best target
+        DebugDrawCircle(bestPos, innerRadius, Color.green);
 
         return bestPos;
     }
-
     int CountUnitsInRadius(Vector3 center, float radius)
     {
         Collider[] nearby = Physics.OverlapSphere(center, radius, playerLayer);
@@ -163,6 +160,12 @@ public class EnemyAbilitySystem : MonoBehaviour
             Stats stats = col.GetComponent<Stats>();
             if (stats == null || stats.side != Side.Player)
                 continue;
+            
+            if (ability.type == SpecialAbilityType.Lightning)
+            {
+                if (col.GetComponent<BuildingStats>() != null)
+                    continue;
+            }
 
             float distance = Vector3.Distance(targetPos, col.transform.position);
             float radius = ability.damageArea;
@@ -180,6 +183,27 @@ public class EnemyAbilitySystem : MonoBehaviour
                 finalDamage = baseDamage * 0.2f;
 
             stats.TakeDamage(finalDamage);
+        }
+    }
+    
+    void DebugDrawCircle(Vector3 center, float radius, Color color)
+    {
+        center.y += 1.5f;
+
+        int segments = 32;
+        float angleStep = 2f * Mathf.PI / segments;
+
+        Vector3 prevPoint = center + new Vector3(Mathf.Cos(0), 0, Mathf.Sin(0)) * radius;
+
+        for (int i = 1; i <= segments; i++)
+        {
+            float angle = i * angleStep;
+
+            Vector3 nextPoint = center + new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * radius;
+
+            Debug.DrawLine(prevPoint, nextPoint, color, 5f, false);
+
+            prevPoint = nextPoint;
         }
     }
 }
