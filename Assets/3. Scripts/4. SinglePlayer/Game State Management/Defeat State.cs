@@ -9,10 +9,17 @@ public class DefeatState : GameState
     {
         Time.timeScale = 0f;
 
+        GoogleAdMobHandler.Instance.ShowRewardedAd();
+
         if (instantiatedCanvas != null)
             instantiatedCanvas.gameObject.SetActive(true);
         else
             instantiatedCanvas = Instantiate(gameOverCanvas, Vector3.zero, Quaternion.identity);
+    }
+
+    public void OnClickSkip()
+    {
+        
     }
 
     public override void OnStateExit()

@@ -34,7 +34,8 @@ public class RepairButtonHandler : MonoBehaviour
     private Tile currentTile;
     private float _wallYOffset = 1f;
 
-    [SerializeField] private WallParent _wallPrefab, CurrentWall;
+    [SerializeField] internal WallParent _wallPrefab, CurrentWall;
+    [SerializeField] private AllBuildingData allBuildingData;
     private Transform placedBuilding;
     private bool _mainWallPlaced = false;
     public BuildingPlacementHelper BuildingHelper;
@@ -46,14 +47,13 @@ public class RepairButtonHandler : MonoBehaviour
     void OnEnable()
     {
         IsReady = true;
-       PlayHide();
+        PlayHide();
+        _wallPrefab = allBuildingData.wallParentBuildings[(int)GameData.playerFaction].wallParentBuilding;
     }
 
     void Start()
     {
         CheckIFEnemy();
-        placedBuilding = StatsData.transform;
-        CurrentWall = StatsData.GetComponentInChildren<WallParent>();
     }
 
     private void OnMouseDown() 
@@ -135,10 +135,16 @@ public class RepairButtonHandler : MonoBehaviour
 
         StatsData.HealthRepair();
         PlayHide();
-        // PlaceWalls();
+        if(CurrentWall != null)
+        {
+            LastWallPosition = CurrentWall.transform.position;
+            Destroy(CurrentWall.gameObject);
+        }
+        
+        PlaceWalls();
         StartCoroutine(CoolDownTimerStart());
     }
-
+    private Vector3 LastWallPosition;
     IEnumerator CoolDownTimerStart()
     {
         IsReady = false;
@@ -153,7 +159,7 @@ public class RepairButtonHandler : MonoBehaviour
     #region Repair Wall
     private void PlaceWalls()
     {
-        currentTile = BuildingHelper.currentTile;
+        currentTile = BuildingPlacementHelper.GetTile();
         Vector3 _currentTileCords = currentTile.transform.position;
         var cgmInstance = CubeGridManager.Instance;
         Vector2Int currentGrid = cgmInstance.WorldToGrid(_currentTileCords);
@@ -172,7 +178,13 @@ public class RepairButtonHandler : MonoBehaviour
         if(CurrentWall!= null)
             Destroy(CurrentWall.gameObject);
         
-        CurrentWall = Instantiate(_wallPrefab, spawnPos, Quaternion.identity, placedBuilding.transform);
+        Debug.Log("Wall Placed at " + spawnPos);
+        Debug.Log("Current Tile: " + currentTile.name);
+        Debug.Log("Wall Prefab: " + _wallPrefab.name);
+        Debug.Log("Placed Building: " + placedBuilding);
+        CurrentWall = Instantiate(_wallPrefab, spawnPos, Quaternion.identity, StatsData.transform);
+        Debug.Log("Current Wall: " + CurrentWall.name);
+        Debug.Log("Adjacent Tiles: " + adjacentTiles.Length);
 
         for (int i = 0; i < adjacentTiles.Length; i++)
         {
