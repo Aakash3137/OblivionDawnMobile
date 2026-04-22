@@ -45,30 +45,41 @@ public class TopPanelHandler : MonoBehaviour
 
     private void OnClickProfileButton()
     {
+        AudioManager.PlayOneShot(GameAudioType.ButtonClick);
+
         throw new NotImplementedException();
     }
 
     private void OnClickHeroJourneyButton()
     {
-        throw new NotImplementedException();
+        AudioManager.PlayOneShot(GameAudioType.ButtonClick);
+
+        var heroJourneyPanel = HeroJourneyPanelManager.Instance;
+
+        if (heroJourneyPanel != null)
+            heroJourneyPanel.OpenJourneyPanel();
+        else
+            Debug.LogError("Hero Journey Panel Manager Handler is null");
     }
 
     private void OnClickSettingButton()
     {
+        AudioManager.PlayOneShot(GameAudioType.ButtonClick);
+
         throw new NotImplementedException();
     }
 
     private void OnClickBuyButton()
     {
+        AudioManager.PlayOneShot(GameAudioType.ButtonClick);
+
         var centerScrollPanel = CenterScrollHandler.Instance;
 
         if (centerScrollPanel != null)
             centerScrollPanel.SetPanel((int)MainPanels.Shop);
         else
-            Debug.LogError("Bottom Panel Handler is null");
+            Debug.LogError("Center Scroll Handler is null");
     }
-
-
     private void UpdateGemText(int value)
     {
         diamondText.SetText("{0}", value);

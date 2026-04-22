@@ -60,7 +60,7 @@ public class LevelData : ScriptableObject
         PlayerXP += amount;
     }
 
-    public void GenrateLevel(LevelBox prefab, Transform parent)
+    public void GenerateLevel(LevelBox prefab, Transform parent)
     {
         if (xpRequirements.Count == 0)
             return;
