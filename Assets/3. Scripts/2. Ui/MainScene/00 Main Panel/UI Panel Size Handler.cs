@@ -19,7 +19,7 @@ public class UIPanelSizeHandler : MonoBehaviour
             canvasRect = canvas.rootCanvas.GetComponent<RectTransform>();
     }
 
-    private void Start()
+    private void OnEnable()
     {
         if (resizePanel)
             SetRectSize();

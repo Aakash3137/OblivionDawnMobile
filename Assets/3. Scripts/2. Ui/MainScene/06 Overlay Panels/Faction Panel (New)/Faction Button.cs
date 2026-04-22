@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class FactionButton : MonoBehaviour
 {
-    [SerializeField] private FactionScrollPanelManager fspManager;
+    [SerializeField] private FactionScrollHandler fspManager;
     private Button button;
 
 

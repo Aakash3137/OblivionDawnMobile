@@ -99,9 +99,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5141272103494573985}
-  - component: {fileID: 5979564859826474722}
   m_Layer: 5
-  m_Name: 02 Level
+  m_Name: 02 Map Level Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -119,7 +118,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5303199989740215721}
+  - {fileID: 1300481571893142863}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -127,36 +126,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &5979564859826474722
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 276106459246395487}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18f1e63ac99476940822b30dd64a778f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mapLevelDataSO:
-  - {fileID: 11400000, guid: 5feb46a47154af7458ecf915fc1a9a5c, type: 2}
-  - {fileID: 11400000, guid: 5a5c801a44ab3e94486177756b8cf069, type: 2}
-  - {fileID: 11400000, guid: 59f0168c96dc94b429fb8d3421396a97, type: 2}
-  - {fileID: 11400000, guid: 0094358042f00104b9c377eab96963d3, type: 2}
-  - {fileID: 11400000, guid: 27c6f52ab88bfd54897d305bc1d723c2, type: 2}
-  - {fileID: 11400000, guid: c2216a53847a3a646826cd6085660486, type: 2}
-  - {fileID: 11400000, guid: c2e7486c9ff368c4d9026241756055cf, type: 2}
-  - {fileID: 11400000, guid: 9525716cba78cbb4ab4c55ae7df1bf8c, type: 2}
-  - {fileID: 11400000, guid: feb1ee2ea217fd34a95fc5a64185a7a7, type: 2}
-  - {fileID: 11400000, guid: bac4c21713f639e41bf014e4360592ba, type: 2}
-  - {fileID: 11400000, guid: 0112f68f4c75635408839551fbf8d293, type: 2}
-  - {fileID: 11400000, guid: 36a50d01f71f82843b3c7c9643878706, type: 2}
-  - {fileID: 11400000, guid: c9d1479d5ab21684cb7e63c21d812485, type: 2}
-  - {fileID: 11400000, guid: 42c530a7888ee2c44b10e4f6ea3994d3, type: 2}
-  - {fileID: 11400000, guid: b29abd72bf4833f41bbf7d15007ee4b8, type: 2}
-  mapLevelBlockPrefab: {fileID: 3817252663897581792, guid: 5190f65400e629c48b1cbc10c7c9297e, type: 3}
-  mapLevelBlockContainer: {fileID: 3788490370717297449}
 --- !u!1 &1912698336401443296
 GameObject:
   m_ObjectHideFlags: 0
@@ -307,6 +276,73 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &4175911674208497434
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1300481571893142863}
+  - component: {fileID: 2601374393861443905}
+  m_Layer: 5
+  m_Name: Level Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1300481571893142863
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4175911674208497434}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 5303199989740215721}
+  m_Father: {fileID: 5141272103494573985}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2601374393861443905
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4175911674208497434}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18f1e63ac99476940822b30dd64a778f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mapLevelDataSO:
+  - {fileID: 11400000, guid: 5feb46a47154af7458ecf915fc1a9a5c, type: 2}
+  - {fileID: 11400000, guid: 5a5c801a44ab3e94486177756b8cf069, type: 2}
+  - {fileID: 11400000, guid: 59f0168c96dc94b429fb8d3421396a97, type: 2}
+  - {fileID: 11400000, guid: 0094358042f00104b9c377eab96963d3, type: 2}
+  - {fileID: 11400000, guid: 27c6f52ab88bfd54897d305bc1d723c2, type: 2}
+  - {fileID: 11400000, guid: c2216a53847a3a646826cd6085660486, type: 2}
+  - {fileID: 11400000, guid: c2e7486c9ff368c4d9026241756055cf, type: 2}
+  - {fileID: 11400000, guid: 9525716cba78cbb4ab4c55ae7df1bf8c, type: 2}
+  - {fileID: 11400000, guid: feb1ee2ea217fd34a95fc5a64185a7a7, type: 2}
+  - {fileID: 11400000, guid: bac4c21713f639e41bf014e4360592ba, type: 2}
+  - {fileID: 11400000, guid: 0112f68f4c75635408839551fbf8d293, type: 2}
+  - {fileID: 11400000, guid: 36a50d01f71f82843b3c7c9643878706, type: 2}
+  - {fileID: 11400000, guid: c9d1479d5ab21684cb7e63c21d812485, type: 2}
+  - {fileID: 11400000, guid: 42c530a7888ee2c44b10e4f6ea3994d3, type: 2}
+  - {fileID: 11400000, guid: b29abd72bf4833f41bbf7d15007ee4b8, type: 2}
+  mapLevelBlockPrefab: {fileID: 3817252663897581792, guid: 5190f65400e629c48b1cbc10c7c9297e, type: 3}
+  mapLevelBlockContainer: {fileID: 3788490370717297449}
 --- !u!1 &4744552684043439158
 GameObject:
   m_ObjectHideFlags: 0
@@ -333,13 +369,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4744552684043439158}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7723771513353833716}
-  m_Father: {fileID: 5141272103494573985}
+  m_Father: {fileID: 1300481571893142863}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}

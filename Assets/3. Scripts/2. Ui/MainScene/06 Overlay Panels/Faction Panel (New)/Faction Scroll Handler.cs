@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FactionScrollPanelManager : MonoBehaviour
+public class FactionScrollHandler : MonoBehaviour
 {
     [Space(10)]
     [SerializeField] private float mainCardScrollSpeed = 50f;
