@@ -128,7 +128,7 @@ public class EnemyAIHandler : MonoBehaviour
         else
             Destroy(gameObject);
 
-        GameData.enemyFaction = enemyFactionName;
+        enemyFactionName = GameData.enemyFaction;
     }
 
     void Start()
@@ -139,11 +139,7 @@ public class EnemyAIHandler : MonoBehaviour
             return;
         }
 
-        if (MenuManager.Instance != null)
-        {
-            AIPersonalityEnum chosen = MenuManager.Instance.SelectedPersonalityFromMenu();
-            currentPersonality = AIPersonalities.Find(p => p.personalityName == chosen);
-        }
+        currentPersonality = AIPersonalities.Find(p => p.difficulty == GameData.difficulty && p.playStyle == GameData.playStyle);
 
         //Setting spawn interval
         currentSpawnInterval = currentPersonality.spawnInterval;
@@ -563,15 +559,15 @@ public class EnemyAIHandler : MonoBehaviour
         // Fallback to old logic
         switch (currentPersonality.playStyle)
         {
-            case PlayStyle.Attack:
+            case PlayStyle.Aggressive:
                 category = BuildingCategory.Unit;
                 return GetWeightedUnitBuilding();
 
-            case PlayStyle.Defence:
+            case PlayStyle.Defensive:
                 category = BuildingCategory.Defense;
                 return GetWeightedDefenseBuilding();
 
-            case PlayStyle.Mix:
+            case PlayStyle.Balanced:
                 if (unitBuilt <= defenseBuilt)
                 {
                     category = BuildingCategory.Unit;

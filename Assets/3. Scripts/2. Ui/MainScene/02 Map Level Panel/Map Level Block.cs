@@ -6,24 +6,21 @@ public class MapLevelBlock : MonoBehaviour
 {
     [SerializeField] private TMP_Text levelText;
     [SerializeField] private Toggle toggleButton;
-    private MapLevelDataSO mapLevelDataSO;
     private int level;
 
-    public void Initialize(int level, ToggleGroup toggleGroup, MapLevelDataSO mapLevelDataSO)
+    public void Initialize(int level, ToggleGroup toggleGroup)
     {
         this.level = level;
         levelText.SetText("Level {0}", level);
         toggleButton.group = toggleGroup;
-        this.mapLevelDataSO = mapLevelDataSO;
 
         toggleButton.onValueChanged.AddListener(OnToggle);
     }
 
-    private void OnToggle(bool value)
+    private void OnToggle(bool isOn)
     {
-        if (value)
+        if (isOn)
         {
-            GameData.mapLevelData = mapLevelDataSO;
             GameData.mapLevel = level;
         }
     }

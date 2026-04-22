@@ -5,7 +5,6 @@ using UnityEngine.UI;
 public class MapLevelPanelManager : MonoBehaviour
 {
     public static MapLevelPanelManager Instance { get; private set; }
-    [SerializeField] private List<MapLevelDataSO> mapLevelDataSO;
     [SerializeField] private MapLevelBlock mapLevelBlockPrefab;
     [SerializeField] private ToggleGroup mapLevelBlockContainer;
 
@@ -15,22 +14,14 @@ public class MapLevelPanelManager : MonoBehaviour
             Instance = this;
         else
             Destroy(gameObject);
-
-        mapLevelDataSO.Sort((x, y) => x.level.CompareTo(y.level));
     }
 
     private void Start()
     {
-        for (int i = 0; i < mapLevelDataSO.Count; i++)
+        for (int i = 0; i < GameData.totalLevels; i++)
         {
             var mapLevelBlock = Instantiate(mapLevelBlockPrefab, mapLevelBlockContainer.transform);
-            mapLevelBlock.Initialize(i + 1, mapLevelBlockContainer, mapLevelDataSO[i]);
+            mapLevelBlock.Initialize(i + 1, mapLevelBlockContainer);
         }
     }
-
-    private void OnValidate()
-    {
-        mapLevelDataSO.Sort((x, y) => x.level.CompareTo(y.level));
-    }
-
 }

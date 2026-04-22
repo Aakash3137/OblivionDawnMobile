@@ -12,8 +12,6 @@ GameObject:
   - component: {fileID: 1194324727093015926}
   - component: {fileID: 1532302302415512196}
   - component: {fileID: 6856224047142067814}
-  - component: {fileID: 7316777321990446402}
-  - component: {fileID: 4002803638187835338}
   m_Layer: 5
   m_Name: Close Button
   m_TagString: Untagged
@@ -122,38 +120,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &7316777321990446402
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 289126016487298274}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreLayout: 1
-  m_MinWidth: -1
-  m_MinHeight: -1
-  m_PreferredWidth: -1
-  m_PreferredHeight: -1
-  m_FlexibleWidth: -1
-  m_FlexibleHeight: -1
-  m_LayoutPriority: 1
---- !u!114 &4002803638187835338
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 289126016487298274}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c17c44ae9d9c53148bf3990805bdfe82, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1932940795176108194
 GameObject:
   m_ObjectHideFlags: 0
@@ -311,6 +277,7 @@ GameObject:
   - component: {fileID: 4757993892463424952}
   - component: {fileID: 4799413418073848880}
   - component: {fileID: 2889604753949396774}
+  - component: {fileID: 2289143845234870666}
   m_Layer: 5
   m_Name: Faction Selection Panel
   m_TagString: Untagged
@@ -375,6 +342,21 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &2289143845234870666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4816919870224448866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ec9bf6620e7c0f4f93a4a584f06178a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playButton: {fileID: 4944460823183613319}
+  closeButton: {fileID: 6856224047142067814}
+  fspManager: {fileID: 4739772478258073820}
 --- !u!1 &5551409114232971146
 GameObject:
   m_ObjectHideFlags: 0
@@ -659,7 +641,6 @@ GameObject:
   - component: {fileID: 3145119468653368826}
   - component: {fileID: 2749761540031120258}
   - component: {fileID: 4944460823183613319}
-  - component: {fileID: 1556682008080607531}
   m_Layer: 5
   m_Name: Start Button
   m_TagString: Untagged
@@ -781,19 +762,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &1556682008080607531
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8660842172961766757}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ec9bf6620e7c0f4f93a4a584f06178a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fspManager: {fileID: 4739772478258073820}
 --- !u!1 &8892091844834085116
 GameObject:
   m_ObjectHideFlags: 0
