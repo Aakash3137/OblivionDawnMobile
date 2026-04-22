@@ -13,7 +13,7 @@ public class PhotonNetworkManager : MonoBehaviour
 
     [Header("References")]
     public PhotonEventsHandler eventsHandlerPrefab;
-    
+
     public bool AutoStart = false;
     public string LastSessionName;
 
@@ -23,8 +23,8 @@ public class PhotonNetworkManager : MonoBehaviour
     public event Action<string> OnLobbyCreated;
     public event Action OnLobbyJoined;
 
-    
-// Add this to Awake method:
+
+    // Add this to Awake method:
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -35,19 +35,19 @@ public class PhotonNetworkManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
-    
+
         // ✅ FIX: Add scene loaded callback
         SceneManager.sceneLoaded += OnSceneLoaded;
-    
+
         EnsureEventsHandler();
     }
 
-// Don't forget to unsubscribe
+    // Don't forget to unsubscribe
     private void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
-    
+
     private void Start()
     {
         if (AutoStart)
@@ -55,11 +55,11 @@ public class PhotonNetworkManager : MonoBehaviour
             CreateLobby();
         }
     }
-    
+
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         Debug.Log($"[PNM] Scene loaded: {scene.name}");
-        
+
         if (scene.name == "GameScene")
         {
             Invoke(nameof(RefreshAllPlayerUIs), 0.5f);
@@ -105,18 +105,18 @@ public class PhotonNetworkManager : MonoBehaviour
         Debug.Log($"[PNM] Creating lobby: {code}");
         StartRunner(Fusion.GameMode.Host, code).Forget();
 
-        HomeUIManager.Instance.UpdateSessionCode(code);
+        // HomeUIManager.Instance.UpdateSessionCode(code);
         OnLobbyCreated?.Invoke(code);
     }
 
     // ---------------------- PVP MATCHMAKING ----------------------
-    
+
     public void StartPvPMatchmaking()
     {
         // Use a fixed session name for PvP matchmaking so players can find each other
         string pvpSession = "PvP_Global_Match";
         LastSessionName = pvpSession;
-        
+
         Debug.Log($"[PNM] Starting PvP matchmaking: {pvpSession}");
         StartRunner(Fusion.GameMode.AutoHostOrClient, pvpSession).Forget();
     }
@@ -135,17 +135,17 @@ public class PhotonNetworkManager : MonoBehaviour
     }
 
     // ---------------------- START RUNNER ----------------------
-    
+
     private async Task StartRunner(Fusion.GameMode mode, string sessionName)
     {
         // Create runner if doesn't exist
         if (_runner == null)
-        { 
+        {
             _runner = gameObject.AddComponent<NetworkRunner>();
             _runner.ProvideInput = true;
         }
 
-        var sceneManager = GetComponent<NetworkSceneManagerDefault>() 
+        var sceneManager = GetComponent<NetworkSceneManagerDefault>()
                            ?? gameObject.AddComponent<NetworkSceneManagerDefault>();
 
         var startArgs = new StartGameArgs()
@@ -167,13 +167,13 @@ public class PhotonNetworkManager : MonoBehaviour
         if (result.Ok)
         {
             Debug.Log($"[PNM] Runner started successfully as {mode}. Room: {sessionName}");
-        
+
             // Register callbacks
             if (PhotonEventsHandler.Instance != null)
             {
                 _runner.AddCallbacks(PhotonEventsHandler.Instance);
             }
-        
+
             // ✅ ADD THIS: Register the SimplePlayerSpawner
             var spawner = FindObjectOfType<PlayerSpawner>();
             if (spawner != null)
@@ -186,7 +186,7 @@ public class PhotonNetworkManager : MonoBehaviour
         {
             Debug.LogError($"[PNM] FAILED: {result.ShutdownReason}");
             Debug.LogError($"[PNM] Error Details: {result.ErrorMessage}");
-            
+
             // Handle connection timeouts
             if (result.ShutdownReason.ToString().Contains("Timeout"))
             {
@@ -208,17 +208,17 @@ public class PhotonNetworkManager : MonoBehaviour
             _runner = null;
         }
     }
-    
+
     public void ForceCleanup()
     {
         Debug.Log("[PNM] Force cleanup - destroying all network components");
-        
+
         if (_runner != null)
         {
             Destroy(_runner);
             _runner = null;
         }
-        
+
         // Clean up any remaining network objects
         var networkObjects = FindObjectsOfType<NetworkObject>();
         foreach (var obj in networkObjects)
@@ -229,40 +229,40 @@ public class PhotonNetworkManager : MonoBehaviour
             }
         }
     }
-    
+
     public void HandleOpponentDisconnect()
     {
         Debug.Log("[PNM] Opponent disconnected - ending match");
-        
+
         // Leave current session
         LeaveSession();
-        
+
         // Show match over screen
         if (MatchOverManager.Instance != null)
         {
             MatchOverManager.Instance.ShowMatchOver("You Win!", "Opponent disconnected");
         }
     }
-    
+
     private void HandleConnectionError(string errorMessage)
     {
         Debug.LogWarning($"[PNM] Connection error: {errorMessage}");
-        
+
         // Go back to home and show error
-        if (HomeUIManager.Instance != null)
-        {
-            HomeUIManager.Instance.ShowError(errorMessage);
-            
-            // Switch back to home panel
-            GameObject loadingPanel = GameObject.Find("LoadingPanel");
-            GameObject homePanel = GameObject.Find("HomePanel");
-            
-            if (loadingPanel != null && homePanel != null)
-            {
-                loadingPanel.SetActive(false);
-                homePanel.SetActive(true);
-            }
-        }
+        // if (HomeUIManager.Instance != null)
+        // {
+        //     // HomeUIManager.Instance.ShowError(errorMessage);
+
+        //     // Switch back to home panel
+        //     GameObject loadingPanel = GameObject.Find("LoadingPanel");
+        //     GameObject homePanel = GameObject.Find("HomePanel");
+
+        //     if (loadingPanel != null && homePanel != null)
+        //     {
+        //         loadingPanel.SetActive(false);
+        //         homePanel.SetActive(true);
+        //     }
+        // }
     }
 }
 

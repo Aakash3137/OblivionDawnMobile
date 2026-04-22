@@ -43,7 +43,7 @@ public class DecManager : MonoBehaviour
 
     private void OnclickCloseBtn()
     {
-        HomeUIManager.Instance.ShowPanel(PanelName.Home);
+        // HomeUIManager.Instance.ShowPanel(PanelName.Home);
         AudioManager.PlayOneShot(GameAudioType.ButtonClick);
     }
 

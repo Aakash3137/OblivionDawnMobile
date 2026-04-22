@@ -41,6 +41,15 @@ public class GameModeManager : MonoBehaviour
     {
         GameData.gameMode = currentMode;
 
+        Debug.Log($"<color=green> [GameModeManager] Initializing game mode: {currentMode}</color>");
+
+        var factionPanel = FactionPanelManager.Instance;
+
+        if (factionPanel != null)
+            factionPanel.OpenFactionPanel();
+        else
+            Debug.LogError("Faction Panel is null");
+
         switch (currentMode)
         {
             case Mode.Death_Solo:
@@ -53,10 +62,6 @@ public class GameModeManager : MonoBehaviour
             case Mode.Scenario_Type:
                 break;
         }
-
-        FactionPanelManager.Instance.ShowPanel();
-
-        Debug.Log($"<color=green> [GameModeManager] Initializing game mode: {currentMode}</color>");
 
         AudioManager.PlayOneShot(GameAudioType.ButtonClick);
         HidePanel();

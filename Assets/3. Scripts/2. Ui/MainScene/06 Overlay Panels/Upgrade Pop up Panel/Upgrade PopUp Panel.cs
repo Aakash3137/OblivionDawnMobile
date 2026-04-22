@@ -545,7 +545,7 @@ public class UpgradePopUpPanel : MonoBehaviour
     {
         currentUpgradeCard = card;
     }
-    public void ShowPanel()
+    private void ShowPanel()
     {
         if (canvasGroup != null)
         {

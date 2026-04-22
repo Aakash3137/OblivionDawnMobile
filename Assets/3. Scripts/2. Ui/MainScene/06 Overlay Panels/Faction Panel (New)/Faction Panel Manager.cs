@@ -27,11 +27,9 @@ public class FactionPanelManager : MonoBehaviour
     private void OnClickPlayGame()
     {
         var faction = fspManager.GetCurrentFaction();
-
         GameData.playerFaction = faction;
 
         GameStateManager.Instance.ChangeState(GameStateEnum.LOADING);
-
         Debug.Log($"<color=green>[FactionPanelManager] Selected Faction: {faction}</color>");
 
         AudioManager.PlayOneShot(GameAudioType.ButtonClick);
@@ -43,8 +41,12 @@ public class FactionPanelManager : MonoBehaviour
         AudioManager.PlayOneShot(GameAudioType.ButtonClick);
         HidePanel();
     }
+    public void OpenFactionPanel()
+    {
+        ShowPanel();
+    }
 
-    public void ShowPanel()
+    private void ShowPanel()
     {
         if (canvasGroup == null)
             TryGetComponent(out canvasGroup);

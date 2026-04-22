@@ -51,7 +51,7 @@ public class JourneyManager : MonoBehaviour
     #region UI
     public void OnClickShowHomePage()
     {
-        HomeUIManager.Instance.ShowPanel(PanelName.Home);
+        // HomeUIManager.Instance.ShowPanel(PanelName.Home);
         //AudioManager.PlayAudioOnce(GameAudioType.ButtonClick);
     }
 

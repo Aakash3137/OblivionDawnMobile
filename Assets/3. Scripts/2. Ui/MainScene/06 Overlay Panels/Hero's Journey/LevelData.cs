@@ -13,7 +13,7 @@ public class LevelData : ScriptableObject
     {
         public List<TrackEntry> entries;
     }
-    
+
 
     [Header("References")]
     [SerializeField] private PlayerLevelData playerLevelData;
@@ -52,7 +52,7 @@ public class LevelData : ScriptableObject
                 currentLevel++;
         }
 
-        _Data.Level = currentLevel;
+        _Data.PlayerLevel = currentLevel;
     }
 
     public void SetXP(int amount)
@@ -85,7 +85,7 @@ public class LevelData : ScriptableObject
                     {
                         TrackEntryUI ui = Instantiate(trackEntryPrefab, parent);
 
-                        bool isLocked = level > _Data.Level;
+                        bool isLocked = level > _Data.PlayerLevel;
                         ui.Init(entry, isLocked);
                     }
                 }
@@ -100,7 +100,7 @@ public class LevelData : ScriptableObject
     {
         LevelBox box = Instantiate(prefab, parent);
 
-        bool isLocked = level > _Data.Level;
+        bool isLocked = level > _Data.PlayerLevel;
         var entry = playerLevelData.GetEntry(level);
 
         box.Init(level, isLocked, entry);

@@ -3,7 +3,6 @@ using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
 
-
 [CreateAssetMenu(fileName = "Userdata", menuName = "Userdata", order = 0)]
 public class Userdata : ScriptableObject
 {
@@ -23,12 +22,8 @@ public class Userdata : ScriptableObject
     [Header("Progression")]
     public PlayerLevelData levelData;
     [SerializeField] private int xp = 0;
-    [SerializeField, ReadOnly] public int level = 0;
+    [SerializeField, ReadOnly] public int playerLevel = 0;
 
-    public Action<int> OnXPChanged;
-    public Action<int> OnLevelChanged;
-
-    
     [Header("Daily Rewards")]
     public int CurrentDay = 1;
     public bool[] DayRewards = new bool[7];
@@ -37,13 +32,11 @@ public class Userdata : ScriptableObject
     public TMP_Text CoinTxt;
     public TMP_Text DiamondTxt;
 
-
     public Action<FactionName> OnFragmentsChanged;
-    public Action OnDiamondsChanged;
-    public Action OnMapShardsChanged;
-    public Action OnPlayerLevelChanged;
-
-    //public int Level = 1;
+    public Action<int> OnDiamondsChanged;
+    public Action<int> OnMapShardsChanged;
+    public Action<int> OnPlayerLevelChanged;
+    public Action<int> OnXPChanged;
 
     public int XP
     {
@@ -51,27 +44,27 @@ public class Userdata : ScriptableObject
         set
         {
             xp = value;
+            OnXPChanged?.Invoke(xp);
+
 #if UNITY_EDITOR
             UnityEditor.EditorUtility.SetDirty(this);
             UnityEditor.AssetDatabase.SaveAssets();
 #endif
-
-            OnXPChanged?.Invoke(xp);
         }
     }
 
-    public int Level
+    public int PlayerLevel
     {
-        get => level;
+        get => playerLevel;
         set
         {
-            level = value;
+            playerLevel = value;
+            OnPlayerLevelChanged?.Invoke(playerLevel);
+
 #if UNITY_EDITOR
             UnityEditor.EditorUtility.SetDirty(this);
             UnityEditor.AssetDatabase.SaveAssets();
 #endif
-
-            OnPlayerLevelChanged?.Invoke();
         }
     }
     public int Coins
@@ -84,8 +77,6 @@ public class Userdata : ScriptableObject
             UnityEditor.EditorUtility.SetDirty(this);
             UnityEditor.AssetDatabase.SaveAssets();
 #endif
-
-            UpdateCurrencyUI();
         }
     }
 
@@ -95,13 +86,12 @@ public class Userdata : ScriptableObject
         set
         {
             diamonds = value;
-            UpdateCurrencyUI();
+            OnDiamondsChanged?.Invoke(diamonds);
+
 #if UNITY_EDITOR
             UnityEditor.EditorUtility.SetDirty(this);
             UnityEditor.AssetDatabase.SaveAssets();
 #endif
-
-            OnDiamondsChanged?.Invoke();
         }
     }
 
@@ -111,49 +101,31 @@ public class Userdata : ScriptableObject
         set
         {
             mapShards = value;
+            OnMapShardsChanged?.Invoke(mapShards);
+
 #if UNITY_EDITOR
             UnityEditor.EditorUtility.SetDirty(this);
             UnityEditor.AssetDatabase.SaveAssets();
 #endif
-            UpdateCurrencyUI();
-            OnMapShardsChanged?.Invoke();
         }
     }
-
-
-
-    void UpdateCurrencyUI()
-    {
-        if (CoinTxt != null)
-            CoinTxt.text = Coins.ToString();
-
-        if (DiamondTxt != null)
-            DiamondTxt.text = Diamonds.ToString();
-    }
-
-
 
     [Button]
     public void AddFragments(FactionName faction, int amount)
     {
         fragments[(int)faction] += amount;
-
         OnFragmentsChanged?.Invoke(faction);
     }
-
-
     public void ConsumeFragments(FactionName faction, int amount)
     {
         fragments[(int)faction] -= amount;
-
         OnFragmentsChanged?.Invoke(faction);
+
 #if UNITY_EDITOR
         UnityEditor.EditorUtility.SetDirty(this);
         UnityEditor.AssetDatabase.SaveAssets();
 #endif
     }
-
-
     public int GetFragment(FactionName faction) => fragments[(int)faction];
 
     public void ResetData()

@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class SettingPanelScript : MonoBehaviour
 {
-    [Header ("Buttons")]
+    [Header("Buttons")]
     [SerializeField] private Button CloseButton;
     [SerializeField] private Button AudioBtn;
     [SerializeField] private Button VibrationBtn;
@@ -17,6 +17,6 @@ public class SettingPanelScript : MonoBehaviour
 
     public void OnClickClose()
     {
-        HomeUIManager.Instance.ShowPanel(PanelName.Home);
+        // HomeUIManager.Instance.ShowPanel(PanelName.Home);
     }
 }

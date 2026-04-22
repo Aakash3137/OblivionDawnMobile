@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BottomBarHandler : MonoBehaviour
+public class BottomPanelHandler : MonoBehaviour
 {
+    [Header("Shop = 0, Level = 1, Battle = 2, Upgrades = 3, Deck = 4 ")]
     [SerializeField] private Toggle[] toggles;
 
     private void Start()

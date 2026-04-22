@@ -10,6 +10,7 @@ public class CenterScrollHandler : MonoBehaviour
 
     [SerializeField] private RectTransform viewport;
     [SerializeField] private ScrollRect scrollRect;
+    [Header("Shop = 0, Level = 1, Battle = 2, Upgrades = 3, Deck = 4 ")]
     [SerializeField] private RectTransform[] menuPanels;
 
     [SerializeField, Space(10)] private float snapForce = 100f;
