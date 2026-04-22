@@ -34,7 +34,7 @@ public class DraggableObject : MonoBehaviour,
         canvasGroup.blocksRaycasts = false;
 
         // Move to top-most canvas automatically
-        transform.SetParent(HomeUIManager.Instance.transform, true);
+        // transform.SetParent(HomeUIManager.Instance.transform, true);
     }
 
     public void OnDrag(PointerEventData eventData)

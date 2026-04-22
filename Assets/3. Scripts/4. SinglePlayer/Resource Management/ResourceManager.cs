@@ -1,5 +1,4 @@
 
-using System;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -7,29 +6,26 @@ public class ResourceManager : MonoBehaviour
 {
     [Header("Global Resource Tick")]
     [field: SerializeField] public float globalTickTime { get; private set; }
+    [SerializeField, Header("Inclusive")] private int minStartAmount = 150;
+    [SerializeField, Header("Not Inclusive")] private int maxStartAmount = 351;
 
-    [Header("Set Starting Resources")]
-    public BuildCost[] startingResources;
+    [Header("Set Starting Resources"), ReadOnly] public BuildCost[] startingResources { get; private set; } = new BuildCost[0];
 
-    [Header("Current Resources"), ReadOnly, HideInInspector]
-    public BuildCost[] currentResources;
+    [Header("Current Resources"), ReadOnly] public BuildCost[] currentResources { get; private set; } = new BuildCost[0];
 
-    [Header("Max Resources (Capacity)"), ReadOnly, HideInInspector]
-    public BuildCost[] maxResources;
+    [Header("Max Resources (Capacity)"), ReadOnly] public BuildCost[] maxResources { get; private set; } = new BuildCost[0];
 
-    [Header("Generation Rates"), ReadOnly, HideInInspector]
-    public BuildCost[] currentGenerationRates;
+    [Header("Generation Rates"), ReadOnly] public BuildCost[] currentGenerationRates { get; private set; } = new BuildCost[0];
 
-    [Header("Resource Building Counts"), ReadOnly, HideInInspector]
-    public int[] resourceBuildingCounts;
+    [Header("Resource Building Counts"), ReadOnly] public int[] resourceBuildingCounts { get; private set; } = new int[0];
 
-    public Action OnResourcesChanged;
-    public Action GlobalResourceTick;
+
+    public System.Action OnResourcesChanged;
+    public System.Action GlobalResourceTick;
 
     private void Start()
     {
-        InitializeResources(startingResources);
-
+        InitializeStartingResources();
         _ = StartGlobalTick();
     }
 
@@ -47,21 +43,35 @@ public class ResourceManager : MonoBehaviour
     }
 
     #region  Helper Functions
-    public void InitializeResources(BuildCost[] resources)
+    private void InitializeStartingResources()
     {
-        currentResources = new BuildCost[resources.Length];
-        maxResources = new BuildCost[resources.Length];
-        currentGenerationRates = new BuildCost[resources.Length];
-        resourceBuildingCounts = new int[resources.Length];
+        var enumValues = ScenarioDataTypes._resourceEnumValues;
+        int resourceCount = enumValues.Length;
 
-        for (int i = 0; i < resources.Length; i++)
+        startingResources = new BuildCost[resourceCount];
+        currentResources = new BuildCost[resourceCount];
+        maxResources = new BuildCost[resourceCount];
+        currentGenerationRates = new BuildCost[resourceCount];
+        resourceBuildingCounts = new int[resourceCount];
+
+        for (int i = 0; i < resourceCount; i++)
         {
-            currentResources[i].resourceType = resources[i].resourceType;
-            maxResources[i].resourceType = resources[i].resourceType;
-            currentGenerationRates[i].resourceType = resources[i].resourceType;
+            var type = enumValues[i];
 
-            maxResources[i].resourceAmount = resources[i].resourceAmount;
-            currentResources[i].resourceAmount = resources[i].resourceAmount;
+            int randomAmount = Random.Range(minStartAmount, maxStartAmount);
+            randomAmount = Mathf.CeilToInt(randomAmount / 10f) * 10;
+
+            startingResources[i].resourceType = type;
+            startingResources[i].resourceAmount = randomAmount;
+
+            currentResources[i].resourceType = type;
+            currentResources[i].resourceAmount = randomAmount;
+
+            maxResources[i].resourceType = type;
+            maxResources[i].resourceAmount = randomAmount;
+
+            currentGenerationRates[i].resourceType = type;
+            currentGenerationRates[i].resourceAmount = 0;
         }
 
         ClampResources();
@@ -225,14 +235,16 @@ public class ResourceManager : MonoBehaviour
         OnResourcesChanged?.Invoke();
     }
 
-    void OnValidate()
+    [Button("DEBUG: Hack Resources")]
+    public void HackResources()
     {
-        var enumValues = Enum.GetValues(typeof(ScenarioResourceType));
+        for (int i = 0; i < currentResources.Length; i++)
+        {
+            currentResources[i].resourceAmount = 999;
+            maxResources[i].resourceAmount = 999;
+        }
 
-        startingResources = BuildCostUtils.ResizePreservingData(startingResources, enumValues.Length);
-
-        for (int i = 0; i < startingResources.Length; i++)
-            startingResources[i].resourceType = (ScenarioResourceType)enumValues.GetValue(i);
+        ClampResources();
     }
 
     [Button("DEBUG: Add Resources")]

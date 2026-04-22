@@ -1,19 +1,37 @@
 public static class GameData
 {
-    public static Mode gameMode = Mode.None;
-    public static FactionName playerFaction = FactionName.Futuristic;
+    public static Mode gameMode;
+    public static Difficulty difficulty;
+    public static PlayStyle playStyle;
+    public static FactionName playerFaction;
     public static FactionName enemyFaction;
-    public static int mapLevel = 1;
-    public static MapLevelDataSO mapLevelData = null;
+    public static int mapLevel;
+    public static int totalLevels;
 
     //  for Stat data
-    public static readonly int GameMaxDeckSize = 8;
-    public static readonly int GameMaxPopulation = 40;
-    public static int GameMaxObjectLevel = 20;
+    public static readonly int GameMaxDeckSize;
+    public static readonly int GameMaxPopulation;
+    public static int GameMaxObjectLevel;
 
 
     // should remove use of strings
     public static string GameModeType;
     public static string SelectedFactionName;
     public static MP_Faction SelectedMPFaction;
+
+    static GameData()
+    {
+        gameMode = Mode.None;
+        difficulty = Difficulty.Easy;
+        playStyle = PlayStyle.Aggressive;
+        playerFaction = FactionName.Futuristic;
+        enemyFaction = FactionName.Futuristic;
+
+        mapLevel = 1;
+        totalLevels = 15;
+
+        GameMaxDeckSize = 8;
+        GameMaxPopulation = 40;
+        GameMaxObjectLevel = 20;
+    }
 }

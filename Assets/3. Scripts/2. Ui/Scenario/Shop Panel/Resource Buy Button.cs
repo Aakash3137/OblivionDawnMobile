@@ -29,7 +29,7 @@ public class ResourceBuyButton : MonoBehaviour
 
             cost = 5;
             buttonText.SetText($"{cost}");
-            SetButtonInteractivity();
+            SetButtonInteractivity(userdata.Diamonds);
         }
 
         if (userdata != null)
@@ -37,9 +37,9 @@ public class ResourceBuyButton : MonoBehaviour
 
     }
 
-    private void SetButtonInteractivity()
+    private void SetButtonInteractivity(int diamonds)
     {
-        button.interactable = userdata.Diamonds >= cost;
+        button.interactable = diamonds >= cost;
     }
 
     public void Initialize(int cost, int amount, int resourceIndex = -1)
@@ -51,7 +51,7 @@ public class ResourceBuyButton : MonoBehaviour
         buttonText.SetText($"{cost}");
         button.onClick.AddListener(OnClickBuy);
 
-        SetButtonInteractivity();
+        SetButtonInteractivity(userdata.Diamonds);
     }
 
     private void OnClickBalanceResources()

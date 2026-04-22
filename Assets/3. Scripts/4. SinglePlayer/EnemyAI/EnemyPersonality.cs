@@ -1,7 +1,20 @@
 using System;
 using System.Collections.Generic;
-using ExitGames.Client.Photon.StructWrapping;
 using UnityEngine;
+
+public enum Difficulty
+{
+    Easy = 0,
+    Medium = 1,
+    Hard = 2
+}
+
+public enum PlayStyle
+{
+    Aggressive = 0,
+    Defensive = 1,
+    Balanced = 2
+}
 
 [CreateAssetMenu(fileName = "NewEnemyPersonality", menuName = "AI/Enemy Personality")]
 public class EnemyPersonality : ScriptableObject
@@ -26,7 +39,8 @@ public class EnemyPersonality : ScriptableObject
 
     [Header("Wall Strategy")]
     public bool useSmartWallStrategy = false;
-    public PlayStyle playStyle = PlayStyle.Mix;
+    public Difficulty difficulty = Difficulty.Medium;
+    public PlayStyle playStyle = PlayStyle.Balanced;
 
     [Header("Limits")]
     public bool reduceSpawningTime = false;
@@ -35,8 +49,6 @@ public class EnemyPersonality : ScriptableObject
 
     public int maxEnemyBuildings = 150;
 
-    [Header("Combat Behavior")]
-    public AICombatType combatType;
     [Range(0f, 2f)] public float ComparisonMatchValue = 1f;
 
     // When to attack

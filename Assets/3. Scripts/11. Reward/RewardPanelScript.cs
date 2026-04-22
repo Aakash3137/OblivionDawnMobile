@@ -7,11 +7,14 @@ using System.Collections.Generic;
 
 public class RewardPanelScript : MonoBehaviour
 {
+    public static RewardPanelScript Instance { get; private set; }
+    private CanvasGroup canvasGroup;
+
     [Header("References")]
     [SerializeField] private Userdata userdata;
     [SerializeField] private WeeklyRewardSO rewardData;
 
-    [SerializeField] private Button closeBtn;
+    [SerializeField] private Button closeButton;
     [SerializeField] private ScrollRect scrollRect;
 
     [SerializeField] private TMP_Text countdownText;
@@ -33,8 +36,18 @@ public class RewardPanelScript : MonoBehaviour
     // =============================
     // PANEL OPEN
     // =============================
+    private void Awake()
+    {
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
 
-    void OnEnable()
+        HidePanel();
+    }
+
+    // previously OnEnable  
+    public void OpenRewardPanel()
     {
         userdata.CurrentDay = Mathf.Clamp(userdata.CurrentDay, 1, 7);
 
@@ -42,11 +55,13 @@ public class RewardPanelScript : MonoBehaviour
         rewardData.UpdateRewardState(userdata);
         SetupTimer();
         ScrollToCurrentDay();
+
+        ShowPanel();
     }
 
     void Start()
     {
-        closeBtn.onClick.AddListener(OnClickCloseBtn);
+        closeButton.onClick.AddListener(OnClickClosePanel);
         rewardClaimBtn.onClick.AddListener(OnClaim);
 
         rewardPopup.SetActive(false);
@@ -81,7 +96,7 @@ public class RewardPanelScript : MonoBehaviour
 
         RefreshUI();
         ScrollToCurrentDay();
-        
+
     }
 
     // =============================
@@ -240,13 +255,38 @@ public class RewardPanelScript : MonoBehaviour
     // UI BUTTONS
     // =============================
 
-    void OnClickCloseBtn()
+    private void OnClickClosePanel()
     {
-        HomeUIManager.Instance.ShowPanel(PanelName.Home);
+        AudioManager.PlayOneShot(GameAudioType.ButtonClick);
+        HidePanel();
     }
 
     void OpenPopup()
     {
         rewardPopup.SetActive(true);
+    }
+    public void ShowPanel()
+    {
+        if (canvasGroup == null)
+            TryGetComponent(out canvasGroup);
+
+        canvasGroup.alpha = 1f;
+        canvasGroup.interactable = true;
+        canvasGroup.blocksRaycasts = true;
+    }
+
+    public void HidePanel()
+    {
+        if (canvasGroup == null)
+            TryGetComponent(out canvasGroup);
+
+        canvasGroup.alpha = 0f;
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+    }
+    private void OnDestroy()
+    {
+        rewardClaimBtn.onClick.RemoveListener(OnClaim);
+        closeButton.onClick.RemoveListener(OnClickClosePanel);
     }
 }

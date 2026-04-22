@@ -11,6 +11,6 @@ public class ShopManager : MonoBehaviour
 
     private void OnclickCloseBtn()
     {
-        HomeUIManager.Instance.ShowPanel(PanelName.Home);
+        // HomeUIManager.Instance.ShowPanel(PanelName.Home);
     }
 }

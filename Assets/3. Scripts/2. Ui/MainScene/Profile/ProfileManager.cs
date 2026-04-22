@@ -29,7 +29,7 @@ public class ProfileManager : MonoBehaviour
     {
         if (ProfileData.ProfilePicture != null)
         {
-            UserPic.sprite = ProfileData.ProfilePicture; 
+            UserPic.sprite = ProfileData.ProfilePicture;
             HomePic.sprite = ProfileData.ProfilePicture;
             profileEditData.EditorPic.sprite = ProfileData.ProfilePicture;
         }
@@ -39,7 +39,7 @@ public class ProfileManager : MonoBehaviour
             HomePic.sprite = ProfileData.defaultProfilePicture;
             profileEditData.EditorPic.sprite = ProfileData.defaultProfilePicture;
         }
-        
+
         NameText.text = ProfileData.UserName;
         Coins.text = ProfileData.Coins.ToString();
         Gems.text = ProfileData.Diamonds.ToString();
@@ -54,7 +54,7 @@ public class ProfileManager : MonoBehaviour
     }
     private void CloseProfileManager()
     {
-        HomeUIManager.Instance.ShowPanel(PanelName.Home);
+        // HomeUIManager.Instance.ShowPanel(PanelName.Home);
     }
 
     public void OpenEditProfilePanel()
@@ -99,7 +99,7 @@ public class ProfileManager : MonoBehaviour
     {
         MessageObject.text = message;
         MessageObject.color = color;
-        MessageObject .gameObject.SetActive(true);
+        MessageObject.gameObject.SetActive(true);
         yield return new WaitForSeconds(delay);
         MessageObject.text = "";
         MessageObject.gameObject.SetActive(false);
@@ -118,10 +118,8 @@ public class ProfileManager : MonoBehaviour
         ProfileData.ResetData();
         PlayerPrefs.DeleteAll();
         profileEditData.DeleteAlertPanel.SetActive(false);
-        HomeUIManager.Instance.ShowPanel(PanelName.Login);
+        // HomeUIManager.Instance.ShowPanel(PanelName.Login);
     }
-
-    
 }
 
 [System.Serializable]
@@ -130,7 +128,7 @@ public class ProfileEditData
     public TMP_InputField NameInputField;
     public string Birthday;
     public TMP_Text MessageTxt;
-    
+
 
     public TMP_Dropdown dateDD;
     public TMP_Dropdown monthDD;
@@ -142,7 +140,7 @@ public class ProfileEditData
     public Button DeleteButton;
     public Button ConfirmDeleteButton;
 
-    [Header ("Avatar Selection")]
+    [Header("Avatar Selection")]
     public List<Sprite> AvatarOptions;
     public List<ImageSelector> CharacterImages;
     public ImageSelector AvatarPrefab;
@@ -193,7 +191,7 @@ public class ProfileEditData
 
     void OnMonthChanged(int monthIndex)
     {
-        int month = monthIndex + 1; 
+        int month = monthIndex + 1;
         GenerateDateOptions(month);
     }
 
@@ -217,7 +215,7 @@ public class ProfileEditData
         switch (month)
         {
             case 1: return 31;
-            case 2: return 28; 
+            case 2: return 28;
             case 3: return 31;
             case 4: return 30;
             case 5: return 31;
@@ -234,16 +232,16 @@ public class ProfileEditData
 
     void GenerateCharacterImages(ProfileManager profileManager)
     {
-        if(AvatarParent.childCount > 0)
+        if (AvatarParent.childCount > 0)
         {
-            for(int i = AvatarParent.childCount -1; i >=0; i--)
+            for (int i = AvatarParent.childCount - 1; i >= 0; i--)
             {
                 GameObject.Destroy(AvatarParent.GetChild(i).gameObject);
             }
-        }   
+        }
         CharacterImages.Clear();
 
-        foreach(Sprite CharSprite in AvatarOptions)
+        foreach (Sprite CharSprite in AvatarOptions)
         {
             ImageSelector newAvatar = GameObject.Instantiate(AvatarPrefab, AvatarParent);
             newAvatar.name = "Avatar_" + CharSprite.name;
