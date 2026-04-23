@@ -141,6 +141,12 @@ public class EnemyAIHandler : MonoBehaviour
 
         currentPersonality = AIPersonalities.Find(p => p.difficulty == GameData.difficulty && p.playStyle == GameData.playStyle);
 
+        if (currentPersonality == null)
+        {
+            Debug.LogError("[EnemyAI] No personality found!");
+            return;
+        }
+
         //Setting spawn interval
         currentSpawnInterval = currentPersonality.spawnInterval;
 

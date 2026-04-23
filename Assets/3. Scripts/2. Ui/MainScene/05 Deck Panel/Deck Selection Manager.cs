@@ -21,7 +21,7 @@ public class DeckSelectionManager : MonoBehaviour
     [HideInInspector] public FactionName selectedFaction;
 
     private int maxEquipCount;
-    private int currentDeckIndex;
+    private int currentDeckIndex = 0;
     private int maxPopulation;
     private int currentPopulation;
     public int AvailablePopulation => maxPopulation - currentPopulation;
@@ -41,13 +41,11 @@ public class DeckSelectionManager : MonoBehaviour
             Instance = this;
         else
             Destroy(gameObject);
-    }
 
-    private void Start()
-    {
-        GenerateCards();
         // copy the reference for allFactionsDeckData to one in SO -> Load Data
         allFactionsDeckData = decSelectionDataSO.allFactionsDeckData;
+
+        GenerateCards();
 
 #if UNITY_EDITOR
         UnityEditor.EditorUtility.SetDirty(decSelectionDataSO);
