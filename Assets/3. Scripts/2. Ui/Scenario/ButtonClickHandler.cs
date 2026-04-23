@@ -16,6 +16,11 @@ public class ButtonClickHandler : MonoBehaviour
     {
         if(_Object == ObjectType.Remove)
         {
+            if(repairButtonHandler.IsMain)
+            {
+                Debug.Log("Main Wall Cannot Be Removed");
+                return;
+            }
             repairButtonHandler.StatsData.Die();
             Debug.Log("Remove");
             return;    

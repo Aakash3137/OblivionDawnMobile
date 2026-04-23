@@ -48,6 +48,9 @@ public class CameraPanningPerspective : MonoBehaviour
 
     void Update()
     {
+        if (GameStateManager.Instance.IsGameOver) 
+            return;
+
         PanCamera();
         ZoomCamera();
         ResetCamera();
@@ -79,12 +82,14 @@ public class CameraPanningPerspective : MonoBehaviour
             {
                 isPanning = true;
                 lastTouchGroundPoint = GetGroundPointFromScreen(touch.position);
+
             }
             else if (touch.phase == TouchPhase.Moved && isPanning)
             {
                 Vector3 current = GetGroundPointFromScreen(touch.position);
                 Vector3 delta = lastTouchGroundPoint - current;
                 MoveCamera(delta);
+
             }
             else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
             {
@@ -157,7 +162,8 @@ public class CameraPanningPerspective : MonoBehaviour
             Vector3 oldPosition = transform.position;
 
             transform.position += transform.forward * delta * touchZoomSpeed;
-
+            Debug.Log("Repair Close! Pinching detected. Closing Repair Button if open.");
+            RepairManager.Instance.OnClickRepairBtnClose();
             // Clamp
             Vector3 clampedPos = new Vector3(
                 Mathf.Clamp(transform.position.x, cameraMinBounds.x, cameraMaxBounds.x),
@@ -186,6 +192,8 @@ public class CameraPanningPerspective : MonoBehaviour
 
             transform.position += transform.forward * scroll * mouseZoomSpeed;
 
+            Debug.Log("Repair Close! Scrolling detected. Closing Repair Button if open.");
+            RepairManager.Instance.OnClickRepairBtnClose();
             // Clamp
             Vector3 clampedPos = new Vector3(
                 Mathf.Clamp(transform.position.x, cameraMinBounds.x, cameraMaxBounds.x),

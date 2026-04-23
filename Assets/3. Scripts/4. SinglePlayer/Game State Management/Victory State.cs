@@ -8,7 +8,12 @@ public class VictoryState : GameState
     public override void OnStateEnter()
     {
         Time.timeScale = 0f;
-        GoogleAdMobHandler.Instance.ShowRewardedAd();
+        GameStateManager.Instance.IsGameOver = true;
+        if (GoogleAdMobHandler.Instance != null)
+        {
+            GoogleAdMobHandler.Instance.ShowRewardedAd();
+        }
+        
         if (instantiatedCanvas != null)
             instantiatedCanvas.gameObject.SetActive(true);
         else

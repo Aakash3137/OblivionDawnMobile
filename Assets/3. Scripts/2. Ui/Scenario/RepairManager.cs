@@ -20,6 +20,9 @@ public class RepairManager : MonoBehaviour
 
 private void Update()
     {
+        if (GameStateManager.Instance.IsGameOver) 
+            return;
+        
         if (Application.isMobilePlatform)
         {
             if (Input.touchCount == 1)
@@ -49,7 +52,7 @@ private void Update()
 
         foreach (RaycastHit hit in hits)
         {
-            if (hit.collider.GetComponent<BuildingSkeleton>() != null)
+            if (hit.collider.GetComponent<BuildingPlacementHelper>() != null)
             {
                 hasBuilding = true;
                 break;
@@ -59,6 +62,7 @@ private void Update()
         // ❗ If no building hit → close panel
         if (!hasBuilding)
         {
+            Debug.Log("Repair Close! No building hit. Closing Repair Button if open.");
             OnClickRepairBtnClose();
         }
     }
@@ -88,8 +92,13 @@ private void Update()
             Destroy(CurrentRepairBtn.gameObject);
         }
 
+
         CurrentRepairBtn = Instantiate(RepairPrefab, RepairParent);
         CurrentRepairBtn.StatsData = StatsData;
+        if(StatsData.gameObject.name.Contains("MainBuilding"))
+        {
+            CurrentRepairBtn.KillBtn.interactable = false;
+        }
         CurrentRepairBtn.gameObject.SetActive(true);
         CurrentRepairBtn.EffectPlace = GlowParent;
         CurrentRepairBtn.PlayShow();
@@ -100,6 +109,7 @@ private void Update()
 
     public void OnClickRepairBtnClose()
     {
+        Debug.Log("Closing Repair Button");
         if(CurrentRepairBtn != null)
         {
             CurrentRepairBtn.PlayHide();

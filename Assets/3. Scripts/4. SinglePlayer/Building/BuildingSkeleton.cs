@@ -13,7 +13,7 @@ public class BuildingSkeleton : MonoBehaviour
     public GameObject graphicObject { get; private set; }
     private GameObject constructionIcon;
 
-    [SerializeField] internal Transform GlowEffectPlace, RepairEffectPlace;
+    // [SerializeField] internal Transform GlowEffectPlace, RepairEffectPlace;
 
     private async Awaitable Awake()
     {
@@ -71,40 +71,41 @@ public class BuildingSkeleton : MonoBehaviour
         graphicObject.SetActive(true);
     }
 
-#region Click Event & Repair
-    RepairButtonHandler RepairObj = null;
-    void OnMouseDown()
-    {
-        Debug.Log("Clicked on " + gameObject.name);
-        RepairObj = RepairManager.Instance.OnClickRepairBtnOpen(RepairEffectPlace, RepairEffectPlace, GenericComponents[2].GetComponent<Stats>(), false);
+// #region Click Event & Repair
+//     RepairButtonHandler RepairObj = null;
+//     void OnMouseDown()
+//     {
+//         Debug.Log("Clicked on " + gameObject.name);
+//         RepairObj = RepairManager.Instance.OnClickRepairBtnOpen(RepairEffectPlace, GlowEffectPlace, GenericComponents[2].GetComponent<Stats>(), false);
 
-        if(RepairObj == null)
-            return;
+//         if(RepairObj == null)
+//             return;
         
-        RepairObj.CurrentWall = GetWallParentFromBuilding(gameObject);
-        if(GenericComponents[2].GetComponent<Stats>().currentHealth > GenericComponents[2].GetComponent<Stats>().basicStats.maxHealth/2)
-            RepairObj.Repairbtn.interactable = false;
-           else
-             RepairObj.Repairbtn.interactable = true;
+//         RepairObj.CurrentWall = GetWallParentFromBuilding(gameObject);
+//         if(GenericComponents[2].GetComponent<Stats>().currentHealth > GenericComponents[2].GetComponent<Stats>().basicStats.maxHealth/2)
+//             RepairObj.Repairbtn.interactable = false;
+//            else
+//              RepairObj.Repairbtn.interactable = true;
 
-        // StartCoroutine(CoolDownTimerStart());
-    }
+//         // StartCoroutine(CoolDownTimerStart());
+//     }
 
-    IEnumerator CoolDownTimerStart()
-    {
-        yield return new WaitForSeconds(3f);
-        RepairManager.Instance.OnClickRepairBtnClose();
-    }
+//     IEnumerator CoolDownTimerStart()
+//     {
+//         yield return new WaitForSeconds(3f);
+//         RepairManager.Instance.OnClickRepairBtnClose();
+//     }
 
-    public static WallParent GetWallParentFromBuilding(GameObject building)
-    {
-        WallParent wallParent = building.GetComponentInChildren<WallParent>();
-        if (wallParent == null)
-        {
-            Debug.Log($"<color=yellow>No WallParent found in children of {building.name}</color>");
-            return null;
-        }
-        return wallParent;
-    }
-    #endregion
+//     public static WallParent GetWallParentFromBuilding(GameObject building)
+//     {
+//         WallParent wallParent = building.GetComponentInChildren<WallParent>();
+//         if (wallParent == null)
+//         {
+//             Debug.Log($"<color=yellow>No WallParent found in children of {building.name}</color>");
+//             return null;
+//         }
+//         return wallParent;
+//     }
+// #endregion
+
 }

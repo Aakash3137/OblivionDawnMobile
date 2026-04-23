@@ -8,6 +8,7 @@ public class BuildingPlacementHelper : MonoBehaviour
     private CubeGridManager cgmInstance;
     [SerializeField] private List<Tile> neighborTiles = new List<Tile>();
     internal static Tile currentTile;
+    [SerializeField] internal Transform GlowEffectPlace, RepairEffectPlace;
 
 
     private void Awake()
@@ -90,4 +91,47 @@ public class BuildingPlacementHelper : MonoBehaviour
     {
         currentTile.OpenStatusHandler(true);
     }
+
+    #region Click Event & Repair
+    RepairButtonHandler RepairObj = null;
+    void OnMouseDown()
+    {
+        if (GameStateManager.Instance.IsGameOver) 
+            return;
+
+        Stats _CurrentStats = gameObject.GetComponent<Stats>();
+        Debug.Log("Clicked on " + gameObject.name);
+        RepairObj = RepairManager.Instance.OnClickRepairBtnOpen(RepairEffectPlace, RepairEffectPlace, _CurrentStats, false);
+
+        if(RepairObj == null)
+            return;
+        
+        RepairObj.CurrentWall = GetWallParentFromBuilding(gameObject);
+        if(_CurrentStats.currentHealth > _CurrentStats.basicStats.maxHealth/2)
+            RepairObj.Repairbtn.interactable = false;
+           else
+             RepairObj.Repairbtn.interactable = true;
+
+        if(_CurrentStats is BuildingStats buildingStats)
+        {
+            if(buildingStats.buildingType == ScenarioBuildingType.MainBuilding)
+            {
+                RepairObj.IsMain = true;
+            }
+        }
+        _CurrentStats.RepairObj = RepairObj;
+        // StartCoroutine(CoolDownTimerStart());
+    }
+
+    public static WallParent GetWallParentFromBuilding(GameObject building)
+    {
+        WallParent wallParent = building.GetComponentInChildren<WallParent>();
+        if (wallParent == null)
+        {
+            Debug.Log($"<color=yellow>No WallParent found in children of {building.name}</color>");
+            return null;
+        }
+        return wallParent;
+    }
+#endregion
 }
