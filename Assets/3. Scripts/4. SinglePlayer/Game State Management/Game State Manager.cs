@@ -17,6 +17,8 @@ public class GameStateManager : MonoBehaviour
     private Dictionary<GameStateEnum, UnityEvent> onEnterEvents = new();
     private Dictionary<GameStateEnum, UnityEvent> onExitEvents = new();
 
+    public bool IsGameOver = false;
+
 
     private void Awake()
     {

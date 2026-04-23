@@ -99,12 +99,12 @@ public class Stats : MonoBehaviour
                 }
     }
 
-    void callRepair()
-    {
-        BuildingSkeleton building = GetComponent<BuildingSkeleton>();
-            if (building != null)
-                RepairManager.Instance.OnClickRepairBtnOpen(building.RepairEffectPlace, building.RepairEffectPlace, this, true);
-    }
+    // void callRepair()
+    // {
+    //     BuildingSkeleton building = GetComponent<BuildingSkeleton>();
+    //         if (building != null)
+    //             RepairManager.Instance.OnClickRepairBtnOpen(building.RepairEffectPlace, building.RepairEffectPlace, this, true);
+    // }
 
     private void ApplyMaterial()
     {
@@ -201,6 +201,8 @@ public class Stats : MonoBehaviour
 
             if (!RepairObj.IsReady)
                 return;
+
+            RepairObj.Repairbtn.interactable = true;
 
             // callRepair();
             // Debug.Log($"<color=red>Your Health is too low {currentHealth} Repair Health Now</color>");

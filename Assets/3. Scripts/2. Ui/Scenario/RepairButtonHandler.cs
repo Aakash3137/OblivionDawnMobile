@@ -24,10 +24,12 @@ public class RepairButtonHandler : MonoBehaviour
     [Header ("UI")]
     [SerializeField] private RectTransform rect;
     [SerializeField] internal Button Repairbtn;
+    [SerializeField] internal Button KillBtn;
 
     [Header ("Data")]
     [SerializeField] internal Stats StatsData;
     [SerializeField] internal bool IsReady;
+    [SerializeField] internal bool IsMain = false;
 
 
     [Header ("Wall Data")]
@@ -44,6 +46,7 @@ public class RepairButtonHandler : MonoBehaviour
     [Header ("Effects")]
     public GameObject GlowEffectPrefab;
     public Transform EffectPlace;
+    private Vector3 WallPos;
     void OnEnable()
     {
         IsReady = true;
@@ -135,6 +138,7 @@ public class RepairButtonHandler : MonoBehaviour
 
         StatsData.HealthRepair();
         PlayHide();
+        WallPos = CurrentWall.transform.position;
         if(CurrentWall != null)
         {
             LastWallPosition = CurrentWall.transform.position;
@@ -173,7 +177,7 @@ public class RepairButtonHandler : MonoBehaviour
         adjacentTiles[2] = cgmInstance.GetTile(adjacentTileCords[2]);
         adjacentTiles[3] = cgmInstance.GetTile(adjacentTileCords[3]); 
 
-        var spawnPos = new Vector3(_currentTileCords.x, _wallYOffset, _currentTileCords.z);
+        var spawnPos = WallPos;
         
         if(CurrentWall!= null)
             Destroy(CurrentWall.gameObject);

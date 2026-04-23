@@ -35,19 +35,6 @@ public class EnemyPersonality : ScriptableObject
 
     public int maxEnemyBuildings = 150;
 
-    [Header("Combat Behavior")]
-    public AICombatType combatType;
-    [Range(0f, 2f)] public float ComparisonMatchValue = 1f;
-
-    // When to attack
-    [Range(0f, 2f)] public float attackConfidence = 1.2f;
-
-    // When to retreat
-    [Range(0f, 2f)] public float retreatThreshold = 0.8f;
-
-    // Minimum time before switching again
-    public float stanceCooldown = 10f;
-
     [Header("Economy")]
     public bool balancedResourceStart = true;
     public int balancedResourceTarget = 3;
@@ -59,18 +46,29 @@ public class EnemyPersonality : ScriptableObject
 
     [Min(1)] public int maxDeckSlots = 8;
 
-    public bool isEnemyAwarenessEnabled = false;
-    public bool AutoDeckSelection = false;
-
     public AllUnitData allUnitData;
     public AllBuildingData allBuildingData;
 
     public List<FactionDeckSelection> factionDeckSelections = new List<FactionDeckSelection>();
 
+    private bool _isValidating;
+
     private void OnValidate()
     {
-        SyncDeck();
-        ValidateDeckLimits();
+        if (_isValidating) return;
+        _isValidating = true;
+
+        try
+        {
+            if (!Application.isPlaying)
+            {
+                ValidateDeckLimits(); 
+            }
+        }
+        finally
+        {
+            _isValidating = false;
+        }
     }
 
     void SyncDeck()
@@ -98,7 +96,7 @@ public class EnemyPersonality : ScriptableObject
     {
         List<UnitProduceStatsSO> allUnits = allUnitData.GetUnitsSO(block.faction);
 
-        block.unitSelections.RemoveAll(u => !allUnits.Contains(u.unit));
+       // block.unitSelections.RemoveAll(u => !allUnits.Contains(u.unit));
 
         foreach (var unit in allUnits)
         {
@@ -120,7 +118,7 @@ public class EnemyPersonality : ScriptableObject
     {
         List<DefenseBuildingDataSO> allBuildings = allBuildingData.GetDefenseBuildingsSO(block.faction);
 
-        block.defenseBuildingSelections.RemoveAll(b => !allBuildings.Contains(b.building));
+       // block.defenseBuildingSelections.RemoveAll(b => !allBuildings.Contains(b.building));
 
         foreach (var building in allBuildings)
         {
@@ -189,6 +187,16 @@ public class EnemyPersonality : ScriptableObject
             }
         }
     }
+    
+#if UNITY_EDITOR
+    [ContextMenu("Rebuild Deck (Safe)")]
+    public void RebuildDeck()
+    {
+        SyncDeck();
+        ValidateDeckLimits();
+        UnityEditor.EditorUtility.SetDirty(this);
+    }
+#endif
 }
 
 [Serializable]
