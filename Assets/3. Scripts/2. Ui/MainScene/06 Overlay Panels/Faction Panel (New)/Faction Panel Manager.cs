@@ -34,6 +34,13 @@ public class FactionPanelManager : MonoBehaviour
     }
     public void OpenFactionPanel()
     {
+        var factionCards = GetComponentsInChildren<FactionDisplayCard>();
+
+        foreach(var card in factionCards)
+        {
+            card.RefreshCards();
+        }
+
         ShowPanel();
     }
 

@@ -27,12 +27,6 @@ public class FactionDisplayCard : MonoBehaviour
         RefreshCards();
     }
 
-    private void OnEnable()
-    {
-        if (selectedSO != null && selectedSO.Count > 0)
-            RefreshCards();
-    }
-
     private void CreateCards()
     {
         for (int i = 0; i < maxCardCount; i++)
@@ -42,7 +36,7 @@ public class FactionDisplayCard : MonoBehaviour
         }
     }
 
-    private void RefreshCards()
+    public void RefreshCards()
     {
         for (int i = 0; i < instantiatedCards.Count; i++)
         {
