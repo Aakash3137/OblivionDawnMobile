@@ -1,6 +1,5 @@
 using System;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,7 +24,7 @@ public class TopPanelHandler : MonoBehaviour
 
     [Header("Image references")]
     [SerializeField] private Image userPic;
-
+    private OverlayPanelManager overlayPanelManager;
     private void Awake()
     {
         if (Instance == null)
@@ -41,20 +40,27 @@ public class TopPanelHandler : MonoBehaviour
         UpdateGemText(userdata.Diamonds);
         UpdateMapShardText(userdata.MapShards);
         UpdatePlayerLevelText(userdata.PlayerLevel);
+
+        overlayPanelManager = OverlayPanelManager.Instance;
     }
 
     private void OnClickProfileButton()
     {
         AudioManager.PlayOneShot(GameAudioType.ButtonClick);
 
-        throw new NotImplementedException();
+        var profilePanel = overlayPanelManager.profilePanel;
+
+        if (profilePanel != null)
+            profilePanel.OpenProfilePanel();
+        else
+            Debug.LogError("Profile Panel Manager Handler is null");
     }
 
     private void OnClickHeroJourneyButton()
     {
         AudioManager.PlayOneShot(GameAudioType.ButtonClick);
 
-        var heroJourneyPanel = HeroJourneyPanelManager.Instance;
+        var heroJourneyPanel = overlayPanelManager.heroJourneyPanel;
 
         if (heroJourneyPanel != null)
             heroJourneyPanel.OpenJourneyPanel();
@@ -66,7 +72,12 @@ public class TopPanelHandler : MonoBehaviour
     {
         AudioManager.PlayOneShot(GameAudioType.ButtonClick);
 
-        throw new NotImplementedException();
+        var settingPanel = overlayPanelManager.settingPanel;
+
+        if (settingPanel != null)
+            settingPanel.OpenSettingPanel();
+        else
+            Debug.LogError("Setting Panel Manager Handler is null");
     }
 
     private void OnClickBuyButton()

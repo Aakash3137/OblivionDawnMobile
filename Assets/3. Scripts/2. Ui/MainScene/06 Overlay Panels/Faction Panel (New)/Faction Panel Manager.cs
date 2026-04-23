@@ -3,8 +3,6 @@ using UnityEngine.UI;
 
 public class FactionPanelManager : MonoBehaviour
 {
-    public static FactionPanelManager Instance { get; private set; }
-
     [SerializeField] private Button playButton;
     [SerializeField] private Button closeButton;
     [SerializeField] private FactionScrollHandler fspManager;
@@ -13,13 +11,6 @@ public class FactionPanelManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-            Instance = this;
-        else
-            Destroy(gameObject);
-
-        HidePanel();
-
         playButton.onClick.AddListener(OnClickPlayGame);
         closeButton.onClick.AddListener(OnClickClosePanel);
     }

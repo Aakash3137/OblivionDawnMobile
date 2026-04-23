@@ -1,78 +1,69 @@
-using System;
 using System.Collections.Generic;
-using ExitGames.Client.Photon.StructWrapping;
 using UnityEngine;
 
 public class DeckPanelManager : MonoBehaviour
 {
-    public static DeckPanelManager Instance { get; private set; }
     [Space(10)]
     [SerializeField] private AllBuildingData allBuildingData;
     [SerializeField] private AllUnitData allUnitData;
-    [Space(10)]
-    [SerializeField] private DeckCard deckCardPrefab;
-    [Space(10)]
-    public FactionCardPanel[] factionCardPanels;
 
-    public List<MainBuildingDataSO> cityCenterScriptables { get; private set; }
-    private List<UnitProduceStatsSO> unitScriptables;
-    private List<DefenseBuildingDataSO> defenseScriptables;
+    [SerializeField, Space(10)] private DeckCard deckCardPrefab;
 
+    [Space(10)] public FactionCardPanel[] factionCardPanels;
+    [SerializeField, Space(10)] private FactionName defaultFaction = FactionName.Futuristic;
 
-    private void Awake()
+    private void Start()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        var upgradePopUpPanel = OverlayPanelManager.Instance.upgradePopUpPanel;
+        upgradePopUpPanel.OnCardPurchased += CreateDeckCard;
 
-        cityCenterScriptables = allBuildingData.mainBuildingSO;
-        defenseScriptables = allBuildingData.AllDefenseBuildingSO;
-        unitScriptables = allUnitData.AllUnitsSO;
+        foreach (var dataSO in allUnitData.AllUnitsSO)
+            CreateDeckCard(dataSO);
+
+        foreach (var dataSO in allBuildingData.AllDefenseBuildingSO)
+            CreateDeckCard(dataSO);
+
+        TryGetComponent(out DeckPanelNavigation deckPanelNavigation);
+        deckPanelNavigation.SetDeckCardPanelToOpen(defaultFaction);
     }
 
-    private void OnEnable()
+    private void CreateDeckCard(ScriptableObject dataSO)
     {
-        CreateUnitCards();
-        CreateDefenseCards();
-    }
-
-    public void CreateUnitCards()
-    {
-        foreach (var unitSO in unitScriptables)
+        if (dataSO == null)
         {
-            if (unitSO == null) { LogNullScriptable("Unit"); continue; }
-            var cardPanel = factionCardPanels[(int)unitSO.unitIdentity.faction].cardPanels[0];
+            Debug.LogError($"<size=18>[Deck Panel Manager] dataSO is null</size>");
+            return;
+        }
 
-            if (unitSO.cardDetails.cardState == CardState.Purchased && !cardPanel.scriptablesInDeck.Contains(unitSO))
-            {
-                cardPanel.AddCard(deckCardPrefab, unitSO);
-                cardPanel.scriptablesInDeck.Add(unitSO);
-            }
+        FactionName faction;
+        CardsPanel cardPanel;
+        bool inDeck;
+
+        switch (dataSO)
+        {
+            case UnitProduceStatsSO unitSO:
+                faction = unitSO.unitIdentity.faction;
+                cardPanel = factionCardPanels[(int)faction].cardPanels[0];
+                inDeck = cardPanel.scriptablesInDeck.Contains(unitSO);
+                if (!inDeck && unitSO.cardDetails.cardState == CardState.Purchased)
+                {
+                    cardPanel.AddCard(deckCardPrefab, unitSO);
+                    cardPanel.scriptablesInDeck.Add(unitSO);
+                }
+                break;
+            case DefenseBuildingDataSO defenseSO:
+                faction = defenseSO.buildingIdentity.faction;
+                cardPanel = factionCardPanels[(int)faction].cardPanels[0];
+                inDeck = cardPanel.scriptablesInDeck.Contains(defenseSO);
+                if (!inDeck && defenseSO.cardDetails.cardState == CardState.Purchased)
+                {
+                    cardPanel.AddCard(deckCardPrefab, defenseSO);
+                    cardPanel.scriptablesInDeck.Add(defenseSO);
+                }
+
+                break;
         }
     }
-    public void CreateDefenseCards()
-    {
-        if (defenseScriptables == null) { LogNullScriptable("Defense Building List"); return; }
-        foreach (var defenseSO in defenseScriptables)
-        {
-            if (defenseSO == null) { LogNullScriptable("Defense Building"); continue; }
-            var cardPanel = factionCardPanels[(int)defenseSO.buildingIdentity.faction].cardPanels[0];
-
-            if (defenseSO.cardDetails.cardState == CardState.Purchased && !cardPanel.scriptablesInDeck.Contains(defenseSO))
-            {
-                cardPanel.AddCard(deckCardPrefab, defenseSO);
-                cardPanel.scriptablesInDeck.Add(defenseSO);
-            }
-        }
-    }
-
-    private void LogNullScriptable(string context) =>
-        Debug.Log($"<color=green>[Deck Panel Manager] {context} scriptable is null</color>");
 
     public List<ScriptableObject> GetDefaultDeckCards(FactionName faction)
     {
@@ -90,7 +81,18 @@ public class DeckPanelManager : MonoBehaviour
 
         return defaultDeckCards;
     }
+    public MainBuildingUpgradeData GetMainBuildingUpgradeData(FactionName faction)
+    {
+        var cityCenterSO = allBuildingData.mainBuildingSO[(int)faction];
+        return cityCenterSO.mainBuildingUpgradeData[cityCenterSO.buildingIdentity.spawnLevel];
+    }
 
+    private void OnDestroy()
+    {
+        var upgradePopUpPanel = OverlayPanelManager.Instance.upgradePopUpPanel;
+        if (upgradePopUpPanel == null) return;
+        upgradePopUpPanel.OnCardPurchased -= CreateDeckCard;
+    }
     private void OnValidate()
     {
         var enumValues = ScenarioDataTypes._factionEnumValues;

@@ -1,12 +1,9 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class HeroJourneyPanelManager : MonoBehaviour
 {
-    public static HeroJourneyPanelManager Instance { get; private set; }
-
     [Header("UI Element")]
     [SerializeField] private Button closeButton;
     [SerializeField] private LevelBox levelBoxPrefab;
@@ -16,15 +13,6 @@ public class HeroJourneyPanelManager : MonoBehaviour
     [SerializeField] LevelData LevelsData;
     private CanvasGroup canvasGroup;
 
-    private void Awake()
-    {
-        if (Instance == null)
-            Instance = this;
-        else
-            Destroy(gameObject);
-
-        HidePanel();
-    }
     public void Start()
     {
         CreateLevelBox();

@@ -6,20 +6,24 @@ public class BattlePanelManager : MonoBehaviour
     [SerializeField] private Button battleButton;
     [SerializeField] private Button rewardButton;
 
+    private OverlayPanelManager overlayPanelManager;
+
     private void Start()
     {
         battleButton.onClick.AddListener(OnClickBattle);
         rewardButton.onClick.AddListener(OnClickReward);
+
+        overlayPanelManager = OverlayPanelManager.Instance;
     }
 
     private void OnClickBattle()
     {
         AudioManager.PlayOneShot(GameAudioType.ButtonClick);
 
-        var gameModeManager = GameModeManager.Instance;
+        var gameModeManager = overlayPanelManager.gameModePanel;
 
         if (gameModeManager != null)
-            gameModeManager.ShowPanel();
+            gameModeManager.OpenGameModePanel();
         else
             Debug.LogError("GameMode Manager is null");
     }
@@ -27,7 +31,7 @@ public class BattlePanelManager : MonoBehaviour
     {
         AudioManager.PlayOneShot(GameAudioType.ButtonClick);
 
-        var rewardPanel = RewardPanelScript.Instance;
+        var rewardPanel = overlayPanelManager.rewardPanel;
 
         if (rewardPanel != null)
             rewardPanel.OpenRewardPanel();

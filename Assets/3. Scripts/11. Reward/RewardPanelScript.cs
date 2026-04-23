@@ -7,7 +7,6 @@ using System.Collections.Generic;
 
 public class RewardPanelScript : MonoBehaviour
 {
-    public static RewardPanelScript Instance { get; private set; }
     private CanvasGroup canvasGroup;
 
     [Header("References")]
@@ -36,15 +35,6 @@ public class RewardPanelScript : MonoBehaviour
     // =============================
     // PANEL OPEN
     // =============================
-    private void Awake()
-    {
-        if (Instance == null)
-            Instance = this;
-        else
-            Destroy(gameObject);
-
-        HidePanel();
-    }
 
     // previously OnEnable  
     public void OpenRewardPanel()

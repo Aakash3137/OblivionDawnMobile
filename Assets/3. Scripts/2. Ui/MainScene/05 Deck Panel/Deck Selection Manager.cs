@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
@@ -8,7 +7,6 @@ using UnityEngine;
 public class DeckSelectionManager : MonoBehaviour
 {
     public static DeckSelectionManager Instance { get; private set; }
-
     [Space(10)]
     [SerializeField] private DecSelectionData decSelectionDataSO;
 
@@ -17,10 +15,8 @@ public class DeckSelectionManager : MonoBehaviour
     [SerializeField] private Transform selectedCardsContainer;
     private int maxCardCount = GameData.GameMaxDeckSize;
 
-    [Space(10)]
-    [ReadOnly][SerializeField] private FactionDeckData[] allFactionsDeckData;
-    [Space(10)]
-    [ReadOnly][SerializeField] private List<SelectedCard> selectedCards;
+    [SerializeField, ReadOnly, Space(10)] private FactionDeckData[] allFactionsDeckData;
+    [SerializeField, ReadOnly, Space(10)] private List<SelectedCard> selectedCards = new();
 
     [HideInInspector] public FactionName selectedFaction;
 
@@ -34,7 +30,6 @@ public class DeckSelectionManager : MonoBehaviour
     public bool HasPopulationFor(int cost) => currentPopulation + cost <= maxPopulation;
 
     private Deck currentDeck => allFactionsDeckData[(int)selectedFaction].decks[currentDeckIndex];
-    private FactionCardPanel[] factionCardPanels;
 
     [Space(10)]
     [Header("UI References")]
@@ -45,15 +40,15 @@ public class DeckSelectionManager : MonoBehaviour
         if (Instance == null)
             Instance = this;
         else
-        {
             Destroy(gameObject);
-            return;
-        }
+    }
 
+    private void Start()
+    {
         GenerateCards();
-
-        // copy the reference for allFactionsDeckData to one in SO
+        // copy the reference for allFactionsDeckData to one in SO -> Load Data
         allFactionsDeckData = decSelectionDataSO.allFactionsDeckData;
+
 #if UNITY_EDITOR
         UnityEditor.EditorUtility.SetDirty(decSelectionDataSO);
         UnityEditor.AssetDatabase.SaveAssets();
@@ -62,8 +57,6 @@ public class DeckSelectionManager : MonoBehaviour
 
     public void GenerateCards()
     {
-        selectedCards = new List<SelectedCard>(maxCardCount);
-
         for (int i = 0; i < maxCardCount; i++)
         {
             var card = Instantiate(selectedCardPrefab, selectedCardsContainer);
@@ -71,18 +64,16 @@ public class DeckSelectionManager : MonoBehaviour
         }
     }
 
-    public void SetVariables()
+    public void InitializeDeckData(MainBuildingUpgradeData cityCenterData, List<UpgradeCard> currentFactionCards)
     {
-        var cityCenterSO = DeckPanelManager.Instance.cityCenterScriptables[(int)selectedFaction];
-        var cityCenterData = cityCenterSO.mainBuildingUpgradeData[cityCenterSO.buildingIdentity.spawnLevel];
-
         maxEquipCount = cityCenterData.maxDeckEquipCount;
         maxPopulation = cityCenterData.maxPopulation;
-
         currentPopulation = 0;
 
-        foreach (var cardSO in currentDeck.deckCardsSO)
-            currentPopulation += CalculatePopulation(cardSO);
+        foreach (DeckCard deckCard in currentFactionCards)
+        {
+            currentPopulation += deckCard.cardPopulation;
+        }
 
         UpdatePopulationUI();
     }
@@ -113,7 +104,7 @@ public class DeckSelectionManager : MonoBehaviour
         if (deck.deckCardsSO.Count >= maxEquipCount)
             return false;
 
-        int addedPop = CalculatePopulation(cardSO);
+        int addedPop = GetPopulationCost(cardSO);
         if (currentPopulation + addedPop > maxPopulation)
             return false;
 
@@ -133,6 +124,7 @@ public class DeckSelectionManager : MonoBehaviour
         }
 
         SortSelectedCards();
+        // Save Data Here
         return true;
     }
 
@@ -148,7 +140,7 @@ public class DeckSelectionManager : MonoBehaviour
 
         deck.deckCardsSO.Remove(cardSO);
 
-        currentPopulation -= CalculatePopulation(cardSO);
+        currentPopulation -= GetPopulationCost(cardSO);
         UpdatePopulationUI();
 
         foreach (var card in selectedCards)
@@ -161,20 +153,20 @@ public class DeckSelectionManager : MonoBehaviour
         }
 
         SortSelectedCards();
+        // Save Data Here
         return true;
     }
 
-    public void LoadDefaultData()
+    public void TryAddDefaultDeckData()
     {
         var factionCount = ScenarioDataTypes._factionEnumValues.Length;
+        var deckPanelManager = GetComponentInParent<DeckPanelManager>();
 
         for (int i = 0; i < factionCount; i++)
         {
-            List<ScriptableObject> defaultCards = allFactionsDeckData[i].decks[currentDeckIndex].deckCardsSO;
-
-            if (defaultCards.Count == 0)
+            if (allFactionsDeckData[i].decks[currentDeckIndex].deckCardsSO.Count == 0)
             {
-                defaultCards = DeckPanelManager.Instance.GetDefaultDeckCards((FactionName)i);
+                var defaultCards = deckPanelManager.GetDefaultDeckCards((FactionName)i);
 
                 foreach (var card in defaultCards)
                     allFactionsDeckData[i].decks[currentDeckIndex].deckCardsSO.Add(card);
@@ -182,37 +174,22 @@ public class DeckSelectionManager : MonoBehaviour
         }
     }
 
-    public void LoadDeckData()
+    public void LoadDeckCardSelectionState(List<UpgradeCard> currentFactionCards)
     {
-        factionCardPanels = DeckPanelManager.Instance.factionCardPanels;
-
-        var factionIndex = (int)selectedFaction;
-
         List<ScriptableObject> loadedDeckSO = currentDeck.deckCardsSO;
-
-        // card panel index is 0 since no division into unit and building and city Center like upgrade panel
-        var currentFactionCardPanel = factionCardPanels[factionIndex].cardPanels[0];
-
-        List<UpgradeCard> currentFactionCards = currentFactionCardPanel.allCards;
 
         // Debug.Log($"<color=green>[Deck Selection Manager] currentFactionCards: {loadedDeckSO.Count}</color>");
         // Debug.Log($"<color=green>[Deck Selection Manager] Selected Faction : {selectedFaction}</color>");
 
-        foreach (var card in currentFactionCards)
+        foreach (DeckCard card in currentFactionCards)
         {
             if (card == null) continue;
-            if (card is DeckCard deckCard)
-            {
-                if (deckCard.upgradeDataSO != null && loadedDeckSO.Contains(deckCard.upgradeDataSO))
-                    deckCard.EnableSelectionPanel(true);
-                else if (deckCard.upgradeDataSO == null)
-                    Debug.Log($"<color=red>[Deck Selection Manager] Card upgradeDataSO not found in loaded deck</color>");
-            }
+
+            if (loadedDeckSO.Contains(card.upgradeDataSO))
+                card.SelectionPanelEnabled(true);
+            else
+                card.SelectionPanelEnabled(false);
         }
-
-        if (currentFactionCards[0] is DeckCard deckCards)
-            deckCards.UpdateButtonInteractivity();
-
     }
 
     private void SortSelectedCards()
@@ -237,7 +214,7 @@ public class DeckSelectionManager : MonoBehaviour
         /// </summary>
 
         int order = GetTypeOrder(a).CompareTo(GetTypeOrder(b));
-        return order != 0 ? order : CalculatePopulation(a).CompareTo(CalculatePopulation(b));
+        return order != 0 ? order : GetPopulationCost(a).CompareTo(GetPopulationCost(b));
     }
 
     private static int CompareByCard(SelectedCard a, SelectedCard b) =>
@@ -249,7 +226,7 @@ public class DeckSelectionManager : MonoBehaviour
         populationText.SetText($"{currentPopulation}/{maxPopulation}");
     }
 
-    private static int CalculatePopulation(ScriptableObject cardSO)
+    private static int GetPopulationCost(ScriptableObject cardSO)
     {
         int populationCost = cardSO switch
         {

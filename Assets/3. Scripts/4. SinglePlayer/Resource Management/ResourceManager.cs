@@ -54,11 +54,12 @@ public class ResourceManager : MonoBehaviour
         currentGenerationRates = new BuildCost[resourceCount];
         resourceBuildingCounts = new int[resourceCount];
 
+        int randomAmount = Random.Range(minStartAmount, maxStartAmount);
+
         for (int i = 0; i < resourceCount; i++)
         {
             var type = enumValues[i];
 
-            int randomAmount = Random.Range(minStartAmount, maxStartAmount);
             randomAmount = Mathf.CeilToInt(randomAmount / 10f) * 10;
 
             startingResources[i].resourceType = type;
