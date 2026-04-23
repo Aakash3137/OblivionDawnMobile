@@ -7,23 +7,14 @@ public class DeckPanelNavigation : MonoBehaviour
     [SerializeField] private Toggle[] factionButtons;
     private bool[] isDeckDataLoaded = new bool[4];
     private bool isDefaultDataLoaded = false;
+    private DeckPanelManager deckPanelManager;
 
-    private void Awake()
+    private void Start()
     {
+        TryGetComponent(out deckPanelManager);
         AddListeners();
     }
-    private async Awaitable OnEnable()
-    {
-        await Awaitable.NextFrameAsync();
-        SetDeckCardPanelToOpen(FactionName.Present);
-    }
-    private async Awaitable Start()
-    {
-        await Awaitable.NextFrameAsync();
-        factionButtons[0].group.allowSwitchOff = false;
-    }
-
-    private void SetDeckCardPanelToOpen(FactionName faction)
+    public void SetDeckCardPanelToOpen(FactionName faction)
     {
         factionButtons[(int)faction].SetIsOnWithoutNotify(true);
         OnClickFaction(faction);
@@ -40,34 +31,36 @@ public class DeckPanelNavigation : MonoBehaviour
 
     private void OnClickFaction(FactionName faction)
     {
+        AudioManager.PlayOneShot(GameAudioType.ButtonClick);
+
         ToggleFactionPanel(faction);
 
         var dsmInstance = DeckSelectionManager.Instance;
-
         dsmInstance.selectedFaction = faction;
+
+        var cityCenterData = deckPanelManager.GetMainBuildingUpgradeData(faction);
+        // card panel index is 0 since no division into unit and building and city Center like upgrade panel
+        var currentFactionCards = deckPanelManager.factionCardPanels[(int)faction].cardPanels[0].allCards;
+
+        dsmInstance.InitializeDeckData(cityCenterData, currentFactionCards);
+        dsmInstance.RefreshSelectionCards();
 
         if (!isDefaultDataLoaded)
         {
-            dsmInstance.LoadDefaultData();
+            dsmInstance.TryAddDefaultDeckData();
             isDefaultDataLoaded = true;
         }
 
         if (!isDeckDataLoaded[(int)faction])
         {
-            dsmInstance.LoadDeckData();
+            dsmInstance.LoadDeckCardSelectionState(currentFactionCards);
             isDeckDataLoaded[(int)faction] = true;
         }
-
-        dsmInstance.SetVariables();
-        dsmInstance.RefreshSelectionCards();
-
-        AudioManager.PlayOneShot(GameAudioType.ButtonClick);
-
     }
 
     private void ToggleFactionPanel(FactionName faction)
     {
-        var factionPanels = DeckPanelManager.Instance.factionCardPanels;
+        var factionPanels = deckPanelManager.factionCardPanels;
 
         foreach (var factionPanel in factionPanels)
         {

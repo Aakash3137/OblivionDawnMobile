@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,10 +13,11 @@ public class ProfileManager : MonoBehaviour
     [SerializeField] private TMP_Text Gems;
     [SerializeField] internal Button crossButton;
     [SerializeField] internal Button EditButton;
-    [SerializeField] internal Image UserPic, HomePic, CircleFill;
+    [SerializeField] internal Image UserPic, CircleFill;
 
-    [SerializeField] internal Userdata ProfileData;
+    [SerializeField] internal Userdata userData;
     [SerializeField] internal ProfileEditData profileEditData;
+    private CanvasGroup canvasGroup;
 
     private void Start()
     {
@@ -27,34 +26,37 @@ public class ProfileManager : MonoBehaviour
 
     private void SetProfile()
     {
-        if (ProfileData.ProfilePicture != null)
+        if (userData.ProfilePicture != null)
         {
-            UserPic.sprite = ProfileData.ProfilePicture;
-            HomePic.sprite = ProfileData.ProfilePicture;
-            profileEditData.EditorPic.sprite = ProfileData.ProfilePicture;
+            UserPic.sprite = userData.ProfilePicture;
+            profileEditData.EditorPic.sprite = userData.ProfilePicture;
         }
         else
         {
-            UserPic.sprite = ProfileData.defaultProfilePicture;
-            HomePic.sprite = ProfileData.defaultProfilePicture;
-            profileEditData.EditorPic.sprite = ProfileData.defaultProfilePicture;
+            UserPic.sprite = userData.defaultProfilePicture;
+            profileEditData.EditorPic.sprite = userData.defaultProfilePicture;
         }
 
-        NameText.text = ProfileData.UserName;
-        Coins.text = ProfileData.Coins.ToString();
-        Gems.text = ProfileData.Diamonds.ToString();
-        profileEditData.NameInputField.text = ProfileData.UserName;
+        NameText.text = userData.UserName;
+        Coins.text = userData.Coins.ToString();
+        Gems.text = userData.Diamonds.ToString();
+        profileEditData.NameInputField.text = userData.UserName;
         EditButton.onClick.AddListener(OpenEditProfilePanel);
-        crossButton.onClick.AddListener(CloseProfileManager);
+        crossButton.onClick.AddListener(CloseProfilePanel);
         profileEditData.CloseButton.onClick.AddListener(CloseEditProfilePanel);
         profileEditData.SaveButton.onClick.AddListener(SaveProfile);
         profileEditData.DeleteButton.onClick.AddListener(DeleteAccount);
         profileEditData.ConfirmDeleteButton.onClick.AddListener(OpenDeleteAlertPanel);
         profileEditData.Setdata(this);
     }
-    private void CloseProfileManager()
+    public void OpenProfilePanel()
     {
-        // HomeUIManager.Instance.ShowPanel(PanelName.Home);
+        ShowPanel();
+    }
+    private void CloseProfilePanel()
+    {
+        AudioManager.PlayOneShot(GameAudioType.ButtonClick);
+        HidePanel();
     }
 
     public void OpenEditProfilePanel()
@@ -79,12 +81,11 @@ public class ProfileManager : MonoBehaviour
         if (!string.IsNullOrEmpty(newUsername))
         {
             PlayerPrefs.SetString("Username", newUsername);
-            ProfileData.UserName = newUsername;
+            userData.UserName = newUsername;
             NameText.text = newUsername;
-            ProfileData.Birthday = profileEditData.dateDD.value.ToString("00") + "/" + profileEditData.monthDD.value.ToString("00");
+            userData.Birthday = profileEditData.dateDD.value.ToString("00") + "/" + profileEditData.monthDD.value.ToString("00");
             UserPic.sprite = profileEditData.TargetImage;
-            HomePic.sprite = profileEditData.TargetImage;
-            ProfileData.ProfilePicture = UserPic.sprite;
+            userData.ProfilePicture = UserPic.sprite;
 
             StartCoroutine(ShowMessageThenClear(2f, "Profile Saved!", Color.green, profileEditData.MessageTxt));
         }
@@ -109,16 +110,44 @@ public class ProfileManager : MonoBehaviour
     public void OnClickChangeProfilePic()
     {
         Debug.Log("[ProfileManager] Change Profile Picture Clicked");
-
     }
-
 
     public void DeleteAccount()
     {
-        ProfileData.ResetData();
+        userData.ResetData();
         PlayerPrefs.DeleteAll();
         profileEditData.DeleteAlertPanel.SetActive(false);
         // HomeUIManager.Instance.ShowPanel(PanelName.Login);
+    }
+
+    private void ShowPanel()
+    {
+        if (canvasGroup == null)
+            TryGetComponent(out canvasGroup);
+
+        canvasGroup.alpha = 1f;
+        canvasGroup.interactable = true;
+        canvasGroup.blocksRaycasts = true;
+    }
+    public void HidePanel()
+    {
+        if (canvasGroup == null)
+            TryGetComponent(out canvasGroup);
+
+        canvasGroup.alpha = 0f;
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+    }
+
+    private void OnDestroy()
+    {
+        crossButton.onClick.RemoveListener(CloseProfilePanel);
+        EditButton.onClick.RemoveListener(OpenEditProfilePanel);
+        profileEditData.CloseButton.onClick.RemoveListener(CloseEditProfilePanel);
+        profileEditData.SaveButton.onClick.RemoveListener(SaveProfile);
+        profileEditData.DeleteButton.onClick.RemoveListener(DeleteAccount);
+        profileEditData.ConfirmDeleteButton.onClick.RemoveListener(OpenDeleteAlertPanel);
+        profileEditData.Setdata(null);
     }
 }
 

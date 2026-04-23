@@ -20,33 +20,20 @@ public class UpgradePanelNavigation : MonoBehaviour
 
     private int selectedCategoryIndex;
     private CardsPanel currentCardPanel;
+    private UpgradePanelManager upgradePanelManager;
 
-    private void Awake()
+    private void Start()
     {
+        TryGetComponent(out upgradePanelManager);
         AddListeners();
     }
-
-    private async Awaitable OnEnable()
-    {
-        await Awaitable.NextFrameAsync();
-        SetCardPanelToOpen(FactionName.Futuristic, 1);
-    }
-    private async Awaitable Start()
-    {
-        await Awaitable.NextFrameAsync();
-        typeButtons[0].group.allowSwitchOff = false;
-        factionButtons[0].group.allowSwitchOff = false;
-    }
-
-    private void SetCardPanelToOpen(FactionName faction, int categoryIndex)
+    public void SetCardPanelToOpen(FactionName faction, int categoryIndex)
     {
         selectedFaction = faction;
         selectedCategoryIndex = categoryIndex;
 
         factionButtons[(int)faction].SetIsOnWithoutNotify(true);
         typeButtons[categoryIndex].SetIsOnWithoutNotify(true);
-
-        // Debug.Log($"<color=green>[UpgradePanelNavigation] Activating {factionButtons[(int)faction].name} with category {typeButtons[categoryIndex].name} panel</color>");
 
         OnClickFaction(faction);
     }
@@ -92,20 +79,18 @@ public class UpgradePanelNavigation : MonoBehaviour
     private void OnClickCategory(int categoryIndex)
     {
         // Debug.Log($"<color=green>[UpgradePanelNavigation] calling OnClickCategory with index {categoryIndex}</color>");
-
         selectedCategoryIndex = categoryIndex;
 
-        currentCardPanel = UpgradePanelManager.Instance.factionCardPanels[(int)selectedFaction].cardPanels[categoryIndex];
+        currentCardPanel = upgradePanelManager.factionCardPanels[(int)selectedFaction].cardPanels[categoryIndex];
+
         ToggleTypePanel(currentCardPanel);
-
         UpdateFragmentsCount(selectedFaction);
-
         AudioManager.PlayOneShot(GameAudioType.ButtonClick);
     }
 
     private void ToggleFactionPanel(FactionName faction)
     {
-        var factionPanels = UpgradePanelManager.Instance.factionCardPanels;
+        var factionPanels = upgradePanelManager.factionCardPanels;
 
         foreach (var factionPanel in factionPanels)
         {
@@ -117,7 +102,7 @@ public class UpgradePanelNavigation : MonoBehaviour
 
     private void ToggleTypePanel(CardsPanel panel)
     {
-        var factionPanel = UpgradePanelManager.Instance.factionCardPanels[(int)selectedFaction];
+        var factionPanel = upgradePanelManager.factionCardPanels[(int)selectedFaction];
 
         foreach (var cardPanel in factionPanel.cardPanels)
             cardPanel.gameObject.SetActive(false);

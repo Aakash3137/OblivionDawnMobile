@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class UpgradePanelManager : MonoBehaviour
 {
-    public static UpgradePanelManager Instance;
-
     [SerializeField] private AllBuildingData allBuildingData;
     [SerializeField] private AllUnitData allUnitData;
     [Space(10)]
@@ -18,25 +16,10 @@ public class UpgradePanelManager : MonoBehaviour
     private List<MainBuildingDataSO> mainBuildingScriptables;
     private List<UnitProduceStatsSO> unitScriptables;
     private List<BuildingDataSO> buildingScriptables;
-
-    public UpgradePanelNavigation upgradePanelNavigation { get; private set; }
-
-
-    private void Awake()
+    [SerializeField] private FactionName defaultFaction = FactionName.Futuristic;
+    private void Start()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-
-        upgradePanelNavigation = GetComponent<UpgradePanelNavigation>();
-
         userData.OnFragmentsChanged += UpgradeAvailable;
-
         mainBuildingScriptables = allBuildingData.mainBuildingSO;
         buildingScriptables = allBuildingData.allBuildingsSO;
         unitScriptables = allUnitData.AllUnitsSO;
@@ -44,6 +27,9 @@ public class UpgradePanelManager : MonoBehaviour
         CreateBuildingCards();
         CreateUnitCards();
         CreateCityCenterCards();
+
+        TryGetComponent(out UpgradePanelNavigation upgradePanelNavigation);
+        upgradePanelNavigation.SetCardPanelToOpen(defaultFaction, 1);
     }
 
     public void CreateCityCenterCards()
@@ -121,10 +107,6 @@ public class UpgradePanelManager : MonoBehaviour
         }
 
         notifyObject.SetActive(false);
-    }
-    private void OnDisable()
-    {
-        UpgradeAvailable();
     }
 }
 

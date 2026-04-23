@@ -6,8 +6,6 @@ using UnityEngine.UI;
 
 public class UpgradePopUpPanel : MonoBehaviour
 {
-    public static UpgradePopUpPanel Instance { get; private set; }
-
     #region  References to UI elements
     [SerializeField] private Userdata userData;
     [SerializeField] private AllBuildingData allBuildingData;
@@ -63,21 +61,10 @@ public class UpgradePopUpPanel : MonoBehaviour
     private int currentFragments => userData.GetFragment(currentCardFaction);
     MainBuildingDataSO mainBuildingSO => allBuildingData.mainBuildingSO[(int)currentCardFaction];
 
-    private void Awake()
-    {
-        if (Instance == null)
-            Instance = this;
-        else
-            Destroy(gameObject);
-    }
+    public Action<ScriptableObject> OnCardPurchased;
 
     private void Start()
     {
-        if (canvasGroup == null)
-            canvasGroup = GetComponent<CanvasGroup>();
-
-        HidePanel();
-
         buttonLabel = actionButton.GetComponentInChildren<TMP_Text>();
 
         closeButton.onClick.AddListener(OnClickClose);
@@ -144,12 +131,20 @@ public class UpgradePopUpPanel : MonoBehaviour
         {
             currentBuildingSO.cardDetails.cardState = currentCardState;
             InitializeStatBlocks(currentBuildingSO);
+            OnCardPurchased?.Invoke(currentBuildingSO);
         }
         else
         {
             currentUnitSO.cardDetails.cardState = currentCardState;
             InitializeStatBlocks(currentUnitSO);
+            OnCardPurchased?.Invoke(currentUnitSO);
         }
+
+
+#if UNITY_EDITOR
+        UnityEditor.EditorUtility.SetDirty(currentUnitSO);
+        UnityEditor.AssetDatabase.SaveAssets();
+#endif
 
         RefreshButtonState();
         UpdateProgressBar();
@@ -193,21 +188,18 @@ public class UpgradePopUpPanel : MonoBehaviour
         if (currentBuildingSO != null)
         {
             currentBuildingSO.buildingIdentity.spawnLevel = cardSpawnLevel;
-#if UNITY_EDITOR
-            UnityEditor.EditorUtility.SetDirty(currentBuildingSO);
-            UnityEditor.AssetDatabase.SaveAssets();
-#endif
             InitializeStatBlocks(currentBuildingSO);
         }
         else
         {
             currentUnitSO.unitIdentity.spawnLevel = cardSpawnLevel;
-#if UNITY_EDITOR
-            UnityEditor.EditorUtility.SetDirty(currentUnitSO);
-            UnityEditor.AssetDatabase.SaveAssets();
-#endif
             InitializeStatBlocks(currentUnitSO);
         }
+
+#if UNITY_EDITOR
+        UnityEditor.EditorUtility.SetDirty(currentUnitSO);
+        UnityEditor.AssetDatabase.SaveAssets();
+#endif
 
         currentUpgradeCard.RefreshCardCosts();
         RefreshButtonState();
@@ -545,25 +537,25 @@ public class UpgradePopUpPanel : MonoBehaviour
     {
         currentUpgradeCard = card;
     }
+
     private void ShowPanel()
     {
-        if (canvasGroup != null)
-        {
-            canvasGroup.alpha = 1f;
-            canvasGroup.interactable = true;
-            canvasGroup.blocksRaycasts = true;
-        }
-    }
+        if (canvasGroup == null)
+            TryGetComponent(out canvasGroup);
 
+        canvasGroup.alpha = 1f;
+        canvasGroup.interactable = true;
+        canvasGroup.blocksRaycasts = true;
+    }
     public void HidePanel()
     {
-        if (canvasGroup != null)
-        {
-            canvasGroup.alpha = 0f;
-            canvasGroup.interactable = false;
-            canvasGroup.blocksRaycasts = false;
-        }
-    }
-    #endregion
+        if (canvasGroup == null)
+            TryGetComponent(out canvasGroup);
 
+        canvasGroup.alpha = 0f;
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+    }
+
+    #endregion
 }

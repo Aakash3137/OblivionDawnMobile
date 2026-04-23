@@ -12,7 +12,6 @@ public enum Mode
 
 public class GameModeManager : MonoBehaviour
 {
-    public static GameModeManager Instance { get; private set; }
     private CanvasGroup canvasGroup;
     public Mode currentMode = Mode.Death_Solo;
 
@@ -24,26 +23,24 @@ public class GameModeManager : MonoBehaviour
     [SerializeField] private Button selectFaction;
     [SerializeField] private Button closeButton;
 
-    private void Awake()
+    private OverlayPanelManager overlayPanelManager;
+    private void Start()
     {
-        if (Instance == null)
-            Instance = this;
-        else
-            Destroy(gameObject);
-
-        HidePanel();
-
         selectFaction.onClick.AddListener(OnClickSelectFaction);
         closeButton.onClick.AddListener(OnClickClosePanel);
+
+        overlayPanelManager = OverlayPanelManager.Instance;
     }
 
     private void OnClickSelectFaction()
     {
+        AudioManager.PlayOneShot(GameAudioType.ButtonClick);
+
         GameData.gameMode = currentMode;
 
         Debug.Log($"<color=green> [GameModeManager] Initializing game mode: {currentMode}</color>");
 
-        var factionPanel = FactionPanelManager.Instance;
+        var factionPanel = OverlayPanelManager.Instance.factionPanel;
 
         if (factionPanel != null)
             factionPanel.OpenFactionPanel();
@@ -62,9 +59,6 @@ public class GameModeManager : MonoBehaviour
             case Mode.Scenario_Type:
                 break;
         }
-
-        AudioManager.PlayOneShot(GameAudioType.ButtonClick);
-        HidePanel();
     }
 
     private void OnClickClosePanel()
@@ -73,7 +67,12 @@ public class GameModeManager : MonoBehaviour
         HidePanel();
     }
 
-    public void ShowPanel()
+    public void OpenGameModePanel()
+    {
+        ShowPanel();
+    }
+
+    private void ShowPanel()
     {
         if (canvasGroup == null)
             TryGetComponent(out canvasGroup);

@@ -21,9 +21,9 @@ public class UpgradeCard : MonoBehaviour
     [SerializeField] private TMP_Text levelText;
     [SerializeField] private GameObject populationCostRoot;
     #endregion
-
     [HideInInspector] public CardsPanel myPanel;
 
+    public int cardPopulation { get; private set; }
     public int cardUpgradeCost { get; private set; }
     public int cardFragmentCost { get; private set; }
 
@@ -31,10 +31,13 @@ public class UpgradeCard : MonoBehaviour
     private FactionName cardFaction;
     private int currentFragments => userData.GetFragment(cardFaction);
     public bool isUpgradable => userData.Diamonds >= cardUpgradeCost && currentFragments >= cardFragmentCost;
+    private OverlayPanelManager overlayPanelManager;
 
-    private void Awake()
+    private void Start()
     {
         AddListeners();
+
+        overlayPanelManager = OverlayPanelManager.Instance;
     }
     public virtual void RefreshAllCards()
     {
@@ -89,21 +92,23 @@ public class UpgradeCard : MonoBehaviour
 
             if (buildingDataSO is DefenseBuildingDataSO defenseBuildingData)
             {
-                populationCostText.SetText($"{defenseBuildingData.populationCost}");
+                cardPopulation = defenseBuildingData.populationCost;
             }
             else
             {
+                cardPopulation = 99;
                 populationCostRoot.SetActive(false);
             }
 
         }
         else if (upgradeDataSO is UnitProduceStatsSO unitDataSO)
         {
-            populationCostText.SetText($"{unitDataSO.populationCost}");
+            cardPopulation = unitDataSO.populationCost;
 
             levelText.SetText($"Level {unitDataSO.unitIdentity.spawnLevel + 1}");
         }
 
+        populationCostText.SetText($"{cardPopulation}");
         UpdateProgressBar();
     }
 
@@ -115,29 +120,30 @@ public class UpgradeCard : MonoBehaviour
 
     private void OnCardClick()
     {
-        var panel = UpgradePopUpPanel.Instance;
+        var upgradePanel = overlayPanelManager.upgradePopUpPanel;
 
-        if (panel == null)
+        if (upgradePanel != null)
         {
-            Debug.Log("<color=green>[UpgradeCard] UpgradePopUpPanel instance not found</color>");
-            return;
-        }
+            upgradePanel.SetSelectedUpgradeCard(this);
 
-        panel.SetSelectedUpgradeCard(this);
-
-        if (upgradeDataSO is BuildingDataSO buildingDataSO)
-        {
-            Debug.Log($"<color=green> Clicked on {buildingDataSO.name} card</color>");
-            panel.OpenActionPanel(buildingDataSO);
-        }
-        else if (upgradeDataSO is UnitProduceStatsSO unitDataSO)
-        {
-            Debug.Log($"<color=green> Clicked on {unitDataSO.name} card</color>");
-            panel.OpenActionPanel(unitDataSO);
+            switch (upgradeDataSO)
+            {
+                case BuildingDataSO buildingDataSO:
+                    Debug.Log($"<color=green> Clicked on {buildingDataSO.name} card</color>");
+                    upgradePanel.OpenActionPanel(buildingDataSO);
+                    break;
+                case UnitProduceStatsSO unitDataSO:
+                    Debug.Log($"<color=green> Clicked on {unitDataSO.name} card</color>");
+                    upgradePanel.OpenActionPanel(unitDataSO);
+                    break;
+                default:
+                    Debug.Log("<color=green> [CardUpgradeData]Imposter Scriptable Object not Unit SO or Building SO </color>");
+                    break;
+            }
         }
         else
         {
-            Debug.Log("<color=green> [CardUpgradeData]Imposter Scriptable Object not Unit SO or Building SO </color>");
+            Debug.Log("<color=green>[UpgradeCard] UpgradePopUpPanel instance not found</color>");
         }
     }
 

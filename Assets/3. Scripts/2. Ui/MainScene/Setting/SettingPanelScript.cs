@@ -9,14 +9,39 @@ public class SettingPanelScript : MonoBehaviour
     [SerializeField] private Button VibrationBtn;
     [SerializeField] private Button MusicBtn;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private CanvasGroup canvasGroup;
+
+    private void Start()
     {
         CloseButton.onClick.AddListener(OnClickClose);
     }
 
     public void OnClickClose()
     {
-        // HomeUIManager.Instance.ShowPanel(PanelName.Home);
+        AudioManager.PlayOneShot(GameAudioType.ButtonClick);
+        HidePanel();
+    }
+
+    public void OpenSettingPanel()
+    {
+        ShowPanel();
+    }
+    private void ShowPanel()
+    {
+        if (canvasGroup == null)
+            TryGetComponent(out canvasGroup);
+
+        canvasGroup.alpha = 1f;
+        canvasGroup.interactable = true;
+        canvasGroup.blocksRaycasts = true;
+    }
+    public void HidePanel()
+    {
+        if (canvasGroup == null)
+            TryGetComponent(out canvasGroup);
+
+        canvasGroup.alpha = 0f;
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
     }
 }

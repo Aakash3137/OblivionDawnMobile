@@ -6,58 +6,57 @@ public class DeckCard : UpgradeCard
     [SerializeField] private Button deckSelectButton;
     [SerializeField] private Button deckDeSelectButton;
     [SerializeField] private GameObject selectionPanel;
-    private bool isSelected = false;
-    private int cardPopulation;
+    [SerializeField] private bool isSelected = false;
+    private DeckSelectionManager dsmInstance;
 
-    private void Start()
+    public override void InitializeCard()
     {
-        // selectionPanel.SetActive(false);
-
-        cardPopulation = upgradeDataSO switch
-        {
-            UnitProduceStatsSO unit => unit.populationCost,
-            DefenseBuildingDataSO building => building.populationCost,
-            _ => 99
-        };
+        base.InitializeCard();
+        dsmInstance = DeckSelectionManager.Instance;
+        deckSelectButton.interactable = CanAddCard();
     }
-
     public void OnSelectDeckCard()
     {
-        bool selected = DeckSelectionManager.Instance.TrySelectCard(upgradeDataSO);
+        bool selected = dsmInstance.TrySelectCard(upgradeDataSO);
         selectionPanel.SetActive(selected);
         isSelected = selected;
 
-        UpdateButtonInteractivity();
+        RefreshAllCardsInteractivity();
     }
 
     public void OnDeSelectCard()
     {
-        bool deselected = DeckSelectionManager.Instance.TryDeSelectCard(upgradeDataSO);
+        bool deselected = dsmInstance.TryDeSelectCard(upgradeDataSO);
         selectionPanel.SetActive(!deselected);
         isSelected = !deselected;
 
-        UpdateButtonInteractivity();
+        RefreshAllCardsInteractivity();
     }
-
-    public void UpdateButtonInteractivity()
+    private void RefreshAllCardsInteractivity()
     {
-        foreach (var upgradeCard in myPanel.allCards)
+        foreach (DeckCard deckCard in myPanel.allCards)
         {
-            if (upgradeCard is DeckCard deckCard)
-            {
-                deckCard.deckSelectButton.interactable = deckCard.CanAddCard();
-            }
+            deckCard.deckSelectButton.interactable = deckCard.CanAddCard();
         }
     }
 
     private bool CanAddCard()
     {
-        if (isSelected) return false;
-
-        var dsmInstance = DeckSelectionManager.Instance;
-
-        if (!dsmInstance.canAddMoreCards) return false;
-        if (!dsmInstance.HasPopulationFor(cardPopulation)) return false;
+        if (isSelected)
+        {
+            // Debug.Log($"<size=20><color=red>[Deck Card] Can't add card {upgradeDataSO.name} Reason : Card Already Selected</color></size>");
+            return false;
+        }
+        if (!dsmInstance.canAddMoreCards)
+        {
+            // Debug.Log($"<size=20><color=red>[Deck Card] Can't add card {upgradeDataSO.name} Reason : Deck Full</color></size>");
+            return false;
+        }
+        if (!dsmInstance.HasPopulationFor(cardPopulation))
+        {
+            // Debug.Log($"<size=20><color=red>[Deck Card] Can't add card {upgradeDataSO.name} Reason : Not enough population</color></size>");
+            return false;
+        }
         return true;
     }
 
@@ -75,8 +74,10 @@ public class DeckCard : UpgradeCard
         deckDeSelectButton.onClick.RemoveListener(OnDeSelectCard);
     }
 
-    public void EnableSelectionPanel(bool flag)
+    public void SelectionPanelEnabled(bool enable)
     {
-        selectionPanel.SetActive(flag);
+        isSelected = enable;
+        selectionPanel.SetActive(enable);
+        deckSelectButton.interactable = CanAddCard();
     }
 }
