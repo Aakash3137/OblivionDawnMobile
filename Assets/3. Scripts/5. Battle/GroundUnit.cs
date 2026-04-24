@@ -1,4 +1,3 @@
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -71,13 +70,32 @@ public class GroundUnit : MonoBehaviour
     private float separationTimer;
     private const float separationInterval = 0.15f;
     private float targetCheckOffset;
+    private bool statsLoaded = false;
     //Abilities
     private float baseMoveSpeed;
     private Dictionary<AbilityEffect, float> speedMultipliers = new Dictionary<AbilityEffect, float>();
+    
+    public void Start()
+    {
+        // Write nothing here 
+    }
 
-    private void Start()
+    public void OnStatsReady()
     {
         unitStats = GetComponent<UnitStats>();
+        // Stats are now initialized
+        
+        LoadStats();
+    }
+    private void LoadStats()
+    {
+        if (statsLoaded) return;
+
+        // unitProduceSO is set by Initialize() — wait until it's ready
+        if (unitStats.unitProduceSO == null) return;
+
+        statsLoaded = true;
+
         unitProduceSO = unitStats.unitProduceSO;
         unitData = unitProduceSO.unitUpgradeData[unitStats.identity.spawnLevel];
         // Initialize stats
@@ -92,6 +110,8 @@ public class GroundUnit : MonoBehaviour
         if (unitStats is UnitStats unitStat)
             attackTargets = unitStat.unitAttackTargets;
 
+       // Debug.Log($"ADDD[{name}] CanAttackAir={attackTargets.canAttackAir}, CanAttackGround={attackTargets.canAttackGround}");
+        
         targetCheckOffset = Random.Range(0f, 1f);
 
         // Setup NavMeshAgent
@@ -113,10 +133,11 @@ public class GroundUnit : MonoBehaviour
 
     private void Update()
     {
+        if (!statsLoaded) return;
+        if (primaryTarget == null) SetPrimaryTarget();
         HandleTargetDetection();
         HandleState();
     }
-
     private void HandleTargetDetection()
     {
         targetCheckTimer += Time.deltaTime;

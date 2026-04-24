@@ -78,25 +78,40 @@ public class AirUnit : MonoBehaviour
     protected float separationTimer;
     protected const float separationInterval = 0.15f;
     private bool targetLocked = false;
+    private bool statsLoaded = false;
     public Stats airTarget;
     
     //Abilities
     private float baseMoveSpeed;
     private Dictionary<AbilityEffect, float> speedMultipliers = new Dictionary<AbilityEffect, float>();
     
-    protected virtual void Start()
+    protected virtual void Start() { }
+
+    public virtual void OnStatsReady()
     {
         unitStats = GetComponent<UnitStats>();
+        LoadStats();
+    }
+    
+    protected virtual void LoadStats()
+    {
+        if (statsLoaded) return;
+
+        // unitProduceSO is set by Initialize() — wait until it's ready
+        if (unitStats.unitProduceSO == null) return;
+
+        statsLoaded = true;
+
         unitProduceSO = unitStats.unitProduceSO;
         unitData = unitProduceSO.unitUpgradeData[unitStats.identity.spawnLevel];
-        
+
         // Initialize stats
         baseMoveSpeed = unitData.unitMobilityStats.moveSpeed;
         RecalculateSpeed();
         AttackRange = unitData.unitRangeStats.attackRange;
         DetectionRange = unitData.unitRangeStats.detectionRange;
         burstCooldown = unitData.unitAttackStats.fireRate;
-        
+
         // Flight stats
         flyHeight = unitProduceSO.unitFlyStats.flyHeight;
         climbAngle = unitProduceSO.unitFlyStats.climbAngle;
@@ -104,12 +119,12 @@ public class AirUnit : MonoBehaviour
         bankAngle = unitProduceSO.unitFlyStats.bankAngle;
         evadeRadius = unitProduceSO.unitFlyStats.evadeRadius;
         attackAngleTolerance = unitProduceSO.unitFlyStats.attackAngleTolerance;
-        
-        // Cached values
+
+        // Cached values — side is set by Initialize() so reading it here is safe
         unitSide = unitStats.side;
         forward = transform.forward;
         attackTargets = unitStats.unitAttackTargets;
-        
+
         targetCheckOffset = Random.Range(0f, 1f);
         evadeDirection = Random.value > 0.5f ? 1 : -1;
 
@@ -118,6 +133,9 @@ public class AirUnit : MonoBehaviour
 
     protected virtual void Update()
     {
+        if (!statsLoaded) return;
+        if (primaryTarget == null) SetPrimaryTarget();
+
         // Target Validation
         if (target != null)
         {

@@ -104,6 +104,10 @@ public class UnitStats : Stats
             InitializeUnitUpkeep();
 
         GameplayRegistry.Register(this);
+
+        // Notify GroundUnit it is safe to read side/stats now
+        GetComponent<GroundUnit>()?.OnStatsReady();
+        GetComponent<AirUnit>()?.OnStatsReady();
     }
 
     public void FireWeapon()

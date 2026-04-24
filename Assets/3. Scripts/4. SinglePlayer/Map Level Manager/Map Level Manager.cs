@@ -21,7 +21,7 @@ public class MapLevelManager : MonoBehaviour
         if (levelData == null)
         {
             levelData = Resources.Load<MapLevelDataSO>("DefaultLevelData");
-        }
+        }   
 
         if (levelData.environmentPrefab != null)
             Instantiate(levelData.environmentPrefab, ENVIRONMENT_CONTAINER.transform);

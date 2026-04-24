@@ -3,6 +3,8 @@ using LitMotion;
 using LitMotion.Extensions;
 using TMPro;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class TileUIPanel : MonoBehaviour
 {
@@ -23,7 +25,6 @@ public class TileUIPanel : MonoBehaviour
     private float _wallYOffset = 1f;
     private Tile currentTile;
     private BuildingStats placedBuilding;
-
 
     private void Start()
     {
@@ -53,44 +54,54 @@ public class TileUIPanel : MonoBehaviour
         buildPanel.HideBuildPanel(canvasGroup);
     }
 
-    public void PlaceBuilding(BuildingStats buildingPrefab, UnitProduceStatsSO unitSO = null)
+    public async void PlaceBuilding(BuildingStats buildingPrefab, UnitProduceStatsSO unitSO = null)
     {
-        if (currentTile == null || buildingPrefab == null || buildingPrefab == null) return;
+        if (currentTile == null || buildingPrefab == null) return;
         if (currentTile.hasBuilding) return;
 
         if (!CanPlaceBuilding(buildingPrefab))
         {
             errorText.text = "Not enough resources";
-
             HandleError();
-
-            // if (buildPanel != null)
-            //     buildPanel.HideBuildPanel(canvasGroup);
-
             return;
         }
 
-        Vector3 spawnPos = currentTile.transform.position + Vector3.up * 2f;
+        // Capture tile before Close() nulls it
+        Tile tileSnapshot = currentTile;
+        Vector3 spawnPos = tileSnapshot.transform.position + Vector3.up * 2f;
 
-        placedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
+        // InstantiateAsync keeps the asset loaded for the lifetime of the instance;
+        // release it in the building's OnDestroy via Addressables.ReleaseInstance
+        var buildingHandle = Addressables.InstantiateAsync(buildingPrefab.name, spawnPos, Quaternion.identity, tileSnapshot.transform);
+        await buildingHandle.Task;
+
+        if (buildingHandle.Status != AsyncOperationStatus.Succeeded)
+        {
+            Debug.LogError($"[TileUIPanel] Failed to instantiate building addressable: {buildingPrefab.name}");
+            return;
+        }
+
+        placedBuilding = buildingHandle.Result.GetComponent<BuildingStats>();
 
         if (placedBuilding is OffenseBuildingStats offenseBuilding)
             offenseBuilding.SetUnitPrefab(CharacterDatabase.Instance.GetUnitPrefab(unitSO), unitSO.GetUnitSpawnTime());
 
-        // This will set current tile and owner side order is important
-        placedBuilding.SetBuildingTile(currentTile);
+        // This will set current tile and owner side — order is important
+        placedBuilding.SetBuildingTile(tileSnapshot);
         placedBuilding.Initialize();
         // Initialize tile buff after all values are set
-        currentTile.InitializeTileBuffs();
+        tileSnapshot.InitializeTileBuffs();
 
         // Fade out build panel
         if (buildPanel != null)
             buildPanel.HideBuildPanel(canvasGroup);
 
+        // Pass snapshot so PlaceWalls/PlaceWallsOnMainBuilding don't rely on currentTile
         PlaceWallsOnMainBuilding();
-        PlaceWalls();
+        PlaceWalls(tileSnapshot);
         Close();
     }
+
     private void HandleError()
     {
         if (errorMotion.IsActive())
@@ -118,9 +129,9 @@ public class TileUIPanel : MonoBehaviour
     }
 
     // Wall logic (unchanged)
-    private void PlaceWalls()
+    private async void PlaceWalls(Tile tile)
     {
-        Vector3 _currentTileCords = currentTile.transform.position;
+        Vector3 _currentTileCords = tile.transform.position;
         var cgmInstance = CubeGridManager.Instance;
         Vector2Int currentGrid = cgmInstance.WorldToGrid(_currentTileCords);
 
@@ -136,7 +147,17 @@ public class TileUIPanel : MonoBehaviour
 
         var spawnPos = new Vector3(_currentTileCords.x, _wallYOffset, _currentTileCords.z);
 
-        WallParent currentWall = Instantiate(_wallPrefab, spawnPos, Quaternion.identity, placedBuilding.transform);
+        // InstantiateAsync keeps asset loaded for the lifetime of the wall instance
+        var wallHandle = Addressables.InstantiateAsync(_wallPrefab.name, spawnPos, Quaternion.identity, placedBuilding.transform);
+        await wallHandle.Task;
+
+        if (wallHandle.Status != AsyncOperationStatus.Succeeded)
+        {
+            Debug.LogError($"[TileUIPanel] Failed to instantiate wall addressable: {_wallPrefab.name}");
+            return;
+        }
+
+        WallParent currentWall = wallHandle.Result.GetComponent<WallParent>();
 
         for (int i = 0; i < adjacentTiles.Length; i++)
         {
@@ -168,7 +189,7 @@ public class TileUIPanel : MonoBehaviour
         }
     }
 
-    private void PlaceWallsOnMainBuilding()
+    private async void PlaceWallsOnMainBuilding()
     {
         if (_mainWallPlaced) return;
 
@@ -185,14 +206,23 @@ public class TileUIPanel : MonoBehaviour
             }
         }
 
-        if (mainBuilding != null)
-            Instantiate(_wallPrefab,
-                new Vector3(mainBuildingTile.position.x, _wallYOffset, mainBuildingTile.position.z),
-                Quaternion.identity, mainBuilding);
-        else
+        // InstantiateAsync keeps asset loaded for the lifetime of the wall instance
+        var wallHandle = Addressables.InstantiateAsync(
+            _wallPrefab.name,
+            new Vector3(mainBuildingTile.position.x, _wallYOffset, mainBuildingTile.position.z),
+            Quaternion.identity,
+            mainBuilding);
+        await wallHandle.Task;
+
+        if (wallHandle.Status != AsyncOperationStatus.Succeeded)
+        {
+            Debug.LogError($"[TileUIPanel] Failed to instantiate wall addressable: {_wallPrefab.name}");
+            return;
+        }
+
+        if (mainBuilding == null)
             Debug.Log("Main building not found");
 
         _mainWallPlaced = true;
     }
 }
-

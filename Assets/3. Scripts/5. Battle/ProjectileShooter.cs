@@ -19,12 +19,19 @@ public class ProjectileShooter : MonoBehaviour
 
     private GameObject VFXPool;
 
+    private bool statsLoaded = false;
+
 
     void Start()
     {
-        shooterStats = GetComponent<Stats>();
-
+        shooterStats = GetComponentInParent<Stats>();
         VFXPool = GameObject.FindGameObjectWithTag("VFXPool");
+    }
+
+    private void LoadStats()
+    {
+        if (statsLoaded) return;
+        statsLoaded = true;
 
         if (TryGetComponent<UnitStats>(out var unitStats))
         {
@@ -41,7 +48,9 @@ public class ProjectileShooter : MonoBehaviour
             unitDamage = mainStats.attackStats.damage;
             buildingDamage = mainStats.attackStats.buildingDamage;
         }
-        projectileSide = shooterStats.side;
+
+        if (shooterStats != null)
+            projectileSide = shooterStats.side;
     }
 
     public void Fire(Stats target, Transform firePoint = null)
@@ -56,6 +65,12 @@ public class ProjectileShooter : MonoBehaviour
 
         if (target == null || projectile == null || muzzlePoints.Count == 0)
             return;
+
+        // Re-read side here in case Start() ran before Initialize() set it
+        if (shooterStats != null)
+            projectileSide = shooterStats.side;
+
+        LoadStats();
 
         int muzzleCount = muzzlePoints.Count;
 

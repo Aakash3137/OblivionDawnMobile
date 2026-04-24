@@ -605,6 +605,50 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1807120803253265653, guid: 7161dea4d9f7cff40a43e0b23c812d59, type: 3}
   m_PrefabInstance: {fileID: 385414985}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &421714711
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 421714713}
+  - component: {fileID: 421714714}
+  m_Layer: 0
+  m_Name: TestAddressables
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &421714713
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 421714711}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &421714714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 421714711}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4eebc82062dd2f43baf73c0e0261c20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &440154558 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: e222318d884c36448aed9781dafe1bf0, type: 3}
@@ -3817,6 +3861,10 @@ PrefabInstance:
       propertyPath: enemyModeSwitch
       value: 
       objectReference: {fileID: 1772300670}
+    - target: {fileID: 4628267504887400421, guid: ba3e76c809ab9b14faad7aee6cb40841, type: 3}
+      propertyPath: currentPersonality
+      value: 
+      objectReference: {fileID: 11400000, guid: e50161e16bd2b4048a3d2f7b0d8a8911, type: 2}
     - target: {fileID: 7730424683783505825, guid: ba3e76c809ab9b14faad7aee6cb40841, type: 3}
       propertyPath: scanCenter
       value: 
@@ -6366,3 +6414,4 @@ SceneRoots:
   - {fileID: 1584292193}
   - {fileID: 1847155673}
   - {fileID: 70611840}
+  - {fileID: 421714713}
