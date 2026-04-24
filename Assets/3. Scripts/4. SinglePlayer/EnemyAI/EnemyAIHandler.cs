@@ -103,6 +103,7 @@ public class EnemyAIHandler : MonoBehaviour
     private BuildingCategory lastFailedCategory;
 
     private float nextRecheckTime = -999f;
+    private bool isSpawning = false; // guard against overlapping async spawns
 
     // ===== EMERGENCY STATE =====
     enum EmergencyState
@@ -389,6 +390,8 @@ public class EnemyAIHandler : MonoBehaviour
 
     void TrySpawnBuilding()
     {
+        if (isSpawning) return; // wait for previous async spawn to complete
+
         if (totalBuildingsSpawned >= currentPersonality.maxEnemyBuildings)
             return;
 
@@ -1168,14 +1171,15 @@ public class EnemyAIHandler : MonoBehaviour
 
     // ============== SPAWNING METHOD ==============
 
-    void SpawnBuilding(Tile tile, BuildingStats buildingPrefab, BuildingCategory category)
+    async void SpawnBuilding(Tile tile, BuildingStats buildingPrefab, BuildingCategory category)
     {
         if (tile == null || buildingPrefab == null || tile.hasBuilding)
             return;
 
+        isSpawning = true;
         Vector3 spawnPos = tile.transform.position + Vector3.up * 2f;
 
-        if (enemyBuildPanel.PlaceBuildingAI(buildingPrefab, spawnPos, tile))
+        if (await enemyBuildPanel.PlaceBuildingAI(buildingPrefab, spawnPos, tile))
         {
             failedBuildAttempts = 0; //  reset on success
 
@@ -1223,6 +1227,8 @@ public class EnemyAIHandler : MonoBehaviour
             failedBuildAttempts++; //  track failure
             lastFailedCategory = category;
         }
+
+        isSpawning = false;
     }
 
     //resource Imbalance fixing 

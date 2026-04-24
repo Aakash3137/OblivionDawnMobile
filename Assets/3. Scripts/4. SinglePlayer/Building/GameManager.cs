@@ -1,5 +1,7 @@
 using System;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 public enum UnitStance
 {
@@ -41,7 +43,7 @@ public class GameManager : MonoBehaviour
         ObstaclesPool = GameObject.FindGameObjectWithTag("ObstaclesPool").transform;
     }
 
-    public void Initialize()
+    public async void Initialize()
     {
         playerTile = cgmInstance.GetTile(playerSpawnCoord);
         enemyTile = cgmInstance.GetTile(enemySpawnCoord);
@@ -49,11 +51,11 @@ public class GameManager : MonoBehaviour
         playerSpawnPoint = playerTile.transform;
         enemySpawnPoint = enemyTile.transform;
 
-        SpawnMainBuilding();
+        await SpawnMainBuilding();
         //SpawnNeutralBuildings();
     }
 
-    private void SpawnMainBuilding()
+    private async Awaitable SpawnMainBuilding()
     {
         var playerFaction = GameData.playerFaction;
         var enemyFaction = GameData.enemyFaction;
@@ -62,17 +64,39 @@ public class GameManager : MonoBehaviour
         var playerMainBuilding = charDb.mainBuildingPrefabs[(int)playerFaction];
         var enemyMainBuilding = charDb.mainBuildingPrefabs[(int)enemyFaction];
 
-        var playerBuilding = Instantiate(playerMainBuilding, playerSpawnPoint.position + Vector3.up * buildingYOffset, Quaternion.identity);
-        var enemyBuilding = Instantiate(enemyMainBuilding, enemySpawnPoint.position + Vector3.up * buildingYOffset, Quaternion.identity);
+        // Load both in parallel
+        var playerHandle = Addressables.InstantiateAsync(
+            playerMainBuilding.name,
+            playerSpawnPoint.position + Vector3.up * buildingYOffset,
+            Quaternion.identity);
 
-        playerBuilding.SetBuildingTile(playerTile);
-        playerBuilding.Initialize();
+        var enemyHandle = Addressables.InstantiateAsync(
+            enemyMainBuilding.name,
+            enemySpawnPoint.position + Vector3.up * buildingYOffset,
+            Quaternion.identity);
 
-        enemyBuilding.SetBuildingTile(enemyTile);
-        enemyBuilding.Initialize();
+        await playerHandle.Task;
+        await enemyHandle.Task;
 
-        PlayerMainBuilding = playerBuilding;
-        EnemyMainBuilding = enemyBuilding;
+        if (playerHandle.Status == AsyncOperationStatus.Succeeded)
+        {
+            var playerBuilding = playerHandle.Result.GetComponent<MainBuildingStats>();
+            playerBuilding.SetBuildingTile(playerTile);
+            playerBuilding.Initialize();
+            PlayerMainBuilding = playerBuilding;
+        }
+        else
+            Debug.LogError($"[GameManager] Failed to load player main building: {playerMainBuilding.name}");
+
+        if (enemyHandle.Status == AsyncOperationStatus.Succeeded)
+        {
+            var enemyBuilding = enemyHandle.Result.GetComponent<MainBuildingStats>();
+            enemyBuilding.SetBuildingTile(enemyTile);
+            enemyBuilding.Initialize();
+            EnemyMainBuilding = enemyBuilding;
+        }
+        else
+            Debug.LogError($"[GameManager] Failed to load enemy main building: {enemyMainBuilding.name}");
     }
 
 

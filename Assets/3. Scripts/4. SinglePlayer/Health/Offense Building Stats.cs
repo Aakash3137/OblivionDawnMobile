@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class OffenseBuildingStats : BuildingStats
 {
@@ -83,7 +85,7 @@ public class OffenseBuildingStats : BuildingStats
 
             isProducingUnits = true;
             await Awaitable.WaitForSecondsAsync(unitSpawnTime, destroyCancellationToken);
-            SpawnUnit();
+            await SpawnUnit();
         }
     }
 
@@ -92,22 +94,33 @@ public class OffenseBuildingStats : BuildingStats
         return canMaintain && maxSpawnableUnits > producedUnits.Count;
     }
 
-    private void SpawnUnit()
+    // Returns Awaitable so ProduceUnits waits for the spawn to fully complete before looping
+    private async Awaitable SpawnUnit()
     {
         if (producedUnits.Count >= maxSpawnableUnits)
             return;
 
-        if (TryGetSpawnPosition(out Vector3 spawnPoint))
-        {
-            var intUnit = Instantiate(unit, spawnPoint, Quaternion.identity, transform);
-            intUnit.spawnerBuilding = this;
-            intUnit.Initialize();
-            producedUnits.Add(intUnit);
-        }
-        else
+        if (!TryGetSpawnPosition(out Vector3 spawnPoint))
         {
             Debug.Log("<color=red>[OffenseBuildingStats] No spawn position found</color>");
+            return;
         }
+
+        // InstantiateAsync keeps the asset loaded for the lifetime of the unit instance;
+        // Addressables.ReleaseInstance is called automatically when the GameObject is destroyed
+        var unitHandle = Addressables.InstantiateAsync(unit.name, spawnPoint, Quaternion.identity, transform);
+        await unitHandle.Task;
+
+        if (unitHandle.Status != AsyncOperationStatus.Succeeded)
+        {
+            Debug.LogError($"[OffenseBuildingStats] Failed to instantiate unit addressable: {unit.name}");
+            return;
+        }
+
+        var intUnit = unitHandle.Result.GetComponent<UnitStats>();
+        intUnit.spawnerBuilding = this;
+        intUnit.Initialize();
+        producedUnits.Add(intUnit);
     }
 
     internal override void EnableFunctionality()

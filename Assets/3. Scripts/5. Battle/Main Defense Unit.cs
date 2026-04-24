@@ -29,17 +29,30 @@ public class MainDefenseUnit : MonoBehaviour
     [field: SerializeField, ReadOnly] public GameObject[] primaryTarget { get; private set; }
     [field: SerializeField, ReadOnly] public GameObject[] secondaryTarget { get; private set; }
 
-    // Reply target system
     private Stats replyTarget;
 
     private float[] targetCheckTimer;
     private float[] targetCheckIntervals;
     private float[] attackTimer;
 
+    // Data read lazily on first Update — by then Initialize() has always completed
+    private bool statsLoaded = false;
+
     private void Start()
     {
         projectileShooter = GetComponent<ProjectileShooter>();
         mainStats = GetComponent<MainBuildingStats>();
+    }
+
+    private void LoadStats()
+    {
+        if (statsLoaded) return;
+
+        // mainBuildingData is set by Initialize() — wait until it's ready
+        if (mainStats.mainBuildingData == null) return;
+
+        statsLoaded = true;
+
         mainBuildingSO = mainStats.GetBuildingSO();
         mainData = mainStats.mainBuildingData;
         forward = transform.forward;
@@ -67,6 +80,9 @@ public class MainDefenseUnit : MonoBehaviour
 
     private void Update()
     {
+        if (mainStats == null) return;
+        LoadStats();
+        if (!statsLoaded) return;
         MultiTargetDetection();
     }
 
@@ -136,6 +152,8 @@ public class MainDefenseUnit : MonoBehaviour
 
     public void SetReplyTarget(Stats attacker)
     {
+        if (mainStats == null) return;
+        LoadStats(); // ensure attackTargets is initialized before accessing it
         if (attacker != null && attacker.side != mainStats.side)
         {
             if ((attacker.CanFly && attackTargets.canAttackAir) || (!attacker.CanFly && attackTargets.canAttackGround))
@@ -186,7 +204,6 @@ public class MainDefenseUnit : MonoBehaviour
             }
         }
 
-        // Assign based on hierarchy: replyTarget > unit > building
         if (replyTarget != null && Vector3.Distance(transform.position, replyTarget.transform.position) <= mainData.mainRangeStats.attackRange)
         {
             target[index] = replyTarget;
@@ -256,6 +273,8 @@ public class MainDefenseUnit : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
+        if (!statsLoaded || mainData == null) return;
+
         var AttackRange = mainData.mainRangeStats.attackRange;
         var DetectionRange = mainData.mainRangeStats.detectionRange;
         var MinAttackRange = mainData.mainRangeStats.minAttackRange;

@@ -29,26 +29,43 @@ public class DefenseUnit : MonoBehaviour
     [field: SerializeField, ReadOnly]
     public GameObject secondaryTarget { get; private set; }
 
-    // Reply target system
     private Stats replyTarget;
 
     private float targetCheckTimer = 0f;
     private const float targetCheckInterval = 1f;
     private float attackTimer = 0f;
 
+    // Data read lazily on first Update — by then Initialize() has always completed
+    private bool statsLoaded = false;
+
     private void Start()
     {
         _projectileShooter = GetComponent<ProjectileShooter>();
         defenseStats = GetComponent<DefenseBuildingStats>();
+    }
+
+    private void LoadStats()
+    {
+        if (statsLoaded) return;
+
+        // GetBuildingData returns null before Initialize() sets it
+        if (defenseStats.GetBuildingData() == null) return;
+
+        statsLoaded = true;
+
         defenseBuildingSO = defenseStats.GetBuildingSO();
         defenseData = defenseStats.GetBuildingData();
         forward = transform.forward;
+
         if (defenseBuilding == null)
             defenseBuilding = transform.GetChild(0).gameObject;
     }
 
     private void Update()
     {
+        if (defenseStats == null) return;
+        LoadStats();
+
         targetCheckTimer += Time.deltaTime;
 
         if (targetCheckTimer >= targetCheckInterval)
@@ -108,6 +125,8 @@ public class DefenseUnit : MonoBehaviour
 
     public void SetReplyTarget(Stats attacker)
     {
+        if (defenseStats == null) return;
+        LoadStats(); // ensure SO is loaded before accessing it
         if (attacker != null && attacker.side != defenseStats.side)
         {
             if ((attacker.CanFly && defenseBuildingSO.defenseAttackTargets.canAttackAir) ||
@@ -159,7 +178,6 @@ public class DefenseUnit : MonoBehaviour
             }
         }
 
-        // Assign based on hierarchy: replyTarget > unit > building
         if (replyTarget != null && Vector3.Distance(transform.position, replyTarget.transform.position) <= defenseData.defenseRangeStats.attackRange)
         {
             target = replyTarget;

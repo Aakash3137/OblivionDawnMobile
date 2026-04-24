@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.UI;
 
 public class EnemyBuildPanel : MonoBehaviour
@@ -62,8 +65,6 @@ public class EnemyBuildPanel : MonoBehaviour
         PlaceBuilding(slot);
     }
 
-
-    // updated code with enemy faction selection from inspector.
     private BuildingStats GetBuildingByType(int k)
     {
         var unitsSO = AIDecSelectionData.GetUnitsSOInDeck(enemyFactionName);
@@ -74,52 +75,55 @@ public class EnemyBuildPanel : MonoBehaviour
             return CharacterDatabase.Instance.GetSpawnerBuilding(unitsSO[k]);
     }
 
-    private void PlaceBuilding(BuildingStats buildingPrefab)
+    private async void PlaceBuilding(BuildingStats buildingPrefab)
     {
         if (currentTile == null || buildingPrefab == null) return;
-
         if (currentTile.hasBuilding) return;
+        if (!CanPlaceBuilding(buildingPrefab)) return;
 
-        if (!CanPlaceBuilding(buildingPrefab))
+        Tile tileSnapshot = currentTile;
+        Vector3 spawnPos = tileSnapshot.transform.position + Vector3.up * 2f;
+
+        var handle = Addressables.InstantiateAsync(buildingPrefab.name, spawnPos, Quaternion.identity, tileSnapshot.transform);
+        await handle.Task;
+
+        if (handle.Status != AsyncOperationStatus.Succeeded)
+        {
+            Debug.LogError($"[EnemyBuildPanel] Failed to instantiate: {buildingPrefab.name}");
             return;
+        }
 
-        Vector3 spawnPos = currentTile.transform.position + Vector3.up * 2f;
-
-        placedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
-
-        // This will set current tile and owner side order is important
-        placedBuilding.SetBuildingTile(currentTile);
+        placedBuilding = handle.Result.GetComponent<BuildingStats>();
+        placedBuilding.SetBuildingTile(tileSnapshot);
         placedBuilding.Initialize();
-        currentTile.InitializeTileBuffs();
+        tileSnapshot.InitializeTileBuffs();
         PlaceWallsOnMainBuilding();
-        PlaceWalls();
+        PlaceWalls(tileSnapshot);
         CloseBuildPanel();
     }
 
-    public bool PlaceBuildingAI(BuildingStats buildingPrefab, Vector3 spawnPos, Tile tile)
+    // Returns Task<bool> so EnemyAIHandler can await the result
+    public async Task<bool> PlaceBuildingAI(BuildingStats buildingPrefab, Vector3 spawnPos, Tile tile)
     {
-
         if (tile == null || buildingPrefab == null) return false;
-        currentTile = tile;
+        if (tile.hasBuilding) return false;
+        if (!CanPlaceBuilding(buildingPrefab)) return false;
 
-        if (currentTile.hasBuilding) return false;
+        var handle = Addressables.InstantiateAsync(buildingPrefab.name, spawnPos, Quaternion.identity, tile.transform);
+        await handle.Task;
 
-        if (!CanPlaceBuilding(buildingPrefab))
+        if (handle.Status != AsyncOperationStatus.Succeeded)
         {
-            // GameDebug.Log("[Enemy AI] Can't place building" + currentTile.transform.position);
-            // GameDebug.Log("HAsBuilding0 " + currentTile.hasBuilding);
+            Debug.LogError($"[EnemyBuildPanel] Failed to instantiate: {buildingPrefab.name}");
             return false;
         }
 
-        placedBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity, currentTile.transform);
-
-        // This will set current tile and owner side order is important
-        placedBuilding.SetBuildingTile(currentTile);
+        placedBuilding = handle.Result.GetComponent<BuildingStats>();
+        placedBuilding.SetBuildingTile(tile);
         placedBuilding.Initialize();
-        currentTile.InitializeTileBuffs();
+        tile.InitializeTileBuffs();
         PlaceWallsOnMainBuilding();
-
-        PlaceWalls();
+        PlaceWalls(tile);
 
         return true;
     }
@@ -146,12 +150,11 @@ public class EnemyBuildPanel : MonoBehaviour
         gameObject.SetActive(true);
     }
 
-    // Wall logic (unchanged)
-    private void PlaceWalls()
+    private async void PlaceWalls(Tile tile)
     {
-        if (currentTile == null || CubeGridManager.Instance == null) return;
+        if (tile == null || CubeGridManager.Instance == null) return;
 
-        Vector3 _currentTileCords = currentTile.transform.position;
+        Vector3 _currentTileCords = tile.transform.position;
         var cgmInstance = CubeGridManager.Instance;
         Vector2Int currentGrid = cgmInstance.WorldToGrid(_currentTileCords);
 
@@ -159,15 +162,28 @@ public class EnemyBuildPanel : MonoBehaviour
 
         Tile[] adjacentTiles = new Tile[4]; // 0 : Right, 1 : Left, 2 : Up, 3 : Down;
 
-        // Directions are fixed with index 0 : Right, 1 : Left, 2 : Up, 3 : Down
         adjacentTiles[0] = cgmInstance.GetTile(adjacentTileCords[0]);
         adjacentTiles[1] = cgmInstance.GetTile(adjacentTileCords[1]);
         adjacentTiles[2] = cgmInstance.GetTile(adjacentTileCords[2]);
         adjacentTiles[3] = cgmInstance.GetTile(adjacentTileCords[3]);
 
-        WallParent currentWall = Instantiate(_wallPrefab,
+        // Capture placedBuilding before any await — it's a field and could change
+        BuildingStats buildingSnapshot = placedBuilding;
+
+        var wallHandle = Addressables.InstantiateAsync(
+            _wallPrefab.name,
             new Vector3(_currentTileCords.x, _wallYOffset, _currentTileCords.z),
-            Quaternion.identity, placedBuilding.transform);
+            Quaternion.identity,
+            buildingSnapshot.transform);
+        await wallHandle.Task;
+
+        if (wallHandle.Status != AsyncOperationStatus.Succeeded)
+        {
+            Debug.LogError($"[EnemyBuildPanel] Failed to instantiate wall: {_wallPrefab.name}");
+            return;
+        }
+
+        WallParent currentWall = wallHandle.Result.GetComponent<WallParent>();
 
         for (int i = 0; i < adjacentTiles.Length; i++)
         {
@@ -180,7 +196,6 @@ public class EnemyBuildPanel : MonoBehaviour
                 {
                     case 0:
                         currentWall.DisableWall(0);
-                        // Most common error here is null reference exception when tile.hasBuilding is not set to false after the building is destroyed
                         // adjacentTiles[i].GetCurrentBuilding().GetComponentInChildren<WallParent>()?.DisableWall(1);
                         break;
                     case 1:
@@ -200,7 +215,7 @@ public class EnemyBuildPanel : MonoBehaviour
         }
     }
 
-    private void PlaceWallsOnMainBuilding()
+    private async void PlaceWallsOnMainBuilding()
     {
         if (_mainWallPlaced) return;
 
@@ -217,12 +232,24 @@ public class EnemyBuildPanel : MonoBehaviour
             }
         }
 
-        if (mainBuilding != null)
-            Instantiate(_wallPrefab,
-                new Vector3(mainBuildingTile.position.x, _wallYOffset, mainBuildingTile.position.z),
-                Quaternion.identity, mainBuilding);
-        else
+        if (mainBuilding == null)
+        {
             Debug.Log("Main building not found");
+            return;
+        }
+
+        var wallHandle = Addressables.InstantiateAsync(
+            _wallPrefab.name,
+            new Vector3(mainBuildingTile.position.x, _wallYOffset, mainBuildingTile.position.z),
+            Quaternion.identity,
+            mainBuilding);
+        await wallHandle.Task;
+
+        if (wallHandle.Status != AsyncOperationStatus.Succeeded)
+        {
+            Debug.LogError($"[EnemyBuildPanel] Failed to instantiate wall: {_wallPrefab.name}");
+            return;
+        }
 
         _mainWallPlaced = true;
     }

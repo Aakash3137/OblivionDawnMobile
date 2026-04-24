@@ -49,17 +49,6 @@ public class EnemyPersonality : ScriptableObject
 
     public int maxEnemyBuildings = 150;
 
-    [Range(0f, 2f)] public float ComparisonMatchValue = 1f;
-
-    // When to attack
-    [Range(0f, 2f)] public float attackConfidence = 1.2f;
-
-    // When to retreat
-    [Range(0f, 2f)] public float retreatThreshold = 0.8f;
-
-    // Minimum time before switching again
-    public float stanceCooldown = 10f;
-
     [Header("Economy")]
     public bool balancedResourceStart = true;
     public int balancedResourceTarget = 3;
@@ -143,8 +132,8 @@ public class EnemyPersonality : ScriptableObject
     {
         List<DefenseBuildingDataSO> allBuildings = allBuildingData.GetDefenseBuildingsSO(block.faction);
 
-       // block.defenseBuildingSelections.RemoveAll(b => !allBuildings.Contains(b.building));
-
+       // block.defenseBuildingSelections.RemoveAll  (b => !allBuildings.Contains(b.building));
+      
         foreach (var building in allBuildings)
         {
             if (!block.defenseBuildingSelections.Exists(e => e.building == building))
