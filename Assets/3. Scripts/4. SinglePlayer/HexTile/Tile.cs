@@ -35,12 +35,12 @@ public class Tile : MonoBehaviour
             openTileVisual = transform.GetChild(1).gameObject;
     }
 
-    public void Initialize(Side side, Vector2Int coord, Material tileMaterial = null)
+    public void Initialize(Side side, Vector2Int coord, Texture2D tileTexture = null)
     {
         ownerSide = side;
-        if (meshObject != null && tileMaterial != null)
+        if (meshObject != null && tileTexture != null)
         {
-            meshObject.sharedMaterial = tileMaterial;
+            meshObject.sharedMaterial.mainTexture = tileTexture;
         }
         this.coord = coord;
     }
@@ -72,7 +72,10 @@ public class Tile : MonoBehaviour
 
     public void OpenStatusHandler(bool flag)
     {
-        isOpen = flag;
+        if (hasBuilding)
+            isOpen = true;
+        else
+            isOpen = flag;
 
         if (openTileVisual == null)
             return;

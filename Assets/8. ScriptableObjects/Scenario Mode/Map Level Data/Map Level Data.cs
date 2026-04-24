@@ -5,6 +5,6 @@ public class MapLevelDataSO : ScriptableObject
 {
     [field: SerializeField] public int level { get; private set; }
     public GameObject environmentPrefab;
-    public Material tileMaterial;
+    public Texture2D tileTexture;
     public TileModificationData[] tileModificationData;
 }

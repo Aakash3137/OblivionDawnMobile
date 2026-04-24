@@ -32,7 +32,7 @@ public class CubeGridManager : MonoBehaviour
 
     #region Tile Generation
     [Button]
-    public void GenerateTiles(Material tileMaterial)
+    public void GenerateTiles(Texture2D tileTexture)
     {
         DestroyTiles();
 
@@ -61,7 +61,7 @@ public class CubeGridManager : MonoBehaviour
                     side = (x % 2 == 0) ? Side.Player : Side.Enemy;
 
                 allTiles.Add(spawnedTile);
-                spawnedTile.Initialize(side, new Vector2Int(x, y), tileMaterial);
+                spawnedTile.Initialize(side, new Vector2Int(x, y), tileTexture);
                 RegisterTile(new Vector2Int(x, y), spawnedTile);
                 onTilesGenerated += spawnedTile.RefreshBorders;
 
@@ -107,7 +107,7 @@ public class CubeGridManager : MonoBehaviour
 
     public void Initialize(MapLevelDataSO mapLevelData)
     {
-        GenerateTiles(mapLevelData.tileMaterial);
+        GenerateTiles(mapLevelData.tileTexture);
 
         var navMeshSUrface = GetComponent<NavMeshSurface>();
         navMeshSUrface.BuildNavMesh();
