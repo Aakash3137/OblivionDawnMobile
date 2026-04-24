@@ -43,7 +43,6 @@ public class DeckPanelNavigation : MonoBehaviour
         var currentFactionCards = deckPanelManager.factionCardPanels[(int)faction].cardPanels[0].allCards;
 
         dsmInstance.InitializeDeckData(cityCenterData, currentFactionCards);
-        dsmInstance.RefreshSelectionCards();
 
         if (!isDefaultDataLoaded)
         {
@@ -56,6 +55,8 @@ public class DeckPanelNavigation : MonoBehaviour
             dsmInstance.LoadDeckCardSelectionState(currentFactionCards);
             isDeckDataLoaded[(int)faction] = true;
         }
+
+        dsmInstance.RefreshSelectionCards();
     }
 
     private void ToggleFactionPanel(FactionName faction)
