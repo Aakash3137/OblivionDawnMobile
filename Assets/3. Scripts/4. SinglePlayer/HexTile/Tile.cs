@@ -73,16 +73,18 @@ public class Tile : MonoBehaviour
     public void OpenStatusHandler(bool flag)
     {
         if (hasBuilding)
-            isOpen = true;
-        else
-            isOpen = flag;
-
-        if (openTileVisual == null)
+        {
+            isOpen = false;
+            if (openTileVisual != null)
+                openTileVisual.SetActive(false);
             return;
+        }
+        isOpen = flag;
 
         if (ownerSide != Side.Player)
         {
-            openTileVisual.SetActive(false);
+            if (openTileVisual != null)
+                openTileVisual.SetActive(false);
             return;
         }
 
@@ -95,7 +97,8 @@ public class Tile : MonoBehaviour
 
             if (neighbor.currentBuilding != null && neighbor.currentBuilding.side != Side.Player)
             {
-                openTileVisual.SetActive(false);
+                if (openTileVisual != null)
+                    openTileVisual.SetActive(false);
                 return;
             }
         }
@@ -105,10 +108,10 @@ public class Tile : MonoBehaviour
 
     public void Occupy(Side side)
     {
-        if (ownerSide != Side.Player && ownerSide != Side.Enemy)
+        if (hasBuilding || ownerSide == side)
             return;
 
-        if (ownerSide == side)
+        if (ownerSide != Side.Player && ownerSide != Side.Enemy)
             return;
 
         ChangeSide(side);
