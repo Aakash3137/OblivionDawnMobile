@@ -82,7 +82,7 @@ public class Stats : MonoBehaviour
         {
            //callRepair();
             // RepairObj.PlayShow();
-            FindRepairButton();
+            RepairObj.Repairbtn.interactable = true;
         }
     }
 

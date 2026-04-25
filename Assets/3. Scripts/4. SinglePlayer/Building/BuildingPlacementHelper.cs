@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using ExitGames.Client.Photon.StructWrapping;
+using System.Collections;
 
 public class BuildingPlacementHelper : MonoBehaviour
 {
@@ -9,7 +10,20 @@ public class BuildingPlacementHelper : MonoBehaviour
     [SerializeField] private List<Tile> neighborTiles = new List<Tile>();
     internal static Tile currentTile;
     [SerializeField] internal Transform GlowEffectPlace, RepairEffectPlace;
+    [SerializeField] internal bool RepairDelay;
 
+    void OnEnable()
+    {
+        RepairDelay = false;
+        StartCoroutine(CanRepairDelay());
+    }
+
+    IEnumerator CanRepairDelay()
+    {
+        RepairDelay = false;
+        yield return new WaitForSeconds(1.5f);
+        RepairDelay = true;
+    }
 
     private void Awake()
     {
@@ -97,6 +111,9 @@ public class BuildingPlacementHelper : MonoBehaviour
     void OnMouseDown()
     {
         if (GameStateManager.Instance.IsGameOver) 
+            return;
+
+        if(!RepairDelay)
             return;
 
         Stats _CurrentStats = gameObject.GetComponent<Stats>();
