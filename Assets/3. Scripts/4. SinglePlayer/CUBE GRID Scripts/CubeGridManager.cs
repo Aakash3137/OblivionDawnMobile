@@ -105,19 +105,21 @@ public class CubeGridManager : MonoBehaviour
             Destroy(gameObject);
     }
 
-    public void Initialize(MapLevelDataSO mapLevelData)
+    public void Initialize(MapLevelDataSO mapLevelData, Texture2D textureOverride)
     {
-        GenerateTiles(mapLevelData.tileTexture);
-
-        var navMeshSUrface = GetComponent<NavMeshSurface>();
-        navMeshSUrface.BuildNavMesh();
-
+        // Use the pre-loaded texture passed in; fall back to nothing if null
+        // (should never be null in production – MapLevelBlock guards this).
+        GenerateTiles(textureOverride);
+ 
+        var navMeshSurface = GetComponent<NavMeshSurface>();
+        navMeshSurface.BuildNavMesh();
+ 
         tileEffectTiles.Clear();
         onTileOccupied?.Invoke(playerTilesCount, enemyTilesCount);
-
+ 
         if (TryGetComponent(out gameManager))
             gameManager.Initialize();
-
+ 
         if (TryGetComponent(out tileModifyManager))
             tileModifyManager.Initialize(mapLevelData.tileModificationData);
     }

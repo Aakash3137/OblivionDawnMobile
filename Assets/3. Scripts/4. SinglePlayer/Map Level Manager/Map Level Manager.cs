@@ -22,12 +22,12 @@ public class MapLevelManager : MonoBehaviour
     {
         var levelData = allMapLevelDataSO[GameData.mapLevel - 1];
 
-        if (levelData.environmentPrefab != null)
-            Instantiate(levelData.environmentPrefab, ENVIRONMENT_CONTAINER.transform);
-
-        CubeGridManager.Instance.Initialize(levelData);
+        if (GameData.loadedEnvironmentPrefab != null)
+            Instantiate(GameData.loadedEnvironmentPrefab, ENVIRONMENT_CONTAINER.transform);
+ 
+        CubeGridManager.Instance.Initialize(levelData, GameData.loadedTileTexture);
     }
-
+ 
     private void OnValidate()
     {
         allMapLevelDataSO.Sort((x, y) => x.level.CompareTo(y.level));

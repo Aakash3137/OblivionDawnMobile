@@ -1,10 +1,14 @@
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 [CreateAssetMenu(fileName = "Map Level Data", menuName = "Level Data/Map Level Data")]
 public class MapLevelDataSO : ScriptableObject
 {
     [field: SerializeField] public int level { get; private set; }
-    public GameObject environmentPrefab;
-    public Texture2D tileTexture;
+    
+    // ── Addressable references
+    public AssetReferenceGameObject environmentPrefabRef;
+    public AssetReferenceT<Texture2D> tileTextureRef;
+ 
     public TileModificationData[] tileModificationData;
 }

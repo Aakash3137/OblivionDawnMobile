@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public static class GameData
 {
     public static Mode gameMode;
@@ -19,6 +21,10 @@ public static class GameData
     public static string SelectedFactionName;
     public static MP_Faction SelectedMPFaction;
 
+    // Addressable map assets
+    public static GameObject loadedEnvironmentPrefab;
+    public static Texture2D  loadedTileTexture;
+    
     static GameData()
     {
         gameMode = Mode.None;
